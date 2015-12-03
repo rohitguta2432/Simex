@@ -20,8 +20,10 @@ public class Employee {
 	private String ImportDate;
 	private long Cir_code;
 	private String Roles;
+	private String ssoScope;
 	
-	
+	public String getSsoScope() { return ssoScope; }
+	public void setSsoScope(String ssoScope){ ssoScope = this.ssoScope; }
 	public String getEmp_code() {
 		return Emp_code;
 	}
