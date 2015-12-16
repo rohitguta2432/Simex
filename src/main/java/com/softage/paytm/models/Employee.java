@@ -1,4 +1,4 @@
-package com.softage.model;
+package com.softage.paytm.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
