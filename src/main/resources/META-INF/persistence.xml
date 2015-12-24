@@ -2,17 +2,59 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 
 	<persistence-unit name="localPersistenceUnit" transaction-type="RESOURCE_LOCAL">
-	<class>com.softage.paytm.models.Employee</class>
-	<exclude-unlisted-classes />
+        <class>com.softage.paytm.models.AgentpinmasterEntity</class>
+        <class>com.softage.paytm.models.AllocationMastEntity</class>
+        <class>com.softage.paytm.models.AppointmentMastEntity</class>
+        <class>com.softage.paytm.models.CallStatusMasterEntity</class>
+        <class>com.softage.paytm.models.CircleMastEntity</class>
+        <class>com.softage.paytm.models.DataentryEntity</class>
+        <class>com.softage.paytm.models.EmplogintableEntity</class>
+        <class>com.softage.paytm.models.MyguestsEntity</class>
+        <class>com.softage.paytm.models.PaytmagententryEntity</class>
+        <class>com.softage.paytm.models.PaytmcustomerDataEntity</class>
+        <class>com.softage.paytm.models.PaytmdeviceidinfoEntity</class>
+        <class>com.softage.paytm.models.PaytmMastEntity</class>
+        <class>com.softage.paytm.models.ProofMastEntity</class>
+        <class>com.softage.paytm.models.ReasonMastEntity</class>
+        <class>com.softage.paytm.models.ReceiverMastEntity</class>
+        <class>com.softage.paytm.models.RemarkMastEntity</class>
+        <class>com.softage.paytm.models.ReportMastEntity</class>
+        <class>com.softage.paytm.models.RoleMastEntity</class>
+        <class>com.softage.paytm.models.CircleMastEntity</class>
+        <class>com.softage.paytm.models.ProcessMastEntity</class>
+        <class>com.softage.paytm.models.SmsSendlogEntity</class>
+        <class>com.softage.paytm.models.SmsLogEntity</class>
+        <class>com.softage.paytm.models.SpokeMastEntity</class>
+        <class>com.softage.paytm.models.StateMasterEntity</class>
+        <class>com.softage.paytm.models.TelecallLogEntity</class>
+        <class>com.softage.paytm.models.TelecallMastEntity</class>
+        <class>com.softage.paytm.models.TimeslotEntity</class>
+        <class>com.softage.paytm.models.UploadRequestEntity</class>
+        <class>com.softage.paytm.models.UploadTableEntity</class>
+        <class>com.softage.paytm.models.TblNotificationLogEntity</class>
+        <exclude-unlisted-classes />
 
-	<properties>
+		<properties>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmdb"/>
+			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
+			<property name="hibernate.connection.username" value="root"/>
+			<property name="hibernate.connection.password" value="trainspotting@123"/>
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+		</properties>
+	</persistence-unit>
+</persistence>
+
+	<!--<properties>
 		<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-		<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-		<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmdb" />
-		<property name="hibernate.connection.username" value="root" />
-		<property name="hibernate.connection.password" value="trainspotting@123" />
+		<property name="hibernate.connection.driver_class" value="net.sourceforge.jtds.jdbc.Driver" />
+		<property name="hibernate.connection.url" value="jdbc:jtds:sqlserver://172.25.37.218:1433/Test_PayTm" />
+		<property name="hibernate.connection.username"/>
+		<property name="hibernate.connection.password"/>
 		<property name="hibernate.hbm2ddl.auto" value="update" />
 		<property name="hibernate.jdbc.batch_size" value="0" />
-	</properties>
-</persistence-unit>
-</persistence>
+	</properties>-->
+
+
+
+

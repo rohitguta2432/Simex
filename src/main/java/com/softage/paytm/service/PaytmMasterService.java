@@ -1,0 +1,17 @@
+package com.softage.paytm.service;
+
+import com.softage.paytm.models.PaytmMastEntity;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by SS0085 on 21-12-2015.
+ */
+public interface PaytmMasterService {
+
+    public void savePaytmMaster(List<Map<String,String>> paytmList);
+
+    public PaytmMastEntity getPaytmMastData();
+
+}
