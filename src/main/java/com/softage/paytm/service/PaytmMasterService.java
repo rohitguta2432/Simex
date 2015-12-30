@@ -1,6 +1,9 @@
 package com.softage.paytm.service;
 
+import com.softage.paytm.models.CallStatusMasterEntity;
 import com.softage.paytm.models.PaytmMastEntity;
+import com.softage.paytm.models.StateMasterEntity;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -13,5 +16,8 @@ public interface PaytmMasterService {
     public void savePaytmMaster(List<Map<String,String>> paytmList);
 
     public PaytmMastEntity getPaytmMastData();
+    public  List telecallingScreen(String userName);
+    public List<StateMasterEntity> getStateList();
+    public List<CallStatusMasterEntity> getStatusList();
 
 }

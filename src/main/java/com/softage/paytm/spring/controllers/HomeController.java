@@ -1,11 +1,15 @@
 package com.softage.paytm.spring.controllers;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.softage.paytm.models.CallStatusMasterEntity;
 import com.softage.paytm.models.PaytmMastEntity;
+import com.softage.paytm.models.PaytmagententryEntity;
+import com.softage.paytm.models.StateMasterEntity;
 import com.softage.paytm.service.PaytmMasterService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -55,7 +59,7 @@ class HomeController {
 	  int count=0;
 		while ((line = br.readLine()) != null) {
 			String[] customerData = line.split(cvsSplitBy);
-			if(count!=0) {
+			if(count!=0 && count==1) {
 				HashMap<String, String> map = new HashMap<String, String>();
 				System.out.println(customerData[0]);
 				map.put("kycRequestId", customerData[0]);
@@ -115,13 +119,52 @@ class HomeController {
 
 		}*/
 	}
-
+	@RequestMapping(value = "/getTeleCallData", method = RequestMethod.GET)
 	public JSONObject getTeleCallingData(){
 		JSONObject jsonObject =new JSONObject();
 		PaytmMastEntity paytmMastData=paytmMasterService.getPaytmMastData();
-		   System.out.println(paytmMastData);
+		System.out.println(paytmMastData);
 		return  jsonObject;
 	}
+
+	@RequestMapping(value = "/telecallingScreen", method = RequestMethod.GET)
+	public JSONObject telecallingScreen(){
+		String userName="";
+		JSONObject jsonObject =new JSONObject();
+		List list=paytmMasterService.telecallingScreen(userName);
+        List<StateMasterEntity> stateList=paytmMasterService.getStateList();
+		List<CallStatusMasterEntity> statusList= paytmMasterService.getStatusList();
+		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar date = Calendar.getInstance();
+		String dateList1[]=new String[7];
+		List<String> dateList=new ArrayList<>();
+		for(int i = 0; i < 7;i++){
+
+			dateList1[i]  = format.format(date.getTime());
+			date.add(Calendar.DATE  , 1);
+			dateList.add(dateList1[i]);
+		}
+
+		return jsonObject;
+	}
+	@RequestMapping(value = "/agentRegistration", method = {RequestMethod.GET,RequestMethod.POST})
+	public String agentRegistration(HttpServletRequest request){
+		String msg="";
+
+		String Acode=request.getParameter("agent_code");
+		PaytmagententryEntity paytmagententryEntity=new PaytmagententryEntity();
+		return  msg;
+	}
+	@RequestMapping(value = "/customerCalling", method = {RequestMethod.GET,RequestMethod.POST})
+	public String Call(){
+		String msg=null;
+
+
+
+	return  msg;
+	}
+
+
 }
 /*
 
