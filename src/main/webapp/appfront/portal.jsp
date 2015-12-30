@@ -80,16 +80,16 @@
     <div class="page-sidebar" id="sidebar">
       <!-- Sidebar Menu -->
       <ul class="nav sidebar-menu">
-        <li class="active"><a ui-sref="index"><i class="menu-icon fa fa-home"></i><span
-                class="menu-text">Dashboard</span></a></li>
+        <%--<li class="active"><a ui-sref="index"><i class="menu-icon fa fa-home"></i><span
+                class="menu-text">Dashboard</span></a></li>--%>
 
         <li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
                        Agent Regsitration </span></a>
         </li>
-        <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
-                        Data Entry </span></a></li>
+       <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
+                        Data Entry </span></a></li>--%>
         <li><a ui-sref="uploadScreen"><i class="menu-icon fa fa-upload"></i><span class="menu-text">
-                        Upload Data Screen </span></a></li>
+                        Import Paytm Data </span></a></li>
         <li><a ui-sref="telecalling"><i class="menu-icon fa fa-phone"></i><span class="menu-text">
                         Telecalling </span></a></li>
         <li><a ui-sref="registration"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
