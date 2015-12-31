@@ -238,9 +238,11 @@ e.printStackTrace();
 	@ResponseBody
 	public JSONObject getSpokeCode(@RequestParam (value = "circleName")String circleName){
 	  JSONObject jsonObject=new JSONObject();
-
+		List<String> spokeList=circleService.getSpokeList(circleName);
+		jsonObject.put("spokeList",spokeList);
 	  return  jsonObject;
 }
+
 	@RequestMapping(value = "/postCalling", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
 	public String postCallig(HttpServletRequest request,HttpServletResponse  response){
