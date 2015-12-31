@@ -65,7 +65,7 @@ public class CircleMastDaoImp implements CircleMastDao {
         SpokeMastEntity spokeMastEntity=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "select spokeList.spokeCode from SpokeMastEntity spokeList";
+            String strQuery = "select spokeList.spokeCode from SpokeMastEntity spokeList where spokeList.circle="+circleName;
             query=entityManager.createQuery(strQuery);
             spokeCodeList=query.getResultList();
 
