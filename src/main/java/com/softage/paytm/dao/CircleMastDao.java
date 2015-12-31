@@ -11,4 +11,6 @@ public interface CircleMastDao {
 
     public CircleMastEntity findByPrimaryKey(int circleCode);
     public List<String> getCircleList();
+    List<String> getSpokeList(String circleName);
+
 }

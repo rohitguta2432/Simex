@@ -18,6 +18,13 @@ public class CircleServiceImp implements CircleService {
     @Override
     public List<String> getCirleList() {
         List<String> circleList=circleMastDao.getCircleList();
+
         return circleList;
+    }
+
+    @Override
+    public List<String> getSpokeList(String circleName) {
+       List<String> list= circleMastDao.getSpokeList(circleName);
+        return list;
     }
 }

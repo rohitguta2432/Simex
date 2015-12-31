@@ -9,4 +9,5 @@ import java.util.List;
  */
 public interface CircleService {
     public List<String> getCirleList();
+    List<String> getSpokeList(String circleName);
 }

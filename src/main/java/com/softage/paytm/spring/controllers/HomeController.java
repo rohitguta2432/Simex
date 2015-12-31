@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Handles requests for the application home page.
@@ -194,19 +195,14 @@ class HomeController {
 		    return  msg;
 	}
 	@RequestMapping(value = "/customerCalling", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
 	public String Call(){
 		String msg=null;
-		String url = "http://27.124.7.54:5000/ConvoqueAPI/placeACall.jsp?src=8882905998&dst=8588875378&callerID=8882905998";
-   try {
+		String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
+	   try {
 	      URL obj = new URL(url);
 	      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-	// optional default is GET
 	      con.setRequestMethod("GET");
-	      con.setRequestMethod("POST");
-
-	//add request header
-//	con.setRequestProperty("User-Agent", USER_AGENT);
 
 	int responseCode = con.getResponseCode();
 	System.out.println("\nSending 'GET' request to URL : " + url);
@@ -222,16 +218,16 @@ class HomeController {
 	in.close();
 
 	//print result
-	System.out.println(response.toString());
+	msg=response.toString();
 } catch (Exception e){
-
+e.printStackTrace();
   }
 	return  msg;
 	}
 
 	@RequestMapping(value = "/getCirles", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
-public JSONObject getCircleName(){
+    public JSONObject getCircleName(){
 
 		JSONObject jsonObject=new JSONObject();
 		List<String> circles= circleService.getCirleList();
@@ -240,11 +236,28 @@ public JSONObject getCircleName(){
 }
 	@RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
-public JSONObject getSpokeCode(@RequestParam (value = "circleName")String circleName){
-	JSONObject jsonObject=new JSONObject();
+	public JSONObject getSpokeCode(@RequestParam (value = "circleName")String circleName){
+	  JSONObject jsonObject=new JSONObject();
 
-	return  jsonObject;
+	  return  jsonObject;
 }
+	@RequestMapping(value = "/postCalling", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public String postCallig(HttpServletRequest request,HttpServletResponse  response){
+
+
+
+		return  null;
+	}
+
+	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public String postCallingStatus(HttpServletRequest request,HttpServletResponse  response){
+
+
+
+		return  null;
+	}
 
 }
 /*
