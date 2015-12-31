@@ -31,6 +31,7 @@ public class AllocationMastEntity {
     private AppointmentMastEntity appointmentMastByAppointmentId;
 
     @Id
+    @GeneratedValue
     @Column(name = "Id", nullable = false, insertable = true, updatable = true)
     public int getId() {
         return id;

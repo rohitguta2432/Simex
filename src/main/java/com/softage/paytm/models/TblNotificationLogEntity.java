@@ -15,6 +15,7 @@ public class TblNotificationLogEntity {
     private String notificationType;
 
     @Id
+    @GeneratedValue
     @Column(name = "tbl_id", nullable = false, insertable = true, updatable = true)
     public long getTblId() {
         return tblId;

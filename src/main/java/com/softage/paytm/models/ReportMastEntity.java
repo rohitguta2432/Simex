@@ -13,6 +13,7 @@ public class ReportMastEntity {
     private String reportName;
 
     @Id
+    @GeneratedValue
     @Column(name = "Report_Id", nullable = false, insertable = true, updatable = true)
     public long getReportId() {
         return reportId;

@@ -32,11 +32,12 @@
         <class>com.softage.paytm.models.UploadRequestEntity</class>
         <class>com.softage.paytm.models.UploadTableEntity</class>
         <class>com.softage.paytm.models.TblNotificationLogEntity</class>
+
         <exclude-unlisted-classes />
 
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmdb"/>
+			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytm"/>
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
 			<property name="hibernate.connection.username" value="root"/>
 			<property name="hibernate.connection.password" value="trainspotting@123"/>

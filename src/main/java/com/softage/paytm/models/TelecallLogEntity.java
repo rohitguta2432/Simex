@@ -15,6 +15,7 @@ public class TelecallLogEntity {
     private Timestamp tcCallTime;
 
     @Id
+    @GeneratedValue
     @Column(name = "TC_Id", nullable = false, insertable = true, updatable = true)
     public int getTcId() {
         return tcId;

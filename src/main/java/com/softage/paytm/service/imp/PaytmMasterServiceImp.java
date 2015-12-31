@@ -66,7 +66,9 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 paytmMastEntity.setSubStageId(map.get("SubStageId"));
                 paytmMastEntity.setCreatedTimestamp(map.get("CreatedTimestamp"));
                 paytmMastEntity.setImportDate(new Timestamp(new Date().getTime()));
-                paytmMastEntity.setOtp("0");
+                paytmMastEntity.setOtp("342"+i);
+                paytmMastEntity.setRefCode(3424+i);
+                paytmMastEntity.setImportBy("Afjal");
                 custList.add(paytmMastEntity);
                 i++;
             }
@@ -79,9 +81,9 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
-    public PaytmMastEntity getPaytmMastData() {
-        PaytmMastEntity paytmMastData =paytmMasterDao.getPaytmMastData();
-        return  paytmMastData;
+    public JSONObject getPaytmMastData(String mobileNo) {
+        JSONObject jsonObject =paytmMasterDao.getPaytmMastData(mobileNo);
+        return  jsonObject;
 
     }
 

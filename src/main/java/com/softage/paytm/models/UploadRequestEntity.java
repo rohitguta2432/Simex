@@ -15,6 +15,7 @@ public class UploadRequestEntity {
     private Collection<UploadTableEntity> uploadTablesByReqCode;
 
     @Id
+    @GeneratedValue
     @Column(name = "Req_Code", nullable = false, insertable = true, updatable = true)
     public int getReqCode() {
         return reqCode;

@@ -13,8 +13,8 @@ import java.util.Collection;
 @Table(name = "appointment_mast")
 public class AppointmentMastEntity {
     private long appointmentId;
-    private String appointmentDate;
-    private String appointmentTime;
+    private Date appointmentDate;
+    private Time appointmentTime;
     private Timestamp importDate;
     private String customerPhone;
     private Collection<AllocationMastEntity> allocationMastsByAppointmentId;
@@ -23,12 +23,13 @@ public class AppointmentMastEntity {
   /* // public void setAppointmentDate(Date appointmentDate) {
         this.appointmentDate = appointmentDate;
     }*/
-
-    public void setAppointmentTime(Time appointmentTime) {
-        this.appointmentTime = appointmentTime.toString();
-    }
+//
+//    public void setAppointmentTime(Time appointmentTime) {
+//        this.appointmentTime = appointmentTime.toString();
+//    }
 
     @Id
+    @GeneratedValue
     @Column(name = "Appointment_id", nullable = false, insertable = true, updatable = true)
     public long getAppointmentId() {
         return appointmentId;
@@ -40,21 +41,21 @@ public class AppointmentMastEntity {
 
     @Basic
     @Column(name = "Appointment_Date", nullable = false, insertable = true, updatable = true, length = 10)
-    public String getAppointmentDate() {
+    public Date getAppointmentDate() {
         return appointmentDate;
     }
 
-    public void setAppointmentDate(String appointmentDate) {
+    public void setAppointmentDate(Date appointmentDate) {
         this.appointmentDate = appointmentDate;
     }
 
     @Basic
     @Column(name = "Appointment_Time", nullable = false, insertable = true, updatable = true, length = 16)
-    public String getAppointmentTime() {
+    public Time getAppointmentTime() {
         return appointmentTime;
     }
 
-    public void setAppointmentTime(String appointmentTime) {
+    public void setAppointmentTime(Time appointmentTime) {
         this.appointmentTime = appointmentTime;
     }
 

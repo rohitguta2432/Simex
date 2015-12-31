@@ -19,6 +19,7 @@ public class UploadTableEntity {
     private UploadRequestEntity uploadRequestByReqCode;
 
     @Id
+    @GeneratedValue
     @Column(name = "Req_Id", nullable = false, insertable = true, updatable = true)
     public int getReqId() {
         return reqId;

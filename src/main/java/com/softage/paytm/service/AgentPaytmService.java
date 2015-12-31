@@ -8,5 +8,6 @@ import com.softage.paytm.models.PaytmagententryEntity;
 public interface AgentPaytmService {
 
     public String saveAgent(PaytmagententryEntity paytmagententryEntity);
+    public PaytmagententryEntity findByPrimaryKey(String agentCode);
 
 }

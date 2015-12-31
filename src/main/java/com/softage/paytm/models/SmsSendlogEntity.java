@@ -23,6 +23,7 @@ public class SmsSendlogEntity {
     private ReceiverMastEntity receiverMastByReceiverCode;
 
     @Id
+    @GeneratedValue
     @Column(name = "SSL_Id", nullable = false, insertable = true, updatable = true)
     public int getSslId() {
         return sslId;

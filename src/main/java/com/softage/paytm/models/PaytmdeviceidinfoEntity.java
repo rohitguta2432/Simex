@@ -17,6 +17,7 @@ public class PaytmdeviceidinfoEntity {
     private TblNotificationLogEntity tblNotificationLogByLoginId;
 
     @Id
+    @GeneratedValue
     @Column(name = "Id", nullable = false, insertable = true, updatable = true)
     public long getId() {
         return id;

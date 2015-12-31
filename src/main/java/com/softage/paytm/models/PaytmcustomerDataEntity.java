@@ -26,8 +26,8 @@ public class PaytmcustomerDataEntity {
     private String pcdName;
     private String pcdPincode;
     private String pcdState;
-    private String pcdVisitDate;
-    private String pcdVisitTIme;
+    private Date pcdVisitDate;
+    private Time pcdVisitTIme;
     private Collection<AllocationMastEntity> allocationMastsByPcdCustomerPhone;
     private Collection<AppointmentMastEntity> appointmentMastsByPcdCustomerPhone;
 
@@ -181,21 +181,21 @@ public class PaytmcustomerDataEntity {
 
     @Basic
     @Column(name = "PCD_VisitDate", nullable = false, insertable = true, updatable = true, length = 10)
-    public String getPcdVisitDate() {
+    public Date getPcdVisitDate() {
         return pcdVisitDate;
     }
 
-    public void setPcdVisitDate(String pcdVisitDate) {
+    public void setPcdVisitDate(Date pcdVisitDate) {
         this.pcdVisitDate = pcdVisitDate;
     }
 
     @Basic
     @Column(name = "PCD_VisitTIme", nullable = false, insertable = true, updatable = true, length = 16)
-    public String getPcdVisitTIme() {
+    public Time getPcdVisitTIme() {
         return pcdVisitTIme;
     }
 
-    public void setPcdVisitTIme(String pcdVisitTIme) {
+    public void setPcdVisitTIme(Time pcdVisitTIme) {
         this.pcdVisitTIme = pcdVisitTIme;
     }
 

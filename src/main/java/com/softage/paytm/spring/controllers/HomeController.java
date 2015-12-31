@@ -17,6 +17,7 @@ import com.softage.paytm.models.StateMasterEntity;
 import com.softage.paytm.service.AgentPaytmService;
 import com.softage.paytm.service.CircleService;
 import com.softage.paytm.service.PaytmMasterService;
+import com.softage.paytm.service.PostCallingService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,8 @@ class HomeController {
 	private AgentPaytmService agentPaytmService;
 	@Autowired
 	public CircleService circleService;
+	@Autowired
+	public PostCallingService postCallingService;
 
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -56,6 +59,7 @@ class HomeController {
 	}
 
 	@RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
+	@ResponseBody
 	public void getFilePath(HttpServletRequest request) {
 //		 File input = new File("/x/data.csv");
 //		 File output = new File("/x/data.json");
@@ -72,7 +76,7 @@ class HomeController {
 	  int count=0;
 		while ((line = br.readLine()) != null) {
 			String[] customerData = line.split(cvsSplitBy);
-			if(count!=0 && count==1) {
+			if(count!=0 ) {
 				HashMap<String, String> map = new HashMap<String, String>();
 				System.out.println(customerData[0]);
 				map.put("kycRequestId", customerData[0]);
@@ -100,6 +104,7 @@ class HomeController {
 				list.add(map);
 			}
               count++;
+
 		}
           System.out.println("list   "+list);
 	  paytmMasterService.savePaytmMaster(list);
@@ -132,21 +137,23 @@ class HomeController {
 
 		}*/
 	}
-	@RequestMapping(value = "/getTeleCallData", method = RequestMethod.GET)
+/*	@RequestMapping(value = "/getTeleCallData", method = RequestMethod.GET)
 	public JSONObject getTeleCallingData(){
 		JSONObject jsonObject =new JSONObject();
 		PaytmMastEntity paytmMastData=paytmMasterService.getPaytmMastData();
 		System.out.println(paytmMastData);
 		return  jsonObject;
-	}
+	}*/
 
-	@RequestMapping(value = "/telecallingScreen", method = RequestMethod.GET)
+	@RequestMapping(value = "/telecallingScreen", method ={ RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
 	public JSONObject telecallingScreen(){
 		String userName="";
 		JSONObject jsonObject =new JSONObject();
 		List list=paytmMasterService.telecallingScreen(userName);
         List<StateMasterEntity> stateList=paytmMasterService.getStateList();
 		List<CallStatusMasterEntity> statusList= paytmMasterService.getStatusList();
+		JSONObject json= paytmMasterService.getPaytmMastData((String)list.get(0));
 		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 		Calendar date = Calendar.getInstance();
 		String dateList1[]=new String[7];
@@ -158,6 +165,11 @@ class HomeController {
 			dateList.add(dateList1[i]);
 		}
 
+        jsonObject.put("listMobile ",list);
+		jsonObject.put("stateList",stateList);
+		jsonObject.put("statusList",statusList);
+		jsonObject.put("dateList",dateList);
+		jsonObject.put("paytmmastjson",json);
 		return jsonObject;
 	}
 	@RequestMapping(value = "/agentRegistration", method = {RequestMethod.GET,RequestMethod.POST})
@@ -171,7 +183,7 @@ class HomeController {
 			String mobileNo = request.getParameter("phone");
 			String circleOffice = request.getParameter("circle_office");
 			String spokeCode = request.getParameter("spoke_code");
-			String avalTime = request.getParameter("avl_tim");
+			String avalTime = request.getParameter("avl_time");
 			String pincode = request.getParameter("pin_code");
 			String multipin = request.getParameter("multi_pin");
 			String email = request.getParameter("email");
@@ -247,6 +259,44 @@ e.printStackTrace();
 	@ResponseBody
 	public String postCallig(HttpServletRequest request,HttpServletResponse  response){
 
+		try {
+			String number = request.getParameter("number");
+			String name = request.getParameter("name");
+			String address = request.getParameter("address");
+			String area = request.getParameter("area");
+			String emailId = request.getParameter("emailId");
+			String city = request.getParameter("city");
+			String state = request.getParameter("state");
+			String pinCode = request.getParameter("pincode");
+			String landMark = request.getParameter("landmark");
+			String visitDate = request.getParameter("visitDate");
+			String visitTime = request.getParameter("visitTime");
+			String status = request.getParameter("status");
+			String importType = "admin";
+			String importby = "Afjal";
+			Map<String, String> map = new HashMap<String, String>();
+
+			map.put("number", number);
+			map.put("name", name);
+			map.put("address", address);
+			map.put("area", area);
+			map.put("emailId", emailId);
+			map.put("city", city);
+			map.put("state", state);
+			map.put("pinCode", pinCode);
+			map.put("landmark", landMark);
+			map.put("visitDate", visitDate);
+			map.put("visitTime", visitTime);
+			map.put("status", status);
+			map.put("importby", importby);
+			map.put("importType", importType);
+
+			postCallingService.saveCallingData(map);
+			logger.info("Map created successfully");
+		}catch (Exception e){
+			logger.error("",e);
+			e.printStackTrace();
+		}
 
 
 		return  null;

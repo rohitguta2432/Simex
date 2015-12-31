@@ -13,9 +13,10 @@ import java.util.Map;
  */
 public interface PaytmMasterService {
 
+
     public void savePaytmMaster(List<Map<String,String>> paytmList);
 
-    public PaytmMastEntity getPaytmMastData();
+    public JSONObject getPaytmMastData(String mobileNo);
     public  List telecallingScreen(String userName);
     public List<StateMasterEntity> getStateList();
     public List<CallStatusMasterEntity> getStatusList();

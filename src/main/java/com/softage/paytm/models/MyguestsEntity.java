@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * Created by SS0085 on 23-12-2015.
  */
 @Entity
-@Table(name = "myguests", schema = "", catalog = "paytm")
+@Table(name = "myguests")
 public class MyguestsEntity {
     private int id;
     private String firstname;
@@ -16,6 +16,7 @@ public class MyguestsEntity {
     private Timestamp regDate;
 
     @Id
+    @GeneratedValue
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
     public int getId() {
         return id;

@@ -40,7 +40,7 @@ public class PaytmagententryEntity {
         this.acode = acode;
     }
 
-    @Basic
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "AId", nullable = false, insertable = true, updatable = true)
     public int getaId() {
         return aId;

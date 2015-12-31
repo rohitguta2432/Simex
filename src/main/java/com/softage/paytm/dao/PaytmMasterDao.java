@@ -3,6 +3,7 @@ package com.softage.paytm.dao;
 import com.softage.paytm.models.CallStatusMasterEntity;
 import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.StateMasterEntity;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public interface PaytmMasterDao {
 
     public void savePaytmMaster(List<PaytmMastEntity> paytmMastEntity);
-    public PaytmMastEntity getPaytmMastData();
+    public JSONObject getPaytmMastData(String mobileNo);
     public  List telecallingScreen(String userName);
     public List<StateMasterEntity> getStatemaster();
     public List<CallStatusMasterEntity> getStatusList();

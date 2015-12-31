@@ -19,6 +19,7 @@ public class AgentpinmasterEntity {
     }
 
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "APM_ID", nullable = false, insertable = true, updatable = true)
     public long getApmId() {
         return apmId;
