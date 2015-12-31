@@ -52,7 +52,7 @@
                                             <label for="Text8" class="col-sm-3 control-label no-padding-right">Circle Office</label>
                                             <div class="col-sm-9">
                                                 <!--<input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" id="Text8" name="emp_code" ng-model="emp_code" placeholder="Emp code (if Softage employee)" allow-pattern="(\d|[a-z])" required/>-->
-                                               <select  name="circle" ng-model="circle_office"  class="form-control"  ng-options="office.office for office in offices" ng-change="getspokecode()">
+                                               <select  name="circle" ng-model="circle_office"  class="form-control"  ng-options="office for office in offices" ng-change="getspokecode()">
 
                                                </select>
                                                <!-- <select ng-model="center" name="center" ng-options="office.office for office in offices" class="form-control" required>
@@ -68,7 +68,7 @@
                                             <label for="Text8" class="col-sm-3 control-label no-padding-right">SpokeCode</label>
                                             <div class="col-sm-9">
                                                <!-- <input type="text" class="form-control" id="Text2" ng-minlength="3" ng-maxlength="15" name="agent_spkcode" ng-model="user.agent_spkcode" placeholder="Agent Spoke code" allow-pattern="(\d|[a-z])" required/>-->
-                                                <select id="Text8" name="circle" class="form-control" ng-model="spoke_code" ng-options="code.code for code in codes">
+                                                <select id="Text8" name="circle" class="form-control" ng-model="spoke_code" ng-options="code for code in codes">
                                                     <option value="select">Select Circle Office</option>
 
                                                 </select>

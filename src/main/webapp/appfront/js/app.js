@@ -33,7 +33,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
         
 });
 
-routerApp.controller('agentCtrl',['$scope', '$http', function($scope,$http,$q){
+routerApp.controller('agentCtrl',['$scope', '$http','$q','$log', function($scope,$http,$q,$log){
 /*
     $scope.offices  = [{id:1, office:"GUJARAT"},{id:2, office:"KARNATAKA"},{id:3, office:"B&amp;J"}, {id:4, office:"DELHI"}, {id:5, office:"HARYANA"}, {id:6, office:"HP"}, {id:7, office:"RAJASTHAN"}, {id:8, office:"MPCG"}, {id:9, office:"ANE"},{id:10, office:"M&amp;G"},{id:11, office:"PUNJAB"}, {id:12, office:"ROB"}, {id:13, office:"UPEAST"}, {id:14, office:"UPWEST"}, {id:15, office:"MUMBAI"}];
 */
@@ -41,18 +41,18 @@ routerApp.controller('agentCtrl',['$scope', '$http', function($scope,$http,$q){
     $scope.offices = [{id: 1, office:"Delhi"}];
     $scope.codes = [{id: 1, code:"ANESH11"}];
 
- /*  $scope.getcircleoffice = function(){
+ $scope.getcircleoffice = function(){
         var dfr = $q.defer();
-        $http.get('http://localhost:8080/paytm/+').
+        $http.get('http://localhost:8080/paytm/getCirles').
             success(function(data) {
                 dfr.resolve(data);
             }).error(function(error){dfr.reject("Failed");});
         return dfr.promise;
     };
 
-    $scope.spokecode = function(id){
+  $scope.spokecode = function(id){
         var dfr = $q.defer();
-        $http.get('http://localhost:8080/paytm/+').
+        $http.get('http://localhost:8080/paytm/getSpokeCode?circleName='+id).
             success(function(data) {
                 dfr.resolve(data);
             }).error(function(error){dfr.reject("Failed");});
@@ -63,20 +63,19 @@ routerApp.controller('agentCtrl',['$scope', '$http', function($scope,$http,$q){
     $scope.getcircleoffice().then(function(data){
         //console.log('data:   '+data);
         $scope.offices= data.circles;
+        console.log( $scope.offices);
     }, function(reason) {
         console.log('Error:   '+reason);
     });
 
 
-    $scope.getspokecode = function(id){
-        $log.log('getspokecode  - '+$scope.circle_office.id);
-        $scope.spokecode($scope.circle_office.id).then(function(data) {
-            $scope.codes = data;
-            //$scope.model = $scope.models[2]; //default selected index
-            $ionicLoading.hide();
+    $scope.getspokecode = function(){
+        $log.log('getspokecode  - '+$scope.circle_office);
+        $scope.spokecode($scope.circle_office).then(function(data) {
+            $scope.codes = data.spokeList;
         }, function(reason) {
         });
-    }*/
+    }
 
 
     $scope.errormessage = '';
