@@ -1,6 +1,10 @@
 package com.softage.paytm.spring.controllers;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -10,6 +14,8 @@ import com.softage.paytm.models.CallStatusMasterEntity;
 import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.PaytmagententryEntity;
 import com.softage.paytm.models.StateMasterEntity;
+import com.softage.paytm.service.AgentPaytmService;
+import com.softage.paytm.service.CircleService;
 import com.softage.paytm.service.PaytmMasterService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -19,6 +25,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -31,6 +39,10 @@ class HomeController {
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	@Autowired
 	private PaytmMasterService paytmMasterService;
+	@Autowired
+	private AgentPaytmService agentPaytmService;
+	@Autowired
+	public CircleService circleService;
 
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -148,22 +160,91 @@ class HomeController {
 		return jsonObject;
 	}
 	@RequestMapping(value = "/agentRegistration", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
 	public String agentRegistration(HttpServletRequest request){
 		String msg="";
+		try {
+			String agentName = request.getParameter("agent_name");
+			String agentCode = request.getParameter("agent_code");
+			String empCode = request.getParameter("employee");
+			String mobileNo = request.getParameter("phone");
+			String circleOffice = request.getParameter("circle_office");
+			String spokeCode = request.getParameter("spoke_code");
+			String avalTime = request.getParameter("avl_tim");
+			String pincode = request.getParameter("pin_code");
+			String multipin = request.getParameter("multi_pin");
+			String email = request.getParameter("email");
+			PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
+			       paytmagententryEntity.setAfullname(agentName);
+			       paytmagententryEntity.setAcode(agentCode);
+			       paytmagententryEntity.setEmpcode(empCode);
+			       paytmagententryEntity.setAphone(mobileNo);
+			       paytmagententryEntity.setAspokecode(spokeCode);
+			       paytmagententryEntity.setAavailslot(avalTime);
+			       paytmagententryEntity.setApincode(pincode);
+			       paytmagententryEntity.setMulitplePin(multipin);
+			       paytmagententryEntity.setAemailId(email);
+			       paytmagententryEntity.setImportby("system");
+			       paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
+		           msg= agentPaytmService.saveAgent(paytmagententryEntity);
 
-		String Acode=request.getParameter("agent_code");
-		PaytmagententryEntity paytmagententryEntity=new PaytmagententryEntity();
-		return  msg;
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		    return  msg;
 	}
 	@RequestMapping(value = "/customerCalling", method = {RequestMethod.GET,RequestMethod.POST})
 	public String Call(){
 		String msg=null;
+		String url = "http://27.124.7.54:5000/ConvoqueAPI/placeACall.jsp?src=8882905998&dst=8588875378&callerID=8882905998";
+   try {
+	      URL obj = new URL(url);
+	      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
+	// optional default is GET
+	      con.setRequestMethod("GET");
+	      con.setRequestMethod("POST");
 
+	//add request header
+//	con.setRequestProperty("User-Agent", USER_AGENT);
 
+	int responseCode = con.getResponseCode();
+	System.out.println("\nSending 'GET' request to URL : " + url);
+	System.out.println("Response Code : " + responseCode);
+
+	BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	String inputLine;
+	StringBuffer response = new StringBuffer();
+
+	while ((inputLine = in.readLine()) != null) {
+		response.append(inputLine);
+	}
+	in.close();
+
+	//print result
+	System.out.println(response.toString());
+} catch (Exception e){
+
+  }
 	return  msg;
 	}
 
+	@RequestMapping(value = "/getCirles", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+public JSONObject getCircleName(){
+
+		JSONObject jsonObject=new JSONObject();
+		List<String> circles= circleService.getCirleList();
+         jsonObject.put("circles",circles);
+	 return  jsonObject;
+}
+	@RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+public JSONObject getSpokeCode(@RequestParam (value = "circleName")String circleName){
+	JSONObject jsonObject=new JSONObject();
+
+	return  jsonObject;
+}
 
 }
 /*
