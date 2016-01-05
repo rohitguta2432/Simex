@@ -1,5 +1,26 @@
 
+<div class="page-body">
 
+    <div class="row">
+
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+            <div class="widget">
+                <div class="widget-header bordered-bottom bordered-themeprimary">
+                    <span class="widget-caption">Agent Regsitration</span>
+                    <div class="widget-buttons">
+                        <a href="#" data-toggle="maximize">
+                            <i class="fa fa-expand"></i>
+                        </a>
+                        <a href="#" data-toggle="collapse">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                        <a href="#" data-toggle="dispose">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
 
                             <div class="widget-body">
                                  <div id="horizontal-form">
@@ -9,9 +30,9 @@
                                             <label for="Text5" class="col-sm-3 control-label no-padding-right" >Name</label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15"  name="agent" ng-model="agent_name" id="Text5" placeholder="Name" allow-pattern="[a-z_ ]" required/>
-                                                <span style="color:red;" ng-show="myForm.agent.$dirty && myForm.agent.$invalid">
-                                                <p ng-show="myForm.agent.$error.required">Name is required.</p>
-                                                    </span>
+
+                                                <p style="color:red;" ng-show="myForm.agent.$error.required">*Name is required.</p>
+
                                             </div>
                                         </div>
 
@@ -19,9 +40,9 @@
                                             <label for="Text1" class="col-sm-3 control-label no-padding-right">Agent Code</label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" name="agent_code" ng-model="agent_code" id="Text1" placeholder="Agent Code" allow-pattern="(\d|[a-z])" required/>
-                                             <span style="color:red" ng-show="myForm.agent_code.$dirty && myForm.agent_code.$invalid">
-                                                <p ng-show="myForm.agent_code.$error.required">Agent Code is required.</p>
-                                                    </span>
+
+                                                <p  style="color:red" ng-show="myForm.agent_code.$error.required">*Agent Code is required.</p>
+
                                             </div>
                                         </div>
                                         <div class="form-group col-sm-6">
@@ -29,10 +50,9 @@
                                                 Softage Employee
                                             </label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" name="employee" ng-model="employee" id="Text1" placeholder="Softage Employee" allow-pattern="[a-z_ ]" required/>
-                                             <span style="color:red" ng-show="myForm.employee.$dirty && myForm.employee.$invalid">
-                                                <p ng-show="myForm.employee.$error.required">Employee is required.</p>
-                                                    </span>
+                                                <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" name="employee" ng-model="employee" placeholder="Softage Employee" allow-pattern="[a-z_ ]" required/>
+                                                <p style="color:red" ng-show="myForm.employee.$error.required">*Softage Employee is required.</p>
+
                                             </div>
                                         </div>
 
@@ -41,9 +61,9 @@
                                             <label for="Text7" class="col-sm-3 control-label no-padding-right">Mobile Number</label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" ng-minlength="3" ng-maxlength="10" id="Text7" name="phone" data-phone ng-model="phone"   placeholder="Mobile Number"  required />
-                                           <span style="color:red" ng-show="myForm.phone.$dirty && myForm.phone.$invalid">
-                                                <p ng-show="myForm.phone.$error.required">Your Mobile Number is required.</p>
-                                                    </span>
+
+                                                <p style="color:red" ng-show="myForm.phone.$error.required">*Mobile Number is required.</p>
+
                                                 <span style="color:red" ng-show="errormessage.length > 1">Please enter a valid phone number.</span>
                                             </div>
                                         </div>
@@ -52,15 +72,13 @@
                                             <label for="Text8" class="col-sm-3 control-label no-padding-right">Circle Office</label>
                                             <div class="col-sm-9">
                                                 <!--<input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" id="Text8" name="emp_code" ng-model="emp_code" placeholder="Emp code (if Softage employee)" allow-pattern="(\d|[a-z])" required/>-->
-                                               <select  name="circle" ng-model="circle_office"  class="form-control"  ng-options="office for office in offices" ng-change="getspokecode()">
-
+                                               <select  name="circle" ng-model="circle_office"  class="form-control"  ng-options="office for office in offices" required ng-change="getspokecode()">
+                                                   <option value="">Select Circle Office</option>
                                                </select>
+                                                <p style="color:red" ng-show="myForm.circle.$error.required">*Circle Office is required.</p>
                                                <!-- <select ng-model="center" name="center" ng-options="office.office for office in offices" class="form-control" required>
                                                     &lt;!&ndash;<option value="">Select</option>&ndash;&gt;
                                                 </select>-->
-                                            <span style="color:red" ng-show="myForm.emp_code.$dirty && myForm.emp_code.$invalid">
-                                                <p ng-show="myForm.emp_code.$error.required">Your Emp Code is required.</p>
-                                                    </span>
                                             </div>
                                         </div>
 
@@ -68,13 +86,12 @@
                                             <label for="Text8" class="col-sm-3 control-label no-padding-right">SpokeCode</label>
                                             <div class="col-sm-9">
                                                <!-- <input type="text" class="form-control" id="Text2" ng-minlength="3" ng-maxlength="15" name="agent_spkcode" ng-model="user.agent_spkcode" placeholder="Agent Spoke code" allow-pattern="(\d|[a-z])" required/>-->
-                                                <select id="Text8" name="circle" class="form-control" ng-model="spoke_code" ng-options="code for code in codes">
-                                                    <option value="select">Select Circle Office</option>
+                                                <select id="Text8" name="spoke_code" class="form-control" required ng-model="spoke_code" ng-options="code for code in codes">
+                                                    <option value="0">Select Circle Office</option>
 
                                                 </select>
-                                                <span style="color:red" ng-show="myForm.agent_spkcode.$dirty && myForm.agent_spkcode.$invalid">
-                                                <p ng-show="myForm.agent_spkcode.$error.required">Your Agent Spoke code is required.</p>
-                                                    </span>
+                                                <p style="color:red" ng-show="myForm.spoke_code.$error.required">*Spoke code is required.</p>
+
                                             </div>
                                         </div>
 
@@ -82,8 +99,8 @@
                                             <label for="Text3" class="col-sm-3 control-label no-padding-right">Available Slot</label>
                                             <div class="col-sm-9">
                                                 <!-- <input type="text" class="form-control" id="Text3"  ng-minlength="3" ng-maxlength="15" name="pin_code" ng-model="user.pin_code" placeholder="Pin Codes" allow-pattern="^\d{5}(?:[-\s]\d{4})?$" required/>-->
-                                                <select id="Text3" name="circle" class="form-control" ng-model="avl_time" onchange="Fspoke(this.txt)">
-                                                    <option value="select">Time Slot</option>
+                                                <select id="Text3" name="avl_time" required class="form-control" ng-model="avl_time" onchange="Fspoke(this.txt)">
+                                                    <option value="0">Time Slot</option>
                                                     <option value="8 AM - 12 PM">8 AM - 12 PM</option>
                                                     <option value="9 AM - 1 PM">9 AM - 1 PM</option>
                                                     <option value="10 AM - 2 PM">10 AM - 2 PM</option>
@@ -94,59 +111,59 @@
                                                     <option value="Full Day">Full Day</option>
 
                                                 </select>
-                                                <span style="color:red" ng-show="myForm.pin_code.$dirty && myForm.pin_code.$invalid">
-                                                <p ng-show="myForm.pin_code.$error.required">Your Pin Codes (Covered) is required.</p>
-                                                    </span>
+
+                                                <p style="color:red"  ng-show="myForm.avl_time.$error.required">*Available Slot is required.</p>
+
                                             </div>
                                         </div>
 
                                         <div class="form-group col-sm-6">
-                                            <label for="Text10" class="col-sm-3 control-label no-padding-right">Alternative Number</label>
+                                            <label class="col-sm-3 control-label no-padding-right">Alternative Number</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="Text10" ng-minlength="3" ng-maxlength="15"  name="Alternative_Number" ng-model="altr_number" placeholder="Alternative Number" required/>
-                                            <span style="color:red" ng-show="myForm.Alternative_Number.$dirty && myForm.Alternative_Number.$invalid">
-                                                <p ng-show="myForm.Alternative_Number.$error.required">Alternative Number is required.</p>
-                                                    </span>
+                                                <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"  name="Alternative_Number" ng-model="altr_number" placeholder="Alternative Number" required/>
+                                                <p  style="color:red" ng-show="myForm.Alternative_Number.$error.required">*Alternative Number is required.</p>
+
                                             </div>
                                         </div>
 
                                         <div class="form-group col-sm-6">
-                                            <label for="Text11" class="col-sm-3 control-label no-padding-right">Pincode</label>
+                                            <label  class="col-sm-3 control-label no-padding-right">Pincode</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="Text11" ng-minlength="3" ng-maxlength="15"  name="pin_code" ng-model="pin_code"  placeholder="Pincode" required />
-                                            <span style="color:red" ng-show="myForm.pin_code.$dirty && myForm.pin_code.$invalid">
-                                                <p ng-show="myForm.pin_code.$error.required">Pincode is required.</p>
-                                                    </span>
+                                                <input type="text" class="form-control"  ng-minlength="6" ng-maxlength="6"  name="pin_code" ng-model="pin_code"  placeholder="Pincode" required />
+
+                                                <p  style="color:red" ng-show="myForm.pin_code.$error.required">*Pincode is required.</p>
+                                                <p  style="color:red" ng-show="myForm.pin_code.$error.minlength">*Pin code should be 6 digit.</p>
+
                                             </div>
                                         </div>
                                         <div class="form-group col-sm-6">
-                                            <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Mulitple Pin</label>
+                                            <label  class="col-sm-3 control-label no-padding-right">Mulitple Pin</label>
                                             <div class="radio col-sm-3">
                                                 <label>
-                                                    <input type="radio" value="Y" ng-model="multi_pin" name="PinMultiple" />
-                                                    <span class="text" >Yes</span>
+                                                    <input type="radio" value="Y"  ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='Y'"/>
+                                                    <span class="text">Yes</span>
                                                 </label>
                                             </div>
                                             <div class="radio col-sm-3">
                                                 <label>
-                                                    <input type="radio" checked="checked" value="N" ng-model="multi_pin" name="PinMultiple" />
+                                                    <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" />
                                                     <span class="text" >No</span>
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="form-group col-sm-6">
-                                            <label for="Text11" class="col-sm-3 control-label no-padding-right">Email</label>
+                                            <label  class="col-sm-3 control-label no-padding-right">Email</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"  name="email" ng-model="email"  placeholder="Email" required />
-                                            <span style="color:red" ng-show="myForm.email.$dirty && myForm.email.$invalid">
-                                                <p ng-show="myForm.email.$error.required">Email is required.</p>
-                                                    </span>
+                                                <input type="email" class="form-control"  ng-minlength="3" ng-maxlength="15"  name="email" ng-model="email"  placeholder="Email" required />
+
+                                                <p style="color:red" ng-show="myForm.email.$error.required">*Email is required.</p>
+
                                             </div>
                                         </div>
 
                                         <div class="form-group">
                                             <div class="col-sm-offset-5 col-sm-10">
-                                                <input type="submit" class="btn btn-azure shiny" value="Submit" ng-disabled="myForm.agent.$dirty && myForm.agent.$invalid ||myForm.agent_code.$dirty && myForm.agent_name.$invalid ||myForm.phone.$dirty && myForm.phone.$invalid ||myForm.emp_code.$dirty && myForm.emp_code.$invalid ||myForm.agent_spkcode.$dirty && myForm.agent_spkcode.$invalid ||myForm.pin_code.$dirty && myForm.pin_code.$invalid ||myForm.email_id.$dirty && myForm.email_id.$invalid ||myForm.weekly_off.$dirty && myForm.weekly_off.$invalid">
+                                                <input type="submit" class="btn btn-azure shiny" value="Submit" ng-disabled="myForm.agent.$dirty && myForm.agent.$invalid ||myForm.agent_code.$dirty && myForm.agent_code.$invalid ||myForm.employee.$dirty && myForm.employee.$invalid ||myForm.phone.$dirty && myForm.phone.$invalid ||myForm.circle.$dirty && myForm.circle.$invalid ||myForm.spoke_code.$dirty && myForm.spoke_code.$invalid ||myForm.avl_time.$dirty && myForm.avl_time.$invalid ||myForm.Alternative_Number.$dirty && myForm.Alternative_Number.$invalid||myForm.pin_code.$dirty && myForm.pin_code.$invalid ||myForm.email.$dirty && myForm.email.$invalid">
                                             </div>
                                         </div>
 

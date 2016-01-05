@@ -1,108 +1,172 @@
- <div class="page-body">
-                    
-                    <div class="row">
-                        
+<div class="page-body">
 
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">                            
-
-                            <div class="widget">
-                                        <div class="widget-header bordered-bottom bordered-themeprimary">
-                                            <span class="widget-caption">Telecalling</span>
-                                            <div class="widget-buttons">
-                                        <a href="#" data-toggle="maximize">
-                                            <i class="fa fa-expand"></i>
-                                        </a>
-                                        <a href="#" data-toggle="collapse">
-                                            <i class="fa fa-minus"></i>
-                                        </a>
-                                        <a href="#" data-toggle="dispose">
-                                            <i class="fa fa-times"></i>
-                                        </a>
-                                    </div>
-                                        </div>
-                                        <div class="widget-body">
-                                            <div id="horizontal-form">                                                                                           
-                                            <form class="form-horizontal" role="form">
-
-                                                    <div class="form-group col-sm-6">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Agent Code</label>
-                                                        <div class="col-sm-9">
-                                                           <input type="text" class="form-control" id="Text5" placeholder="Agent Code" />                                                                                                              
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group col-sm-6">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Agent Name</label>
-                                                        <div class="col-sm-9">
-                                                            <input type="text" class="form-control" id="Text1" placeholder="Agent Name" />                                                                                                                  
-                                                        </div>
-                                                    </div>
-
-                                                     <div class="form-group col-sm-6">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Mobile Number</label>
-                                                        <div class="col-sm-9">
-                                                           <input type="text" class="form-control" id="Text7" placeholder="Mobile Number" />                                                                                                              
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group col-sm-6">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Emp code (if Softage employee)</label>
-                                                        <div class="col-sm-9">
-                                                            <input type="text" class="form-control" id="Text8" placeholder="Emp code (if Softage employee)" />                                                                                                                  
-                                                        </div>
-                                                    </div>
-
-                                                     <div class="form-group col-sm-6">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Agent Spoke code</label>
-                                                        <div class="col-sm-9">
-                                                           <input type="text" class="form-control" id="Text2" placeholder="Agent Spoke code" />                                                                                                               
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group col-sm-6">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Pin Codes (Covered)</label>
-                                                        <div class="col-sm-9">
-                                                             <input type="text" class="form-control" id="Text3" placeholder="Pin Codes" />                                                                                                               
-                                                        </div>
-                                                    </div>
-
-                                                     <div class="form-group col-sm-6">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Email Id</label>
-                                                        <div class="col-sm-9">
-                                                           <input type="text" class="form-control" id="Text10" placeholder="Email Id" />                                                                                                              
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group col-sm-6">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Weekly off</label>
-                                                        <div class="col-sm-9">
-                                                            <input type="text" class="form-control" id="Text11" placeholder="Weekly off" />                                                                                                                  
-                                                        </div>
-                                                    </div>                                                   
-                                                    <div class="form-group">
-                                                        <div class="col-sm-offset-5 col-sm-10">
-                                                            <button type="submit" class="btn btn-azure shiny">Submit</button>
-                                                        </div>
-                                                    </div>
-
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
+    <div class="row">
 
 
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-
-                            
-                        </div>
+            <div class="widget">
+                <div class="widget-header bordered-bottom bordered-themeprimary">
+                    <span class="widget-caption">Telecalling</span>
+                    <div class="widget-buttons">
+                        <a href="#" data-toggle="maximize">
+                            <i class="fa fa-expand"></i>
+                        </a>
+                        <a href="#" data-toggle="collapse">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                        <a href="#" data-toggle="dispose">
+                            <i class="fa fa-times"></i>
+                        </a>
                     </div>
                 </div>
-                <!-- /Page Body -->
+                <div class="widget-body">
+                    <div id="horizontal-form">
+                        <form class="form-horizontal" role="form" ng-controller="telecalling" ng-submit="screen()">
+
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Mobile Number</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" ng-model="mob.mobileNo" name="mobile" placeholder="Mobile Number" />
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Status</label>
+                                <div class="col-sm-9">
+                                    <select  name="status" ng-model="status" ng-options="status.statusText for status in statuses track by status.csmCode" class="form-control"  ng-change="changestatus()">
+                                        <option value="" selected="selected">Status</option>
+
+                                    </select>
+                                    <!-- <select ng-model="center" name="center" ng-options="office.office for office in offices" class="form-control" required>
+                                         &lt;!&ndash;<option value="">Select</option>&ndash;&gt;
+                                     </select>-->
+
+                                    <p style="color:red" ng-show="myForm.emp_code.$error.required">Your Emp Code is required.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Name</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="Text2" name="name"  ng-model="mob.customerName" placeholder="Name" />
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Address1</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control"  name="address1" ng-model="codes.address1" placeholder="Address1"  />
+
+
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label class="col-sm-3 control-label no-padding-right">Address2</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" name="address2" ng-model="codes.address2" placeholder="Address2" />
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">City</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" name="city" ng-model="codes.city" placeholder="City" />
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">State</label>
+                                <div class="col-sm-9">
+                                    <select  name="state" ng-model="state"  class="form-control"  ng-options="state.stateName for state in states track by state.stateCode">
+                                        <option value="" selected="selected">State</option>
+                                    </select>
+                                  <!--  <input type="text" class="form-control" name="city" ng-model="city" placeholder="Weekly off" />-->
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Pincode</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" name="pincode" ng-model="codes.pincode" placeholder="Pincode" />
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Landmark</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" name="land_mark" ng-model="land_mark" placeholder="Landmark" />
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Email</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" name="email" ng-model="codes.email" placeholder="Email" />
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Visit Date</label>
+                                <div class="col-sm-9">
+                                    <select  name="visit_date" ng-model="visit_date"  class="form-control"  ng-options="dates for dates in date" ng-change="getTime()">
+                                        <option value="" selected="selected">Visit Date</option>
+
+                                    </select>
+                                    <!--<input ng-model="date | date:'yyyy-MM-dd'" type="text">-->
+                                </div>
+
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Visit Time</label>
+                                <div class="col-sm-9">
+                                    <select  name="visit_time" ng-model="visit_time"   class="form-control"  ng-options="">
+                                        <option value="" selected="selected">Visit Time</option>
+                                        <option value="8">8:00</option>
+                                        <option value="9">9:00</option>
+                                        <option value="10">10:00</option>
+                                        <option value="11">11:00</option>
+                                        <option value="12">12:00</option>
+                                        <option value="13">13:00</option>
+                                        <option value="14">14:00</option>
+                                        <option value="15">15:00</option>
+                                        <option value="16">16:00</option>
+                                        <option value="17">17:00</option>
+                                        <option value="18">18:00</option>
+                                        <option value="19">19:00</option>
+                                        <option value="20">20:00</option>
+                                        <option value="21">21:00</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label  class="col-sm-3 control-label no-padding-right">Ext No</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" name="ext_no" ng-model="ext_no" placeholder="Ext No" />
+                                </div>
+
+                            </div>
+
+                           <div class="form-group">
+                                <div class="col-sm-offset-5 col-sm-10">
+                                    <input type="button" value="Dial" id="Dial" onclick="FDial()" class="btn btn-azure shiny">
+                                    <button type="submit" class="btn btn-azure shiny" ng-disabled="disabled">Submit</button>
+                                    <input type="button" value="Call" id="Call" ng-click="calling()" class="btn btn-azure shiny">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <!-- /Page Content -->
+
+
+
+
+
         </div>
-            <!-- /Page Content -->
-        </div>        
-        <!-- Main Container -->
- 
+    </div>
+</div>
+<!-- /Page Body -->
+</div>
+<!-- /Page Content -->
+</div>
+<!-- /Page Content -->
+</div>
+<!-- Main Container -->
+
 

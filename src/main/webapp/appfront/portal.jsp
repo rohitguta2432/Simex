@@ -12,6 +12,8 @@
   <link href="libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
   <%--<script src="http://code.angularjs.org/1.2.13/angular.js"></script>--%>
   <script src="libs/angular/angular.js"></script>
+  <script src="libs/angular-moment/angular-moment.js"></script>
+  <script src="libs/moment/moment.js"></script>
   <%--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>--%>
   <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
   <script src="js/app.js"></script>
