@@ -10,6 +10,7 @@ import java.util.Map;
 public interface PostCallingService {
 
     public String saveCallingData(Map<String,String> map);
+    public String sendsmsService();
 
 
 

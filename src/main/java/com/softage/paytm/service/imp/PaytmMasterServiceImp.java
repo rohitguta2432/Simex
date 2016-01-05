@@ -88,10 +88,10 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
-    public List telecallingScreen(String userName) {
+    public JSONObject telecallingScreen(String userName) {
 
-       List list= paytmMasterDao.telecallingScreen(userName);
-        return list;
+       JSONObject json= paytmMasterDao.telecallingScreen(userName);
+        return json;
     }
 
     @Override

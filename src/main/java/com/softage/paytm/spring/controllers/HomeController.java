@@ -22,12 +22,11 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,10 +59,9 @@ class HomeController {
 
 	@RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
 	@ResponseBody
-	public void getFilePath(HttpServletRequest request) {
+	public void getFilePath(MultipartRequest multipartRequest) {
 //		 File input = new File("/x/data.csv");
 //		 File output = new File("/x/data.json");
-
 		String csvFile = "D:/CSVFile/TestFile.csv";
 		BufferedReader br = null;
 		String line = "";
@@ -150,10 +148,10 @@ class HomeController {
 	public JSONObject telecallingScreen(){
 		String userName="";
 		JSONObject jsonObject =new JSONObject();
-		List list=paytmMasterService.telecallingScreen(userName);
+		JSONObject teleJson=paytmMasterService.telecallingScreen(userName);
         List<StateMasterEntity> stateList=paytmMasterService.getStateList();
 		List<CallStatusMasterEntity> statusList= paytmMasterService.getStatusList();
-		JSONObject json= paytmMasterService.getPaytmMastData((String)list.get(0));
+		JSONObject json= paytmMasterService.getPaytmMastData((String)teleJson.get("mobileNo"));
 		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 		Calendar date = Calendar.getInstance();
 		String dateList1[]=new String[7];
@@ -165,7 +163,7 @@ class HomeController {
 			dateList.add(dateList1[i]);
 		}
 
-        jsonObject.put("listMobile ",list);
+        jsonObject.put("teleData ",teleJson);
 		jsonObject.put("stateList",stateList);
 		jsonObject.put("statusList",statusList);
 		jsonObject.put("dateList",dateList);

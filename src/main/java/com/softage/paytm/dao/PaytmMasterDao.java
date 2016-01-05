@@ -14,7 +14,7 @@ public interface PaytmMasterDao {
 
     public void savePaytmMaster(List<PaytmMastEntity> paytmMastEntity);
     public JSONObject getPaytmMastData(String mobileNo);
-    public  List telecallingScreen(String userName);
+    public  JSONObject telecallingScreen(String userName);
     public List<StateMasterEntity> getStatemaster();
     public List<CallStatusMasterEntity> getStatusList();
 

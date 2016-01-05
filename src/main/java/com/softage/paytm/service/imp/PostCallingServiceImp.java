@@ -1,9 +1,6 @@
 package com.softage.paytm.service.imp;
 
-import com.softage.paytm.dao.AgentPaytmDao;
-import com.softage.paytm.dao.AllocationDao;
-import com.softage.paytm.dao.PaytmDeviceDao;
-import com.softage.paytm.dao.PostCallingDao;
+import com.softage.paytm.dao.*;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.PostCallingService;
 import org.slf4j.Logger;
@@ -11,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -26,13 +27,15 @@ import java.util.Map;
 @Service
 public class PostCallingServiceImp implements PostCallingService {
     @Autowired
-    public PostCallingDao postCallingDao;
+    private PostCallingDao postCallingDao;
     @Autowired
-    public AgentPaytmDao agentPaytmDao;
+    private AgentPaytmDao agentPaytmDao;
     @Autowired
-    public  AllocationDao allocationDao;
+    private  AllocationDao allocationDao;
     @Autowired
-    public PaytmDeviceDao paytmDeviceDao;
+    private PaytmDeviceDao paytmDeviceDao;
+    @Autowired
+    private SmsSendLogDao smsSendLogDao;
 
 
 
@@ -69,6 +72,60 @@ public class PostCallingServiceImp implements PostCallingService {
 
         return result;
     }
+
+    @Override
+    public String sendsmsService() {
+        String msg=null;
+        SmsSendlogEntity smsSendlogEntity=null;
+             smsSendlogEntity=smsSendLogDao.getSendData();
+             if (smsSendlogEntity!=null){
+
+                 String mobileno=smsSendlogEntity.getMobileNumber();
+                 String smstext=smsSendlogEntity.getSmsText();
+                 String result=sendSms(mobileno,smstext);
+                 if ("done".equalsIgnoreCase(result)){
+                     smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
+
+
+
+                 }
+
+
+               }
+        return  msg;
+    }
+      private String sendSms(String mobileno,String text){
+          String msg=null;
+          SmsSendlogEntity smsSendlogEntity=null;
+          //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
+          String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
+          try {
+              URL obj = new URL(url);
+              HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+              con.setRequestMethod("GET");
+              int responseCode = con.getResponseCode();
+              System.out.println("\nSending 'GET' request to URL : " + url);
+              System.out.println("Response Code : " + responseCode);
+
+              BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+              String inputLine;
+              StringBuffer response = new StringBuffer();
+
+              while ((inputLine = in.readLine()) != null) {
+                  response.append(inputLine);
+              }
+              in.close();
+
+              //print result
+              msg=response.toString();
+          } catch (Exception e){
+              e.printStackTrace();
+          }
+          return  msg;
+
+
+      }
+
 
     public String saveCustomer(Map<String,String> map){
         String result=null;

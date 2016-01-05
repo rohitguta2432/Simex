@@ -71,21 +71,24 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
-    public List telecallingScreen(String username) {
+    public JSONObject telecallingScreen(String username) {
         EntityManager entityManager = null;
         List list = new ArrayList<>();
         Query query=null;
+        JSONObject json=new JSONObject();
         try{
             entityManager = entityManagerFactory.createEntityManager();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
             Query query1= entityManager.createNativeQuery("{call sp_GetTeleData(?)}").setParameter(1, username);
             Object[] s = (Object[])query1.getSingleResult();
-            list.add(s[0]);
-            list.add(s[1]);
+            if (s.length>0) {
+                json.put("mobileNo", s[0]);
+                json.put("customerName", s[1]);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return list;
+        return json;
     }
 
     @Override
