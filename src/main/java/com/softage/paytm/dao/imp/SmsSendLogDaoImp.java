@@ -1,6 +1,8 @@
 package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.SmsSendLogDao;
+import com.softage.paytm.models.ProcessMastEntity;
+import com.softage.paytm.models.ReceiverMastEntity;
 import com.softage.paytm.models.SmsSendlogEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,5 +64,15 @@ public class SmsSendLogDaoImp implements SmsSendLogDao {
             e.printStackTrace();
         }
         return  msg;
+    }
+
+    @Override
+    public ProcessMastEntity getByPrimarykey(int processCode) {
+        return null;
+    }
+
+    @Override
+    public ReceiverMastEntity getbyPrimaryKey(int reciverId) {
+        return null;
     }
 }

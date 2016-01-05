@@ -303,10 +303,23 @@ e.printStackTrace();
 	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
 	public String postCallingStatus(HttpServletRequest request,HttpServletResponse  response){
-
-
-
-		return  null;
+		       Map<String, String> map = new HashMap<String, String>();
+		       String result=null;
+		try {
+			String importby = "Afjal";
+			String importType = "Admin";
+			String mobileNo = request.getParameter("mobileNo");
+			String status = request.getParameter("status");
+			map.put("number", mobileNo);
+			map.put("status", status);
+			map.put("importby", importby);
+			map.put("importType", importType);
+			result = postCallingService.saveCallingData(map);
+		}catch (Exception e){
+			e.printStackTrace();;
+			logger.error("error to posting data ",e);
+		}
+		     return  result;
 	}
 
 }

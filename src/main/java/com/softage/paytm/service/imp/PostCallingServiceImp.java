@@ -77,21 +77,25 @@ public class PostCallingServiceImp implements PostCallingService {
     public String sendsmsService() {
         String msg=null;
         SmsSendlogEntity smsSendlogEntity=null;
-             smsSendlogEntity=smsSendLogDao.getSendData();
-             if (smsSendlogEntity!=null){
+        try {
+            smsSendlogEntity = smsSendLogDao.getSendData();
+            if (smsSendlogEntity != null) {
 
-                 String mobileno=smsSendlogEntity.getMobileNumber();
-                 String smstext=smsSendlogEntity.getSmsText();
-                 String result=sendSms(mobileno,smstext);
-                 if ("done".equalsIgnoreCase(result)){
-                     smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
+                String mobileno = smsSendlogEntity.getMobileNumber();
+                String smstext = smsSendlogEntity.getSmsText();
+                String result = sendSms(mobileno, smstext);
+                if ("done".equalsIgnoreCase(result)) {
 
-
-
-                 }
-
-
-               }
+                    smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
+                    smsSendlogEntity.setDeliveryStatus("Delivered");
+                    smsSendlogEntity.setSmsDelivered("Y");
+                    smsSendLogDao.updateSmsLogData(smsSendlogEntity);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("sms not send  ",e);
+        }
         return  msg;
     }
       private String sendSms(String mobileno,String text){
@@ -119,6 +123,7 @@ public class PostCallingServiceImp implements PostCallingService {
               //print result
               msg=response.toString();
           } catch (Exception e){
+              logger.error("enable to send message  ",e);
               e.printStackTrace();
           }
           return  msg;
