@@ -352,6 +352,7 @@ public class PostCallingDaoImp implements PostCallingDao{
         }catch (Exception e){
             e.printStackTrace();;
         }
+
         finally {
             if (entityManager != null && entityManager.isOpen())
             {
