@@ -20,5 +20,6 @@ public interface PostCallingDao {
     public String getAgentCode(String pinCode,Date date,Date date1,int maxAllocation,String agentCode);
     public String saveSmsSendEntity(SmsSendlogEntity smsSendlogEntity);
     public String saveTabNotification(TblNotificationLogEntity tblNotificationLogEntity);
+    public AppointmentMastEntity getByCustomerNuber(String customerNumber);
 
 }

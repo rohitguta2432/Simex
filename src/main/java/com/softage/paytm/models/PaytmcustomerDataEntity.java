@@ -50,7 +50,7 @@ public class PaytmcustomerDataEntity {
     }
 
     @Basic
-    @Column(name = "Allocation_Status", nullable = true, insertable = true, updatable = true, length = 2)
+    @Column(name = "Allocation_Status", nullable = true, insertable = true, updatable = true, length = 10)
     public String getAllocationStatus() {
         return allocationStatus;
     }

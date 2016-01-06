@@ -192,26 +192,38 @@ public class PostCallingDaoImp implements PostCallingDao{
             entityManager = entityManagerFactory.createEntityManager();
 
             if("0".equals(agentCode)) {
-                strQuery = "select A.apmAcode from AgentpinmasterEntity A join PaytmagententryEntity P " +
-                        "on  A.apmAcode=P.acode where  A.apmAPincode=:agentPinCode" +
+
+                strQuery="select A.APM_Acode from agentpinmaster A join paytmagententry P on " +
+                        " A.APM_Acode=P.acode where  A.APM_APincode=? and  (select count(am.Agent_Code) from allocation_mast am where am.Agent_Code=A.APM_Acode and am.Allocation_datetime>=? and am.Allocation_datetime<?)<=?";
+
+               /* strQuery = "select A.apmAcode from AgentpinmasterEntity A join PaytmagententryEntity P " +
+                        "on  A.apmAcode=P.acode where  A.apmAPincode=:agentPinCode "+
                         " and (select count(am.agentCode) from AllocationMastEntity am" +
-                        " where am.agentCode=A.apmAcode and am.allocationDatetime>=:date and am.allocationDatetime<:date1)<=:maxAllocation";
+                        " where am.agentCode=A.apmAcode and am.allocationDatetime>=:date and am.allocationDatetime<:date1)<=:maxAllocation";*/
             }else {
-                strQuery = "select A.apmAcode from AgentpinmasterEntity A join PaytmagententryEntity P " +
+
+
+/*                strQuery="select A.APM_Acode from agentpinmaster A join paytmagententry P on " +
+                        " A.APM_Acode=P.acode where A.APM_Acode <>? A.APM_APincode=? and (select COUNT (am.agent_code)  from allocation_mast am where am.agent_code=A.APM_Acode and am.Allocation_datetime>=? and am.Allocation_datetime<? )<=?";*/
+
+             /*  strQuery = "select A.apmAcode from AgentpinmasterEntity A join PaytmagententryEntity P " +
                         "on  A.apmAcode=P.acode where A.apmAcode <>:agentcode and A.apmAPincode=:agentPinCode" +
                         " and (select count(am.agentCode) from AllocationMastEntity am" +
-                        " where am.agentCode=A.apmAcode and am.allocationDatetime>=:date and am.allocationDatetime<:date1)<=:maxAllocation";
+                        " where am.agentCode=A.apmAcode and am.allocationDatetime>=:date and am.allocationDatetime<:date1)<=:maxAllocation";*/
 
             }
-            query=entityManager.createQuery(strQuery);
-            if(!"0".equals(agentCode)){
-                query.setParameter("agentcode",agentCode);
+          query=entityManager.createNativeQuery(strQuery);
+             if(!"0".equals(agentCode)){
+                query.setParameter(1,agentCode);
+                query.setParameter(2,pinCode);
+                query.setParameter(3,date);
+                query.setParameter(4,date1);
             }
-            query.setParameter("agentPinCode",pinCode);
-            query.setParameter("date",date);
-            query.setParameter("date1",date1);
+            query.setParameter(1,pinCode);
+            query.setParameter(2,date);
+            query.setParameter(3,date1);
+            query.setParameter(4,maxAllocation);
             agentCode1=(String)query.getSingleResult();
-            //  telecallMastEntity=entityManager.find(CircleMastEntity.class,1);
 
         }catch (Exception e){
             e.printStackTrace();;
@@ -262,5 +274,24 @@ public class PostCallingDaoImp implements PostCallingDao{
         }
         return  msg;
 
+    }
+
+    @Override
+    public AppointmentMastEntity getByCustomerNuber(String customerNumber) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<CircleMastEntity> list=new ArrayList<>();
+        AppointmentMastEntity appointmentMastEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select am from AppointmentMastEntity am where am.customerPhone=:phoneNumber";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("phoneNumber",customerNumber);
+            appointmentMastEntity= (AppointmentMastEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        return appointmentMastEntity;
     }
 }

@@ -301,7 +301,7 @@ class HomeController {
 			map.put("importby", importby);
 			map.put("importType", importType);
 
-//			postCallingService.saveCallingData(map);
+     		postCallingService.saveCallingData(map);
 			logger.info("Map created successfully");
 			result="success";
 		}catch (Exception e){

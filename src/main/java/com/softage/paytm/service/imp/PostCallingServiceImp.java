@@ -53,7 +53,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 telecallLogEntity.setTcCallStatus(map.get("status"));
                 telecallLogEntity.setTcCallTime(new Timestamp(new Date().getTime()));
                 telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
-                postCallingDao.saveTeleCallLog(telecallLogEntity);
+                 postCallingDao.saveTeleCallLog(telecallLogEntity);
                if ("CON".equals(status)){
                    tcStatus="D";
                    result=saveCustomer(map);
@@ -61,12 +61,14 @@ public class PostCallingServiceImp implements PostCallingService {
               byte s=(byte)(telecallMastEntity.getTmAttempts()+1);
            //   TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
          //     telecallMastEntity.setTmCustomerPhone(map.get("number"));
-              telecallMastEntity.setTmAttempts(s);
-              telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
-              telecallMastEntity.setTmLastAttemptDateTime(new Timestamp(new Date().getTime()));
-              telecallMastEntity.setTmTeleCallStatus(tcStatus);
-              telecallMastEntity.setTmLastCallStatus(map.get("status"));
-              postCallingDao.updateTeleCall(telecallMastEntity);
+               if("done".equalsIgnoreCase(result)) {
+                   telecallMastEntity.setTmAttempts(s);
+                   telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
+                   telecallMastEntity.setTmLastAttemptDateTime(new Timestamp(new Date().getTime()));
+                   telecallMastEntity.setTmTeleCallStatus(tcStatus);
+                   telecallMastEntity.setTmLastCallStatus(map.get("status"));
+                   postCallingDao.updateTeleCall(telecallMastEntity);
+               }
 
 
 
@@ -135,7 +137,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
     public String saveCustomer(Map<String,String> map){
         String result=null;
-        DateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
         try {
             PaytmcustomerDataEntity paytmcustomerDataEntity = new PaytmcustomerDataEntity();
             paytmcustomerDataEntity.setPcdCustomerPhone(map.get("number"));
@@ -154,7 +156,7 @@ public class PostCallingServiceImp implements PostCallingService {
             Date parsedUtilDate = formater.parse(map.get("visitDate"));
             java.sql.Date sqltDate= new java.sql.Date(parsedUtilDate.getTime());
             paytmcustomerDataEntity.setPcdVisitDate(sqltDate);
-            paytmcustomerDataEntity.setPcdVisitTIme(Time.valueOf(map.get("visitTime")));
+            paytmcustomerDataEntity.setPcdVisitTIme(new Time(Integer.parseInt(map.get("visitTime")),0,0));
             result = postCallingDao.savePaytmCustomer(paytmcustomerDataEntity);
             if (result!=null&&"done".equalsIgnoreCase(result)){
                 result=saveAppoinment(map,paytmcustomerDataEntity);
@@ -169,24 +171,28 @@ public class PostCallingServiceImp implements PostCallingService {
     }
     public String saveAppoinment(Map<String,String> map,PaytmcustomerDataEntity paytmcustomerDataEntity){
         String result=null;
-        DateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
         try {
             AppointmentMastEntity appointmentMastEntity = new AppointmentMastEntity();
             Date parsedUtilDate = formater.parse(map.get("visitDate"));
             java.sql.Date sqltDate= new java.sql.Date(parsedUtilDate.getTime());
             appointmentMastEntity.setAppointmentDate(sqltDate);
-            appointmentMastEntity.setAppointmentTime(Time.valueOf(map.get("visitTime")));
+            appointmentMastEntity.setAppointmentTime(new Time(Integer.parseInt(map.get("visitTime")),0,0));
             appointmentMastEntity.setImportDate(new Timestamp(new Date().getTime()));
             appointmentMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
             result = postCallingDao.saveAppointment(appointmentMastEntity);
+            if("done".equalsIgnoreCase(result)){
+              jobAllocated(paytmcustomerDataEntity);
+            }
 
         }catch (Exception e){
-
+           e.printStackTrace();
+            logger.error("error to save Appointmantdata");
         }
         return  result;
     }
 
-public String jobAllocated(long appointmentId,String mobileNo,PaytmcustomerDataEntity paytmcustomerDataEntity,AppointmentMastEntity appointmentMastEntity){
+public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
      String result=null;
      String name=null;
      String address=null;
@@ -196,34 +202,55 @@ public String jobAllocated(long appointmentId,String mobileNo,PaytmcustomerDataE
      java.sql.Date date=null;
      Time time=null;
      java.sql.Date date1=null;
-    String agentCode="0";
-    String confirmationAllowed=null;
-    String finalconfirmation=null;
-    int maxAllocation=15;
-    String loginId=null;
+     String agentCode="0";
+     String confirmationAllowed=null;
+     String finalconfirmation=null;
+     int maxAllocation=15;
+     String loginId=null;
+     String customerNo="";
+     long appointmentId=0;
+    AppointmentMastEntity appointmentMastEntity=null;
 
-       long appointmentId1= postCallingDao.checkAppointmentId(appointmentId);
+               if(paytmcustomerDataEntity!=null){
+                   customerNo=paytmcustomerDataEntity.getPcdCustomerPhone();
+                   appointmentMastEntity= postCallingDao.getByCustomerNuber(customerNo);
+               }
+             if (appointmentMastEntity!=null){
+              appointmentId=appointmentMastEntity.getAppointmentId();
+             }
+
+    long appointmentId1= postCallingDao.checkAppointmentId(appointmentId);
        if(appointmentId1==0){
 
-      Map<String,Object> dataMap= postCallingDao.getData(appointmentId,mobileNo);
+   //   Map<String,Object> dataMap= postCallingDao.getData(appointmentId,mobileNo);
 
-                        name=(String) dataMap.get("name");
-                        address=(String)dataMap.get("address");
-                        area=(String)dataMap.get("area");
-                        city=(String)dataMap.get("city");
-                        pinCode=(String)dataMap.get("pinCode");
-                        date=(java.sql.Date)dataMap.get("visitDate");
-                        time=(Time)dataMap.get("visitTime");
+                      name= paytmcustomerDataEntity.getPcdName();
+                      address=paytmcustomerDataEntity.getPcdAddress();
+                      area=  paytmcustomerDataEntity.getPcdArea();
+                      city=   paytmcustomerDataEntity.getPcdCity();
+                      pinCode=  paytmcustomerDataEntity.getPcdPincode();
+                      date= paytmcustomerDataEntity.getPcdVisitDate();
+                      time= paytmcustomerDataEntity.getPcdVisitTIme();
+
+//                        name=(String) dataMap.get("name");
+//                        address=(String)dataMap.get("address");
+//                        area=(String)dataMap.get("area");
+//                        city=(String)dataMap.get("city");
+//                        pinCode=(String)dataMap.get("pinCode");
+//                        date=(java.sql.Date)dataMap.get("visitDate");
+//                        time=(Time)dataMap.get("visitTime");
                         Calendar calendar= Calendar.getInstance();
                         calendar.setTime(date);
-                        calendar.add(Calendar.DATE,3);
+                        calendar.add(Calendar.DAY_OF_WEEK,3);
                         java.sql.Date loopdate=new java.sql.Date(calendar.getTimeInMillis());
 
                         while (date.getTime()<=loopdate.getTime()){
-                            calendar.add(Calendar.DATE,1);
+                            Calendar calendar1= Calendar.getInstance();
+                            calendar1.setTime(new Date());
+                            calendar1.add(Calendar.DAY_OF_WEEK,1);
                             date1=new java.sql.Date(calendar.getTimeInMillis());
                             if("0".equals(agentCode)){
-                               agentCode= postCallingDao.getAgentCode(pinCode,date,date1,maxAllocation,agentCode);
+                                agentCode= postCallingDao.getAgentCode(pinCode,date,date1,maxAllocation,agentCode);
                                 confirmationAllowed="Y";
                                 finalconfirmation="W";
                             } else {
@@ -246,7 +273,7 @@ public String jobAllocated(long appointmentId,String mobileNo,PaytmcustomerDataE
                        String agentMobileNumber = paytmagententryEntity.getAphone();
                        String vistDate = date.toString();
                        String visitTime = time.toString();
-                       String allocationDate1 = vistDate + "" + visitTime;
+                       String allocationDate1 = vistDate + " " + visitTime;
                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd'T'HH:mm:ss'Z'");
                        Date convertedDate = dateFormat.parse(allocationDate1);
                        AllocationMastEntity allocationMastEntity = new AllocationMastEntity();
@@ -267,7 +294,7 @@ public String jobAllocated(long appointmentId,String mobileNo,PaytmcustomerDataE
                                ", Your visit is fixed at "+date
                                +" "+time+"with "+name+" Address-" +
                                ""+address+" "+pinCode+"Contact no-" +
-                               ""+mobileNo+" Please See Leads in App";
+                               ""+customerNo+" Please See Leads in App";
                        ProcessMastEntity  processMastEntity=new ProcessMastEntity();
                        PaytmdeviceidinfoEntity paytmdeviceidinfoEntity=  paytmDeviceDao.getByloginId(agentCode);
                         if (paytmagententryEntity!=null){
