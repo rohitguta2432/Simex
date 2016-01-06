@@ -31,12 +31,12 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             controller:'telecalling'
 
         })
-    .state('report', {
-        url: '/report',
-        templateUrl: 'report/report.html',
-        controller:'myCtrl'
+        .state('report', {
+            url: '/report',
+            templateUrl: 'report/report.html',
+            controller:'myCtrl'
 
-    });
+        });
 
 });
 
@@ -44,7 +44,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
 
     $scope.offices = [{id: 1, office:"Delhi"}];
     $scope.codes = [{id: 1, code:"ANESH11"}];
-/* Function for get CircleOffice and Spoke office */
+    /* Function for get CircleOffice and Spoke office */
     $scope.getcircleoffice = function(){
         var dfr = $q.defer();
         $http.get('http://localhost:8080/paytm/getCirles').
@@ -67,7 +67,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
     $scope.getcircleoffice().then(function(data){
         //console.log('data:   '+data);
         $scope.offices= data.circles;
-       // console.log( $scope.offices);
+        // console.log( $scope.offices);
     }, function(reason) {
         console.log('Error:   '+reason);
     });
@@ -84,7 +84,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
 
     $scope.errormessage = '';
 
-    $scope.registration = function(){
+    $scope.submit = function(){
         alert('fdsfsd');
         var data = 'agent_name=' + $scope.agent_name + '&agent_code=' + $scope.agent_code + '&employee=' + $scope.employee + '&phone=' +$scope.phone + '&circle_office=' +$scope.circle_office + '&spoke_code=' +$scope.spoke_code + '&avl_time=' +$scope.avl_time +'&altr_number=' +$scope.altr_number +'&pin_code=' +$scope.pin_code +'&multi_pin=' +$scope.multi_pin +'&email=' +$scope.email;
 
@@ -113,7 +113,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
         $scope.pin_code='';
         $scope.multi_pin='';
         $scope.email='';
-
+        return false;
 
     };
 
@@ -123,53 +123,59 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
 
 routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', function($scope,$http,$q,$log,$location){
 
-   /* $scope.message = {
-        text: 'hello world!',
-        time: new Date()
-    };*/
+    /* $scope.message = {
+     text: 'hello world!',
+     time: new Date()
+     };*/
 
-
+    $scope.states= [];
     $scope.times = [];
     $scope.date = new Date();
     $scope.mob={};
     $scope.codes=[];
     $scope.statuses = [{csmCode: 1, status:"Delhi"}];
     /* Function for get Telecalling Screen */
-  $scope.getscreen = function(){
+    $scope.getscreen = function(){
         var dfr = $q.defer();
         $http.get('http://localhost:8080/paytm/telecallingScreen').
             success(function(data) {
+                $scope.date = data.dateList;
+                console.log( $scope.date);
+                //$scope.statuses = data.statusList;
+                //console.log( $scope.statuses);
                 dfr.resolve(data);
             }).error(function(error){dfr.reject("Failed");});
         return dfr.promise;
     };
     $scope.getscreen().then(function(data) {
+
         //alert('getscreen');
         $scope.statuses = data.statusList;
         $scope.states = data.stateList;
         $scope.date = data.dateList;
         $scope.codes = data.paytmmastjson;
         $scope.mob = data.teleData;
-      // console.log($scope.mob);
-       // console.log($scope.statuses);
-       // console.log($scope.codes);
+        // console.log($scope.mob);
+        // console.log($scope.statuses);
+       // console.log($scope.states);
     }, function(reason) {
     });
 
 
     $scope.changestatus = function(){
-         var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.mob.mobileNo;
+        var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.mob.mobileNo;
 
         if($scope.status.csmCode == 'CON')
         {
             //alert(data);
-           // $scope.screen();
+            // $scope.screen();
             //$scope.disabled= true;
+            // location.reload();
         }
         else {
-           // $scope.disabled= true;
+            // $scope.disabled= true;
             //alert('Are you want to sure?');
-           // alert('postcaaling')
+            // alert('postcaaling')
             var cnf= confirm('Are You Sure?');
             if (cnf == false) {
                 location.reload();
@@ -189,7 +195,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
             }
         };
 
-       // $scope.visit_time = [{time:"8:00"},{time:'9:00'},{time:'10:00'},{time:'11:00'},{time:'12:00'},{time:'13:00'},{time:'14:00'},{time:'15:00'},{time:'16:00'},{time:'17:00'},{time:'18:00'},{time:'19:00'}];
+        // $scope.visit_time = [{time:"8:00"},{time:'9:00'},{time:'10:00'},{time:'11:00'},{time:'12:00'},{time:'13:00'},{time:'14:00'},{time:'15:00'},{time:'16:00'},{time:'17:00'},{time:'18:00'},{time:'19:00'}];
     };
 
     $scope.screen = function(){
@@ -199,14 +205,17 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
         $http.get('http://localhost:8080/paytm/postCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
             .success(function(data, status, headers, config) {
-               // alert(data);
+                // alert(data);
                 $scope.message = data;
                 console.log($scope.message);
-                $scope.getscreen();
+                // $scope.getscreen();
                 // $location.path('/draft');
             })
             .error(function(data, status, headers, config) {
                 alert( "failure message: " + JSON.stringify({data: data}));
+                //location.reload();
+                //$scope.getscreen();
+                $scope.getTime();
             });
 
 
@@ -264,7 +273,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
             }
         }
 
-       // $scope.times= myarr;
+        // $scope.times= myarr;
         //console.log(myarr+todaydate+varDate);
     }
 
@@ -358,29 +367,29 @@ function allowPatternDirective() {
 
 
 /*routerApp.controller('AppCtrl', function($scope) {
-        $scope.myDate = new Date();
-        $scope.minDate = new Date(
-            $scope.myDate.getFullYear(),
-            $scope.myDate.getMonth() - 2,
-            $scope.myDate.getDate());
-        $scope.maxDate = new Date(
-            $scope.myDate.getFullYear(),
-            $scope.myDate.getMonth() + 2,
-            $scope.myDate.getDate());
-        $scope.onlyWeekendsPredicate = function(date) {
-            var day = date.getDay();
-            return day === 0 || day === 6;
-        }
-    });*/
+ $scope.myDate = new Date();
+ $scope.minDate = new Date(
+ $scope.myDate.getFullYear(),
+ $scope.myDate.getMonth() - 2,
+ $scope.myDate.getDate());
+ $scope.maxDate = new Date(
+ $scope.myDate.getFullYear(),
+ $scope.myDate.getMonth() + 2,
+ $scope.myDate.getDate());
+ $scope.onlyWeekendsPredicate = function(date) {
+ var day = date.getDay();
+ return day === 0 || day === 6;
+ }
+ });*/
 
 /*
-routerApp.controller('Ctrl',['$http','$q','$log', function ($scope) {
-    $scope.send = function(){
+ routerApp.controller('Ctrl',['$http','$q','$log', function ($scope) {
+ $scope.send = function(){
 
-       alert(jgndfjg);
-    }
-}]);
-*/
+ alert(jgndfjg);
+ }
+ }]);
+ */
 routerApp.controller('Ctrl',['$scope', '$http','$q','$log', function($scope,$http,$q,$log){
 
     $scope.send = function(){
@@ -422,46 +431,46 @@ routerApp.directive("datepicker", function () {
 
 
 routerApp.directive('fileModel', ['$parse', function ($parse) {
-        return {
-            restrict: 'A',
-            link: function(scope, element, attrs) {
-                var model = $parse(attrs.fileModel);
-                var modelSetter = model.assign;
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
 
-                element.bind('change', function(){
-                    scope.$apply(function(){
-                        modelSetter(scope, element[0].files[0]);
-                    });
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    modelSetter(scope, element[0].files[0]);
                 });
-            }
-        };
-    }]);
+            });
+        }
+    };
+}]);
 
 routerApp.service('fileUpload', ['$http', function ($http) {
-        this.uploadFileToUrl = function(form,uploadUrl){
-           /* var fd = new FormData();
-            fd.append('file', file);*/
-            document.myForm.action = uploadUrl;
-            document.myForm.submit();
+    this.uploadFileToUrl = function(form,uploadUrl){
+        /* var fd = new FormData();
+         fd.append('file', file);*/
+        document.myForm.action = uploadUrl;
+        document.myForm.submit();
 
-            /*$http.post(uploadUrl, fd, {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
-            })
+        /*$http.post(uploadUrl, fd, {
+         transformRequest: angular.identity,
+         headers: {'Content-Type': undefined}
+         })
 
-                .success(function(){
-                })
+         .success(function(){
+         })
 
-                .error(function(){
-                });*/
-        }
-    }]);
+         .error(function(){
+         });*/
+    }
+}]);
 
-    routerApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
-        $scope.uploadFile = function($event){
-            var uploadUrl = "/paytm/getFilePath";
-            fileUpload.uploadFileToUrl(angular.element("myForm"), uploadUrl);
-        };
-    }]);
+routerApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
+    $scope.uploadFile = function($event){
+        var uploadUrl = "/paytm/getFilePath";
+        fileUpload.uploadFileToUrl(angular.element("myForm"), uploadUrl);
+    };
+}]);
 
 
