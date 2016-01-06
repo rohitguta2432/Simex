@@ -24,16 +24,18 @@
 
                             <div class="widget-body">
                                  <div id="horizontal-form">
-                                    <form class="form-horizontal" name="myForm" role="form" ng-submit="registration()" ng-controller="agentCtrl" novalidate>
+                                    <form class="form-horizontal" name="myForm" role="form" ng-submit="submit()" ng-controller="agentCtrl" novalidate>
 
-                                        <div class="form-group col-sm-6">
-                                            <label for="Text5" class="col-sm-3 control-label no-padding-right" >Name</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15"  name="agent" ng-model="agent_name" id="Text5" placeholder="Name" allow-pattern="[a-z_ ]" required/>
+                                        <div class="form-group col-sm-6" >
+                                            <label  class="col-sm-3 control-label no-padding-right" >Name</label>
+                                           <div class="col-sm-9">
+                                                <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15"  name="agent_name" ng-model="name" id="Text5" placeholder="Name" allow-pattern="[a-z_ ]" required/>
 
+                                              <!-- <span class="help-inline" ng-show="submitted && myForm.email.$error.email">Invalid email</span>-->
 
 
                                             </div>
+
                                         </div>
 
                                         <div class="form-group col-sm-6">
@@ -51,8 +53,6 @@
                                             </label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" name="employee" ng-model="employee" placeholder="Softage Employee" allow-pattern="[a-z_ ]" required/>
-
-
                                             </div>
                                         </div>
 
@@ -156,7 +156,8 @@
 
                                         <div class="form-group">
                                             <div class="col-sm-offset-5 col-sm-10">
-                                                <input type="submit" class="btn btn-azure shiny" value="Submit" ng-disabled="myForm.agent.$invalid || myForm.agent_code.$invalid || myForm.employee.$invalid || myForm.phone.$invalid || myForm.avl_time.$invalid || myForm.Alternative_Number.$invalid || myForm.pin_code.$invalid || myForm.email.$invalid || myForm.spoke_code.$invalid || myForm.circle.$invalid">
+                                              <input type="submit" class="btn btn-azure shiny" value="Submit">
+                                               <!-- <button type="button" class="btn btn-azure shiny">Submit</button>-->
                                             </div>
                                         </div>
 
