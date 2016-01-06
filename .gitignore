@@ -8,3 +8,6 @@ tmp
 /lib/
 /src/main/webapp/appfront/libs/
 /target/
+paytm.iml
+paytmkyc.iml
+/bin/
