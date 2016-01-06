@@ -51,6 +51,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 telecallLogEntity.setTcCustomerphone(map.get("number"));
                 telecallLogEntity.setTcCallBy(map.get("importby"));
                 telecallLogEntity.setTcCallStatus(map.get("status"));
+                telecallLogEntity.setTcCallTime(new Timestamp(new Date().getTime()));
                 telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
                 postCallingDao.saveTeleCallLog(telecallLogEntity);
                if ("CON".equals(status)){
@@ -58,14 +59,14 @@ public class PostCallingServiceImp implements PostCallingService {
                    result=saveCustomer(map);
                }
               byte s=(byte)(telecallMastEntity.getTmAttempts()+1);
-              TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
-              telecallMastEntity.setTmCustomerPhone(map.get("number"));
+           //   TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
+         //     telecallMastEntity.setTmCustomerPhone(map.get("number"));
               telecallMastEntity.setTmAttempts(s);
               telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
               telecallMastEntity.setTmLastAttemptDateTime(new Timestamp(new Date().getTime()));
               telecallMastEntity.setTmTeleCallStatus(tcStatus);
               telecallMastEntity.setTmLastCallStatus(map.get("status"));
-              postCallingDao.updateTeleCall(telecallMastEntity1);
+              postCallingDao.updateTeleCall(telecallMastEntity);
 
 
 

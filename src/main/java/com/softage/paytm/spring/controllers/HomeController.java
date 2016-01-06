@@ -26,6 +26,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +60,8 @@ class HomeController {
 
 	@RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
 	@ResponseBody
-	public void getFilePath(MultipartRequest multipartRequest) {
+	public void getFilePath(@RequestParam("name") String name,
+							@RequestParam("file") MultipartFile file) {
 //		 File input = new File("/x/data.csv");
 //		 File output = new File("/x/data.json");
 		String csvFile = "D:/CSVFile/TestFile.csv";
@@ -146,7 +148,7 @@ class HomeController {
 	@RequestMapping(value = "/telecallingScreen", method ={ RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
 	public JSONObject telecallingScreen(){
-		String userName="";
+		String userName="afjal";
 		JSONObject jsonObject =new JSONObject();
 		JSONObject teleJson=paytmMasterService.telecallingScreen(userName);
         List<StateMasterEntity> stateList=paytmMasterService.getStateList();
@@ -163,7 +165,7 @@ class HomeController {
 			dateList.add(dateList1[i]);
 		}
 
-        jsonObject.put("teleData ",teleJson);
+        jsonObject.put("teleData",teleJson);
 		jsonObject.put("stateList",stateList);
 		jsonObject.put("statusList",statusList);
 		jsonObject.put("dateList",dateList);
@@ -206,9 +208,19 @@ class HomeController {
 	}
 	@RequestMapping(value = "/customerCalling", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
-	public String Call(){
+	public  String Calling(HttpServletRequest request){
+
+		String number= request.getParameter("mobileNo");
+		String agentNo="8882905998";
+		String result=customerCalling(number,agentNo);
+
+		return "success";
+	}
+
+
+	private String customerCalling(String mobileNo,String agentNumber ){
 		String msg=null;
-		String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
+		String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91"+mobileNo+"&agent_number=+91"+agentNumber;
 	   try {
 	      URL obj = new URL(url);
 	      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -229,9 +241,9 @@ class HomeController {
 
 	//print result
 	msg=response.toString();
-} catch (Exception e){
-e.printStackTrace();
-  }
+     } catch (Exception e){
+          e.printStackTrace();
+      }
 	return  msg;
 	}
 
@@ -256,9 +268,9 @@ e.printStackTrace();
 	@RequestMapping(value = "/postCalling", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
 	public String postCallig(HttpServletRequest request,HttpServletResponse  response){
-
+            String result=null;
 		try {
-			String number = request.getParameter("number");
+			String number = request.getParameter("mobileNo");
 			String name = request.getParameter("name");
 			String address = request.getParameter("address");
 			String area = request.getParameter("area");
@@ -289,15 +301,18 @@ e.printStackTrace();
 			map.put("importby", importby);
 			map.put("importType", importType);
 
-			postCallingService.saveCallingData(map);
+//			postCallingService.saveCallingData(map);
 			logger.info("Map created successfully");
+			result="success";
 		}catch (Exception e){
 			logger.error("",e);
 			e.printStackTrace();
+			result="error";
+
 		}
 
 
-		return  null;
+		return  result;
 	}
 
 	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
