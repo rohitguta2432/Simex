@@ -131,11 +131,9 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
         text: 'hello world!',
         time: new Date()
     };*/
-<<<<<<< HEAD
-=======
+
 
     $scope.times = [];
->>>>>>> 2c7ee3d... commit for telecaling Screen
     $scope.date = new Date();
     $scope.mob={};
     $scope.codes=[];
@@ -188,7 +186,8 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
                         //  alert(data);
                         $scope.message = data;
                         console.log($scope.message);
-                        $scope.getscreen();
+                        location.reload();
+                        //$scope.getscreen();
                         // $location.path('/draft');
                     })
                     .error(function (data, status, headers, config) {
@@ -222,8 +221,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
         // $scope.visit_time = [{time:"8:00"},{time:'9:00'},{time:'10:00'},{time:'11:00'},{time:'12:00'},{time:'13:00'},{time:'14:00'},{time:'15:00'},{time:'16:00'},{time:'17:00'},{time:'18:00'},{time:'19:00'}];
     };
 
-<<<<<<< HEAD
-=======
+
     $scope.getTime = function(){      /////get visit time according to date
         var myarr = [];
         var varDate = $scope.visit_date;
@@ -278,7 +276,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
         //console.log(myarr+todaydate+varDate);
     }
 
->>>>>>> 2c7ee3d... commit for telecaling Screen
+
     $scope.calling = function(){            /////for customer calling
 
         var data = 'customer_number=' + $scope.mob.mobileNo;

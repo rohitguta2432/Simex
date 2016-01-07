@@ -41,7 +41,7 @@
                                          &lt;!&ndash;<option value="">Select</option>&ndash;&gt;
                                      </select>-->
 
-                                    <p style="color:red" ng-show="myForm.emp_code.$error.required">Your Emp Code is required.</p>
+                                    <!--<p style="color:red" ng-show="myForm.emp_code.$error.required">Your Emp Code is required.</p>-->
                                 </div>
                             </div>
 
@@ -115,28 +115,11 @@
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Visit Time</label>
                                 <div class="col-sm-9">
-<<<<<<< HEAD
-                                    <select  name="visit_time" ng-model="visit_time"   class="form-control"  ng-options="">
-                                        <option value="" selected="selected">Visit Time</option>
-                                        <option value="8">8:00</option>
-                                        <option value="9">9:00</option>
-                                        <option value="10">10:00</option>
-                                        <option value="11">11:00</option>
-                                        <option value="12">12:00</option>
-                                        <option value="13">13:00</option>
-                                        <option value="14">14:00</option>
-                                        <option value="15">15:00</option>
-                                        <option value="16">16:00</option>
-                                        <option value="17">17:00</option>
-                                        <option value="18">18:00</option>
-                                        <option value="19">19:00</option>
-                                        <option value="20">20:00</option>
-                                        <option value="21">21:00</option>
-=======
-                                    <select  name="visit_time" ng-model="visit_time"   class="form-control"  ng-options="dates for dates in times">
+
+
+                                    <select  name="visit_time" ng-model="visit_time"   class="form-control"  ng-options="time for time in times">
                                         <option value="" selected="selected">Visit Time</option>
 
->>>>>>> 2c7ee3d... commit for telecaling Screen
                                     </select>
                                 </div>
                             </div>
@@ -151,7 +134,7 @@
                            <div class="form-group">
                                 <div class="col-sm-offset-5 col-sm-10">
                                     <input type="button" value="Dial" id="Dial" onclick="FDial()" class="btn btn-azure shiny">
-                                    <button type="submit" class="btn btn-azure shiny" ng-disabled="disabled">Submit</button>
+                                    <button type="submit" class="btn btn-azure shiny" ng-disabled="">Submit</button>
                                     <input type="button" value="Call" id="Call" ng-click="calling()" class="btn btn-azure shiny">
                                 </div>
                             </div>

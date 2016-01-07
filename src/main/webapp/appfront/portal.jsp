@@ -21,7 +21,10 @@
   <link href="assets/css/beyond.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/animate.min.css" rel="stylesheet" />
   <script src="assets/js/skins.min.js"></script>
-
+    <style>
+        input.ng-invalid{border-color:red;}
+        select.ng-invalid{border-color:red;}
+    </style>
 </head>
 <!-- /Head -->
 <!-- Body -->

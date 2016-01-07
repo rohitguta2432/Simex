@@ -1,5 +1,5 @@
 
-<div class="page-body">
+<div class="page-body" style="padding: 2px 5px 24px;">
 
     <div class="row">
 
@@ -31,7 +31,7 @@
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15"  name="agent" ng-model="agent_name" id="Text5" placeholder="Name" allow-pattern="[a-z_ ]" required/>
 
-                                                <p style="color:red;" ng-show="myForm.agent.$error.required">*Name is required.</p>
+
 
                                             </div>
                                         </div>
@@ -41,7 +41,7 @@
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" name="agent_code" ng-model="agent_code" id="Text1" placeholder="Agent Code" allow-pattern="(\d|[a-z])" required/>
 
-                                                <p  style="color:red" ng-show="myForm.agent_code.$error.required">*Agent Code is required.</p>
+
 
                                             </div>
                                         </div>
@@ -51,7 +51,7 @@
                                             </label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" name="employee" ng-model="employee" placeholder="Softage Employee" allow-pattern="[a-z_ ]" required/>
-                                                <p style="color:red" ng-show="myForm.employee.$error.required">*Softage Employee is required.</p>
+
 
                                             </div>
                                         </div>
@@ -62,9 +62,7 @@
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" ng-minlength="3" ng-maxlength="10" id="Text7" name="phone" data-phone ng-model="phone"   placeholder="Mobile Number"  required />
 
-                                                <p style="color:red" ng-show="myForm.phone.$error.required">*Mobile Number is required.</p>
 
-                                                <span style="color:red" ng-show="errormessage.length > 1">Please enter a valid phone number.</span>
                                             </div>
                                         </div>
 
@@ -75,7 +73,6 @@
                                                <select  name="circle" ng-model="circle_office"  class="form-control"  ng-options="office for office in offices" required ng-change="getspokecode()">
                                                    <option value="">Select Circle Office</option>
                                                </select>
-                                                <p style="color:red" ng-show="myForm.circle.$error.required">*Circle Office is required.</p>
                                                <!-- <select ng-model="center" name="center" ng-options="office.office for office in offices" class="form-control" required>
                                                     &lt;!&ndash;<option value="">Select</option>&ndash;&gt;
                                                 </select>-->
@@ -90,7 +87,6 @@
                                                     <option value="0">Select Circle Office</option>
 
                                                 </select>
-                                                <p style="color:red" ng-show="myForm.spoke_code.$error.required">*Spoke code is required.</p>
 
                                             </div>
                                         </div>
@@ -112,7 +108,6 @@
 
                                                 </select>
 
-                                                <p style="color:red"  ng-show="myForm.avl_time.$error.required">*Available Slot is required.</p>
 
                                             </div>
                                         </div>
@@ -121,7 +116,7 @@
                                             <label class="col-sm-3 control-label no-padding-right">Alternative Number</label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"  name="Alternative_Number" ng-model="altr_number" placeholder="Alternative Number" required/>
-                                                <p  style="color:red" ng-show="myForm.Alternative_Number.$error.required">*Alternative Number is required.</p>
+
 
                                             </div>
                                         </div>
@@ -131,7 +126,6 @@
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control"  ng-minlength="6" ng-maxlength="6"  name="pin_code" ng-model="pin_code"  placeholder="Pincode" required />
 
-                                                <p  style="color:red" ng-show="myForm.pin_code.$error.required">*Pincode is required.</p>
                                                 <p  style="color:red" ng-show="myForm.pin_code.$error.minlength">*Pin code should be 6 digit.</p>
 
                                             </div>
@@ -140,13 +134,13 @@
                                             <label  class="col-sm-3 control-label no-padding-right">Mulitple Pin</label>
                                             <div class="radio col-sm-3">
                                                 <label>
-                                                    <input type="radio" value="Y"  ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='Y'"/>
+                                                    <input type="radio" value="Y"  ng-model="multi_pin" name="PinMultiple" ng-value="false"/>
                                                     <span class="text">Yes</span>
                                                 </label>
                                             </div>
                                             <div class="radio col-sm-3">
                                                 <label>
-                                                    <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" />
+                                                    <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" ng-value="true" />
                                                     <span class="text" >No</span>
                                                 </label>
                                             </div>
@@ -154,16 +148,15 @@
                                         <div class="form-group col-sm-6">
                                             <label  class="col-sm-3 control-label no-padding-right">Email</label>
                                             <div class="col-sm-9">
-                                                <input type="email" class="form-control"  ng-minlength="3" ng-maxlength="15"  name="email" ng-model="email"  placeholder="Email" required />
+                                                <input type="email" class="form-control"  ng-minlength="3" ng-maxlength="40"  name="email" ng-model="email"  placeholder="Email" required />
 
-                                                <p style="color:red" ng-show="myForm.email.$error.required">*Email is required.</p>
 
                                             </div>
                                         </div>
 
                                         <div class="form-group">
                                             <div class="col-sm-offset-5 col-sm-10">
-                                                <input type="submit" class="btn btn-azure shiny" value="Submit" ng-disabled="myForm.agent.$dirty && myForm.agent.$invalid ||myForm.agent_code.$dirty && myForm.agent_code.$invalid ||myForm.employee.$dirty && myForm.employee.$invalid ||myForm.phone.$dirty && myForm.phone.$invalid ||myForm.circle.$dirty && myForm.circle.$invalid ||myForm.spoke_code.$dirty && myForm.spoke_code.$invalid ||myForm.avl_time.$dirty && myForm.avl_time.$invalid ||myForm.Alternative_Number.$dirty && myForm.Alternative_Number.$invalid||myForm.pin_code.$dirty && myForm.pin_code.$invalid ||myForm.email.$dirty && myForm.email.$invalid">
+                                                <input type="submit" class="btn btn-azure shiny" value="Submit" ng-disabled="">
                                             </div>
                                         </div>
 
