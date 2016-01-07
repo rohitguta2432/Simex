@@ -40,6 +40,12 @@ public class AllocationDaoImp implements AllocationDao {
             msg="err";
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return  msg;
     }
 
@@ -63,6 +69,12 @@ public class AllocationDaoImp implements AllocationDao {
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return  allocationMastEntity;
     }

@@ -40,6 +40,12 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
 
            e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
     }
 
     @Override
@@ -67,6 +73,12 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         {
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return  json;
     }
 
@@ -88,6 +100,12 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         }catch (Exception e){
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return json;
     }
 
@@ -108,6 +126,12 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         {
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return  listState;
     }
 
@@ -127,6 +151,12 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return  listStatus;
     }

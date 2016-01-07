@@ -42,6 +42,12 @@ public class CircleMastDaoImp implements CircleMastDao {
           e.printStackTrace();
           logger.error("error to getting Circle List",e);
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return circleMastEntity;
     }
 
@@ -59,6 +65,12 @@ public class CircleMastDaoImp implements CircleMastDao {
 
         }catch (Exception e){
             e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return Circles;
     }
@@ -79,6 +91,12 @@ public class CircleMastDaoImp implements CircleMastDao {
 
         }catch (Exception e){
             e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return spokeCodeList;
     }

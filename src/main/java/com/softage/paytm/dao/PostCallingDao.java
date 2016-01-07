@@ -21,5 +21,8 @@ public interface PostCallingDao {
     public String saveSmsSendEntity(SmsSendlogEntity smsSendlogEntity);
     public String saveTabNotification(TblNotificationLogEntity tblNotificationLogEntity);
     public AppointmentMastEntity getByCustomerNuber(String customerNumber);
+    public RemarkMastEntity getByPrimaryCode(String key);
+    public ProcessMastEntity getProcessByCode(int code);
+    public ReceiverMastEntity getRecivedByCode(int code);
 
 }

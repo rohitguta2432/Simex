@@ -60,22 +60,61 @@ class HomeController {
 
 	@RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
 	@ResponseBody
-	public void getFilePath(@RequestParam("name") String name,
-							@RequestParam("file") MultipartFile file) {
+	public void getFilePath(HttpServletRequest request) {
+
+/*
+		public void getFilePath(@RequestParam("name") String name,
+				@RequestParam("file") MultipartFile file) {	*/
 //		 File input = new File("/x/data.csv");
 //		 File output = new File("/x/data.json");
-		String csvFile = "D:/CSVFile/TestFile.csv";
+//		<form method="POST" action="uploadFile" enctype="multipart/form-data">
+//				File to upload: <input type="file" name="file"><br />
+//				Name: <input type="text" name="name"><br /> <br />
+//		<input type="submit" value="Upload"> Press here to upload the file!
+//				</form>
+
+
+
+
+		String csvFile = "D:/CSVFile/Kyc_data1.csv";
 		BufferedReader br = null;
 		String line = "";
-		String cvsSplitBy = ",";
+		String cvsSplitBy = "\\|";
+		File serverFile=null;
 		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
 
-  try{
-		br = new BufferedReader(new FileReader(csvFile));
+	//	CSVReader reader = new CSVReader(new FileReader("./file/Kyc_data.csv"), ';', '"', 1);
 
-	  int count=0;
-		while ((line = br.readLine()) != null) {
+       try{
+		    /*    if (!file.isEmpty()) {
+
+				   byte[] bytes = file.getBytes();
+
+				   // Creating the directory to store file
+				   String rootPath = System.getProperty("catalina.home");
+				 //  File dir = new File(rootPath + File.separator + "tmpFiles");
+					File dir=new File("D:/CSVFile");
+				   if (!dir.exists())
+					   dir.mkdirs();
+
+				   // Create the file on server
+				    serverFile = new File(dir.getAbsolutePath()
+						   + File.separator + name+".csv");
+				   BufferedOutputStream stream = new BufferedOutputStream(
+						   new FileOutputStream(serverFile));
+				   stream.write(bytes);
+				   stream.close();
+
+
+			   }*/
+
+
+		   br = new BufferedReader(new FileReader(csvFile));
+
+	     int count=0;
+		 while ((line = br.readLine()) != null) {
 			String[] customerData = line.split(cvsSplitBy);
+			int lent= customerData.length;
 			if(count!=0 ) {
 				HashMap<String, String> map = new HashMap<String, String>();
 				System.out.println(customerData[0]);
@@ -92,6 +131,7 @@ class HomeController {
 				map.put("City", customerData[10]);
 				map.put("State", customerData[11]);
 				map.put("Pincode", customerData[12]);
+				System.out.println(customerData[12]);
 				map.put("AddressPhone", customerData[13]);
 				map.put("VendorName", customerData[14]);
 				map.put("StageId", customerData[15]);
@@ -296,7 +336,7 @@ class HomeController {
 			map.put("pinCode", pinCode);
 			map.put("landmark", landMark);
 			map.put("visitDate", visitDate);
-			map.put("visitTime", visitTime);
+			map.put("visitTime", "11");
 			map.put("status", status);
 			map.put("importby", importby);
 			map.put("importType", importType);
@@ -314,6 +354,19 @@ class HomeController {
 
 		return  result;
 	}
+	@RequestMapping(value = "/getReport", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public  JSONObject getReport(HttpServletRequest request){
+		JSONObject jsonObject=new JSONObject();
+		    String from =request.getParameter("from");
+		    String to=request.getParameter("to");
+		    String type=request.getParameter("type");
+
+		return  jsonObject;
+	}
+
+
+
 
 	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody

@@ -37,6 +37,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
             for (Map<String, String> map : paytmList) {
                 paytmMastEntity = new PaytmMastEntity();
                 paytmMastEntity.setKycRequestId(map.get("kycRequestId"));
+                System.out.println(map.get("kycRequestId"));
                 paytmMastEntity.setCustomerId(map.get("CustomerID"));
                 paytmMastEntity.setUsername(map.get("Username"));
                 paytmMastEntity.setCustomerPhone(map.get("CustomerPhone"));

@@ -16,13 +16,12 @@ public PostCallingService postCallingService;
 
 
     public void demoService(){
-        int i=0;
-//        if (i==0){
-//                postCallingService.sendsmsService();
-//            i++;
-//        }
-
-        System.out.println("Method executed at every 5 seconds. Current time is :: "+ new Date());
+        try {
+            postCallingService.sendsmsService();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("Method executed at every 5 minute. Current time is :: "+ new Date());
 
     }
 }

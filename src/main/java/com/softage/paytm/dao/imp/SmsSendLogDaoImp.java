@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import java.util.List;
 
 /**
  * Created by SS0085 on 05-01-2016.
@@ -26,24 +27,31 @@ public class SmsSendLogDaoImp implements SmsSendLogDao {
     public EntityManagerFactory entityManagerFactory;
 
     @Override
-    public SmsSendlogEntity getSendData() {
+    public List<SmsSendlogEntity> getSendData() {
         EntityManager entityManager=null;
         Query query=null;
-        SmsSendlogEntity smsSendlogEntity=null;
+        List< SmsSendlogEntity> entityList=null;
         try{
 
             entityManager= entityManagerFactory.createEntityManager();
             String strQuery="select smsentity from SmsSendlogEntity smsentity where smsentity.smsDelivered=:status";
             query=entityManager.createQuery(strQuery);
             query.setParameter("status","N");
-            smsSendlogEntity=(SmsSendlogEntity)query.getSingleResult();
-
+            query.setMaxResults(10);
+            entityList=query.getResultList();
+           /* smsSendlogEntity=(SmsSendlogEntity)query.getSingleResult();*/
         }catch (Exception e){
             logger.error("error to geting SmsSendlogEntity",e);
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
 
 
-        return smsSendlogEntity;
+        return entityList;
     }
 
     @Override
@@ -62,6 +70,12 @@ public class SmsSendLogDaoImp implements SmsSendLogDao {
         } catch (Exception e) {
             msg="err";
             e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return  msg;
     }

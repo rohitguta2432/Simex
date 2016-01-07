@@ -44,6 +44,12 @@ public class PostCallingDaoImp implements PostCallingDao{
             msg="err";
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return  msg;
     }
 
@@ -64,6 +70,12 @@ public class PostCallingDaoImp implements PostCallingDao{
             msg="err";
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return  msg;
     }
 
@@ -83,6 +95,12 @@ public class PostCallingDaoImp implements PostCallingDao{
         } catch (Exception e) {
             msg="err";
             e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return  msg;
     }
@@ -105,6 +123,12 @@ public class PostCallingDaoImp implements PostCallingDao{
             msg="err";
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return  msg;
     }
 
@@ -124,6 +148,12 @@ public class PostCallingDaoImp implements PostCallingDao{
 
         }catch (Exception e){
             e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return telecallMastEntity;
     }
@@ -148,6 +178,12 @@ public class PostCallingDaoImp implements PostCallingDao{
 
         }catch (Exception e){
             e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
 
         return appoinmentId;
@@ -175,6 +211,12 @@ public class PostCallingDaoImp implements PostCallingDao{
 
         }catch (Exception e){
             e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
 
         return map;
@@ -228,6 +270,12 @@ public class PostCallingDaoImp implements PostCallingDao{
         }catch (Exception e){
             e.printStackTrace();;
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
 
         return agentCode1;
     }
@@ -249,6 +297,12 @@ public class PostCallingDaoImp implements PostCallingDao{
         } catch (Exception e) {
             msg="err";
             e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return  msg;
 
@@ -272,6 +326,12 @@ public class PostCallingDaoImp implements PostCallingDao{
             msg="err";
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return  msg;
 
     }
@@ -292,6 +352,84 @@ public class PostCallingDaoImp implements PostCallingDao{
         }catch (Exception e){
             e.printStackTrace();;
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return appointmentMastEntity;
+    }
+
+    @Override
+    public RemarkMastEntity getByPrimaryCode(String remarkCode) {
+        EntityManager entityManager=null;
+        Query query=null;
+        RemarkMastEntity RemarkMastEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select am from RemarkMastEntity am where am.remarksCode=:remarkCode";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("remarkCode",remarkCode);
+            RemarkMastEntity= (RemarkMastEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return RemarkMastEntity;
+    }
+
+    @Override
+    public ReceiverMastEntity getRecivedByCode(int code) {
+        EntityManager entityManager=null;
+        Query query=null;
+        ReceiverMastEntity receiverMastEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select am from ReceiverMastEntity am where am.receiverCode=:code";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("code",code);
+            receiverMastEntity= (ReceiverMastEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return receiverMastEntity;
+    }
+
+    @Override
+    public ProcessMastEntity getProcessByCode(int code) {
+        EntityManager entityManager=null;
+        Query query=null;
+        ProcessMastEntity processMastEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select am from ProcessMastEntity am where am.processCode=:code";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("code",code);
+            processMastEntity= (ProcessMastEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return processMastEntity;
     }
 }

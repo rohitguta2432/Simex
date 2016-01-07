@@ -81,6 +81,12 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
             msg="err";
             e.printStackTrace();
         }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
         return  msg;
     }
 
@@ -99,6 +105,12 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
 
         }catch (Exception e){
             e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return paytmagententryEntity;
 
