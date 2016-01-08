@@ -27,19 +27,10 @@
   <link href="assets/css/beyond.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/animate.min.css" rel="stylesheet" />
   <script src="assets/js/skins.min.js"></script>
-    <%--<style>
+    <style>
         input.ng-invalid{border-color:red;}
         select.ng-invalid{border-color:red;}
-    </style>--%>
-  <style type="text/css">
-    form.ng-submitted input.ng-invalid {
-      background: red;
-    }
-    form.ng-submitted select.ng-invalid{
-      background: red;
-    }
-  </style>
-
+    </style>
 </head>
 <!-- /Head -->
 <!-- Body -->
