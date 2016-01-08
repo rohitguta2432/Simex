@@ -11,9 +11,15 @@
   <link href="libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
   <%--<script src="http://code.angularjs.org/1.2.13/angular.js"></script>--%>
-  <script src="libs/angular/angular.js"></script>
-  <script src="libs/angular-moment/angular-moment.js"></script>
-  <script src="libs/moment/moment.js"></script>
+
+   <%-- <link href="libs/datepicker/jquery-ui.css" rel="stylesheet" />--%>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css">
+
+
+
   <%--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>--%>
   <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
   <script src="js/app.js"></script>
@@ -21,7 +27,10 @@
   <link href="assets/css/beyond.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/animate.min.css" rel="stylesheet" />
   <script src="assets/js/skins.min.js"></script>
-
+    <style>
+        input.ng-invalid{border-color:red;}
+        select.ng-invalid{border-color:red;}
+    </style>
 </head>
 <!-- /Head -->
 <!-- Body -->
@@ -94,7 +103,7 @@
                         Import Paytm Data </span></a></li>
         <li><a ui-sref="telecalling"><i class="menu-icon fa fa-phone"></i><span class="menu-text">
                         Telecalling </span></a></li>
-        <li><a ui-sref="registration"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+        <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         Reports </span></a></li>
         <li><a ui-sref="registration"><i class="menu-icon fa fa-sign-out"></i><span class="menu-text">
                         Sign out</span> </a></li>

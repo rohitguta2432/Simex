@@ -22,13 +22,14 @@
                                         </div>
                                         <div class="widget-body">
                                             <div id="horizontal-form">                                                                                           
-                                            <form class="form-horizontal" role="form" ng-controller="fileUpload" ng-submit="upload()" method="post">
+                                            <form class="form-horizontal" id="myForm" name="myForm" role="form" ng-controller="myCtrl" method="post" enctype="multipart/form-data">
 
                                                     <div class="form-group col-sm-12">
-                                                        <label for="inputEmail3" class="col-sm-3 control-label no-padding-right">Paytm Data Upload</label>
+                                                        <label class="col-sm-3 control-label no-padding-right">Paytm Data Upload</label>
                                                         <div class="col-sm-9" style="margin-top:10px;">
-                                                          <input type="file" name="img" style="float:left; width:200px; " />
-                                                          <input type="submit" class="btn btn-azure shiny" value="upload" style="float:left;  " />
+                                                          <input type="file" name="file" style="float:left; width:200px; " />
+                                                            <input type="text" name="name" ng-model="name">
+                                                          <input ng-click="uploadFile($event)" type="button" class="btn btn-azure shiny" value="upload" style="float:left;" />
                                                         </div>
                                                     </div>
 

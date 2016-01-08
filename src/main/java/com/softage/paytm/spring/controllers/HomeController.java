@@ -14,10 +14,7 @@ import com.softage.paytm.models.CallStatusMasterEntity;
 import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.PaytmagententryEntity;
 import com.softage.paytm.models.StateMasterEntity;
-import com.softage.paytm.service.AgentPaytmService;
-import com.softage.paytm.service.CircleService;
-import com.softage.paytm.service.PaytmMasterService;
-import com.softage.paytm.service.PostCallingService;
+import com.softage.paytm.service.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +23,11 @@ import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.web.multipart.*;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +47,8 @@ class HomeController {
 	public CircleService circleService;
 	@Autowired
 	public PostCallingService postCallingService;
+	@Autowired
+	private PaytmMultiPartResolver resolver;
 
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -58,125 +60,85 @@ class HomeController {
 		return "app";
 	}
 
-	@RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
-	@ResponseBody
-	public void getFilePath(HttpServletRequest request) {
-
-/*
-		public void getFilePath(@RequestParam("name") String name,
-				@RequestParam("file") MultipartFile file) {	*/
-//		 File input = new File("/x/data.csv");
-//		 File output = new File("/x/data.json");
-//		<form method="POST" action="uploadFile" enctype="multipart/form-data">
-//				File to upload: <input type="file" name="file"><br />
-//				Name: <input type="text" name="name"><br /> <br />
-//		<input type="submit" value="Upload"> Press here to upload the file!
-//				</form>
-
-
-
-
-		String csvFile = "D:/CSVFile/Kyc_data1.csv";
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = "\\|";
-		File serverFile=null;
-		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
-
-	//	CSVReader reader = new CSVReader(new FileReader("./file/Kyc_data.csv"), ';', '"', 1);
-
-       try{
-		    /*    if (!file.isEmpty()) {
-
-				   byte[] bytes = file.getBytes();
-
-				   // Creating the directory to store file
-				   String rootPath = System.getProperty("catalina.home");
-				 //  File dir = new File(rootPath + File.separator + "tmpFiles");
-					File dir=new File("D:/CSVFile");
-				   if (!dir.exists())
-					   dir.mkdirs();
-
-				   // Create the file on server
-				    serverFile = new File(dir.getAbsolutePath()
-						   + File.separator + name+".csv");
-				   BufferedOutputStream stream = new BufferedOutputStream(
-						   new FileOutputStream(serverFile));
-				   stream.write(bytes);
-				   stream.close();
-
-
-			   }*/
-
-
-		   br = new BufferedReader(new FileReader(csvFile));
-
-	     int count=0;
-		 while ((line = br.readLine()) != null) {
-			String[] customerData = line.split(cvsSplitBy);
-			int lent= customerData.length;
-			if(count!=0 ) {
-				HashMap<String, String> map = new HashMap<String, String>();
-				System.out.println(customerData[0]);
-				map.put("kycRequestId", customerData[0]);
-				map.put("CustomerID", customerData[1]);
-				map.put("Username", customerData[2]);
-				map.put("CustomerPhone", customerData[3]);
-				map.put("Email", customerData[4]);
-				map.put("AddressID", customerData[5]);
-				map.put("TimeSlot", customerData[6]);
-				map.put("Priority", customerData[7]);
-				map.put("AddressStreet1", customerData[8]);
-				map.put("AddressStreet2", customerData[9]);
-				map.put("City", customerData[10]);
-				map.put("State", customerData[11]);
-				map.put("Pincode", customerData[12]);
-				System.out.println(customerData[12]);
-				map.put("AddressPhone", customerData[13]);
-				map.put("VendorName", customerData[14]);
-				map.put("StageId", customerData[15]);
-				map.put("SubStageId", customerData[16]);
-				map.put("CreatedTimestamp", customerData[17]);
-				/*map.put("ImportBy", customerData[18]);
-				map.put("ImportDate", customerData[19]);
-				map.put("otp", customerData[20]);
-				map.put("Ref_Code", customerData[21]);*/
-				list.add(map);
-			}
-              count++;
-
-		}
-          System.out.println("list   "+list);
-	  paytmMasterService.savePaytmMaster(list);
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	} finally {
-		if (br != null) {
-			try {
-				br.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-
-	/*	try {
-
-			CSVReader reader = new CSVReader(new FileReader("data.csv"), ',', '"', 1);
-			//Read all rows at once
-			List<String[]> allRows = reader.readAll();
-
-			//Read CSV line by line and use the string array as you want
-			for (String[] row : allRows) {
-				System.out.println(Arrays.toString(row));
-			}
-		} catch (Exception e) {
-
-		}*/
-	}
+//	@RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
+//	@ResponseBody
+//	public void getFilePath(@RequestParam("name") String name,
+//							@RequestParam("file") MultipartFile file) {
+////		 File input = new File("/x/data.csv");
+////		 File output = new File("/x/data.json");
+//		String csvFile = "D:/CSVFile/TestFile.csv";
+//		BufferedReader br = null;
+//		String line = "";
+//		String cvsSplitBy = ",";
+//		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+//
+//  try{
+//		br = new BufferedReader(new FileReader(csvFile));
+//
+//	  int count=0;
+//		while ((line = br.readLine()) != null) {
+//			String[] customerData = line.split(cvsSplitBy);
+//			if(count!=0 ) {
+//				HashMap<String, String> map = new HashMap<String, String>();
+//				System.out.println(customerData[0]);
+//				map.put("kycRequestId", customerData[0]);
+//				map.put("CustomerID", customerData[1]);
+//				map.put("Username", customerData[2]);
+//				map.put("CustomerPhone", customerData[3]);
+//				map.put("Email", customerData[4]);
+//				map.put("AddressID", customerData[5]);
+//				map.put("TimeSlot", customerData[6]);
+//				map.put("Priority", customerData[7]);
+//				map.put("AddressStreet1", customerData[8]);
+//				map.put("AddressStreet2", customerData[9]);
+//				map.put("City", customerData[10]);
+//				map.put("State", customerData[11]);
+//				map.put("Pincode", customerData[12]);
+//				map.put("AddressPhone", customerData[13]);
+//				map.put("VendorName", customerData[14]);
+//				map.put("StageId", customerData[15]);
+//				map.put("SubStageId", customerData[16]);
+//				map.put("CreatedTimestamp", customerData[17]);
+//				/*map.put("ImportBy", customerData[18]);
+//				map.put("ImportDate", customerData[19]);
+//				map.put("otp", customerData[20]);
+//				map.put("Ref_Code", customerData[21]);*/
+//				list.add(map);
+//			}
+//              count++;
+//
+//		}
+//          System.out.println("list   "+list);
+//	  paytmMasterService.savePaytmMaster(list);
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	} catch (IOException e) {
+//		e.printStackTrace();
+//	} finally {
+//		if (br != null) {
+//			try {
+//				br.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
+//
+//
+//	/*	try {
+//
+//			CSVReader reader = new CSVReader(new FileReader("data.csv"), ',', '"', 1);
+//			//Read all rows at once
+//			List<String[]> allRows = reader.readAll();
+//
+//			//Read CSV line by line and use the string array as you want
+//			for (String[] row : allRows) {
+//				System.out.println(Arrays.toString(row));
+//			}
+//		} catch (Exception e) {
+//
+//		}*/
+//	}
 /*	@RequestMapping(value = "/getTeleCallData", method = RequestMethod.GET)
 	public JSONObject getTeleCallingData(){
 		JSONObject jsonObject =new JSONObject();
@@ -184,6 +146,107 @@ class HomeController {
 		System.out.println(paytmMastData);
 		return  jsonObject;
 	}*/
+
+	@RequestMapping(value = "/getFilePath", method = {RequestMethod.GET,RequestMethod.POST})
+	public void getFilePath(HttpServletRequest request) {
+	   if(!resolver.isMultiPartRequest(request)){
+			return;
+		}
+		BufferedReader br = null;
+		try{
+		MultipartRequest req= (MultipartRequest)request;
+		req.getFileMap();
+	    Iterator<String> name1=req.getFileNames();
+		String name=  name1.next();
+		System.out.println(name);
+		String csvFile = "D:/CSVFile/Kyc_data1.csv";
+
+		String line = "";
+		String cvsSplitBy = "\\|";
+		File serverFile=null;
+		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+
+// CSVReader reader = new CSVReader(new FileReader("./file/Kyc_data.csv"), ';', '"', 1);
+
+
+	/*		if (!file.isEmpty()) {
+
+				byte[] bytes = file.getBytes();
+
+				// Creating the directory to store file
+				String rootPath = System.getProperty("catalina.home");
+				//  File dir = new File(rootPath + File.separator + "tmpFiles");
+				File dir=new File("D:/CSVFile");
+				if (!dir.exists())
+					dir.mkdirs();
+
+				// Create the file on server
+				serverFile = new File(dir.getAbsolutePath()
+						+ File.separator + name+".csv");
+				BufferedOutputStream stream = new BufferedOutputStream(
+						new FileOutputStream(serverFile));
+				stream.write(bytes);
+				stream.close();
+
+
+			}
+*/
+
+			br = new BufferedReader(new FileReader(name));
+
+			int count=0;
+			while ((line = br.readLine()) != null) {
+				String[] customerData = line.split(cvsSplitBy);
+				int lent= customerData.length;
+				if(count!=0 ) {
+					HashMap<String, String> map = new HashMap<String, String>();
+					System.out.println(customerData[0]);
+					map.put("kycRequestId", customerData[0]);
+					map.put("CustomerID", customerData[1]);
+					map.put("Username", customerData[2]);
+					map.put("CustomerPhone", customerData[3]);
+					map.put("Email", customerData[4]);
+					map.put("AddressID", customerData[5]);
+					map.put("TimeSlot", customerData[6]);
+					map.put("Priority", customerData[7]);
+					map.put("AddressStreet1", customerData[8]);
+					map.put("AddressStreet2", customerData[9]);
+					map.put("City", customerData[10]);
+					map.put("State", customerData[11]);
+					map.put("Pincode", customerData[12]);
+					System.out.println(customerData[12]);
+					map.put("AddressPhone", customerData[13]);
+					map.put("VendorName", customerData[14]);
+					map.put("StageId", customerData[15]);
+					map.put("SubStageId", customerData[16]);
+					map.put("CreatedTimestamp", customerData[17]);
+         /*map.put("ImportBy", customerData[18]);
+         map.put("ImportDate", customerData[19]);
+         map.put("otp", customerData[20]);
+         map.put("Ref_Code", customerData[21]);*/
+					list.add(map);
+				}
+				count++;
+
+			}
+			System.out.println("list   "+list);
+			paytmMasterService.savePaytmMaster(list);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+
 
 	@RequestMapping(value = "/telecallingScreen", method ={ RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
@@ -336,7 +399,7 @@ class HomeController {
 			map.put("pinCode", pinCode);
 			map.put("landmark", landMark);
 			map.put("visitDate", visitDate);
-			map.put("visitTime", "11");
+			map.put("visitTime", visitTime);
 			map.put("status", status);
 			map.put("importby", importby);
 			map.put("importType", importType);
@@ -354,19 +417,6 @@ class HomeController {
 
 		return  result;
 	}
-	@RequestMapping(value = "/getReport", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public  JSONObject getReport(HttpServletRequest request){
-		JSONObject jsonObject=new JSONObject();
-		    String from =request.getParameter("from");
-		    String to=request.getParameter("to");
-		    String type=request.getParameter("type");
-
-		return  jsonObject;
-	}
-
-
-
 
 	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
@@ -387,7 +437,7 @@ class HomeController {
 			e.printStackTrace();;
 			logger.error("error to posting data ",e);
 		}
-		     return  result;
+		     return  "success";
 	}
 
 }
