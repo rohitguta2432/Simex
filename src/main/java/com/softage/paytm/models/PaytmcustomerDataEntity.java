@@ -70,7 +70,7 @@ public class PaytmcustomerDataEntity {
     }
 
     @Basic
-    @Column(name = "PCD_Area", nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "PCD_Area", nullable = false, insertable = true, updatable = true, length = 150)
     public String getPcdArea() {
         return pcdArea;
     }

@@ -8,12 +8,10 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import au.com.bytecode.opencsv.CSVReader;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.softage.paytm.models.CallStatusMasterEntity;
-import com.softage.paytm.models.PaytmMastEntity;
-import com.softage.paytm.models.PaytmagententryEntity;
-import com.softage.paytm.models.StateMasterEntity;
+import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -29,8 +27,11 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 /**
  * Handles requests for the application home page.
@@ -49,6 +50,10 @@ class HomeController {
 	public PostCallingService postCallingService;
 	@Autowired
 	private PaytmMultiPartResolver resolver;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private ReportService reportService;
 
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -59,6 +64,475 @@ class HomeController {
 
 		return "app";
 	}
+
+
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@ResponseBody
+	public String login(HttpServletRequest request,HttpServletResponse response) {
+		//logger.info("Welcome home! The client locale is {}.", locale);
+		String result=null;
+		  String user=request.getParameter("userName");
+		  String password=request.getParameter("password");
+		   EmplogintableEntity emplogintableEntity  =  userService.getUserByEmpcode(user);
+		   if(emplogintableEntity!=null){
+
+			   if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())){
+				   HttpSession session=request.getSession();
+				   session.setAttribute("name",user);
+				   result="sucsses";
+			   }
+		   }else {
+			   result="error";
+		   }
+
+		return result;
+	}
+
+
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	@ResponseBody
+	public String logout(HttpServletRequest request,HttpServletResponse response) {
+		//logger.info("Welcome home! The client locale is {}.", locale);
+        String result= null;
+		HttpSession session=request.getSession();
+		if (session!=null) {
+			session.invalidate();
+			result="sucsses";
+		}else {
+			result="error";
+		}
+
+		return result;
+	}
+
+	@RequestMapping(value = "/getFilePath", method = {RequestMethod.GET,RequestMethod.POST})
+	public void getFilePath(HttpServletRequest request) {
+	   if(!resolver.isMultipartFile(request)){
+			return;
+		}
+		BufferedReader br = null;
+		InputStream inputStream = null;
+		FileOutputStream outputStream =null;
+		HttpSession session=request.getSession(false);
+		if(session!=null){
+			String name=(String)session.getAttribute("name");
+			System.out.println(name);
+		}
+		try{
+
+	//	req.getFileMap();
+	//    Iterator<String> name1=req.getFileNames();
+	//	String name=  name1.next();
+//		System.out.println(name);
+		 /* parts=request.getParts();
+			System.out.println(parts.size());*/
+			MultipartHttpServletRequest request1  = resolver.resolveMultipart(request);
+
+			request1.getFileMap().forEach((name, file)->{
+				System.out.println(name);
+			});
+
+			Collection<Part>  parts=   request1.getParts();
+			for (Part part : request.getParts())
+			{
+				System.out.println(part.getName());
+				inputStream = request.getPart(part.getName()).getInputStream();
+				int i = inputStream.available();
+				byte[] b  = new byte[i];
+				inputStream.read(b);
+				System.out.println("Length : " + b.length);
+
+				// Finding the fileName //
+				String fileName = "";
+				String partHeader = part.getHeader("content-disposition");
+				System.out.println("Part Header = " + partHeader);
+				System.out.println("part.getHeader" + part.getHeader("content-disposition"));
+
+				for (String temp : part.getHeader("content-disposition").split(";"))
+				{
+					if (temp.trim().startsWith("filename"))
+					{
+						fileName=temp.substring(temp.indexOf('=') + 1).trim().replace("\"", "");
+					}
+				}
+
+				// Writing contents to desired FilePath & FileName //
+				String uploadDir=System.getProperty("jboss.server.base.dir")+"/upload";
+				System.out.println("File will be Uploaded at: " +uploadDir+"/"+fileName);
+				outputStream = new FileOutputStream("D:/CSVFile/"+"mytest.csv");
+				outputStream.write(b);
+				inputStream.close();
+			}
+
+
+
+
+		String csvFile = "D:/CSVFile/Kyc_data1.csv";
+
+		String line = "";
+		String cvsSplitBy = "\\|";
+		File serverFile=null;
+		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+
+
+
+			br = new BufferedReader(new FileReader(""));
+
+			int count=0;
+			while ((line = br.readLine()) != null) {
+				String[] customerData = line.split(cvsSplitBy);
+				int lent= customerData.length;
+				if(count!=0 ) {
+					HashMap<String, String> map = new HashMap<String, String>();
+					System.out.println(customerData[0]);
+					map.put("kycRequestId", customerData[0]);
+					map.put("CustomerID", customerData[1]);
+					map.put("Username", customerData[2]);
+					map.put("CustomerPhone", customerData[3]);
+					map.put("Email", customerData[4]);
+					map.put("AddressID", customerData[5]);
+					map.put("TimeSlot", customerData[6]);
+					map.put("Priority", customerData[7]);
+					map.put("AddressStreet1", customerData[8]);
+					map.put("AddressStreet2", customerData[9]);
+					map.put("City", customerData[10]);
+					map.put("State", customerData[11]);
+					map.put("Pincode", customerData[12]);
+					System.out.println(customerData[12]);
+					map.put("AddressPhone", customerData[13]);
+					map.put("VendorName", customerData[14]);
+					map.put("StageId", customerData[15]);
+					map.put("SubStageId", customerData[16]);
+					map.put("CreatedTimestamp", customerData[17]);
+         /*map.put("ImportBy", customerData[18]);
+         map.put("ImportDate", customerData[19]);
+         map.put("otp", customerData[20]);
+         map.put("Ref_Code", customerData[21]);*/
+					list.add(map);
+				}
+				count++;
+
+			}
+			System.out.println("list   "+list);
+			paytmMasterService.savePaytmMaster(list);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+
+
+	@RequestMapping(value = "/telecallingScreen", method ={ RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public JSONObject telecallingScreen(HttpServletRequest  request){
+		String userName="afjal";
+		HttpSession session=request.getSession(false);
+		if(session!=null){
+			userName=(String)session.getAttribute("name");
+		}
+		JSONObject jsonObject =new JSONObject();
+		JSONObject teleJson=paytmMasterService.telecallingScreen(userName);
+        List<StateMasterEntity> stateList=paytmMasterService.getStateList();
+		List<CallStatusMasterEntity> statusList= paytmMasterService.getStatusList();
+		JSONObject json= paytmMasterService.getPaytmMastData((String)teleJson.get("mobileNo"));
+		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar date = Calendar.getInstance();
+		String dateList1[]=new String[7];
+		List<String> dateList=new ArrayList<>();
+		for(int i = 0; i < 7;i++){
+
+			dateList1[i]  = format.format(date.getTime());
+			date.add(Calendar.DATE  , 1);
+			dateList.add(dateList1[i]);
+		}
+
+        jsonObject.put("teleData",teleJson);
+		jsonObject.put("stateList",stateList);
+		jsonObject.put("statusList",statusList);
+		jsonObject.put("dateList",dateList);
+		jsonObject.put("paytmmastjson",json);
+		return jsonObject;
+	}
+	@RequestMapping(value = "/agentRegistration", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public String agentRegistration(HttpServletRequest request){
+		String msg="";
+		try {
+
+			String userName="system";
+			HttpSession session=request.getSession(false);
+			if(session!=null){
+				userName=(String)session.getAttribute("name");
+			}
+
+			String agentName = request.getParameter("agent_name");
+			String agentCode = request.getParameter("agent_code");
+			String empCode = request.getParameter("employee");
+			String mobileNo = request.getParameter("phone");
+			String circleOffice = request.getParameter("circle_office");
+			String spokeCode = request.getParameter("spoke_code");
+			String avalTime = request.getParameter("avl_time");
+			String pincode = request.getParameter("pin_code");
+			String multipin = request.getParameter("multi_pin");
+			String email = request.getParameter("email");
+			PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
+			       paytmagententryEntity.setAfullname(agentName);
+			       paytmagententryEntity.setAcode(agentCode);
+			       paytmagententryEntity.setEmpcode(empCode);
+			       paytmagententryEntity.setAphone(mobileNo);
+			       paytmagententryEntity.setAspokecode(spokeCode);
+			       paytmagententryEntity.setAavailslot(avalTime);
+			       paytmagententryEntity.setApincode(pincode);
+			       paytmagententryEntity.setMulitplePin(multipin);
+			       paytmagententryEntity.setAemailId(email);
+			       paytmagententryEntity.setImportby(userName);
+			       paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
+		           msg= agentPaytmService.saveAgent(paytmagententryEntity);
+
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		    return  msg;
+	}
+	@RequestMapping(value = "/customerCalling", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public  String Calling(HttpServletRequest request){
+
+		String userName="system";
+		String agentNo="";
+		HttpSession session=request.getSession(false);
+		if(session!=null){
+			userName=(String)session.getAttribute("name");
+			agentNo=userService.getUserByEmpcode(userName).getEmpPhone();
+		}
+
+		String number= request.getParameter("mobileNo");
+
+		String result=customerCalling(number,agentNo);
+
+		return "success";
+	}
+
+
+	private String customerCalling(String mobileNo,String agentNumber ){
+		String msg=null;
+		String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91"+mobileNo+"&agent_number=+91"+agentNumber;
+	   try {
+	      URL obj = new URL(url);
+	      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+	      con.setRequestMethod("GET");
+
+	int responseCode = con.getResponseCode();
+	System.out.println("\nSending 'GET' request to URL : " + url);
+	System.out.println("Response Code : " + responseCode);
+
+	BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	String inputLine;
+	StringBuffer response = new StringBuffer();
+
+	while ((inputLine = in.readLine()) != null) {
+		response.append(inputLine);
+	}
+	in.close();
+
+	//print result
+	msg=response.toString();
+     } catch (Exception e){
+          e.printStackTrace();
+      }
+	return  msg;
+	}
+
+	@RequestMapping(value = "/getCirles", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+    public JSONObject getCircleName(){
+
+
+		JSONObject jsonObject=new JSONObject();
+		List<String> circles= circleService.getCirleList();
+         jsonObject.put("circles",circles);
+	 return  jsonObject;
+}
+	@RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public JSONObject getSpokeCode(@RequestParam (value = "circleName")String circleName){
+	  JSONObject jsonObject=new JSONObject();
+		List<String> spokeList=circleService.getSpokeList(circleName);
+		jsonObject.put("spokeList",spokeList);
+	  return  jsonObject;
+}
+
+	@RequestMapping(value = "/postCalling", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public String postCallig(HttpServletRequest request,HttpServletResponse  response){
+            String result=null;
+		    String importby="System";
+		try {
+			HttpSession session=request.getSession(false);
+			if(session!=null){
+				importby=(String)session.getAttribute("name");
+			}
+			String number = request.getParameter("mobileNo");
+			String name = request.getParameter("name");
+			String address = request.getParameter("address");
+			String area = request.getParameter("area");
+			String emailId = request.getParameter("emailId");
+			String city = request.getParameter("city");
+			String state = request.getParameter("state");
+			String pinCode = request.getParameter("pincode");
+			String landMark = request.getParameter("landmark");
+			String visitDate = request.getParameter("visitDate");
+			String visitTime1 = request.getParameter("visitTime");
+			String status = request.getParameter("status");
+			String importType = "admin";
+			Map<String, String> map = new HashMap<String, String>();
+			String[]  visitTime= visitTime1.split(":");
+			System.out.println(visitTime[0]);
+			map.put("number", number);
+			map.put("name", name);
+			map.put("address", address);
+			map.put("area", area);
+			map.put("emailId", emailId);
+			map.put("city", city);
+			map.put("state", state);
+			map.put("pinCode", pinCode);
+			map.put("landmark", landMark);
+			map.put("visitDate", visitDate);
+			map.put("visitTime",visitTime[0]);
+			map.put("status", status);
+			map.put("importby", importby);
+			map.put("importType", importType);
+	     	result=postCallingService.saveCallingData(map);
+			logger.info(" Result   "+result);
+			return result;
+		}catch (Exception e){
+			logger.error("",e);
+			e.printStackTrace();
+			result="error";
+		}
+
+		return  result;
+	}
+
+	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public String postCallingStatus(HttpServletRequest request,HttpServletResponse  response){
+		       Map<String, String> map = new HashMap<String, String>();
+		       String result=null;
+		       String importby="System";
+		try {
+			HttpSession session=request.getSession(false);
+			if(session!=null){
+				importby=(String)session.getAttribute("name");
+			}
+			String importType = "Admin";
+			String mobileNo = request.getParameter("mobileNo");
+			String status = request.getParameter("status");
+			map.put("number", mobileNo);
+			map.put("status", status);
+			map.put("importby", importby);
+			map.put("importType", importType);
+			result = postCallingService.saveCallingData(map);
+		}catch (Exception e){
+			e.printStackTrace();;
+			logger.error("error to posting data ",e);
+		}
+		     return  "success";
+	}
+	@RequestMapping(value = "/getReportsType", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public JSONObject getReportTypes(){
+		JSONObject jsonObject=new JSONObject();
+        List<ReportMastEntity> reportTypes= circleService.getReporttypes();
+         jsonObject.put("reportTypes",reportTypes);
+		return  jsonObject;
+	}
+	@RequestMapping(value = "/getReports", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+    public JSONObject getReports(HttpServletRequest request){
+		JSONObject jsonObject=new JSONObject();
+		HttpSession session=request.getSession(false);
+		if(session!=null){
+			String name=(String)session.getAttribute("name");
+		}
+		Random randomGenerator = new Random();
+
+			int randomInt = randomGenerator.nextInt(10000);
+			System.out.println(randomInt);
+
+
+		String from=request.getParameter("from");
+		String to= request.getParameter("to");
+		String type=  request.getParameter("type");
+		from=from.substring(6,10)+"-"+from.substring(3,5)+"-"+from.substring(0,2);
+		to=to.substring(6,10)+"-"+to.substring(3,5)+"-"+to.substring(0,2);
+     	jsonObject=reportService.getReports(from,to,"TeleCalling");
+
+		return  jsonObject;
+     }
+
+
+
+}
+/*
+
+
+	 }
+*/
+
+		// List<Map<?, ?>> data = readObjectsFromCsv(input);
+		// writeAsJson(data, output);
+
+
+
+/*	public static List<Map<?, ?>> readObjectsFromCsv(File file) throws IOException {
+		CsvSchema bootstrap = CsvSchema.emptySchema().withHeader();
+		CsvMapper csvMapper = new CsvMapper();
+		MappingIterator<Map<?, ?>> mappingIterator = csvMapper.reader(Map.class).with(bootstrap).readValues(file);
+
+		return mappingIterator.readAll();
+	}
+
+	public static void writeAsJson(List<Map<?, ?>> data, File file) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(file, data);
+	}*/
+
+// CSVReader reader = new CSVReader(new FileReader("./file/Kyc_data.csv"), ';', '"', 1);
+
+
+	/*		if (!file.isEmpty()) {
+
+				byte[] bytes = file.getBytes();
+
+				// Creating the directory to store file
+				String rootPath = System.getProperty("catalina.home");
+				//  File dir = new File(rootPath + File.separator + "tmpFiles");
+				File dir=new File("D:/CSVFile");
+				if (!dir.exists())
+					dir.mkdirs();
+
+				// Create the file on server
+				serverFile = new File(dir.getAbsolutePath()
+						+ File.separator + name+".csv");
+				BufferedOutputStream stream = new BufferedOutputStream(
+						new FileOutputStream(serverFile));
+				stream.write(bytes);
+				stream.close();
+
+
+			}
+*/
 
 //	@RequestMapping(value = "/getFilePath", method = RequestMethod.GET)
 //	@ResponseBody
@@ -145,322 +619,4 @@ class HomeController {
 		PaytmMastEntity paytmMastData=paytmMasterService.getPaytmMastData();
 		System.out.println(paytmMastData);
 		return  jsonObject;
-	}*/
-
-	@RequestMapping(value = "/getFilePath", method = {RequestMethod.GET,RequestMethod.POST})
-	public void getFilePath(HttpServletRequest request) {
-	   if(!resolver.isMultiPartRequest(request)){
-			return;
-		}
-		BufferedReader br = null;
-		try{
-		MultipartRequest req= (MultipartRequest)request;
-		req.getFileMap();
-	    Iterator<String> name1=req.getFileNames();
-		String name=  name1.next();
-		System.out.println(name);
-		String csvFile = "D:/CSVFile/Kyc_data1.csv";
-
-		String line = "";
-		String cvsSplitBy = "\\|";
-		File serverFile=null;
-		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
-
-// CSVReader reader = new CSVReader(new FileReader("./file/Kyc_data.csv"), ';', '"', 1);
-
-
-	/*		if (!file.isEmpty()) {
-
-				byte[] bytes = file.getBytes();
-
-				// Creating the directory to store file
-				String rootPath = System.getProperty("catalina.home");
-				//  File dir = new File(rootPath + File.separator + "tmpFiles");
-				File dir=new File("D:/CSVFile");
-				if (!dir.exists())
-					dir.mkdirs();
-
-				// Create the file on server
-				serverFile = new File(dir.getAbsolutePath()
-						+ File.separator + name+".csv");
-				BufferedOutputStream stream = new BufferedOutputStream(
-						new FileOutputStream(serverFile));
-				stream.write(bytes);
-				stream.close();
-
-
-			}
-*/
-
-			br = new BufferedReader(new FileReader(name));
-
-			int count=0;
-			while ((line = br.readLine()) != null) {
-				String[] customerData = line.split(cvsSplitBy);
-				int lent= customerData.length;
-				if(count!=0 ) {
-					HashMap<String, String> map = new HashMap<String, String>();
-					System.out.println(customerData[0]);
-					map.put("kycRequestId", customerData[0]);
-					map.put("CustomerID", customerData[1]);
-					map.put("Username", customerData[2]);
-					map.put("CustomerPhone", customerData[3]);
-					map.put("Email", customerData[4]);
-					map.put("AddressID", customerData[5]);
-					map.put("TimeSlot", customerData[6]);
-					map.put("Priority", customerData[7]);
-					map.put("AddressStreet1", customerData[8]);
-					map.put("AddressStreet2", customerData[9]);
-					map.put("City", customerData[10]);
-					map.put("State", customerData[11]);
-					map.put("Pincode", customerData[12]);
-					System.out.println(customerData[12]);
-					map.put("AddressPhone", customerData[13]);
-					map.put("VendorName", customerData[14]);
-					map.put("StageId", customerData[15]);
-					map.put("SubStageId", customerData[16]);
-					map.put("CreatedTimestamp", customerData[17]);
-         /*map.put("ImportBy", customerData[18]);
-         map.put("ImportDate", customerData[19]);
-         map.put("otp", customerData[20]);
-         map.put("Ref_Code", customerData[21]);*/
-					list.add(map);
-				}
-				count++;
-
-			}
-			System.out.println("list   "+list);
-			paytmMasterService.savePaytmMaster(list);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-
-
-	@RequestMapping(value = "/telecallingScreen", method ={ RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject telecallingScreen(){
-		String userName="afjal";
-		JSONObject jsonObject =new JSONObject();
-		JSONObject teleJson=paytmMasterService.telecallingScreen(userName);
-        List<StateMasterEntity> stateList=paytmMasterService.getStateList();
-		List<CallStatusMasterEntity> statusList= paytmMasterService.getStatusList();
-		JSONObject json= paytmMasterService.getPaytmMastData((String)teleJson.get("mobileNo"));
-		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-		Calendar date = Calendar.getInstance();
-		String dateList1[]=new String[7];
-		List<String> dateList=new ArrayList<>();
-		for(int i = 0; i < 7;i++){
-
-			dateList1[i]  = format.format(date.getTime());
-			date.add(Calendar.DATE  , 1);
-			dateList.add(dateList1[i]);
-		}
-
-        jsonObject.put("teleData",teleJson);
-		jsonObject.put("stateList",stateList);
-		jsonObject.put("statusList",statusList);
-		jsonObject.put("dateList",dateList);
-		jsonObject.put("paytmmastjson",json);
-		return jsonObject;
-	}
-	@RequestMapping(value = "/agentRegistration", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public String agentRegistration(HttpServletRequest request){
-		String msg="";
-		try {
-			String agentName = request.getParameter("agent_name");
-			String agentCode = request.getParameter("agent_code");
-			String empCode = request.getParameter("employee");
-			String mobileNo = request.getParameter("phone");
-			String circleOffice = request.getParameter("circle_office");
-			String spokeCode = request.getParameter("spoke_code");
-			String avalTime = request.getParameter("avl_time");
-			String pincode = request.getParameter("pin_code");
-			String multipin = request.getParameter("multi_pin");
-			String email = request.getParameter("email");
-			PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
-			       paytmagententryEntity.setAfullname(agentName);
-			       paytmagententryEntity.setAcode(agentCode);
-			       paytmagententryEntity.setEmpcode(empCode);
-			       paytmagententryEntity.setAphone(mobileNo);
-			       paytmagententryEntity.setAspokecode(spokeCode);
-			       paytmagententryEntity.setAavailslot(avalTime);
-			       paytmagententryEntity.setApincode(pincode);
-			       paytmagententryEntity.setMulitplePin(multipin);
-			       paytmagententryEntity.setAemailId(email);
-			       paytmagententryEntity.setImportby("system");
-			       paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
-		           msg= agentPaytmService.saveAgent(paytmagententryEntity);
-
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		    return  msg;
-	}
-	@RequestMapping(value = "/customerCalling", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public  String Calling(HttpServletRequest request){
-
-		String number= request.getParameter("mobileNo");
-		String agentNo="8882905998";
-		String result=customerCalling(number,agentNo);
-
-		return "success";
-	}
-
-
-	private String customerCalling(String mobileNo,String agentNumber ){
-		String msg=null;
-		String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91"+mobileNo+"&agent_number=+91"+agentNumber;
-	   try {
-	      URL obj = new URL(url);
-	      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-	      con.setRequestMethod("GET");
-
-	int responseCode = con.getResponseCode();
-	System.out.println("\nSending 'GET' request to URL : " + url);
-	System.out.println("Response Code : " + responseCode);
-
-	BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	String inputLine;
-	StringBuffer response = new StringBuffer();
-
-	while ((inputLine = in.readLine()) != null) {
-		response.append(inputLine);
-	}
-	in.close();
-
-	//print result
-	msg=response.toString();
-     } catch (Exception e){
-          e.printStackTrace();
-      }
-	return  msg;
-	}
-
-	@RequestMapping(value = "/getCirles", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-    public JSONObject getCircleName(){
-
-		JSONObject jsonObject=new JSONObject();
-		List<String> circles= circleService.getCirleList();
-         jsonObject.put("circles",circles);
-	 return  jsonObject;
-}
-	@RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject getSpokeCode(@RequestParam (value = "circleName")String circleName){
-	  JSONObject jsonObject=new JSONObject();
-		List<String> spokeList=circleService.getSpokeList(circleName);
-		jsonObject.put("spokeList",spokeList);
-	  return  jsonObject;
-}
-
-	@RequestMapping(value = "/postCalling", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public String postCallig(HttpServletRequest request,HttpServletResponse  response){
-            String result=null;
-		try {
-			String number = request.getParameter("mobileNo");
-			String name = request.getParameter("name");
-			String address = request.getParameter("address");
-			String area = request.getParameter("area");
-			String emailId = request.getParameter("emailId");
-			String city = request.getParameter("city");
-			String state = request.getParameter("state");
-			String pinCode = request.getParameter("pincode");
-			String landMark = request.getParameter("landmark");
-			String visitDate = request.getParameter("visitDate");
-			String visitTime = request.getParameter("visitTime");
-			String status = request.getParameter("status");
-			String importType = "admin";
-			String importby = "Afjal";
-			Map<String, String> map = new HashMap<String, String>();
-
-			map.put("number", number);
-			map.put("name", name);
-			map.put("address", address);
-			map.put("area", area);
-			map.put("emailId", emailId);
-			map.put("city", city);
-			map.put("state", state);
-			map.put("pinCode", pinCode);
-			map.put("landmark", landMark);
-			map.put("visitDate", visitDate);
-			map.put("visitTime", visitTime);
-			map.put("status", status);
-			map.put("importby", importby);
-			map.put("importType", importType);
-
-     		postCallingService.saveCallingData(map);
-			logger.info("Map created successfully");
-			result="success";
-		}catch (Exception e){
-			logger.error("",e);
-			e.printStackTrace();
-			result="error";
-
-		}
-
-
-		return  result;
-	}
-
-	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public String postCallingStatus(HttpServletRequest request,HttpServletResponse  response){
-		       Map<String, String> map = new HashMap<String, String>();
-		       String result=null;
-		try {
-			String importby = "Afjal";
-			String importType = "Admin";
-			String mobileNo = request.getParameter("mobileNo");
-			String status = request.getParameter("status");
-			map.put("number", mobileNo);
-			map.put("status", status);
-			map.put("importby", importby);
-			map.put("importType", importType);
-			result = postCallingService.saveCallingData(map);
-		}catch (Exception e){
-			e.printStackTrace();;
-			logger.error("error to posting data ",e);
-		}
-		     return  "success";
-	}
-
-}
-/*
-
-
-	 }
-*/
-
-		// List<Map<?, ?>> data = readObjectsFromCsv(input);
-		// writeAsJson(data, output);
-
-
-
-/*	public static List<Map<?, ?>> readObjectsFromCsv(File file) throws IOException {
-		CsvSchema bootstrap = CsvSchema.emptySchema().withHeader();
-		CsvMapper csvMapper = new CsvMapper();
-		MappingIterator<Map<?, ?>> mappingIterator = csvMapper.reader(Map.class).with(bootstrap).readValues(file);
-
-		return mappingIterator.readAll();
-	}
-
-	public static void writeAsJson(List<Map<?, ?>> data, File file) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValue(file, data);
 	}*/

@@ -9,6 +9,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "telecall_mast")
+@Cacheable
 public class TelecallMastEntity {
     private String tmCustomerPhone;
     private byte tmAttempts;

@@ -1,6 +1,7 @@
 package com.softage.paytm.service;
 
 import com.softage.paytm.models.CircleMastEntity;
+import com.softage.paytm.models.ReportMastEntity;
 
 import java.util.List;
 
@@ -10,4 +11,6 @@ import java.util.List;
 public interface CircleService {
     public List<String> getCirleList();
     List<String> getSpokeList(String circleName);
+    public List<ReportMastEntity> getReporttypes();
+
 }

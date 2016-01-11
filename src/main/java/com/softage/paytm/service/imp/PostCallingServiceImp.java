@@ -54,14 +54,14 @@ public class PostCallingServiceImp implements PostCallingService {
                 telecallLogEntity.setTcCallStatus(map.get("status"));
                 telecallLogEntity.setTcCallTime(new Timestamp(new Date().getTime()));
                 telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
-<<<<<<< HEAD
                 result= postCallingDao.saveTeleCallLog(telecallLogEntity);
-=======
-                 postCallingDao.saveTeleCallLog(telecallLogEntity);
->>>>>>> 150ddfd... commit for postCall
+
                if ("CON".equals(status)){
                    tcStatus="D";
                    result=saveCustomer(map);
+                   if ("JOB ALLOCATED".equalsIgnoreCase(result)){
+                       result="done";
+                   }
                }
                 byte s=(byte)(telecallMastEntity.getTmAttempts()+1);
            //   TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
@@ -74,13 +74,6 @@ public class PostCallingServiceImp implements PostCallingService {
                    telecallMastEntity.setTmLastCallStatus(map.get("status"));
                    postCallingDao.updateTeleCall(telecallMastEntity);
                }
-<<<<<<< HEAD
-=======
-
-
-
-
->>>>>>> 150ddfd... commit for postCall
         return result;
     }
 
@@ -190,7 +183,7 @@ public class PostCallingServiceImp implements PostCallingService {
             appointmentMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
             result = postCallingDao.saveAppointment(appointmentMastEntity);
             if("done".equalsIgnoreCase(result)){
-              jobAllocated(paytmcustomerDataEntity);
+            result = jobAllocated(paytmcustomerDataEntity);
             }
 
         }catch (Exception e){
@@ -200,7 +193,7 @@ public class PostCallingServiceImp implements PostCallingService {
         return  result;
     }
 
-public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
+   public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
      String result=null;
      String name=null;
      String address=null;
@@ -211,28 +204,14 @@ public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
      Time time=null;
      java.sql.Date date1=null;
      String agentCode="0";
-<<<<<<< HEAD
      String confirmationAllowed="";
      String finalconfirmation="";
-=======
-     String confirmationAllowed=null;
-     String finalconfirmation=null;
->>>>>>> 150ddfd... commit for postCall
+
      int maxAllocation=15;
      String loginId=null;
      String customerNo="";
      long appointmentId=0;
-<<<<<<< HEAD
-     AppointmentMastEntity appointmentMastEntity=null;
 
-              if(paytmcustomerDataEntity!=null){
-                   customerNo=paytmcustomerDataEntity.getPcdCustomerPhone();
-                   appointmentMastEntity= postCallingDao.getByCustomerNuber(customerNo);
-               }
-              if (appointmentMastEntity!=null){
-              appointmentId=appointmentMastEntity.getAppointmentId();
-              }
-=======
     AppointmentMastEntity appointmentMastEntity=null;
 
                if(paytmcustomerDataEntity!=null){
@@ -242,7 +221,6 @@ public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
              if (appointmentMastEntity!=null){
               appointmentId=appointmentMastEntity.getAppointmentId();
              }
->>>>>>> 150ddfd... commit for postCall
 
     long appointmentId1= postCallingDao.checkAppointmentId(appointmentId);
        if(appointmentId1==0){
@@ -256,17 +234,6 @@ public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
                       pinCode=  paytmcustomerDataEntity.getPcdPincode();
                       date= paytmcustomerDataEntity.getPcdVisitDate();
                       time= paytmcustomerDataEntity.getPcdVisitTIme();
-<<<<<<< HEAD
-=======
-
-//                        name=(String) dataMap.get("name");
-//                        address=(String)dataMap.get("address");
-//                        area=(String)dataMap.get("area");
-//                        city=(String)dataMap.get("city");
-//                        pinCode=(String)dataMap.get("pinCode");
-//                        date=(java.sql.Date)dataMap.get("visitDate");
-//                        time=(Time)dataMap.get("visitTime");
->>>>>>> 150ddfd... commit for postCall
                         Calendar calendar= Calendar.getInstance();
                         calendar.setTime(date);
                         calendar.add(Calendar.DAY_OF_WEEK,3);
@@ -276,11 +243,8 @@ public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
                             Calendar calendar1= Calendar.getInstance();
                             calendar1.setTime(new Date());
                             calendar1.add(Calendar.DAY_OF_WEEK,1);
-<<<<<<< HEAD
                             date1=new java.sql.Date(calendar1.getTimeInMillis());
-=======
-                            date1=new java.sql.Date(calendar.getTimeInMillis());
->>>>>>> 150ddfd... commit for postCall
+
                             if("0".equals(agentCode)){
                                 agentCode= postCallingDao.getAgentCode(pinCode,date,date1,maxAllocation,agentCode);
                                 confirmationAllowed="Y";
@@ -292,49 +256,30 @@ public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
                             }
 
                             if (agentCode==null){
-                                calendar.add(Calendar.DATE,1);
-                                date=new java.sql.Date(calendar.getTimeInMillis());
+                                Calendar calendar2= Calendar.getInstance();
+                                calendar2.setTime(date);
+                                calendar2.add(Calendar.DATE,1);
+                                date=new java.sql.Date(calendar2.getTimeInMillis());
                             } else {
                                 break;
                             }
                         }
                if(agentCode!=null){
                    try {
+                       int jobNumber=0;
                        PaytmagententryEntity paytmagententryEntity =agentPaytmDao.findByPrimaryKey(agentCode);
                        String agentMobileNumber = paytmagententryEntity.getAphone();
-<<<<<<< HEAD
                        String result1=saveAllocationMast(confirmationAllowed,finalconfirmation,date,time,appointmentMastEntity,paytmagententryEntity,paytmcustomerDataEntity);
-=======
-                       String vistDate = date.toString();
-                       String visitTime = time.toString();
-                       String allocationDate1 = vistDate + " " + visitTime;
-                       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd'T'HH:mm:ss'Z'");
-                       Date convertedDate = dateFormat.parse(allocationDate1);
-                       AllocationMastEntity allocationMastEntity = new AllocationMastEntity();
-                       allocationMastEntity.setAppointmentMastByAppointmentId(appointmentMastEntity);
-                       allocationMastEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
-                       allocationMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
-                       allocationMastEntity.setAllocationDatetime(new Timestamp(convertedDate.getTime()));
-                       allocationMastEntity.setVisitDateTime(new Timestamp(convertedDate.getTime()));
-                       allocationMastEntity.setImportBy("Afjal");
-                       allocationMastEntity.setImportDate(new Timestamp(new Date().getTime()));
-                       allocationMastEntity.setConfirmation(confirmationAllowed);
-                       allocationMastEntity.setFinalConfirmation(finalconfirmation);
-                       String result1 = allocationDao.saveAllocation(allocationMastEntity);
-
->>>>>>> 150ddfd... commit for postCall
                        AllocationMastEntity allocationMastEntity1 = allocationDao.findByAgentCode(appointmentId,agentCode);
-                       int jobNumber = allocationMastEntity1.getId();
+                       if (allocationMastEntity1!=null) {
+                           jobNumber = allocationMastEntity1.getId();
+                       }
                        String text="Dear Agent Job No-"+jobNumber+"" +
                                ", Your visit is fixed at "+date
                                +" "+time+"with "+name+" Address-" +
                                ""+address+" "+pinCode+"Contact no-" +
                                ""+customerNo+" Please See Leads in App";
-<<<<<<< HEAD
 
-=======
-                       ProcessMastEntity  processMastEntity=new ProcessMastEntity();
->>>>>>> 150ddfd... commit for postCall
                        PaytmdeviceidinfoEntity paytmdeviceidinfoEntity=  paytmDeviceDao.getByloginId(agentCode);
                         if (paytmdeviceidinfoEntity!=null){
                           loginId=paytmdeviceidinfoEntity.getLoginId();
@@ -360,7 +305,7 @@ public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
 
 
 
-return  null;
+return  result;
 }
 
 public String saveAllocationMast(String confirmationAllowed,String finalconfirmation,Date date,Time time,AppointmentMastEntity appointmentMastEntity,PaytmagententryEntity paytmagententryEntity,PaytmcustomerDataEntity paytmcustomerDataEntity){
@@ -379,7 +324,7 @@ public String saveAllocationMast(String confirmationAllowed,String finalconfirma
         allocationMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
         allocationMastEntity.setAllocationDatetime(new Timestamp(convertedDate.getTime()));
         allocationMastEntity.setVisitDateTime(new Timestamp(convertedDate.getTime()));
-        allocationMastEntity.setImportBy("Afjal");
+        allocationMastEntity.setImportBy(paytmcustomerDataEntity.getPcdImportBy());
         allocationMastEntity.setImportDate(new Timestamp(new Date().getTime()));
         allocationMastEntity.setConfirmationDatetime(new Timestamp(convertedDate.getTime()));
         allocationMastEntity.setConfirmation(confirmationAllowed);

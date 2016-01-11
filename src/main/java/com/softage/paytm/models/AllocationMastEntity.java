@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "allocation_mast")
+@Cacheable
 public class AllocationMastEntity {
     private int id;
     private Timestamp allocationDatetime;

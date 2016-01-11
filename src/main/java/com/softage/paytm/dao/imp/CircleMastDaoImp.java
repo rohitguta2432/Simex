@@ -2,6 +2,7 @@ package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.CircleMastDao;
 import com.softage.paytm.models.CircleMastEntity;
+import com.softage.paytm.models.ReportMastEntity;
 import com.softage.paytm.models.SpokeMastEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,5 +100,30 @@ public class CircleMastDaoImp implements CircleMastDao {
             }
         }
         return spokeCodeList;
+    }
+
+    @Override
+    public List<ReportMastEntity> getReporttypes() {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<ReportMastEntity> getReportTypes=null;
+        SpokeMastEntity spokeMastEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select rm from ReportMastEntity rm";
+            System.out.println("query>>>>>    "+strQuery);
+            query=entityManager.createQuery(strQuery);
+            getReportTypes=query.getResultList();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return getReportTypes;
     }
 }

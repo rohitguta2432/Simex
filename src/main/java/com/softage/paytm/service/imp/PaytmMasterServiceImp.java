@@ -67,8 +67,10 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 paytmMastEntity.setSubStageId(map.get("SubStageId"));
                 paytmMastEntity.setCreatedTimestamp(map.get("CreatedTimestamp"));
                 paytmMastEntity.setImportDate(new Timestamp(new Date().getTime()));
-                paytmMastEntity.setOtp("342"+i);
-                paytmMastEntity.setRefCode(3424+i);
+                Random randomGenerator = new Random();
+                int randomInt = randomGenerator.nextInt(10000);
+                paytmMastEntity.setOtp(new Integer(randomInt).toString());
+                paytmMastEntity.setRefCode(randomInt);
                 paytmMastEntity.setImportBy("Afjal");
                 custList.add(paytmMastEntity);
                 i++;

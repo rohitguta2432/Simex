@@ -21,7 +21,7 @@ import java.util.Map;
  * Created by SS0085 on 31-12-2015.
  */
 @Repository
-public class PostCallingDaoImp implements PostCallingDao{
+public class PostCallingDaoImp implements PostCallingDao {
     private static final Logger logger = LoggerFactory.getLogger(PostCallingDaoImp.class);
    @Autowired
    public EntityManagerFactory entityManagerFactory;
@@ -292,6 +292,7 @@ public class PostCallingDaoImp implements PostCallingDao{
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(smsSendlogEntity);
+            entityManager.flush();
             transaction.commit();
             msg="done";
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "telecall_log")
+@Cacheable
 public class TelecallLogEntity {
     private int tcId;
     private String tcCallBy;

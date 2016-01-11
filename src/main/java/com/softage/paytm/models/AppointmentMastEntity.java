@@ -1,6 +1,10 @@
 package com.softage.paytm.models;
 
+import org.hibernate.annotations.*;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -11,6 +15,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "appointment_mast")
+@Cacheable
 public class AppointmentMastEntity {
     private long appointmentId;
     private Date appointmentDate;

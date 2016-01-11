@@ -2,6 +2,7 @@ package com.softage.paytm.service.imp;
 
 import com.softage.paytm.dao.CircleMastDao;
 import com.softage.paytm.models.CircleMastEntity;
+import com.softage.paytm.models.ReportMastEntity;
 import com.softage.paytm.service.CircleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,11 @@ import java.util.List;
  */
 @Service
 public class CircleServiceImp implements CircleService {
+    @Override
+    public List<ReportMastEntity> getReporttypes() {
+        return circleMastDao.getReporttypes();
+    }
+
     @Autowired
     public CircleMastDao circleMastDao;
     @Override

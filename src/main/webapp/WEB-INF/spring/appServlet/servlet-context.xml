@@ -31,11 +31,16 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 	<beans:bean
 			class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 	<beans:bean
-			class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+
+			class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" >
+		<beans:property name="cacheSeconds" value="0"></beans:property>
+			</beans:bean>
 	<beans:bean
 			class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
 	<beans:bean
 			class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+	<!--<beans:bean id="userDetailsService" class="com.softage.paytm.service.imp.UserDetailsServiceImp"></beans:bean>-->
+
 	<task:scheduled-tasks scheduler="myScheduler">
 		<task:scheduled ref="senderMessage" method="demoService" fixed-delay="100000" />
 	</task:scheduled-tasks>
@@ -48,6 +53,8 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 
 	<mvc:resources mapping="/appfront/**" location="/appfront/" />
+
+	<beans:bean class="org.springframework.web.multipart.support.StandardServletMultipartResolver"></beans:bean>
 
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<beans:property name="prefix" value="/appfront/" />

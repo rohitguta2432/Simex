@@ -1,6 +1,7 @@
 package com.softage.paytm.dao;
 
 import com.softage.paytm.models.CircleMastEntity;
+import com.softage.paytm.models.ReportMastEntity;
 
 import java.util.List;
 
@@ -12,5 +13,6 @@ public interface CircleMastDao {
     public CircleMastEntity findByPrimaryKey(int circleCode);
     public List<String> getCircleList();
     List<String> getSpokeList(String circleName);
+    List<ReportMastEntity> getReporttypes();
 
 }

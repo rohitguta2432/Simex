@@ -34,6 +34,8 @@ public class AllocationDaoImp implements AllocationDao {
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(allocationMastEntity);
+
+            entityManager.flush();
             transaction.commit();
             msg="done";
         } catch (Exception e) {
@@ -59,12 +61,11 @@ public class AllocationDaoImp implements AllocationDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "select al from AllocationMastEntity al where al.appointmentId=:appointmantId and al.agentCode=:agnetcode  order by importDate";
+            String strQuery = " select al from AllocationMastEntity al where al.appointmentId=:appointmantId and al.agentCode=:agentCode";
             query=entityManager.createQuery(strQuery);
-            query.setParameter("agnetcode",agentCode);
+            query.setParameter("agentCode",agentCode);
             query.setParameter("appointmantId",appointmentid);
-            list = query.getResultList();
-            allocationMastEntity  =list.get(0);
+            allocationMastEntity = (AllocationMastEntity)query.getSingleResult();
         }
         catch (Exception e)
         {
