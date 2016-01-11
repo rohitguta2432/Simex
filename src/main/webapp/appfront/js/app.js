@@ -299,6 +299,8 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
         // $scope.visit_time = [{time:"8:00"},{time:'9:00'},{time:'10:00'},{time:'11:00'},{time:'12:00'},{time:'13:00'},{time:'14:00'},{time:'15:00'},{time:'16:00'},{time:'17:00'},{time:'18:00'},{time:'19:00'}];
     };
 
+
+
 }]);
 
 var PHONE_REGEXP = /^[(]{0,1}[0-9]{3}[)\.\- ]{0,1}[0-9]{3}[\.\- ]{0,1}[0-9]{4}$/;
@@ -472,5 +474,15 @@ routerApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpl
         fileUpload.uploadFileToUrl(angular.element("myForm"), uploadUrl);
     };
 }]);
-
-
+routerApp.controller('logout', ['$scope','$http','$window', function($scope, $http, $window) {
+    $scope.logout = function () {
+        $http.get('http://localhost:8080/paytm/logout').success(function (data, status, headers, config) {
+            // alert('daata');
+            $scope.msg = data;
+            console.log(data);
+            if(data.status == 'success') {
+                $window.location.href = '/paytm/#/auth';
+            }
+        });
+    };
+}]);

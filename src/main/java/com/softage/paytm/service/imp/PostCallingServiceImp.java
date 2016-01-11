@@ -158,7 +158,8 @@ public class PostCallingServiceImp implements PostCallingService {
             Date parsedUtilDate = formater.parse(map.get("visitDate"));
             java.sql.Date sqltDate= new java.sql.Date(parsedUtilDate.getTime());
             paytmcustomerDataEntity.setPcdVisitDate(sqltDate);
-            paytmcustomerDataEntity.setPcdVisitTIme(Time.valueOf(map.get("visitTime")));
+            System.out.println("Time "+map.get("visitTime"));
+            paytmcustomerDataEntity.setPcdVisitTIme(new Time(Integer.parseInt(map.get("visitTime")),0,0));
             result = postCallingDao.savePaytmCustomer(paytmcustomerDataEntity);
             if (result!=null&&"done".equalsIgnoreCase(result)){
                 result=saveAppoinment(map,paytmcustomerDataEntity);
@@ -166,6 +167,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
         } catch (Exception e){
             e.printStackTrace();
+            result="err";
         }
 
         return result;

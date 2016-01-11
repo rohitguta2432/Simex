@@ -2,6 +2,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <head>
+
+
+
   <meta charset="utf-8" />
   <title>Paytm Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -44,6 +47,17 @@
 <!-- /Head -->
 <!-- Body -->
 <body ng-app="routerApp">
+
+<%
+  String name=(String)session.getAttribute("name");
+  if(name==null){
+%>
+   <jsp:forward page="/"/>
+<%
+  }
+
+%>
+
 <!-- Navbar -->
 <div class="navbar">
   <div class="navbar-inner">
@@ -97,14 +111,14 @@
   <!-- Page Container -->
   <div class="page-container">
     <!-- Page Sidebar -->
-    <div class="page-sidebar" id="sidebar">
+    <div class="page-sidebar" id="sidebar" ng-controller="logout">
       <!-- Sidebar Menu -->
       <ul class="nav sidebar-menu">
         <%--<li class="active"><a ui-sref="index"><i class="menu-icon fa fa-home"></i><span
                 class="menu-text">Dashboard</span></a></li>--%>
 
         <li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
-                       Agent Regsitration </span></a>
+                       Agent Registration </span></a>
         </li>
        <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
                         Data Entry </span></a></li>--%>
@@ -114,7 +128,7 @@
                         Telecalling </span></a></li>
         <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         Reports </span></a></li>
-        <li><a ui-sref="registration"><i class="menu-icon fa fa-sign-out"></i><span class="menu-text">
+        <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
       </ul>
       <!-- /Sidebar Menu -->

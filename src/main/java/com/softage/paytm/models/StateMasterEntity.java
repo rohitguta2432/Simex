@@ -7,6 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "state_master")
+@Cacheable
 public class StateMasterEntity {
     private String stateCode;
     private String stateName;

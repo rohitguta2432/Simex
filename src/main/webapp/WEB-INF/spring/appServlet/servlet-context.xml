@@ -54,7 +54,9 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
 	<mvc:resources mapping="/appfront/**" location="/appfront/" />
 
-	<beans:bean class="org.springframework.web.multipart.support.StandardServletMultipartResolver"></beans:bean>
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="maxUploadSize" value="100000" />
+	</beans:bean>
 
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<beans:property name="prefix" value="/appfront/" />

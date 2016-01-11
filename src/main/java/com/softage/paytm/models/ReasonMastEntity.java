@@ -9,6 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "reason_mast")
+@Cacheable
 public class ReasonMastEntity implements Serializable {
     private String reasonCode;
     private int id;

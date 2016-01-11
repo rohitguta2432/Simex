@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "role_mast")
+@Cacheable
 public class RoleMastEntity {
     private String roleCode;
     private String importBy;

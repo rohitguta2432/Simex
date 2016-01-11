@@ -7,6 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "timeslot")
+@Cacheable
 public class TimeslotEntity {
     private int id;
     private String timeSlot;

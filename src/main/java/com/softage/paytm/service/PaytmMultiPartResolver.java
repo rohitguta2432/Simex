@@ -1,3 +1,4 @@
+/*
 package com.softage.paytm.service;
 
 import org.springframework.stereotype.Component;
@@ -11,9 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * Created by SS0038 on 08-01-2016.
- */
+ *//*
+
 
 @Component("multipartResolver")
 public class PaytmMultiPartResolver extends StandardServletMultipartResolver {
@@ -25,3 +28,4 @@ public class PaytmMultiPartResolver extends StandardServletMultipartResolver {
         return isMultipart(request);
     }
 }
+*/

@@ -8,6 +8,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "receiver_mast")
+@Cacheable
 public class ReceiverMastEntity {
     private int receiverCode;
     private String receiver;

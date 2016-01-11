@@ -11,6 +11,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "paytmcustomer_data")
+@Cacheable
 public class PaytmcustomerDataEntity {
     private String pcdCustomerPhone;
     private String allocationStatus;

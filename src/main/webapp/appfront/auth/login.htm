@@ -28,21 +28,22 @@
 
     <img src="../paytm/resources/img/login_bg.png" alt=""
          style="position:absolute; top:-111px; left:50px; z-index:9999; width:200px;"/>
-
+<form name="myform" ng-controller="AuthCtrl" ng-submit="loginData()" method="get" novalidate>
     <div class="loginbox bg-white" style="margin-bottom:20px;">
         <div class="loginbox-title"><i class="menu-icon fa fa-user"></i> Login For Paytm Customers</div>
+        <label id="show1" ng-show="show1" style="color: red;margin-left: 40px;">Please check username and password</label>
         <div class="loginbox-textbox">
-            <input type="text" class="form-control" placeholder="Mobile No"/>
+            <input type="text" class="form-control" ng-model="user" placeholder="Mobile No"/>
         </div>
         <div class="loginbox-textbox">
-            <input type="text" class="form-control" placeholder="OTP"/>
+            <input type="text" class="form-control" ng-model="pass" placeholder="OTP"/>
         </div>
         <div class="loginbox-forgot">
         </div>
         <div class="loginbox-submit">
-            <input type="button" class="btn btn-azure shiny btn-block" onclick="location.href='/paytm/appfront/portal.jsp'"
-                   value="Login"/>
+            <input type="submit" class="btn btn-azure shiny btn-block" value="Login"/>
         </div>
     </div>
+</form>
     <div style="height:0px; clear:both;"></div>
 </div>

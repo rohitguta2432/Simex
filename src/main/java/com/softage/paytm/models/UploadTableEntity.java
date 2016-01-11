@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "upload_table")
+@Cacheable
 public class UploadTableEntity {
     private int reqId;
     private String acknowledgement;

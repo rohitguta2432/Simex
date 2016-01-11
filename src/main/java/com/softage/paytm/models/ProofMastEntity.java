@@ -9,6 +9,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "proof_mast")
+@Cacheable
 public class ProofMastEntity {
     private String idCode;
     private String applicable;

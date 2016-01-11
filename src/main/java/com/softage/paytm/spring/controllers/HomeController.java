@@ -13,11 +13,13 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
+import javassist.bytecode.ByteArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +51,6 @@ class HomeController {
 	@Autowired
 	public PostCallingService postCallingService;
 	@Autowired
-	private PaytmMultiPartResolver resolver;
-	@Autowired
 	private UserService userService;
 	@Autowired
 	private ReportService reportService;
@@ -68,115 +68,91 @@ class HomeController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	@ResponseBody
-	public String login(HttpServletRequest request,HttpServletResponse response) {
+	public JSONObject login(HttpServletRequest request,HttpServletResponse response) {
 		//logger.info("Welcome home! The client locale is {}.", locale);
 		String result=null;
+		  JSONObject jsonObject=new JSONObject();
 		  String user=request.getParameter("userName");
 		  String password=request.getParameter("password");
+		  String dbUser=null;
 		   EmplogintableEntity emplogintableEntity  =  userService.getUserByEmpcode(user);
 		   if(emplogintableEntity!=null){
 
 			   if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())){
+				   dbUser=emplogintableEntity.getEmpCode();
 				   HttpSession session=request.getSession();
 				   session.setAttribute("name",user);
-				   result="sucsses";
+				   result="success";
 			   }
 		   }else {
 			   result="error";
 		   }
-
-		return result;
+         jsonObject.put("status",result);
+		 jsonObject.put("user",dbUser);
+		return jsonObject;
 	}
 
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	@ResponseBody
-	public String logout(HttpServletRequest request,HttpServletResponse response) {
+	public JSONObject logout(HttpServletRequest request,HttpServletResponse response) {
 		//logger.info("Welcome home! The client locale is {}.", locale);
+		JSONObject jsonObject=new JSONObject();
         String result= null;
 		HttpSession session=request.getSession();
 		if (session!=null) {
 			session.invalidate();
-			result="sucsses";
+			result="success";
 		}else {
 			result="error";
 		}
+		jsonObject.put("status",result);
 
-		return result;
+
+		return jsonObject;
 	}
 
 	@RequestMapping(value = "/getFilePath", method = {RequestMethod.GET,RequestMethod.POST})
-	public void getFilePath(HttpServletRequest request) {
-	   if(!resolver.isMultipartFile(request)){
-			return;
-		}
+	@ResponseBody
+	public JSONObject getFilePath(@RequestParam("name") String name,
+							@RequestParam("file") MultipartFile file) {
+
+		JSONObject jsonObject=new JSONObject();
 		BufferedReader br = null;
 		InputStream inputStream = null;
 		FileOutputStream outputStream =null;
-		HttpSession session=request.getSession(false);
-		if(session!=null){
-			String name=(String)session.getAttribute("name");
-			System.out.println(name);
-		}
+		File serverFile=null;
+		String line = "";
+		String cvsSplitBy = "\\|";
 		try{
 
-	//	req.getFileMap();
-	//    Iterator<String> name1=req.getFileNames();
-	//	String name=  name1.next();
-//		System.out.println(name);
-		 /* parts=request.getParts();
-			System.out.println(parts.size());*/
-			MultipartHttpServletRequest request1  = resolver.resolveMultipart(request);
+			if (!file.isEmpty()) {
+				byte[] bytes = file.getBytes();
 
-			request1.getFileMap().forEach((name, file)->{
-				System.out.println(name);
-			});
-
-			Collection<Part>  parts=   request1.getParts();
-			for (Part part : request.getParts())
-			{
-				System.out.println(part.getName());
-				inputStream = request.getPart(part.getName()).getInputStream();
-				int i = inputStream.available();
-				byte[] b  = new byte[i];
-				inputStream.read(b);
-				System.out.println("Length : " + b.length);
-
-				// Finding the fileName //
-				String fileName = "";
-				String partHeader = part.getHeader("content-disposition");
-				System.out.println("Part Header = " + partHeader);
-				System.out.println("part.getHeader" + part.getHeader("content-disposition"));
-
-				for (String temp : part.getHeader("content-disposition").split(";"))
-				{
-					if (temp.trim().startsWith("filename"))
-					{
-						fileName=temp.substring(temp.indexOf('=') + 1).trim().replace("\"", "");
-					}
+				File dir = new File("D:/FileUploder");
+				if (!dir.exists()) {
+					dir.mkdirs();
 				}
+				// Create the file on server
+				serverFile = new File(dir.getAbsolutePath()
+						+ File.separator + "Test3.csv");
+				BufferedOutputStream stream = new BufferedOutputStream(
+						new FileOutputStream(serverFile));
+				stream.write(bytes);
+				stream.close();
 
-				// Writing contents to desired FilePath & FileName //
-				String uploadDir=System.getProperty("jboss.server.base.dir")+"/upload";
-				System.out.println("File will be Uploaded at: " +uploadDir+"/"+fileName);
-				outputStream = new FileOutputStream("D:/CSVFile/"+"mytest.csv");
-				outputStream.write(b);
-				inputStream.close();
+				logger.info("Server File Location="
+						+ serverFile.getAbsolutePath());
+
 			}
 
 
-
-
-		String csvFile = "D:/CSVFile/Kyc_data1.csv";
-
-		String line = "";
-		String cvsSplitBy = "\\|";
-		File serverFile=null;
+		/*File serverFile=null;*/
 		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
 
 
 
-			br = new BufferedReader(new FileReader(""));
+			br = new BufferedReader(new FileReader(serverFile));
 
 			int count=0;
 			while ((line = br.readLine()) != null) {
@@ -204,17 +180,13 @@ class HomeController {
 					map.put("StageId", customerData[15]);
 					map.put("SubStageId", customerData[16]);
 					map.put("CreatedTimestamp", customerData[17]);
-         /*map.put("ImportBy", customerData[18]);
-         map.put("ImportDate", customerData[19]);
-         map.put("otp", customerData[20]);
-         map.put("Ref_Code", customerData[21]);*/
 					list.add(map);
 				}
 				count++;
 
 			}
 			System.out.println("list   "+list);
-			paytmMasterService.savePaytmMaster(list);
+		//	paytmMasterService.savePaytmMaster(list);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -228,6 +200,7 @@ class HomeController {
 				}
 			}
 		}
+		return jsonObject;
 	}
 
 
@@ -298,6 +271,9 @@ class HomeController {
 			       paytmagententryEntity.setImportby(userName);
 			       paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
 		           msg= agentPaytmService.saveAgent(paytmagententryEntity);
+			if ("done".equalsIgnoreCase(msg)){
+				msg="success";
+			}
 
 		}catch (Exception e){
 			e.printStackTrace();
@@ -413,7 +389,10 @@ class HomeController {
 			map.put("importby", importby);
 			map.put("importType", importType);
 	     	result=postCallingService.saveCallingData(map);
-			logger.info(" Result   "+result);
+     		logger.info(" Result   "+result);
+			if ("done".equalsIgnoreCase(result)){
+				result="success";
+			}
 			return result;
 		}catch (Exception e){
 			logger.error("",e);
@@ -465,21 +444,42 @@ class HomeController {
 		if(session!=null){
 			String name=(String)session.getAttribute("name");
 		}
-		Random randomGenerator = new Random();
 
-			int randomInt = randomGenerator.nextInt(10000);
-			System.out.println(randomInt);
+		System.getenv().keySet().forEach(key -> {
+			System.out.println(key);
+			System.out.println(System.getenv().get(key));
+		});
 
+		// base directory  JBOSS_BASE_DIR
+		//JBoss log directory   JBOSS_LOG_DIR
 
 		String from=request.getParameter("from");
 		String to= request.getParameter("to");
 		String type=  request.getParameter("type");
-		from=from.substring(6,10)+"-"+from.substring(3,5)+"-"+from.substring(0,2);
-		to=to.substring(6,10)+"-"+to.substring(3,5)+"-"+to.substring(0,2);
-     	jsonObject=reportService.getReports(from,to,"TeleCalling");
+		logger.info("hello>>>>>>>>>>>>>>>>>>>");
+		//from=from.substring(6,10)+"-"+from.substring(3,5)+"-"+from.substring(0,2);
+	//	to=to.substring(6,10)+"-"+to.substring(3,5)+"-"+to.substring(0,2);
+     //	jsonObject=reportService.getReports("2016-01-08","2016-01-11","TeleCalling");
 
 		return  jsonObject;
      }
+
+
+/*	public ResponseEntity<ByteArray> downLoadFile(){
+		ByteArrayInputStream body = null;
+		FileInputStream fis = null;
+		//report report service
+
+		try{
+			ResponseEntity<ByteArray> responseEntity = new ResponseEntity<ByteArray>(body);
+		}catch(FileNotFoundException fiex){
+
+		}catch(Exception ex){
+
+		}finally{
+
+		}
+	}*/
 
 
 

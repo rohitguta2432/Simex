@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "spoke_mast")
+@Cacheable
 public class SpokeMastEntity {
     private String spokeCode;
     private Integer cirCode;

@@ -9,6 +9,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "remark_mast")
+@Cacheable
 public class RemarkMastEntity {
     private String remarksCode;
     private int id;

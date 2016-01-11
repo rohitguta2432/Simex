@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "emplogintable")
+@Cacheable
 public class EmplogintableEntity {
     private String empPhone;
     private String empCode;

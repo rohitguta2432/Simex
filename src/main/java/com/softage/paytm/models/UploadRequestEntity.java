@@ -8,6 +8,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "upload_request")
+@Cacheable
 public class UploadRequestEntity {
     private int reqCode;
     private String callProc;

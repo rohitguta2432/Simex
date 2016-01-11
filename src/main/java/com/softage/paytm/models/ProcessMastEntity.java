@@ -8,6 +8,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "process_mast")
+@Cacheable
 public class ProcessMastEntity {
     private int processCode;
     private String process;
