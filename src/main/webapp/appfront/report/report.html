@@ -1,8 +1,20 @@
+<style>
+    table, th , td  {
+        border: 1px solid grey;
+        border-collapse: collapse;
+        padding: 5px;
+    }
+    table tr:nth-child(odd)    {
+        background-color: #f1f1f1;
+    }
+    table tr:nth-child(even) {
+        background-color: #ffffff;
+    }
+</style>
 
 <div class="page-body">
 
     <div class="row">
-
 
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
@@ -23,7 +35,7 @@
                 </div>
                 <div class="widget-body">
                     <div id="horizontal-form">
-                        <form class="form-horizontal" name="myForm"  role="form"  ng-submit="send()" ng-controller="Ctrl">
+                        <form class="form-horizontal" name="myForm"  role="form"  ng-submit="send()" ng-controller="report">
                             <div class="form-group col-sm-6" >
                                 <label class="col-sm-3 control-label no-padding-right">From</label>
                                 <div class="col-sm-9"  >
@@ -44,25 +56,68 @@
 
                             <div class="form-group col-sm-6">
 
-                                <select id="report" ng-model="dropdown" name="dropdown" style="margin-left: 135px;">
+                                <select id="report" ng-model="report1" name="dropdown" style="margin-left: -176px;"  ng-options="report.reportName for report in reports track by report.reportId">
 
                                     <!--<option value="select">Select Report</option>-->
-                                    <option value="" selected="selected">Select Report</option>
-                                    <option value="KycMis">KycMis</option>
+                                    <option value="" selected="selected">Select Report</option>1
+                                    <!--<option value="KycMis">KycMis</option>
                                     <option value="KycData">KycData</option>
                                     <option value="TeleCalling">TeleCalling</option>
-                                    <option value="Telecalling Output">Telecalling Output</option>
+                                    <option value="Telecalling Output">Telecalling Output</option>-->
 
                                 </select>
 
 
-                                </div>
-                                <div class="form-group">
+                            </div>
+                            <div class="form-group">
                                 <div class="col-sm-offset-5 col-sm-10">
                                     <input type="submit" class="btn btn-azure shiny" value="Submit">
                                 </div>
                             </div>
+                            <div id="exportable">
+                                <table align="center" border="1" >
+                                    <tr>
+                                        <th>CallerName</th>
+                                        <th>Address</th>
+                                        <th>Appoint_Time</th>
+                                        <!-- <th>Landmark</th>-->
+                                        <th>Status</th>
+                                        <th>Custom_Id</th>
+                                        <th>City</th>
+                                        <th>Appoint_Date</th>
+                                        <th>CallDateTime</th>
+                                        <th>MobileNo.</th>
+                                        <th>Attempts</th>
+                                        <!--<th>State</th>-->
+                                        <th>Agent_Code</th>
+                                        <th>Cust_Name</th>
+                                        <th>Pincode</th>
+                                    </tr>
+                                    <tr ng-repeat="x in message">
 
+                                        <td>{{x.TeleCallerName}}</td>
+                                        <td>{{ x.Address }}</td>
+                                        <td>{{ x.AppointmentTime }}</td>
+                                        <!--<td>{{ x.Landmark }}</td>-->
+                                        <td>{{ x.CallStatus }}</td>
+                                        <td>{{ x.CustomerId }}</td>
+                                        <td>{{ x.City }}</td>
+                                        <td>{{ x.AppointmentDate }}</td>
+                                        <td>{{ x.CallDateTime }}</td>
+                                        <td>{{ x.MobileNumber }}</td>
+                                        <td>{{ x.Attempts }}</td>
+                                        <!--<td>{{ x.State }}</td>-->
+                                        <td>{{ x.Agent_Code }}</td>
+                                        <td>{{ x.CustomerName }}</td>
+                                        <td>{{ x.Pincode }}</td>
+
+
+                                    </tr>
+
+                                </table>
+
+                            </div>
+                            <button ng-click="exportToExcel()">Export</button>
                         </form>
                     </div>
                 </div>

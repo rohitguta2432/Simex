@@ -12,9 +12,9 @@ import java.util.List;
  */
 public interface PaytmMasterDao {
 
-    public void savePaytmMaster(List<PaytmMastEntity> paytmMastEntity);
+    public String savePaytmMaster(List<PaytmMastEntity> paytmMastEntity);
     public JSONObject getPaytmMastData(String mobileNo);
-    public  JSONObject telecallingScreen(String userName);
+    public  JSONObject telecallingScreen(String userName,int circode);
     public List<StateMasterEntity> getStatemaster();
     public List<CallStatusMasterEntity> getStatusList();
 

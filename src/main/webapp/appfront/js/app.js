@@ -42,7 +42,19 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
 
 routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', function($scope,$http,$q,$log,$location){
 
-    $scope.offices = [{id: 1, office:"Delhi"}];
+    $scope.name='';
+    $scope.agent_code='';
+    $scope.employee='';
+    $scope.phone='';
+    $scope.spoke_code='';
+    $scope.circle_office='';
+    $scope.avl_time='';
+    $scope.altr_number='';
+    $scope.pin_code='';
+    $scope.email='';
+
+
+    $scope.offices = [{id: 1, officet:"Delhi"}];
     $scope.codes = [{id: 1, code:"ANESH11"}];
     /* Function for get CircleOffice and Spoke office */
     $scope.getcircleoffice = function(){
@@ -84,39 +96,87 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
 
     $scope.errormessage = '';
 
-    $scope.submit = function(){
-        alert('fdsfsd');
-        var data = 'agent_name=' + $scope.agent_name + '&agent_code=' + $scope.agent_code + '&employee=' + $scope.employee + '&phone=' +$scope.phone + '&circle_office=' +$scope.circle_office + '&spoke_code=' +$scope.spoke_code + '&avl_time=' +$scope.avl_time +'&altr_number=' +$scope.altr_number +'&pin_code=' +$scope.pin_code +'&multi_pin=' +$scope.multi_pin +'&email=' +$scope.email;
+    $scope.submit = function($event) {
 
 
-        console.log(data);
-        $http.get('http://localhost:8080/paytm/agentRegistration?'+ data )
-            /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
-            .success(function(data, status, headers, config) {
-                $scope.message = data;
-                console.log($scope.message);
-                // $location.path('/draft');
-            })
-            .error(function(data, status, headers, config) {
-                alert( "failure message: " + JSON.stringify({data: data}));
-            });
+
+        // $scope.submit = function($event) {
+        //alert('fdsfsd');
+        if($scope.name.length == 0 || $scope.name == undefined){
+            //alert('Agent Name is not valid');
+            $event.preventDefault();
+        }
+        else if($scope.agent_code.length == 0 || $scope.agent_code == undefined){
+            // alert('Agent Code is not valid');
+            $event.preventDefault(); $event.preventDefault();
+        }
+        else if( $scope.employee.length == 0 ||  $scope.employee == undefined){
+            //  alert('Enter the name Employee');
+            $event.preventDefault();
+        }
+        else if($scope.phone.length == 0 || $scope.phone == undefined){
+            // alert('Enter the Phone Number');
+            $event.preventDefault();
+        }
+        else if($scope.circle_office.length == 0 || $scope.circle_office == undefined){
+            // alert('Select Circle Office');
+            $event.preventDefault();
+        }
+        else if($scope.spoke_code.length == 0 || $scope.spoke_code == undefined){
+            //  alert('Select Spoke Code');
+            $event.preventDefault();
+        }
+        /* else if($scope.avl_time.length == 0 ||$scope.avl_time == undefined){
+         alert('Select Alote Time');
+         $event.preventDefault();
+         }
+         else if($scope.altr_number.length == 0 ||$scope.altr_number == undefined){
+         alert('Enter AlterNative Number');
+         $event.preventDefault();
+         }*/
+        else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
+            // alert('Enter Pin Number');
+            $event.preventDefault();
+        }
+        else {
+           //
+            // alert('fdsfsd');
+            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&employee=' + $scope.employee + '&phone=' + $scope.phone + '&circle_office=' + $scope.circle_office + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code + '&multi_pin=' + $scope.multi_pin + '&email=' + $scope.email;
+
+
+            console.log(data);
+            $http.get('http://localhost:8080/paytm/agentRegistration?' + data)
+                /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
+                .success(function (data, status, headers, config) {
+                    $scope.message = data;
+                    if(data.status == 'success'){
+                        alert('Agent Successfully Registered');
+
+                    }
+                    location.reload();
+                    console.log($scope.message);
+                    // $location.path('/draft');
+                })
+                .error(function (data, status, headers, config) {
+                    alert("failure message: " + JSON.stringify({data: data}));
+                });
 // Making the fields empty
 //
-        $scope.agent_name='';
-        $scope.agent_code='';
-        $scope.employee='';
-        $scope.phone='';
-        $scope.circle_office='';
-        $scope.spoke_code='';
-        $scope.avl_time='';
-        $scope.altr_number='';
-        $scope.pin_code='';
-        $scope.multi_pin='';
-        $scope.email='';
-        return false;
+           /* $scope.agent_name = '';
+            $scope.agent_code = '';
+            $scope.employee = '';
+            $scope.phone = '';
+            $scope.circle_office = '';
+            $scope.spoke_code = '';
+            $scope.avl_time = '';
+            $scope.altr_number = '';
+            $scope.pin_code = '';
+            $scope.multi_pin = '';
+            $scope.email = '';
+            return false;*/
 
-    };
-
+        };
+    }
 }]);
 
 
@@ -147,20 +207,23 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
             }).error(function(error){dfr.reject("Failed");});
         return dfr.promise;
     };
-    $scope.getscreen().then(function(data) {
 
-        //alert('getscreen');
-        $scope.statuses = data.statusList;
-        $scope.states = data.stateList;
-        $scope.date = data.dateList;
-        $scope.codes = data.paytmmastjson;
-        $scope.mob = data.teleData;
-        // console.log($scope.mob);
-        // console.log($scope.statuses);
-       // console.log($scope.states);
-    }, function(reason) {
-    });
+    var GetScreen = function() {
+        $scope.getscreen().then(function (data) {
 
+            //alert('getscreen');
+            $scope.statuses = data.statusList;
+            $scope.states = data.stateList;
+            $scope.date = data.dateList;
+            $scope.codes = data.paytmmastjson;
+            $scope.mob = data.teleData;
+            // console.log($scope.mob);
+            // console.log($scope.statuses);
+            // console.log($scope.states);
+        }, function (reason) {
+        });
+    }
+    GetScreen();
 
     $scope.changestatus = function(){
         var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.mob.mobileNo;
@@ -189,7 +252,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
                     })
                     .error(function (data, status, headers, config) {
                         location.reload();
-                        alert("failure message: " + JSON.stringify({data: data}));
+                       // alert("failure message: " + JSON.stringify({data: data}));
                     });
 
             }
@@ -205,17 +268,20 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
         $http.get('http://localhost:8080/paytm/postCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
             .success(function(data, status, headers, config) {
-                // alert(data);
+                // alert('jfgkfj');
                 $scope.message = data;
-                console.log($scope.message);
+
+                //console.log($scope.message);
                 // $scope.getscreen();
                 // $location.path('/draft');
             })
             .error(function(data, status, headers, config) {
-                alert( "failure message: " + JSON.stringify({data: data}));
+                //alert( "failure message: " + JSON.stringify({data: data}));
                 //location.reload();
                 //$scope.getscreen();
-                $scope.getTime();
+                GetScreen();
+                location.reload();
+             //   $scope.getTime();
             });
 
 
@@ -292,7 +358,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
                 // $location.path('/draft');
             })
             .error(function(data, status, headers, config) {
-                alert( "failure message: " + JSON.stringify({data: data}));
+                //alert( "failure message: " + JSON.stringify({data: data}));
             });
 
 
@@ -335,7 +401,7 @@ routerApp.directive('phone', function() {
 
 
 
-routerApp.directive('allowPattern', [allowPatternDirective]);
+/*routerApp.directive('allowPattern', [allowPatternDirective]);
 
 function allowPatternDirective() {
     return {
@@ -365,7 +431,7 @@ function allowPatternDirective() {
             };
         }
     };
-}
+}*/
 
 
 /*routerApp.controller('AppCtrl', function($scope) {
@@ -468,12 +534,118 @@ routerApp.service('fileUpload', ['$http', function ($http) {
     }
 }]);
 
-routerApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
+routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService', function ($scope, $http, FileProductUploadService) {
+
+    $scope.Message = '';
+    $scope.FileInvalidMessage = '';
+    $scope.SelectedFileForUpload = null;
+    $scope.FileDescription = '';
+    $scope.IsFormSubmitted = false;
+    $scope.IsFileValid = false;
+    $scope.IsFormValid = false;
+    $scope.selectedProduct = {};
+
+    $scope.$watch("f1.$valid", function (isValid) {
+        $scope.IsFormValid = isValid;
+
+    });
+
+    $scope.checkFileValid = function (file) {
+        var isValid = true;
+        $scope.IsFileValid = isValid;
+    };
+
+    $scope.selectedFileforUpload = function (file) {
+        $scope.SelectedFileForUpload = file[0];
+    };
+
+    $scope.SaveFile = function () {
+        $scope.IsFormSubmitted = true;
+        $scope.Message = '';
+        $scope.checkFileValid($scope.SelectedFileForUpload);
+
+        if ($scope.IsFormValid && $scope.IsFileValid) {
+            FileProductUploadService.UploadFile($scope.SelectedFileForUpload).then(function (d) {
+                //alert(d.Message);c
+                alert(d.data.Message);
+                console.log(d.data.Message);
+                ClearForm();
+
+            }, function (err) {
+                alert(err);
+            });
+        }else {
+            $scope.Message = 'all the fields are required';
+        }
+    };
+
+    function ClearForm() {
+        $scope.FileDescription = '';
+        angular.forEach(angular.element("input[type='file']"), function (inputElem) {
+            angular.element(inputElem).val(null);
+        });
+
+        $scope.IsFormSubmitted = false;
+        $scope.description = '';
+        $scope.SelectedFileForUpload = null;
+
+    }
+
+    $scope.files = [];
+
+    $scope.$on("fileSelected", function (event, args) {
+        $scope.$apply(function () {
+            //add the file object to the scope's files collection
+            $scope.files.push(args.file);
+        });
+    });
+
+}]).factory('FileProductUploadService', function ($http, $q) {
+
+    var fac = {};
+
+    fac.UploadFile = function (file) {
+
+        var formData = new FormData();
+        formData.append("file", file);
+
+        var defer = $q.defer();
+        $http.post("http://localhost:8080/paytm/upload", formData, {
+            withCredentials: true,
+            headers: { "Content-Type": undefined },
+            transformRequest: angular.identity
+        }).then(
+            function (d) {
+            defer.resolve(d);
+        },function (err) {
+                defer.reject("File Upload Failed");
+            });
+        return defer.promise;
+    }
+
+    return fac;
+});
+
+/*routerApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
     $scope.uploadFile = function($event){
         var uploadUrl = "/paytm/getFilePath";
-        fileUpload.uploadFileToUrl(angular.element("myForm"), uploadUrl);
+        fileUpload.uploadFileToUrl(angular.element("myForm"), uploadUrl).success(function(data, status, headers, config) {
+            alert('jfgkfj');
+            //$scope.message = data;
+
+            //console.log($scope.message);
+            // $scope.getscreen();
+            // $location.path('/draft');
+        })
+            .error(function(data, status, headers, config) {
+                alert( "failure message: " + JSON.stringify({data: data}));
+                //location.reload();
+                //$scope.getscreen();
+                //GetScreen();
+                //   $scope.getTime();
+            });
     };
-}]);
+}]);*/
 routerApp.controller('logout', ['$scope','$http','$window', function($scope, $http, $window) {
     $scope.logout = function () {
         $http.get('http://localhost:8080/paytm/logout').success(function (data, status, headers, config) {
@@ -485,4 +657,75 @@ routerApp.controller('logout', ['$scope','$http','$window', function($scope, $ht
             }
         });
     };
+}]);
+
+
+routerApp.controller('report',['$scope', '$http','$q','$log' ,function($scope,$http,$q,$log){
+
+
+    //$scope.reports =[];
+    $scope.getreport = function(){
+        var dfr = $q.defer();
+        $http.get('http://localhost:8080/paytm/getReportsType').
+            success(function(data) {
+                dfr.resolve(data);
+            }).error(function(error){dfr.reject("Failed");});
+        return dfr.promise;
+    };
+    $scope.getreport().then(function(data){
+        //console.log('data:   '+data);
+        $scope.reports= data.reportTypes;
+        console.log($scope.reports);
+    }, function(reason) {
+        console.log('Error:   '+reason);
+    });
+    $scope.message ={};
+    $scope.send = function(){
+
+        var data = 'from=' + $scope.date + '&to=' + $scope.date1 + '&type=' +  $scope.report1.reportName;
+        $http.get('http://localhost:8080/paytm/getReports?' + data)
+            .success(function (data, status, headers, config) {
+
+                $scope.message = data;
+                //console.log($scope.message);
+            })
+            .error(function (data, status, headers, config) {
+                //location.reload();
+                //$scope.message = data;
+                //console.log($scope.message);
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+    };
+
+    /*$scope.exportData = function () {
+     var blob = new Blob([document.getElementById('exportable').innerHTML], {
+     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+     });
+     saveAs(blob, "Report.xls");
+     };*/
+
+
+
+    $scope.exportToExcel=function(){// ex: '#my-table'
+
+        var blob = new Blob([document.getElementById('exportable').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
+        // $scope.message = data;
+        //$scope.exportHref=Excel.tableToExcel(tableId,'sheet name');
+        //$timeout(function()
+        //{
+        //location.href=$scope.message.exportHref;
+        //},100); // trigger download
+    }
+    /*.controller('MyCtrl',function(Excel,$timeout){
+     $scope.exportToExcel=function(tableId){ // ex: '#my-table'
+     $scope.exportHref=Excel.tableToExcel(tableId,'sheet name');
+     $timeout(function(){location.href=$scope.fileData.exportHref;},100); // trigger download
+     }
+     });*/
+
+
+
 }]);

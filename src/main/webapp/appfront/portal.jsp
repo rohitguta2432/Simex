@@ -25,6 +25,7 @@
 
   <%--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>--%>
   <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
+  <script src="libs/report/FileSaver.js"></script>
   <script src="js/app.js"></script>
   <!--Beyond styles-->
   <link href="assets/css/beyond.min.css" rel="stylesheet" type="text/css" />
@@ -50,6 +51,7 @@
 
 <%
   String name=(String)session.getAttribute("name");
+  String role=(String)session.getAttribute("role");
   if(name==null){
 %>
    <jsp:forward page="/"/>
@@ -116,7 +118,11 @@
       <ul class="nav sidebar-menu">
         <%--<li class="active"><a ui-sref="index"><i class="menu-icon fa fa-home"></i><span
                 class="menu-text">Dashboard</span></a></li>--%>
+            <%
+                    if("ADM".equalsIgnoreCase(role))
+                    {
 
+            %>
         <li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
                        Agent Registration </span></a>
         </li>
@@ -130,6 +136,53 @@
                         Reports </span></a></li>
         <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
+        <%
+
+          }
+        %>
+
+
+          <%
+            if("HR".equalsIgnoreCase(role))
+            {
+
+          %>
+          <li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
+                       Agent Registration </span></a>
+          </li>
+          <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
+                           Data Entry </span></a></li>--%>
+          <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>
+          <%
+
+            }
+          %>
+
+          <%
+            if("A1".equalsIgnoreCase(role))
+            {
+
+          %>
+          <li><a ui-sref="telecalling"><i class="menu-icon fa fa-phone"></i><span class="menu-text">
+                        Telecalling </span></a></li>
+          </li>
+          <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
+                           Data Entry </span></a></li>--%>
+          <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>
+          <%
+
+            }
+          %>
+
+
+
+
+
+
+
+
       </ul>
       <!-- /Sidebar Menu -->
     </div>

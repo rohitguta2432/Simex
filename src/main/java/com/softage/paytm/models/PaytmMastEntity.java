@@ -87,7 +87,7 @@ public class PaytmMastEntity {
     }
 
     @Basic
-    @Column(name = "City", nullable = false, insertable = true, updatable = true, length = 30)
+    @Column(name = "City", nullable = false, insertable = true, updatable = true, length = 100)
     public String getCity() {
         return city;
     }

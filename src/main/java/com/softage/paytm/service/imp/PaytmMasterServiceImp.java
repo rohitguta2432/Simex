@@ -26,12 +26,13 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     private CircleMastDao circleMastDao;
 
     @Override
-    public void savePaytmMaster(List<Map<String, String>> paytmList) {
+    public String savePaytmMaster(List<Map<String, String>> paytmList) {
 
              List<PaytmMastEntity> custList=new ArrayList<PaytmMastEntity>();
              PaytmMastEntity paytmMastEntity=null;
              String circleCode=null;
              CircleMastEntity circleMastEntity=null;
+             String result=null;
         try {
             int i=1;
             for (Map<String, String> map : paytmList) {
@@ -75,12 +76,13 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 custList.add(paytmMastEntity);
                 i++;
             }
-            paytmMasterDao.savePaytmMaster(custList);
+            result=  paytmMasterDao.savePaytmMaster(custList);
         }catch (Exception e){
             e.printStackTrace();
+            result="error";
         }
 
-
+       return  result;
     }
 
     @Override
@@ -91,9 +93,9 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
-    public JSONObject telecallingScreen(String userName) {
+    public JSONObject telecallingScreen(String userName,int cirCode) {
 
-       JSONObject json= paytmMasterDao.telecallingScreen(userName);
+       JSONObject json= paytmMasterDao.telecallingScreen(userName,cirCode);
         return json;
     }
 
@@ -128,7 +130,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 circleCode = "6";
             } else if (state.equalsIgnoreCase("RAJASTHAN") || (pin1 >= 30 && pin1 <= 34)) {
                 circleCode = "7";
-            } else if (state.equalsIgnoreCase("MADHYA PRADESH") || state.equalsIgnoreCase("CHHATISGARH") || (pin1 >= 45 && pin1 <= 49)) {
+            } else if (state.equalsIgnoreCase("MADHYA PRADESH") || state.equalsIgnoreCase("CHATTISGARH") || (pin1 >= 45 && pin1 <= 49)) {
                 circleCode = "8";
             } else if (state.equalsIgnoreCase("ASSAM") || (pin1 >= 78 && pin1 <= 79)) {
                 circleCode = "9";

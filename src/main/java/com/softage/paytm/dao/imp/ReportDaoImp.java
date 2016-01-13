@@ -36,25 +36,26 @@ public class ReportDaoImp implements ReportDao {
             int i=1;
             for (Object[] objects: resultList  ){
                 if (objects.length>0){
-                    JSONObject json=new JSONObject();
-                    json.put("CustomerId",objects[0]);
-                    json.put("MobileNumber",objects[1]);
-                    json.put("CallStatus",objects[2]);
-                    json.put("Attempts",objects[3]);
-                    json.put("CallDateTime",objects[4]);
-                    json.put("Tele-CallerName",objects[5]);
-                    json.put("CustomerName",objects[6]);
-                    json.put("AppointmentDate",objects[7]);
-                    json.put("AppointmentTime",objects[8]);
-                    json.put("Address",objects[9]);
-                    json.put("Landmark",objects[10]);
-                    json.put("City",objects[11]);
-                    json.put("State",objects[12]);
-                    json.put("Pincode",objects[13]);
-                    json.put("Agent_Code",objects[14]);
-                    jsonObject.put("record-"+i,json);
-                    i++;
-                }
+
+                        JSONObject json = new JSONObject();
+                        json.put("CustomerId", objects[0]);
+                        json.put("MobileNumber", objects[1]);
+                        json.put("CallStatus", objects[2]);
+                        json.put("Attempts", objects[3]);
+                        json.put("CallDateTime", objects[4]);
+                        json.put("Tele-CallerName", objects[5]);
+                        json.put("CustomerName", objects[6]);
+                        json.put("AppointmentDate", objects[7]);
+                        json.put("AppointmentTime", objects[8]);
+                        json.put("Address", objects[9]);
+                        json.put("Landmark", objects[10]);
+                        json.put("City", objects[11]);
+                        json.put("State", objects[12]);
+                        json.put("Pincode", objects[13]);
+                        json.put("Agent_Code", objects[14]);
+                        jsonObject.put("record-" + i, json);
+                    }
+                   i++;
 
                }
         }catch (Exception e){

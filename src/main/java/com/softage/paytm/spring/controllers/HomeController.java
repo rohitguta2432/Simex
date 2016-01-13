@@ -68,49 +68,201 @@ class HomeController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	@ResponseBody
-	public JSONObject login(HttpServletRequest request,HttpServletResponse response) {
+	public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
 		//logger.info("Welcome home! The client locale is {}.", locale);
-		String result=null;
-		  JSONObject jsonObject=new JSONObject();
-		  String user=request.getParameter("userName");
-		  String password=request.getParameter("password");
-		  String dbUser=null;
-		   EmplogintableEntity emplogintableEntity  =  userService.getUserByEmpcode(user);
-		   if(emplogintableEntity!=null){
+		String result = null;
+		JSONObject jsonObject = new JSONObject();
+		String user = request.getParameter("userName");
+		String password = request.getParameter("password");
+		String dbUser = null;
+		EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+		if (emplogintableEntity != null) {
 
-			   if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())){
-				   dbUser=emplogintableEntity.getEmpCode();
-				   HttpSession session=request.getSession();
-				   session.setAttribute("name",user);
-				   result="success";
-			   }
-		   }else {
-			   result="error";
-		   }
-         jsonObject.put("status",result);
-		 jsonObject.put("user",dbUser);
+			if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+				dbUser = emplogintableEntity.getEmpCode();
+				HttpSession session = request.getSession();
+				session.setAttribute("name", user);
+				session.setAttribute("role", emplogintableEntity.getRoleCode());
+				session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+				result = "success";
+			}
+		} else {
+			result = "error";
+		}
+		jsonObject.put("status", result);
+		jsonObject.put("user", dbUser);
 		return jsonObject;
 	}
 
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	@ResponseBody
-	public JSONObject logout(HttpServletRequest request,HttpServletResponse response) {
+	public JSONObject logout(HttpServletRequest request, HttpServletResponse response) {
 		//logger.info("Welcome home! The client locale is {}.", locale);
-		JSONObject jsonObject=new JSONObject();
-        String result= null;
-		HttpSession session=request.getSession();
-		if (session!=null) {
+		JSONObject jsonObject = new JSONObject();
+		String result = null;
+		HttpSession session = request.getSession();
+		if (session != null) {
 			session.invalidate();
-			result="success";
-		}else {
-			result="error";
+			result = "success";
+		} else {
+			result = "error";
 		}
-		jsonObject.put("status",result);
-
+		jsonObject.put("status", result);
 
 		return jsonObject;
 	}
+
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	public
+	@ResponseBody
+	JSONObject upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+		BufferedReader br = null;
+		InputStream inputStream = null;
+		FileOutputStream outputStream = null;
+		String result = null;
+		File serverFile = null;
+		String line = "";
+		String cvsSplitBy = "\\|";
+
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("Message", "Data uploaded");
+
+		Iterator<String> itr = request.getFileNames();
+
+		MultipartFile mpf = request.getFile(itr.next());
+
+		System.out.println(mpf.getOriginalFilename() + " uploaded!");
+
+		try {
+			//just temporary save file info into ufile
+			byte[] bytes = mpf.getBytes();
+			mpf.getContentType();
+			String filename = mpf.getOriginalFilename();
+			Random randomGenerator = new Random();
+			int randomInt = randomGenerator.nextInt(10000);
+			String  serverPath=  System.getenv("JBOSS_BASE_DIR");
+			File dir = new File(serverPath+File.separator+"FileUploder");
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			serverFile = new File(dir.getAbsolutePath()
+					+ File.separator + "Test3" + randomInt + ".csv");
+			BufferedOutputStream stream = new BufferedOutputStream(
+					new FileOutputStream(serverFile));
+			stream.write(bytes);
+			stream.close();
+
+			logger.info("Server File Location="
+					+ serverFile.getAbsolutePath());
+
+
+		/*File serverFile=null;*/
+			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+
+
+			br = new BufferedReader(new FileReader(serverFile));
+
+			int count = 0;
+			while ((line = br.readLine()) != null) {
+				String[] customerData = line.split(cvsSplitBy);
+				int lent = customerData.length;
+				if (count != 0) {
+					HashMap<String, String> map = new HashMap<String, String>();
+					System.out.println(customerData[0]);
+					map.put("kycRequestId", customerData[0]);
+					map.put("CustomerID", customerData[1]);
+					map.put("Username", customerData[2]);
+					map.put("CustomerPhone", customerData[3]);
+					map.put("Email", customerData[4]);
+					map.put("AddressID", customerData[5]);
+					map.put("TimeSlot", customerData[6]);
+					map.put("Priority", customerData[7]);
+					map.put("AddressStreet1", customerData[8]);
+					map.put("AddressStreet2", customerData[9]);
+					map.put("City", customerData[10]);
+					map.put("State", customerData[11]);
+					map.put("Pincode", customerData[12]);
+					System.out.println(customerData[12]);
+					map.put("AddressPhone", customerData[13]);
+					map.put("VendorName", customerData[14]);
+					map.put("StageId", customerData[15]);
+					map.put("SubStageId", customerData[16]);
+					map.put("CreatedTimestamp", customerData[17]);
+					list.add(map);
+				}
+				count++;
+
+			}
+			System.out.println("list   " + list);
+			result = paytmMasterService.savePaytmMaster(list);
+			if ("done".equalsIgnoreCase(result)) {
+				result = "success";
+			}
+		//	jsonObject.put("status", "success");
+		} catch (
+				FileNotFoundException e
+				)
+
+		{
+			e.printStackTrace();
+			result = "error";
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = "error";
+		} finally
+
+		{
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+return jsonObject;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		/*   } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+      return result;
+		//2. send it back to the client as <img> that calls get method
+		//we are using getTimeInMillis to avoid server cached image
+
+	}*/
+
+
+
+
+
+
+
 
 	@RequestMapping(value = "/getFilePath", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
@@ -121,21 +273,29 @@ class HomeController {
 		BufferedReader br = null;
 		InputStream inputStream = null;
 		FileOutputStream outputStream =null;
+		String result=null;
 		File serverFile=null;
 		String line = "";
 		String cvsSplitBy = "\\|";
 		try{
 
-			if (!file.isEmpty()) {
+
+
+
+			Random randomGenerator = new Random();
+			int randomInt = randomGenerator.nextInt(10000);
+			  String  serverPath=  System.getenv("JBOSS_BASE_DIR");
+			   String name1=  file.getName();
+			  if (!file.isEmpty()) {
 				byte[] bytes = file.getBytes();
 
-				File dir = new File("D:/FileUploder");
+				File dir = new File(serverPath+File.separator+"FileUploder");
 				if (!dir.exists()) {
 					dir.mkdirs();
 				}
 				// Create the file on server
 				serverFile = new File(dir.getAbsolutePath()
-						+ File.separator + "Test3.csv");
+						+ File.separator + "Test3"+randomInt+".csv");
 				BufferedOutputStream stream = new BufferedOutputStream(
 						new FileOutputStream(serverFile));
 				stream.write(bytes);
@@ -186,11 +346,17 @@ class HomeController {
 
 			}
 			System.out.println("list   "+list);
-		//	paytmMasterService.savePaytmMaster(list);
+		   result=	paytmMasterService.savePaytmMaster(list);
+			if ("done".equalsIgnoreCase(result)){
+				result="success";
+			}
+			jsonObject.put("status","success");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			result="error";
 		} catch (Exception e) {
 			e.printStackTrace();
+			result="error";
 		} finally {
 			if (br != null) {
 				try {
@@ -208,13 +374,18 @@ class HomeController {
 	@RequestMapping(value = "/telecallingScreen", method ={ RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
 	public JSONObject telecallingScreen(HttpServletRequest  request){
-		String userName="afjal";
+		String userName=null;
+		int cirCode=0;
 		HttpSession session=request.getSession(false);
 		if(session!=null){
 			userName=(String)session.getAttribute("name");
+			EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
+			if (emplogintableEntity!=null){
+				cirCode=emplogintableEntity.getCirCode();
+			}
 		}
 		JSONObject jsonObject =new JSONObject();
-		JSONObject teleJson=paytmMasterService.telecallingScreen(userName);
+		JSONObject teleJson=paytmMasterService.telecallingScreen(userName,cirCode);
         List<StateMasterEntity> stateList=paytmMasterService.getStateList();
 		List<CallStatusMasterEntity> statusList= paytmMasterService.getStatusList();
 		JSONObject json= paytmMasterService.getPaytmMastData((String)teleJson.get("mobileNo"));
@@ -238,8 +409,9 @@ class HomeController {
 	}
 	@RequestMapping(value = "/agentRegistration", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
-	public String agentRegistration(HttpServletRequest request){
+	public JSONObject agentRegistration(HttpServletRequest request){
 		String msg="";
+		JSONObject jsonObject=new JSONObject();
 		try {
 
 			String userName="system";
@@ -270,15 +442,16 @@ class HomeController {
 			       paytmagententryEntity.setAemailId(email);
 			       paytmagententryEntity.setImportby(userName);
 			       paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
-		           msg= agentPaytmService.saveAgent(paytmagententryEntity);
+		        msg= agentPaytmService.saveAgent(paytmagententryEntity);
 			if ("done".equalsIgnoreCase(msg)){
 				msg="success";
 			}
+          jsonObject.put("status",msg);
 
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-		    return  msg;
+		    return  jsonObject;
 	}
 	@RequestMapping(value = "/customerCalling", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
@@ -292,7 +465,7 @@ class HomeController {
 			agentNo=userService.getUserByEmpcode(userName).getEmpPhone();
 		}
 
-		String number= request.getParameter("mobileNo");
+		String number= request.getParameter("customer_number");
 
 		String result=customerCalling(number,agentNo);
 
@@ -393,14 +566,13 @@ class HomeController {
 			if ("done".equalsIgnoreCase(result)){
 				result="success";
 			}
-			return result;
 		}catch (Exception e){
 			logger.error("",e);
 			e.printStackTrace();
 			result="error";
 		}
 
-		return  result;
+		return  "success";
 	}
 
 	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
@@ -439,16 +611,18 @@ class HomeController {
 	@RequestMapping(value = "/getReports", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
     public JSONObject getReports(HttpServletRequest request){
+
 		JSONObject jsonObject=new JSONObject();
-		HttpSession session=request.getSession(false);
+
+	/*	HttpSession session=request.getSession(false);
 		if(session!=null){
 			String name=(String)session.getAttribute("name");
-		}
+		}*/
 
-		System.getenv().keySet().forEach(key -> {
+	/*	System.getenv().keySet().forEach(key -> {
 			System.out.println(key);
 			System.out.println(System.getenv().get(key));
-		});
+		});*/
 
 		// base directory  JBOSS_BASE_DIR
 		//JBoss log directory   JBOSS_LOG_DIR
@@ -456,12 +630,11 @@ class HomeController {
 		String from=request.getParameter("from");
 		String to= request.getParameter("to");
 		String type=  request.getParameter("type");
-		logger.info("hello>>>>>>>>>>>>>>>>>>>");
-		//from=from.substring(6,10)+"-"+from.substring(3,5)+"-"+from.substring(0,2);
-	//	to=to.substring(6,10)+"-"+to.substring(3,5)+"-"+to.substring(0,2);
-     //	jsonObject=reportService.getReports("2016-01-08","2016-01-11","TeleCalling");
+		from=from.substring(6,10)+"-"+from.substring(3,5)+"-"+from.substring(0,2);
+	    to=to.substring(6,10)+"-"+to.substring(3,5)+"-"+to.substring(0,2);
+     	jsonObject=reportService.getReports(from,to,"TeleCalling");
 
-		return  jsonObject;
+		return jsonObject;
      }
 
 

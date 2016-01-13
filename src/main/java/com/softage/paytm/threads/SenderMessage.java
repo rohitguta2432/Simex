@@ -17,7 +17,7 @@ public PostCallingService postCallingService;
 
     public void demoService(){
         try {
-      //      postCallingService.sendsmsService();
+           postCallingService.sendsmsService();
         }catch (Exception e){
             e.printStackTrace();
         }

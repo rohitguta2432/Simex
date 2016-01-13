@@ -272,7 +272,17 @@ public class PostCallingServiceImp implements PostCallingService {
                        PaytmagententryEntity paytmagententryEntity =agentPaytmDao.findByPrimaryKey(agentCode);
                        String agentMobileNumber = paytmagententryEntity.getAphone();
                        String result1=saveAllocationMast(confirmationAllowed,finalconfirmation,date,time,appointmentMastEntity,paytmagententryEntity,paytmcustomerDataEntity);
+
                        AllocationMastEntity allocationMastEntity1 = allocationDao.findByAgentCode(appointmentId,agentCode);
+                       if (allocationMastEntity1==null){
+                           for (int i=0; i<=5; i++) {
+                               allocationMastEntity1 = allocationDao.findByAgentCode(appointmentId, agentCode);
+                               if (allocationMastEntity1!=null){
+                                   break;
+                               }
+                           }
+                       }
+
                        if (allocationMastEntity1!=null) {
                            jobNumber = allocationMastEntity1.getId();
                        }

@@ -20,35 +20,32 @@
                                         </a>
                                     </div>
                                         </div>
-                                        <div class="widget-body">
+
+
+                                        <div class="widget-body" ng-controller="myCtrl" >
                                             <div id="horizontal-form">                                                                                           
-                                            <form class="form-horizontal" id="myForm" name="myForm" role="form" ng-controller="myCtrl" method="post" enctype="multipart/form-data">
+
+                                                <form  novalidate name="f1" ng-submit="SaveFile()" class="form form-horizontal" style="margin-bottom: 0;" accept-charset="UTF-8" enctype="multipart/form-data">
 
                                                     <div class="form-group col-sm-12">
                                                         <label class="col-sm-3 control-label no-padding-right">Paytm Data Upload</label>
                                                         <div class="col-sm-9" style="margin-top:10px;">
-                                                          <input type="file" name="file" style="float:left; width:200px; " />
-                                                            <input type="text" name="name" ng-model="name">
-                                                          <input ng-click="uploadFile($event)" type="button" class="btn btn-azure shiny" value="upload" style="float:left;" />
+
+                                                            <input type="file" name="file" onchange="angular.element(this).scope().selectedFileforUpload(this.files)" required />
+                                                            <span class="error col-md-6" ng-show="(f1.file.$dirty || IsFormSubmitted) && f1.file.$error.required">File Required</span>
+                                                            <span class="error col-md-6">{{FileInvalidMessage}}</span>
+
+                                                            <input type="submit" class="btn btn-azure shiny" value="Upload File" value="upload" style="float:left;" />
+
                                                         </div>
                                                     </div>
 
                                                     <div style="clear:both; height:20px;"></div>
 
-                                                                                                      
-                                                    <!--<div class="form-group">
-                                                        <div class="col-sm-offset-5 col-sm-10">
-                                                            <button type="submit" class="btn btn-azure shiny">Submit</button>
-                                                        </div>
-                                                    </div>-->
-
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
-
-
-
 
                             
                         </div>

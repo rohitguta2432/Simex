@@ -23,10 +23,11 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     private EntityManagerFactory entityManagerFactory;
 
     @Override
-    public void savePaytmMaster(List<PaytmMastEntity> paytmMastEntity) {
+    public String savePaytmMaster(List<PaytmMastEntity> paytmMastEntity) {
 
         EntityManager entityManager=null;
         EntityTransaction transaction = null;
+        String result=null;
 
         try{
             entityManager = entityManagerFactory.createEntityManager();
@@ -36,9 +37,11 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
                 entityManager.persist(mastEntity);
             }
             transaction.commit();
+            result="success";
         }catch (Exception e) {
 
            e.printStackTrace();
+            result="error";
         }
         finally {
             if (entityManager != null && entityManager.isOpen())
@@ -46,6 +49,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
                 entityManager.close();
             }
         }
+        return  result;
     }
 
     @Override
@@ -83,7 +87,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
-    public JSONObject telecallingScreen(String username) {
+    public JSONObject telecallingScreen(String username,int cirCode) {
         EntityManager entityManager = null;
         List list = new ArrayList<>();
         Query query=null;
@@ -91,7 +95,8 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try{
             entityManager = entityManagerFactory.createEntityManager();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
-            Query query1= entityManager.createNativeQuery("{call sp_GetTeleData(?)}").setParameter(1, username);
+            Query query1= entityManager.createNativeQuery("{call sp_GetTeleDataFinal(?)}");
+            query1.setParameter(1,username);
             Object[] s = (Object[])query1.getSingleResult();
             if (s.length>0) {
                 json.put("mobileNo", s[0]);
