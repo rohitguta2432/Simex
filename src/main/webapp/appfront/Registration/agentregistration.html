@@ -29,7 +29,7 @@
                                         <div class="form-group col-sm-6" >
                                             <label  class="col-sm-3 control-label no-padding-right" >Name</label>
                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15"  name="agent_name" ng-model="name" id="Text5" placeholder="Name" allow-pattern="[a-z_ ]" required/>
+                                                <input type="text" class="form-control" minlength="2" maxlength="40"  name="agent_name" ng-model="name" id="Text5" placeholder="Name" allow-pattern="[a-z_ ]" required/>
 
                                               <!-- <span class="help-inline" ng-show="submitted && myForm.email.$error.email">Invalid email</span>-->
 
@@ -41,7 +41,7 @@
                                         <div class="form-group col-sm-6">
                                             <label for="Text1" class="col-sm-3 control-label no-padding-right">Agent Code</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" name="agent_code" ng-model="agent_code" id="Text1" placeholder="Agent Code" allow-pattern="(\d|[a-z])" required/>
+                                                <input type="text" class="form-control" minlength="6" maxlength="6" name="agent_code" ng-model="agent_code" id="Text1" placeholder="Agent Code" allow-pattern="(\d|[a-z])" required/>
 
 
 
@@ -52,7 +52,7 @@
                                                 SoftAge Employee
                                             </label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" name="employee" ng-model="employee" placeholder="Softage Employee" allow-pattern="[a-z_ ]" required/>
+                                                <input type="text" class="form-control" minlength="6" maxlength="6" name="employee" ng-model="employee" placeholder="Softage Employee" allow-pattern="[a-z_ ]" required/>
                                             </div>
                                         </div>
 
@@ -60,7 +60,7 @@
                                         <div class="form-group col-sm-6">
                                             <label for="Text7" class="col-sm-3 control-label no-padding-right">Mobile Number</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" ng-minlength="3" ng-maxlength="10" id="Text7" name="phone" data-phone ng-model="phone"   placeholder="Mobile Number"  required />
+                                                <input type="text" class="form-control" minlength="10" maxlength="10" id="Text7" name="phone" data-phone ng-model="phone"   placeholder="Mobile Number"  required />
 
 
                                             </div>
@@ -124,13 +124,13 @@
                                         <div class="form-group col-sm-6">
                                             <label  class="col-sm-3 control-label no-padding-right">Pincode</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control"  ng-minlength="6" ng-maxlength="6"  name="pin_code" ng-model="pin_code"  placeholder="Pincode" required />
+                                                <input type="text" class="form-control"  minlength="6" maxlength="6"  name="pin_code" ng-model="pin_code"  placeholder="Pincode" required />
 
                                                 <p  style="color:red" ng-show="myForm.pin_code.$error.minlength">*Pin code should be 6 digit.</p>
 
                                             </div>
                                         </div>
-                                        <div class="form-group col-sm-6">
+                                       <!-- <div class="form-group col-sm-6">
                                             <label  class="col-sm-3 control-label no-padding-right">Mulitple Pin</label>
                                             <div class="radio col-sm-3">
                                                 <label>
@@ -140,7 +140,26 @@
                                             </div>
                                             <div class="radio col-sm-3">
                                                 <label>
-                                                    <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" ng-checked="true" />
+                                                    &lt;!&ndash;<input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" ng-checked="true" />&ndash;&gt;
+                                                    <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='N'" />
+                                                    <span class="text" >No</span>
+                                                </label>
+                                            </div>
+                                        </div>-->
+
+                                        <div class="form-group col-sm-6">
+                                            <label  class="col-sm-3 control-label no-padding-right">Mulitple Pin</label>
+                                            <div class="radio col-sm-3">
+                                                <label>
+                                                    <input type="radio" value="Y" ng-model="multi_pin" name="PinMultiple" />
+
+                                                    <span class="text">Yes</span>
+                                                </label>
+                                            </div>
+                                            <div class="radio col-sm-3">
+                                                <label>
+                                                    <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='N'" />
+                                                    <!--<input type="radio" value="Y"  ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='N'"/>-->
                                                     <span class="text" >No</span>
                                                 </label>
                                             </div>

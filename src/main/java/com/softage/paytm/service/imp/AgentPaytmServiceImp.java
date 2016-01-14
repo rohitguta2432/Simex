@@ -44,7 +44,17 @@ public String savePinmaster(PaytmagententryEntity paytmagententryEntity){
     agentpinmasterEntity.setApmAPincode(paytmagententryEntity.getApincode());
     agentpinmasterEntity.setApmImportDate(paytmagententryEntity.getImportdate());
     agentpinmasterEntity.setPaytmagententryByApmAcode(paytmagententryEntity);
+
      String result =agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
+    if("err".equalsIgnoreCase(result)){
+        for (int i=0; i<=5; i++) {
+            result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
+            if ("done".equalsIgnoreCase(result)){
+                break;
+            }
+        }
+
+    }
 
     return result;
 }
@@ -60,6 +70,7 @@ public String savePinmaster(PaytmagententryEntity paytmagententryEntity){
         emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 
         String result= agentPaytmDao.saveEmployee(emplogintableEntity);
+
 
          return result;
     }

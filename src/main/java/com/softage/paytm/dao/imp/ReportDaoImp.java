@@ -32,7 +32,7 @@ public class ReportDaoImp implements ReportDao {
             query= entityManager.createNativeQuery("{call sp_getreportTelecalling(?,?)}");
             query.setParameter(1, from);
             query.setParameter(2,to);
-               List<Object[]> resultList = query.getResultList();
+            List<Object[]> resultList = query.getResultList();
             int i=1;
             for (Object[] objects: resultList  ){
                 if (objects.length>0){
@@ -42,7 +42,8 @@ public class ReportDaoImp implements ReportDao {
                         json.put("MobileNumber", objects[1]);
                         json.put("CallStatus", objects[2]);
                         json.put("Attempts", objects[3]);
-                        json.put("CallDateTime", objects[4]);
+                        json.put("CallDateTime", objects[4].toString());
+                        System.out.println(objects[4].toString());
                         json.put("Tele-CallerName", objects[5]);
                         json.put("CustomerName", objects[6]);
                         json.put("AppointmentDate", objects[7]);

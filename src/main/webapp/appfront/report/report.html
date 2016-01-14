@@ -76,11 +76,11 @@
                             </div>
                             <div id="exportable">
                                 <table align="center" border="1" >
-                                    <tr>
+                                  <!--  <tr>
                                         <th>CallerName</th>
                                         <th>Address</th>
                                         <th>Appoint_Time</th>
-                                        <!-- <th>Landmark</th>-->
+                                        &lt;!&ndash; <th>Landmark</th>&ndash;&gt;
                                         <th>Status</th>
                                         <th>Custom_Id</th>
                                         <th>City</th>
@@ -88,7 +88,7 @@
                                         <th>CallDateTime</th>
                                         <th>MobileNo.</th>
                                         <th>Attempts</th>
-                                        <!--<th>State</th>-->
+                                        &lt;!&ndash;<th>State</th>&ndash;&gt;
                                         <th>Agent_Code</th>
                                         <th>Cust_Name</th>
                                         <th>Pincode</th>
@@ -98,7 +98,7 @@
                                         <td>{{x.TeleCallerName}}</td>
                                         <td>{{ x.Address }}</td>
                                         <td>{{ x.AppointmentTime }}</td>
-                                        <!--<td>{{ x.Landmark }}</td>-->
+                                        &lt;!&ndash;<td>{{ x.Landmark }}</td>&ndash;&gt;
                                         <td>{{ x.CallStatus }}</td>
                                         <td>{{ x.CustomerId }}</td>
                                         <td>{{ x.City }}</td>
@@ -106,12 +106,47 @@
                                         <td>{{ x.CallDateTime }}</td>
                                         <td>{{ x.MobileNumber }}</td>
                                         <td>{{ x.Attempts }}</td>
-                                        <!--<td>{{ x.State }}</td>-->
+                                        &lt;!&ndash;<td>{{ x.State }}</td>&ndash;&gt;
                                         <td>{{ x.Agent_Code }}</td>
                                         <td>{{ x.CustomerName }}</td>
                                         <td>{{ x.Pincode }}</td>
 
 
+                                    </tr>-->
+
+                                    <tr>
+                                        <th>Customer ID</th>
+                                        <th>MobileNumber</th>
+                                        <th>Call Status</th>
+                                        <th>Number of Attempts</th>
+                                        <th>Call DateTime</th>
+                                        <th>Tele-Caller Name</th>
+                                        <th>Customer Name</th>
+                                        <th>Appointment Date</th>
+                                        <th>Appointment Time</th>
+                                        <th>Address</th>
+                                        <th>Landmark</th>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>Pincode</th>
+                                        <th>Agent Code</th>
+                                    </tr>
+                                    <tr ng-repeat="x in message">
+                                        <td>{{ x.CustomerId }}</td>
+                                        <td>{{ x.MobileNumber }}</td>
+                                        <td>{{ x.CallStatus }}</td>
+                                        <td>{{ x.Attempts }}</td>
+                                        <td>{{ x.CallDateTime }}</td>
+                                        <td>{{ x.TeleCallerName }}</td>
+                                        <td>{{ x.CustomerName }}</td>
+                                        <td>{{ x.AppointmentDate }}</td>
+                                        <td>{{ x.AppointmentTime }}</td>
+                                        <td>{{ x.Address }}</td>
+                                        <td>{{ x.Landmark }}</td>
+                                        <td>{{ x.City }}</td>
+                                        <td>{{ x.State }}</td>
+                                        <td>{{ x.Pincode }}</td>
+                                        <td>{{ x.Agent_Code }}</td>
                                     </tr>
 
                                 </table>

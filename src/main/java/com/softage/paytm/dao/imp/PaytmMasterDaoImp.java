@@ -67,8 +67,8 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             query=entityManager.createQuery(strQuery);
             query.setParameter("mobileNo",mobileNo);
             HashMap<String,Object> map=(HashMap<String,Object>)query.getSingleResult();
-            json.put("address1",map.get("address1"));
-            json.put("address2",map.get("address1"));
+            json.put("address1",map.get("address1").toString().replace("#",""));
+            json.put("address2",map.get("address2").toString().replace("#",""));
             json.put("city",map.get("city"));
             json.put("pincode",map.get("pincode"));
             json.put("email",map.get("email"));

@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "sms_sendlog")
+@Cacheable(false)
 public class SmsSendlogEntity {
     private int sslId;
     private String mobileNumber;

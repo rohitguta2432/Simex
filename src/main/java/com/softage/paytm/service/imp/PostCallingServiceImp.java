@@ -47,7 +47,15 @@ public class PostCallingServiceImp implements PostCallingService {
                 String tcStatus="U";
                 String result=null;
 
-                TelecallMastEntity telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
+                 TelecallMastEntity telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
+                 if(telecallMastEntity==null){
+                     for (int i=1; i<=5; i++) {
+                         telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
+                         if (telecallMastEntity!=null){
+                             break;
+                         }
+                     }
+                 }
                 TelecallLogEntity telecallLogEntity =new TelecallLogEntity();
                 telecallLogEntity.setTcCustomerphone(map.get("number"));
                 telecallLogEntity.setTcCallBy(map.get("importby"));
@@ -60,6 +68,9 @@ public class PostCallingServiceImp implements PostCallingService {
                    tcStatus="D";
                    result=saveCustomer(map);
                    if ("JOB ALLOCATED".equalsIgnoreCase(result)){
+                       result="done";
+                   }
+                   if ("NO AGENT AVAILABLE".equalsIgnoreCase(result)){
                        result="done";
                    }
                }
@@ -183,7 +194,16 @@ public class PostCallingServiceImp implements PostCallingService {
             appointmentMastEntity.setAppointmentTime(new Time(Integer.parseInt(map.get("visitTime")),0,0));
             appointmentMastEntity.setImportDate(new Timestamp(new Date().getTime()));
             appointmentMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
+
             result = postCallingDao.saveAppointment(appointmentMastEntity);
+            if("err".equalsIgnoreCase(result)){
+                for (int i=1; i<=5; i++) {
+                    result = postCallingDao.saveAppointment(appointmentMastEntity);
+                    if ("done".equals(result)){
+                        break;
+                    }
+                }
+            }
             if("done".equalsIgnoreCase(result)){
             result = jobAllocated(paytmcustomerDataEntity);
             }
@@ -218,7 +238,16 @@ public class PostCallingServiceImp implements PostCallingService {
 
                if(paytmcustomerDataEntity!=null){
                    customerNo=paytmcustomerDataEntity.getPcdCustomerPhone();
+
                    appointmentMastEntity= postCallingDao.getByCustomerNuber(customerNo);
+                   if (appointmentMastEntity==null){
+                       for (int i=1; i<=5; i++) {
+                           appointmentMastEntity = postCallingDao.getByCustomerNuber(customerNo);
+                           if (appointmentMastEntity!=null){
+                               break;
+                           }
+                       }
+                   }
                }
              if (appointmentMastEntity!=null){
               appointmentId=appointmentMastEntity.getAppointmentId();

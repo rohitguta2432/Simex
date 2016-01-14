@@ -126,13 +126,10 @@ class HomeController {
 		String cvsSplitBy = "\\|";
 
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("Message", "Data uploaded");
 
 		Iterator<String> itr = request.getFileNames();
 
 		MultipartFile mpf = request.getFile(itr.next());
-
-		System.out.println(mpf.getOriginalFilename() + " uploaded!");
 
 		try {
 			//just temporary save file info into ufile
@@ -147,7 +144,7 @@ class HomeController {
 				dir.mkdirs();
 			}
 			serverFile = new File(dir.getAbsolutePath()
-					+ File.separator + "Test3" + randomInt + ".csv");
+					+ File.separator + filename);
 			BufferedOutputStream stream = new BufferedOutputStream(
 					new FileOutputStream(serverFile));
 			stream.write(bytes);
@@ -195,21 +192,20 @@ class HomeController {
 
 			}
 			System.out.println("list   " + list);
-			result = paytmMasterService.savePaytmMaster(list);
+    		result = paytmMasterService.savePaytmMaster(list);
 			if ("done".equalsIgnoreCase(result)) {
-				result = "success";
+				result = "File Successfully Uploaded";
 			}
-		//	jsonObject.put("status", "success");
-		} catch (
-				FileNotFoundException e
-				)
+			jsonObject.put("status", "success");
+		} catch (FileNotFoundException e){
+             logger.error("File Not Found ",e);
 
-		{
 			e.printStackTrace();
-			result = "error";
+			result = "File not Uploaded";
 		} catch (Exception e) {
 			e.printStackTrace();
-			result = "error";
+			logger.error(" ",e);
+			result = "File not Uploaded";
 		} finally
 
 		{
@@ -222,6 +218,7 @@ class HomeController {
 			}
 
 		}
+		jsonObject.put("Message",result);
 
 return jsonObject;
 	}
@@ -442,7 +439,7 @@ return jsonObject;
 			       paytmagententryEntity.setAemailId(email);
 			       paytmagententryEntity.setImportby(userName);
 			       paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
-		        msg= agentPaytmService.saveAgent(paytmagententryEntity);
+		           msg= agentPaytmService.saveAgent(paytmagententryEntity);
 			if ("done".equalsIgnoreCase(msg)){
 				msg="success";
 			}
@@ -523,9 +520,10 @@ return jsonObject;
 
 	@RequestMapping(value = "/postCalling", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
-	public String postCallig(HttpServletRequest request,HttpServletResponse  response){
+	public JSONObject postCallig(HttpServletRequest request,HttpServletResponse  response){
             String result=null;
 		    String importby="System";
+		    JSONObject  jsonObject=new JSONObject();
 		try {
 			HttpSession session=request.getSession(false);
 			if(session!=null){
@@ -571,16 +569,17 @@ return jsonObject;
 			e.printStackTrace();
 			result="error";
 		}
-
-		return  "success";
+           jsonObject.put("status",result);
+		return  jsonObject;
 	}
 
 	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody
-	public String postCallingStatus(HttpServletRequest request,HttpServletResponse  response){
+	public JSONObject postCallingStatus(HttpServletRequest request,HttpServletResponse  response){
 		       Map<String, String> map = new HashMap<String, String>();
 		       String result=null;
 		       String importby="System";
+		       JSONObject jsonObject=new JSONObject();
 		try {
 			HttpSession session=request.getSession(false);
 			if(session!=null){
@@ -594,11 +593,18 @@ return jsonObject;
 			map.put("importby", importby);
 			map.put("importType", importType);
 			result = postCallingService.saveCallingData(map);
+			if("done".equalsIgnoreCase(result))
+			{
+				result="success";
+			}else{
+				result="error";
+			}
 		}catch (Exception e){
 			e.printStackTrace();;
 			logger.error("error to posting data ",e);
 		}
-		     return  "success";
+		jsonObject.put("status",result);
+		return  jsonObject;
 	}
 	@RequestMapping(value = "/getReportsType", method = {RequestMethod.GET,RequestMethod.POST})
 	@ResponseBody

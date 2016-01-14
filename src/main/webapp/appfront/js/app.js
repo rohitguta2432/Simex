@@ -247,11 +247,18 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
 
                 $http.get('http://localhost:8080/paytm/postCallingStatus?' + data)
                     .success(function (data, status, headers, config) {
-                        $scope.message = data;
+                        $scope.postss = data;
+                        console.log( $scope.postss);
+
+                        if(data.status == 'success'){
+                       //     alert('Data');
+                       //     GetScreen();
+                            location.reload();
+                        }
 
                     })
                     .error(function (data, status, headers, config) {
-                        location.reload();
+                       // location.reload();
                        // alert("failure message: " + JSON.stringify({data: data}));
                     });
 
@@ -264,6 +271,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
     $scope.screen = function(){
 
         var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.state.stateCode + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
+       // console.log(data);
         //alert(data);
         $http.get('http://localhost:8080/paytm/postCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
@@ -271,16 +279,26 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
                 // alert('jfgkfj');
                 $scope.message = data;
 
+                 console.log(data.status);
+                if(data.status == 'success'){
+                   alert('Data Successfully inserted');
+                    //GetScreen();
+                    location.reload();
+                }
+            else{
+                    alert('Data Successfully not inserted try again');
+                }
+
                 //console.log($scope.message);
                 // $scope.getscreen();
                 // $location.path('/draft');
             })
             .error(function(data, status, headers, config) {
-                //alert( "failure message: " + JSON.stringify({data: data}));
+
+                alert( "failure message: " + JSON.stringify({data: data}));
                 //location.reload();
                 //$scope.getscreen();
-                GetScreen();
-                location.reload();
+
              //   $scope.getTime();
             });
 
