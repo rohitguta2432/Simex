@@ -2,15 +2,13 @@ package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.PostCallingDao;
 import com.softage.paytm.models.*;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -409,6 +407,38 @@ public class PostCallingDaoImp implements PostCallingDao {
             }
         }
         return receiverMastEntity;
+    }
+
+    @Override
+    public String callJobAllocatedProcedure(long allocationId, String moblieno, String agentcode) {
+        EntityManager entityManager = null;
+        List list = new ArrayList<>();
+        Query query=null;
+        JSONObject json=new JSONObject();
+        String result="";
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
+            Query query1= entityManager.createNativeQuery("{call sp_allocate1(?,?,?)}");
+            query1.setParameter(1,allocationId);
+            query1.setParameter(2,moblieno);
+            query1.setParameter(3,agentcode);
+            String s = (String)query1.getSingleResult();
+          /*  if (s.length>0) {
+               *//* json.put("mobileNo", s[0]);
+                json.put("customerName", s[1]);*//*
+                result=(String)s[0];
+            }*/
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return result;
     }
 
     @Override

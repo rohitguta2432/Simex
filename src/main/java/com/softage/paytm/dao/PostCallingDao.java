@@ -25,4 +25,6 @@ public interface PostCallingDao {
     public ProcessMastEntity getProcessByCode(int code);
     public ReceiverMastEntity getRecivedByCode(int code);
 
+    public String callJobAllocatedProcedure(long allocationId,String moblieno,String agentcode);
+
 }

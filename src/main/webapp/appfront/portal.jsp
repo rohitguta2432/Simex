@@ -16,10 +16,16 @@
   <%--<script src="http://code.angularjs.org/1.2.13/angular.js"></script>--%>
 
    <%-- <link href="libs/datepicker/jquery-ui.css" rel="stylesheet" />--%>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.css">
+    <%--<script type="text/javascript" src="libs/angular/angular.min.js"></script>
+    <script type="text/javascript" src="libs/jquery/dist/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="libs/jquery/dist/jquery.min.js"></script>--%>
+    <script src="libs/jquery/dist/jquery.min.js"></script>
+    <script src="libs/jquery/dist/jquery-ui.min.js"></script>
+    <script src="libs/angular/angular.min.js"></script>
+    <link href="libs/jqueryui/jquery-ui.css" rel="stylesheet" />
+    <%--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>--%>
+    <link rel="stylesheet" type="text/css" href="libs/jqueryui/jquery-ui.css">
 
 
 
@@ -191,10 +197,10 @@
     <div class="page-content">
       <!-- Page Breadcrumb -->
       <div class="page-breadcrumbs">
-        <ul class="breadcrumb">
+       <%-- <ul class="breadcrumb">
           <li><i class="fa fa-home"></i><a href="home.html">Home</a> </li>
           <li class="active">Dashboard</li>
-        </ul>
+        </ul>--%>
       </div>
       <!-- /Page Breadcrumb -->
 

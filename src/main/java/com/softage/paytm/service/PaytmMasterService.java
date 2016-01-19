@@ -5,6 +5,7 @@ import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.StateMasterEntity;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -20,5 +21,6 @@ public interface PaytmMasterService {
     public JSONObject telecallingScreen(String userName,int cirCode);
     public List<StateMasterEntity> getStateList();
     public List<CallStatusMasterEntity> getStatusList();
+    public void uploadRejectedData(List<Map<String, String>> list,File filename);
 
 }

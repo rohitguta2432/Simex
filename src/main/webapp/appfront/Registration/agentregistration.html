@@ -25,7 +25,9 @@
                             <div class="widget-body">
                                  <div id="horizontal-form">
                                     <form class="form-horizontal" name="myForm" role="form" ng-submit="submit($event)" ng-controller="agentCtrl" novalidate>
-
+                                        <div align="center">
+                                            <label style="color:green;margin-top: 0;">{{successTextAlert}}</label>
+                                        </div>
                                         <div class="form-group col-sm-6" >
                                             <label  class="col-sm-3 control-label no-padding-right" >Name</label>
                                            <div class="col-sm-9">
@@ -151,14 +153,14 @@
                                             <label  class="col-sm-3 control-label no-padding-right">Mulitple Pin</label>
                                             <div class="radio col-sm-3">
                                                 <label>
-                                                    <input type="radio" value="Y" ng-model="multi_pin" name="PinMultiple" />
+                                                    <input type="radio" value="Y" ng-model="multi_pin" name="PinMultiple" ng-checked="false" />
 
                                                     <span class="text">Yes</span>
                                                 </label>
                                             </div>
                                             <div class="radio col-sm-3">
                                                 <label>
-                                                    <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='N'" />
+                                                    <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" ng-checked="true" />
                                                     <!--<input type="radio" value="Y"  ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='N'"/>-->
                                                     <span class="text" >No</span>
                                                 </label>

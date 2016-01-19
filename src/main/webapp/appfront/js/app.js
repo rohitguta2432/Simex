@@ -34,7 +34,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
         .state('report', {
             url: '/report',
             templateUrl: 'report/report.html',
-            controller:'myCtrl'
+            controller:'report'
 
         });
 
@@ -126,14 +126,6 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
             //  alert('Select Spoke Code');
             $event.preventDefault();
         }
-        /* else if($scope.avl_time.length == 0 ||$scope.avl_time == undefined){
-         alert('Select Alote Time');
-         $event.preventDefault();
-         }
-         else if($scope.altr_number.length == 0 ||$scope.altr_number == undefined){
-         alert('Enter AlterNative Number');
-         $event.preventDefault();
-         }*/
         else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
             // alert('Enter Pin Number');
             $event.preventDefault();
@@ -141,7 +133,13 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
         else {
            //
             // alert('fdsfsd');
-            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&employee=' + $scope.employee + '&phone=' + $scope.phone + '&circle_office=' + $scope.circle_office + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code + '&multi_pin=' + $scope.multi_pin + '&email=' + $scope.email;
+
+            var pin = $scope.multi_pin;
+            if(pin == undefined || pin == 'N')
+            {
+                pin = 'N';
+            }
+            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&employee=' + $scope.employee + '&phone=' + $scope.phone + '&circle_office=' + $scope.circle_office + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code + '&multi_pin=' + pin + '&email=' + $scope.email;
 
 
             console.log(data);
@@ -149,31 +147,21 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
                 /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
                 .success(function (data, status, headers, config) {
                     $scope.message = data;
-                    if(data.status == 'success'){
-                        alert('Agent Successfully Registered');
 
+                    if(data.status == 'success'){
+                        $scope.successTextAlert = "Agent Successfully Registered";
+                        window.setTimeout(function(){
+                            location.reload();
+                        }, 2000);
                     }
-                    location.reload();
-                    console.log($scope.message);
-                    // $location.path('/draft');
+                    if(data.status == 'error'){
+                        alert('Agent Already Registered');
+                    }
                 })
                 .error(function (data, status, headers, config) {
                     alert("failure message: " + JSON.stringify({data: data}));
                 });
-// Making the fields empty
-//
-           /* $scope.agent_name = '';
-            $scope.agent_code = '';
-            $scope.employee = '';
-            $scope.phone = '';
-            $scope.circle_office = '';
-            $scope.spoke_code = '';
-            $scope.avl_time = '';
-            $scope.altr_number = '';
-            $scope.pin_code = '';
-            $scope.multi_pin = '';
-            $scope.email = '';
-            return false;*/
+
 
         };
     }
@@ -217,9 +205,6 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
             $scope.date = data.dateList;
             $scope.codes = data.paytmmastjson;
             $scope.mob = data.teleData;
-            // console.log($scope.mob);
-            // console.log($scope.statuses);
-            // console.log($scope.states);
         }, function (reason) {
         });
     }
@@ -236,9 +221,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
             // location.reload();
         }
         else {
-            // $scope.disabled= true;
-            //alert('Are you want to sure?');
-            // alert('postcaaling')
+
             var cnf= confirm('Are You Sure?');
             if (cnf == false) {
                 location.reload();
@@ -251,59 +234,44 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
                         console.log( $scope.postss);
 
                         if(data.status == 'success'){
-                       //     alert('Data');
-                       //     GetScreen();
                             location.reload();
                         }
 
                     })
                     .error(function (data, status, headers, config) {
-                       // location.reload();
-                       // alert("failure message: " + JSON.stringify({data: data}));
                     });
 
             }
         };
 
-        // $scope.visit_time = [{time:"8:00"},{time:'9:00'},{time:'10:00'},{time:'11:00'},{time:'12:00'},{time:'13:00'},{time:'14:00'},{time:'15:00'},{time:'16:00'},{time:'17:00'},{time:'18:00'},{time:'19:00'}];
     };
 
     $scope.screen = function(){
 
         var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.state.stateCode + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
-       // console.log(data);
-        //alert(data);
         $http.get('http://localhost:8080/paytm/postCalling?'+ data)
-            /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
             .success(function(data, status, headers, config) {
                 // alert('jfgkfj');
                 $scope.message = data;
-
                  console.log(data.status);
                 if(data.status == 'success'){
-                   alert('Data Successfully inserted');
-                    //GetScreen();
-                    location.reload();
-                }
-            else{
-                    alert('Data Successfully not inserted try again');
+                    $scope.successTextAlert = "Data Successfully inserted";
+                    window.setTimeout(function(){
+                        location.reload();
+                    }, 3000);
                 }
 
-                //console.log($scope.message);
-                // $scope.getscreen();
-                // $location.path('/draft');
+            else{
+                    alert('Record not Inserted due to Visit Date more than 5 Days');
+                    location.reload();
+                }
             })
             .error(function(data, status, headers, config) {
 
                 alert( "failure message: " + JSON.stringify({data: data}));
-                //location.reload();
-                //$scope.getscreen();
-
-             //   $scope.getTime();
             });
 
 
-        // $scope.visit_time = [{time:"8:00"},{time:'9:00'},{time:'10:00'},{time:'11:00'},{time:'12:00'},{time:'13:00'},{time:'14:00'},{time:'15:00'},{time:'16:00'},{time:'17:00'},{time:'18:00'},{time:'19:00'}];
     };
 
 
@@ -357,8 +325,6 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
             }
         }
 
-        // $scope.times= myarr;
-        //console.log(myarr+todaydate+varDate);
     }
 
 
@@ -376,11 +342,9 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
                 // $location.path('/draft');
             })
             .error(function(data, status, headers, config) {
-                //alert( "failure message: " + JSON.stringify({data: data}));
             });
 
 
-        // $scope.visit_time = [{time:"8:00"},{time:'9:00'},{time:'10:00'},{time:'11:00'},{time:'12:00'},{time:'13:00'},{time:'14:00'},{time:'15:00'},{time:'16:00'},{time:'17:00'},{time:'18:00'},{time:'19:00'}];
     };
 
 
@@ -406,11 +370,6 @@ routerApp.directive('phone', function() {
                     scope.errormessage = 'Invalid Phone Number';
                     console.log("invalid phone number");
                     angular.element(this).next().next().css('display','block');
-                    /*
-                     Looks like at this point ctrl is not available,
-                     so I can't user the following method to display the error node:
-                     ctrl.$setValidity('currencyField', false);
-                     */
                 }
             });
         }
@@ -452,30 +411,6 @@ function allowPatternDirective() {
 }*/
 
 
-/*routerApp.controller('AppCtrl', function($scope) {
- $scope.myDate = new Date();
- $scope.minDate = new Date(
- $scope.myDate.getFullYear(),
- $scope.myDate.getMonth() - 2,
- $scope.myDate.getDate());
- $scope.maxDate = new Date(
- $scope.myDate.getFullYear(),
- $scope.myDate.getMonth() + 2,
- $scope.myDate.getDate());
- $scope.onlyWeekendsPredicate = function(date) {
- var day = date.getDay();
- return day === 0 || day === 6;
- }
- });*/
-
-/*
- routerApp.controller('Ctrl',['$http','$q','$log', function ($scope) {
- $scope.send = function(){
-
- alert(jgndfjg);
- }
- }]);
- */
 routerApp.controller('Ctrl',['$scope', '$http','$q','$log', function($scope,$http,$q,$log){
 
     $scope.send = function(){
@@ -503,18 +438,10 @@ routerApp.directive("datepicker", function () {
                 }
 
             };
-
-
-
-            // jqueryfy the element
             elem.datepicker(options);
         }
     }
 });
-
-
-
-
 
 routerApp.directive('fileModel', ['$parse', function ($parse) {
     return {
@@ -532,25 +459,6 @@ routerApp.directive('fileModel', ['$parse', function ($parse) {
     };
 }]);
 
-routerApp.service('fileUpload', ['$http', function ($http) {
-    this.uploadFileToUrl = function(form,uploadUrl){
-        /* var fd = new FormData();
-         fd.append('file', file);*/
-        document.myForm.action = uploadUrl;
-        document.myForm.submit();
-
-        /*$http.post(uploadUrl, fd, {
-         transformRequest: angular.identity,
-         headers: {'Content-Type': undefined}
-         })
-
-         .success(function(){
-         })
-
-         .error(function(){
-         });*/
-    }
-}]);
 
 routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService', function ($scope, $http, FileProductUploadService) {
 
@@ -644,26 +552,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService', f
     return fac;
 });
 
-/*routerApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
-    $scope.uploadFile = function($event){
-        var uploadUrl = "/paytm/getFilePath";
-        fileUpload.uploadFileToUrl(angular.element("myForm"), uploadUrl).success(function(data, status, headers, config) {
-            alert('jfgkfj');
-            //$scope.message = data;
 
-            //console.log($scope.message);
-            // $scope.getscreen();
-            // $location.path('/draft');
-        })
-            .error(function(data, status, headers, config) {
-                alert( "failure message: " + JSON.stringify({data: data}));
-                //location.reload();
-                //$scope.getscreen();
-                //GetScreen();
-                //   $scope.getTime();
-            });
-    };
-}]);*/
 routerApp.controller('logout', ['$scope','$http','$window', function($scope, $http, $window) {
     $scope.logout = function () {
         $http.get('http://localhost:8080/paytm/logout').success(function (data, status, headers, config) {
@@ -677,10 +566,7 @@ routerApp.controller('logout', ['$scope','$http','$window', function($scope, $ht
     };
 }]);
 
-
-routerApp.controller('report',['$scope', '$http','$q','$log' ,function($scope,$http,$q,$log){
-
-
+routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,function($scope,$http,$q,$log, ExportService){
     //$scope.reports =[];
     $scope.getreport = function(){
         var dfr = $q.defer();
@@ -697,53 +583,66 @@ routerApp.controller('report',['$scope', '$http','$q','$log' ,function($scope,$h
     }, function(reason) {
         console.log('Error:   '+reason);
     });
+
+    $scope.date = '';
+    $scope.date1 ='';
+    $scope.report1 ='';
     $scope.message ={};
-    $scope.send = function(){
 
-        var data = 'from=' + $scope.date + '&to=' + $scope.date1 + '&type=' +  $scope.report1.reportName;
-        $http.get('http://localhost:8080/paytm/getReports?' + data)
-            .success(function (data, status, headers, config) {
+    $scope.send = function($event) {
+        if ($scope.date.length == 0 || $scope.date == undefined) {
+            //alert('Agent Name is not valid');
+            $event.preventDefault();
+        }
+        else if ($scope.date1.length == 0 || $scope.date1 == undefined) {
+            // alert('Agent Code is not valid');
+            $event.preventDefault();
+        }
+        else if ($scope.report1.length == 0 || $scope.report1 == undefined) {
+            // alert('Agent Code is not valid');
+            $event.preventDefault();
+        }
+        else {
 
-                $scope.message = data;
-                //console.log($scope.message);
+            var data = 'from=' + $scope.date + '&to=' + $scope.date1 + '&type=' + $scope.report1.reportName;
+            ExportService.SendData(data).then(function(result){
+                $scope.message = result.data;
+               // $scope.successTextAlert = 'Data Submit Successfully ';
+            }, function(err){
+                console.log(err);
+            }).catch(function(err){
+                console.log(err);
+            }).finally(function(){
+                window.setTimeout(function(){
+                    $scope.exportToExcel();
+                    location.reload();
+
+                }, 3000);
             })
-            .error(function (data, status, headers, config) {
-                //location.reload();
-                //$scope.message = data;
-                //console.log($scope.message);
-                alert("failure message: " + JSON.stringify({data: data}));
-            });
-    };
 
-    /*$scope.exportData = function () {
-     var blob = new Blob([document.getElementById('exportable').innerHTML], {
-     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
-     });
-     saveAs(blob, "Report.xls");
-     };*/
-
-
-
+        };
+    }
     $scope.exportToExcel=function(){// ex: '#my-table'
-
         var blob = new Blob([document.getElementById('exportable').innerHTML], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
         });
         saveAs(blob, "Report.xls");
-        // $scope.message = data;
-        //$scope.exportHref=Excel.tableToExcel(tableId,'sheet name');
-        //$timeout(function()
-        //{
-        //location.href=$scope.message.exportHref;
-        //},100); // trigger download
     }
-    /*.controller('MyCtrl',function(Excel,$timeout){
-     $scope.exportToExcel=function(tableId){ // ex: '#my-table'
-     $scope.exportHref=Excel.tableToExcel(tableId,'sheet name');
-     $timeout(function(){location.href=$scope.fileData.exportHref;},100); // trigger download
-     }
-     });*/
 
+}]).factory('ExportService', function ($http, $q) {
 
+    var fac = {};
 
-}]);
+    fac.SendData = function (data) {
+
+        var defer = $q.defer();
+        $http.get('http://localhost:8080/paytm/getReports?' + data).then(function (data) {
+            defer.resolve(data);
+        },function (errData) {
+            defer.reject("failure message: " + JSON.stringify({data: errData}));
+        });
+        return defer.promise;
+    }
+
+    return fac;
+});

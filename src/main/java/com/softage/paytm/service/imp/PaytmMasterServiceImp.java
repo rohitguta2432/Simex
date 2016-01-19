@@ -1,5 +1,6 @@
 package com.softage.paytm.service.imp;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import com.softage.paytm.dao.CircleMastDao;
 import com.softage.paytm.dao.PaytmMasterDao;
 import com.softage.paytm.models.CallStatusMasterEntity;
@@ -7,10 +8,12 @@ import com.softage.paytm.models.CircleMastEntity;
 import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.StateMasterEntity;
 import com.softage.paytm.service.PaytmMasterService;
+import com.sun.deploy.util.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -111,6 +114,102 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
            List<CallStatusMasterEntity>  statusList= paytmMasterDao.getStatusList();
            return statusList;
     }
+
+    @Override
+    public void uploadRejectedData(List<Map<String, String>> list,File fileName) {
+        CSVWriter csvOutput=null;
+        try {
+
+            csvOutput = new CSVWriter(new FileWriter(fileName, true), '|');
+            // use FileWriter constructor that specifies open for appending
+
+
+
+            // if the file didn't already exist then we need to write out the header line
+
+//
+//            map.put("kycRequestId", customerData[0]);
+//            map.put("CustomerID", customerData[1]);
+//            map.put("Username", customerData[2]);
+//            map.put("CustomerPhone", customerData[3]);
+//            map.put("Email", customerData[4]);
+//            map.put("AddressID", customerData[5]);
+//            map.put("TimeSlot", customerData[6]);
+//            map.put("Priority", customerData[7]);
+//            map.put("AddressStreet1", customerData[8]);
+//            map.put("AddressStreet2", customerData[9]);
+//            map.put("City", customerData[10]);
+//            map.put("State", customerData[11]);
+//            map.put("Pincode", customerData[12]);
+//            map.put("AddressPhone", customerData[13]);
+//            map.put("VendorName", customerData[14]);
+//            map.put("StageId", customerData[15]);
+//            map.put("SubStageId", customerData[16]);
+//            map.put("CreatedTimestamp", customerData[17]);
+
+            String s[]={"kycRequestId","CustomerID","Username","CustomerPhone","Email","AddressID","TimeSlot","Priority","AddressStreet1","AddressStreet2","City","State","Pincode","AddressPhone","VendorName","StageId","SubStageId","CreatedTimestamp","Status"};
+
+            csvOutput.writeNext(s);
+            for (Map<String,String> map :list){
+
+                String str[]={map.get("kycRequestId"),map.get("CustomerID"),map.get("Username"),map.get("CustomerPhone")
+                        ,map.get("Email"),map.get("AddressID"),map.get("TimeSlot"),map.get("Priority")
+                        ,map.get("AddressStreet1"),map.get("AddressStreet2"),map.get("City"),map.get("State")
+                        ,map.get("Pincode"),map.get("AddressPhone"),map.get("VendorName"),map.get("StageId")
+                        ,map.get("SubStageId"),map.get("CreatedTimestamp"),"Rejected"};
+                csvOutput.writeNext(str);
+             }
+
+
+
+            csvOutput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try{
+                csvOutput.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+    }
+/*
+
+    private void writeToFile(String output, File fileName) throws FileNotFoundException {
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(fileName));
+            writer.write(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try{
+            writer.close();}catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Set<String> collectHeaders(List<Map<String, String>> flatJson) {
+        Set<String> headers = new TreeSet<String>();
+        for (Map<String, String> map : flatJson) {
+            headers.addAll(map.keySet());
+        }
+        return headers;
+    }
+
+    private String getCommaSeperatedRow(Set<String> headers, Map<String, String> map) {
+        List<String> items = new ArrayList<String>();
+        for (String header : headers) {
+            String value = map.get(header) == null ? "" : map.get(header).replace(",", "");
+            items.add(value);
+        }
+        return StringUtils.join(items, ",");
+    }
+*/
+
 
     public int getCircleCode(int pin1,int pin2,String state){
         int circode = 0;

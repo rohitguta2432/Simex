@@ -9,7 +9,7 @@ import java.util.List;
  * Created by SS0085 on 31-12-2015.
  */
 public interface CircleService {
-    public List<String> getCirleList();
+    public List<String> getCirleList(int cirCode);
     List<String> getSpokeList(String circleName);
     public List<ReportMastEntity> getReporttypes();
 

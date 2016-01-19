@@ -32,124 +32,152 @@ public class PostCallingServiceImp implements PostCallingService {
     @Autowired
     private AgentPaytmDao agentPaytmDao;
     @Autowired
-    private  AllocationDao allocationDao;
+    private AllocationDao allocationDao;
     @Autowired
     private PaytmDeviceDao paytmDeviceDao;
     @Autowired
     private SmsSendLogDao smsSendLogDao;
 
 
-
     private static final Logger logger = LoggerFactory.getLogger(PostCallingServiceImp.class);
+
     @Override
     public String saveCallingData(Map<String, String> map) {
-                String status =map.get("status");
-                String tcStatus="U";
-                String result=null;
+        String status = map.get("status");
+        String tcStatus = "U";
+        String result = null;
+        Date parsedUtilDate=null;
+        java.sql.Date checkVisitDate=null;
+        java.sql.Date visitDate=null;
+        DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
+        try {
+            TelecallMastEntity telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
+            if (telecallMastEntity == null) {
+                for (int i = 1; i <= 5; i++) {
+                    telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
+                    if (telecallMastEntity != null) {
+                        break;
+                    }
+                }
+            }
+            TelecallLogEntity telecallLogEntity = new TelecallLogEntity();
+            telecallLogEntity.setTcCustomerphone(map.get("number"));
+            telecallLogEntity.setTcCallBy(map.get("importby"));
+            telecallLogEntity.setTcCallStatus(map.get("status"));
+            telecallLogEntity.setTcCallTime(new Timestamp(new Date().getTime()));
+            telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
+            result = postCallingDao.saveTeleCallLog(telecallLogEntity);
 
-                 TelecallMastEntity telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
-                 if(telecallMastEntity==null){
-                     for (int i=1; i<=5; i++) {
-                         telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
-                         if (telecallMastEntity!=null){
-                             break;
-                         }
-                     }
-                 }
-                TelecallLogEntity telecallLogEntity =new TelecallLogEntity();
-                telecallLogEntity.setTcCustomerphone(map.get("number"));
-                telecallLogEntity.setTcCallBy(map.get("importby"));
-                telecallLogEntity.setTcCallStatus(map.get("status"));
-                telecallLogEntity.setTcCallTime(new Timestamp(new Date().getTime()));
-                telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
-                result= postCallingDao.saveTeleCallLog(telecallLogEntity);
+            if(map.get("visitDate")!=null) {
+                parsedUtilDate = formater.parse(map.get("visitDate"));
+                visitDate = new java.sql.Date(parsedUtilDate.getTime());
 
-               if ("CON".equals(status)){
-                   tcStatus="D";
-                   result=saveCustomer(map);
-                   if ("JOB ALLOCATED".equalsIgnoreCase(result)){
-                       result="done";
-                   }
-                   if ("NO AGENT AVAILABLE".equalsIgnoreCase(result)){
-                       result="done";
-                   }
-               }
-                byte s=(byte)(telecallMastEntity.getTmAttempts()+1);
-           //   TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
-         //     telecallMastEntity.setTmCustomerPhone(map.get("number"));
-               if("done".equalsIgnoreCase(result)) {
-                   telecallMastEntity.setTmAttempts(s);
-                   telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
-                   telecallMastEntity.setTmLastAttemptDateTime(new Timestamp(new Date().getTime()));
-                   telecallMastEntity.setTmTeleCallStatus(tcStatus);
-                   telecallMastEntity.setTmLastCallStatus(map.get("status"));
-                   postCallingDao.updateTeleCall(telecallMastEntity);
-               }
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DAY_OF_WEEK, 5);
+                 checkVisitDate = new java.sql.Date(calendar.getTimeInMillis());
+            }
+            if ("CON".equals(status) && visitDate.getTime() > checkVisitDate.getTime()) {
+                byte s = 9;
+                tcStatus = "D";
+                telecallMastEntity.setTmAttempts(s);
+                telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
+                telecallMastEntity.setTmLastAttemptDateTime(new Timestamp(new Date().getTime()));
+                telecallMastEntity.setTmTeleCallStatus(tcStatus);
+                telecallMastEntity.setTmLastCallStatus(map.get("status"));
+                postCallingDao.updateTeleCall(telecallMastEntity);
+                result = "err";
+            } else if ("CON".equals(status)) {
+                tcStatus = "D";
+                result = saveCustomer(map);
+                if ("JOB ALLOCATED".equalsIgnoreCase(result)) {
+                    result = "done";
+                }
+                if ("NO AGENT AVAILABLE".equalsIgnoreCase(result)) {
+                    result = "done";
+                }
+            }
+            byte s = (byte) (telecallMastEntity.getTmAttempts() + 1);
+            //   TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
+            //     telecallMastEntity.setTmCustomerPhone(map.get("number"));
+            if ("done".equalsIgnoreCase(result)) {
+                telecallMastEntity.setTmAttempts(s);
+                telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
+                telecallMastEntity.setTmLastAttemptDateTime(new Timestamp(new Date().getTime()));
+                telecallMastEntity.setTmTeleCallStatus(tcStatus);
+                telecallMastEntity.setTmLastCallStatus(map.get("status"));
+                postCallingDao.updateTeleCall(telecallMastEntity);
+            }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
         return result;
     }
 
     @Override
     public String sendsmsService() {
-        String result=null;
-        List<SmsSendlogEntity> smsSendlogEntityList=null;
+        String result = null;
+        List<SmsSendlogEntity> smsSendlogEntityList = null;
         try {
             smsSendlogEntityList = smsSendLogDao.getSendData();
-            for (SmsSendlogEntity smsSendlogEntity:smsSendlogEntityList) {
+            for (SmsSendlogEntity smsSendlogEntity : smsSendlogEntityList) {
 
-                    String mobileno = smsSendlogEntity.getMobileNumber();
-                    String smstext = smsSendlogEntity.getSmsText();
-                    result = sendSms(mobileno, smstext);
-                    if (!"err".equalsIgnoreCase(result)) {
+                String mobileno = smsSendlogEntity.getMobileNumber();
+                String smstext = smsSendlogEntity.getSmsText();
+                result = sendSms(mobileno, smstext);
+                if (!"err".equalsIgnoreCase(result)) {
 
-                        smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
-                        smsSendlogEntity.setDeliveryStatus(result);
-                        smsSendlogEntity.setSmsDelivered("Y");
-                        smsSendLogDao.updateSmsLogData(smsSendlogEntity);
+                    smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
+                    smsSendlogEntity.setDeliveryStatus(result);
+                    smsSendlogEntity.setSmsDelivered("Y");
+                    smsSendLogDao.updateSmsLogData(smsSendlogEntity);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            logger.error("sms not send  ",e);
+            logger.error("sms not send  ", e);
         }
-        return  result;
+        return result;
     }
-      private String sendSms(String mobileno,String text){
-          String result=null;
-          SmsSendlogEntity smsSendlogEntity=null;
-          //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
-          //  String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
-          String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno="+mobileno+"&text="+ text;
-          try {
-              URL obj = new URL(url);
-              HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-              con.setRequestMethod("GET");
-              int responseCode = con.getResponseCode();
-              System.out.println("\nSending 'GET' request to URL : " + url);
-              logger.info("\nSending 'GET' request to URL : " + url);
-              System.out.println("Response Code :" + responseCode);
-              logger.info("Response Code :" + responseCode);
-              BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-              String inputLine;
-              StringBuffer response = new StringBuffer();
 
-              while ((inputLine = in.readLine()) != null) {
-                  response.append(inputLine);
-              }
-              in.close();
-              result=response.toString();
-          } catch (Exception e){
-              logger.error("enable to send message  ",e);
-              result="err";
-              e.printStackTrace();
-          }
-          return  result;
+    private String sendSms(String mobileno, String text) {
+        String result = null;
+        SmsSendlogEntity smsSendlogEntity = null;
+        //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
+        //  String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
+        String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
+        try {
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            System.out.println("\nSending 'GET' request to URL : " + url);
+            logger.info("\nSending 'GET' request to URL : " + url);
+            System.out.println("Response Code :" + responseCode);
+            logger.info("Response Code :" + responseCode);
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
 
-
-      }
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            result = response.toString();
+        } catch (Exception e) {
+            logger.error("enable to send message  ", e);
+            result = "err";
+            e.printStackTrace();
+        }
+        return result;
 
 
-    public String saveCustomer(Map<String,String> map){
-        String result=null;
+    }
+
+
+    public String saveCustomer(Map<String, String> map) {
+        String result = null;
         DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
         try {
             PaytmcustomerDataEntity paytmcustomerDataEntity = new PaytmcustomerDataEntity();
@@ -167,224 +195,226 @@ public class PostCallingServiceImp implements PostCallingService {
             paytmcustomerDataEntity.setPcdPincode(map.get("pinCode"));
             paytmcustomerDataEntity.setPcdState(map.get("state"));
             Date parsedUtilDate = formater.parse(map.get("visitDate"));
-            java.sql.Date sqltDate= new java.sql.Date(parsedUtilDate.getTime());
+            java.sql.Date sqltDate = new java.sql.Date(parsedUtilDate.getTime());
             paytmcustomerDataEntity.setPcdVisitDate(sqltDate);
-            System.out.println("Time "+map.get("visitTime"));
-            paytmcustomerDataEntity.setPcdVisitTIme(new Time(Integer.parseInt(map.get("visitTime")),0,0));
+            System.out.println("Time " + map.get("visitTime"));
+            paytmcustomerDataEntity.setPcdVisitTIme(new Time(Integer.parseInt(map.get("visitTime")), 0, 0));
             result = postCallingDao.savePaytmCustomer(paytmcustomerDataEntity);
-            if (result!=null&&"done".equalsIgnoreCase(result)){
-                result=saveAppoinment(map,paytmcustomerDataEntity);
+            if (result != null && "done".equalsIgnoreCase(result)) {
+                result = saveAppoinment(map, paytmcustomerDataEntity);
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            result="err";
+            result = "err";
         }
 
         return result;
     }
-    public String saveAppoinment(Map<String,String> map,PaytmcustomerDataEntity paytmcustomerDataEntity){
-        String result=null;
+
+    public String saveAppoinment(Map<String, String> map, PaytmcustomerDataEntity paytmcustomerDataEntity) {
+        String result = null;
         DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
         try {
             AppointmentMastEntity appointmentMastEntity = new AppointmentMastEntity();
             Date parsedUtilDate = formater.parse(map.get("visitDate"));
-            java.sql.Date sqltDate= new java.sql.Date(parsedUtilDate.getTime());
+            java.sql.Date sqltDate = new java.sql.Date(parsedUtilDate.getTime());
             appointmentMastEntity.setAppointmentDate(sqltDate);
-            appointmentMastEntity.setAppointmentTime(new Time(Integer.parseInt(map.get("visitTime")),0,0));
+            appointmentMastEntity.setAppointmentTime(new Time(Integer.parseInt(map.get("visitTime")), 0, 0));
             appointmentMastEntity.setImportDate(new Timestamp(new Date().getTime()));
             appointmentMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
 
             result = postCallingDao.saveAppointment(appointmentMastEntity);
-            if("err".equalsIgnoreCase(result)){
-                for (int i=1; i<=5; i++) {
+            if ("err".equalsIgnoreCase(result)) {
+                for (int i = 1; i <= 5; i++) {
                     result = postCallingDao.saveAppointment(appointmentMastEntity);
-                    if ("done".equals(result)){
+                    if ("done".equals(result)) {
                         break;
                     }
                 }
             }
-            if("done".equalsIgnoreCase(result)){
-            result = jobAllocated(paytmcustomerDataEntity);
+            if ("done".equalsIgnoreCase(result)) {
+                result = jobAllocated(paytmcustomerDataEntity);
             }
 
-        }catch (Exception e){
-           e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             logger.error("error to save Appointmantdata");
         }
-        return  result;
+        return result;
     }
 
-   public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity){
-     String result=null;
-     String name=null;
-     String address=null;
-     String city=null;
-     String area=null;
-     String pinCode=null;
-     java.sql.Date date=null;
-     Time time=null;
-     java.sql.Date date1=null;
-     String agentCode="0";
-     String confirmationAllowed="";
-     String finalconfirmation="";
+    public String jobAllocated(PaytmcustomerDataEntity paytmcustomerDataEntity) {
+        String result = null;
+        String name = null;
+        String address = null;
+        String city = null;
+        String area = null;
+        String pinCode = null;
+        java.sql.Date date = null;
+        Time time = null;
+        java.sql.Date date1 = null;
+        String agentCode = "0";
+        String confirmationAllowed = "";
+        String finalconfirmation = "";
 
-     int maxAllocation=15;
-     String loginId=null;
-     String customerNo="";
-     long appointmentId=0;
+        int maxAllocation = 15;
+        String loginId = null;
+        String customerNo = "";
+        long appointmentId = 0;
 
-    AppointmentMastEntity appointmentMastEntity=null;
+        AppointmentMastEntity appointmentMastEntity = null;
 
-               if(paytmcustomerDataEntity!=null){
-                   customerNo=paytmcustomerDataEntity.getPcdCustomerPhone();
+        if (paytmcustomerDataEntity != null) {
+            customerNo = paytmcustomerDataEntity.getPcdCustomerPhone();
 
-                   appointmentMastEntity= postCallingDao.getByCustomerNuber(customerNo);
-                   if (appointmentMastEntity==null){
-                       for (int i=1; i<=5; i++) {
-                           appointmentMastEntity = postCallingDao.getByCustomerNuber(customerNo);
-                           if (appointmentMastEntity!=null){
-                               break;
-                           }
-                       }
-                   }
-               }
-             if (appointmentMastEntity!=null){
-              appointmentId=appointmentMastEntity.getAppointmentId();
-             }
+            appointmentMastEntity = postCallingDao.getByCustomerNuber(customerNo);
+            if (appointmentMastEntity == null) {
+                for (int i = 1; i <= 5; i++) {
+                    appointmentMastEntity = postCallingDao.getByCustomerNuber(customerNo);
+                    if (appointmentMastEntity != null) {
+                        break;
+                    }
+                }
+            }
+        }
+        if (appointmentMastEntity != null) {
+            appointmentId = appointmentMastEntity.getAppointmentId();
+    //        String result1= postCallingDao.callJobAllocatedProcedure(appointmentId, customerNo, "0");
+        }
 
-    long appointmentId1= postCallingDao.checkAppointmentId(appointmentId);
-       if(appointmentId1==0){
 
-   //   Map<String,Object> dataMap= postCallingDao.getData(appointmentId,mobileNo);
 
-                      name= paytmcustomerDataEntity.getPcdName();
-                      address=paytmcustomerDataEntity.getPcdAddress();
-                      area=  paytmcustomerDataEntity.getPcdArea();
-                      city=   paytmcustomerDataEntity.getPcdCity();
-                      pinCode=  paytmcustomerDataEntity.getPcdPincode();
-                      date= paytmcustomerDataEntity.getPcdVisitDate();
-                      time= paytmcustomerDataEntity.getPcdVisitTIme();
-                        Calendar calendar= Calendar.getInstance();
-                        calendar.setTime(date);
-                        calendar.add(Calendar.DAY_OF_WEEK,3);
-                        java.sql.Date loopdate=new java.sql.Date(calendar.getTimeInMillis());
+        long appointmentId1 = postCallingDao.checkAppointmentId(appointmentId);
+        if (appointmentId1 == 0) {
 
-                        while (date.getTime()<=loopdate.getTime()){
-                            Calendar calendar1= Calendar.getInstance();
-                            calendar1.setTime(new Date());
-                            calendar1.add(Calendar.DAY_OF_WEEK,1);
-                            date1=new java.sql.Date(calendar1.getTimeInMillis());
+            //   Map<String,Object> dataMap= postCallingDao.getData(appointmentId,mobileNo);
 
-                            if("0".equals(agentCode)){
-                                agentCode= postCallingDao.getAgentCode(pinCode,date,date1,maxAllocation,agentCode);
-                                confirmationAllowed="Y";
-                                finalconfirmation="W";
-                            } else {
-                               agentCode= postCallingDao.getAgentCode(pinCode,date,date1,maxAllocation,agentCode);
-                                confirmationAllowed="N";
-                                finalconfirmation="W";
-                            }
+            name = paytmcustomerDataEntity.getPcdName();
+            address = paytmcustomerDataEntity.getPcdAddress();
+            area = paytmcustomerDataEntity.getPcdArea();
+            city = paytmcustomerDataEntity.getPcdCity();
+            pinCode = paytmcustomerDataEntity.getPcdPincode();
+            date = paytmcustomerDataEntity.getPcdVisitDate();
+            time = paytmcustomerDataEntity.getPcdVisitTIme();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.add(Calendar.DAY_OF_WEEK, 3);
+            java.sql.Date loopdate = new java.sql.Date(calendar.getTimeInMillis());
 
-                            if (agentCode==null){
-                                Calendar calendar2= Calendar.getInstance();
-                                calendar2.setTime(date);
-                                calendar2.add(Calendar.DATE,1);
-                                date=new java.sql.Date(calendar2.getTimeInMillis());
-                            } else {
+            while (date.getTime() <= loopdate.getTime()) {
+                Calendar calendar1 = Calendar.getInstance();
+                calendar1.setTime(new Date());
+                calendar1.add(Calendar.DAY_OF_WEEK, 1);
+                date1 = new java.sql.Date(calendar1.getTimeInMillis());
+
+                if ("0".equals(agentCode)) {
+                    agentCode = postCallingDao.getAgentCode(pinCode, date, date1, maxAllocation, agentCode);
+                    confirmationAllowed = "Y";
+                    finalconfirmation = "W";
+                } else {
+                    agentCode = postCallingDao.getAgentCode(pinCode, date, date1, maxAllocation, agentCode);
+                    confirmationAllowed = "N";
+                    finalconfirmation = "W";
+                }
+
+                if (agentCode == null) {
+                    Calendar calendar2 = Calendar.getInstance();
+                    calendar2.setTime(date);
+                    calendar2.add(Calendar.DATE, 1);
+                    date = new java.sql.Date(calendar2.getTimeInMillis());
+                } else {
+                    break;
+                }
+            }
+            if (agentCode != null) {
+                try {
+                    int jobNumber = 0;
+                    PaytmagententryEntity paytmagententryEntity = agentPaytmDao.findByPrimaryKey(agentCode);
+                    String agentMobileNumber = paytmagententryEntity.getAphone();
+                    String result1 = saveAllocationMast(confirmationAllowed, finalconfirmation, date, time, appointmentMastEntity, paytmagententryEntity, paytmcustomerDataEntity);
+
+                    AllocationMastEntity allocationMastEntity1 = allocationDao.findByAgentCode(appointmentId, agentCode);
+                    if (allocationMastEntity1 == null) {
+                        for (int i = 0; i <= 5; i++) {
+                            allocationMastEntity1 = allocationDao.findByAgentCode(appointmentId, agentCode);
+                            if (allocationMastEntity1 != null) {
                                 break;
                             }
                         }
-               if(agentCode!=null){
-                   try {
-                       int jobNumber=0;
-                       PaytmagententryEntity paytmagententryEntity =agentPaytmDao.findByPrimaryKey(agentCode);
-                       String agentMobileNumber = paytmagententryEntity.getAphone();
-                       String result1=saveAllocationMast(confirmationAllowed,finalconfirmation,date,time,appointmentMastEntity,paytmagententryEntity,paytmcustomerDataEntity);
+                    }
 
-                       AllocationMastEntity allocationMastEntity1 = allocationDao.findByAgentCode(appointmentId,agentCode);
-                       if (allocationMastEntity1==null){
-                           for (int i=0; i<=5; i++) {
-                               allocationMastEntity1 = allocationDao.findByAgentCode(appointmentId, agentCode);
-                               if (allocationMastEntity1!=null){
-                                   break;
-                               }
-                           }
-                       }
+                    if (allocationMastEntity1 != null) {
+                        jobNumber = allocationMastEntity1.getId();
+                    }
+                    String text = "Dear Agent Job No-" + jobNumber + "" +
+                            ", Your visit is fixed at " + date
+                            + " " + time + "with " + name + " Address-" +
+                            "" + address + " " + pinCode + "Contact no-" +
+                            "" + customerNo + " Please See Leads in App";
 
-                       if (allocationMastEntity1!=null) {
-                           jobNumber = allocationMastEntity1.getId();
-                       }
-                       String text="Dear Agent Job No-"+jobNumber+"" +
-                               ", Your visit is fixed at "+date
-                               +" "+time+"with "+name+" Address-" +
-                               ""+address+" "+pinCode+"Contact no-" +
-                               ""+customerNo+" Please See Leads in App";
+                    PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
+                    if (paytmdeviceidinfoEntity != null) {
+                        loginId = paytmdeviceidinfoEntity.getLoginId();
+                    }
 
-                       PaytmdeviceidinfoEntity paytmdeviceidinfoEntity=  paytmDeviceDao.getByloginId(agentCode);
-                        if (paytmdeviceidinfoEntity!=null){
-                          loginId=paytmdeviceidinfoEntity.getLoginId();
-                        }
-
-                       if(loginId!=null){
-                           String res2=saveTblNotificationLogEntity(text,agentCode);
-                       }else {
-                           String res=saveSmsSendLog(agentMobileNumber,agentCode,text);
-                       }
-                    result="JOB ALLOCATED";
-                   }catch (Exception e){
+                    if (loginId != null) {
+                        String res2 = saveTblNotificationLogEntity(text, agentCode);
+                    } else {
+                        String res = saveSmsSendLog(agentMobileNumber, agentCode, text);
+                    }
+                    result = "JOB ALLOCATED";
+                } catch (Exception e) {
                     e.printStackTrace();
-                   }
-               }else {
-                    result="NO AGENT AVAILABLE";
-               }
-       }
-       else
-       {
-        result= "JOB ALREADY ALLOCATED";
-       }
+                }
+            } else {
+                result = "NO AGENT AVAILABLE";
+            }
+        } else {
+            result = "JOB ALREADY ALLOCATED";
+        }
 
 
 
-return  result;
-}
+        return result;
+    }
 
-public String saveAllocationMast(String confirmationAllowed,String finalconfirmation,Date date,Time time,AppointmentMastEntity appointmentMastEntity,PaytmagententryEntity paytmagententryEntity,PaytmcustomerDataEntity paytmcustomerDataEntity){
-    String vistDate = date.toString();
-    String visitTime = time.toString();
-    String result =null;
-    try {
-        String allocationDate1 = vistDate + " " + visitTime;
-        RemarkMastEntity remarkMastEntity = postCallingDao.getByPrimaryCode("U");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-        Date convertedDate = dateFormat.parse(allocationDate1);
-        AllocationMastEntity allocationMastEntity = new AllocationMastEntity();
-        allocationMastEntity.setAppointmentMastByAppointmentId(appointmentMastEntity);
-        allocationMastEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
+    public String saveAllocationMast(String confirmationAllowed, String finalconfirmation, Date date, Time time, AppointmentMastEntity appointmentMastEntity, PaytmagententryEntity paytmagententryEntity, PaytmcustomerDataEntity paytmcustomerDataEntity) {
+        String vistDate = date.toString();
+        String visitTime = time.toString();
+        String result = null;
+        try {
+            String allocationDate1 = vistDate + " " + visitTime;
+            RemarkMastEntity remarkMastEntity = postCallingDao.getByPrimaryCode("U");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+            Date convertedDate = dateFormat.parse(allocationDate1);
+            AllocationMastEntity allocationMastEntity = new AllocationMastEntity();
+            allocationMastEntity.setAppointmentMastByAppointmentId(appointmentMastEntity);
+            allocationMastEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
 
-        allocationMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
-        allocationMastEntity.setAllocationDatetime(new Timestamp(convertedDate.getTime()));
-        allocationMastEntity.setVisitDateTime(new Timestamp(convertedDate.getTime()));
-        allocationMastEntity.setImportBy(paytmcustomerDataEntity.getPcdImportBy());
-        allocationMastEntity.setImportDate(new Timestamp(new Date().getTime()));
-        allocationMastEntity.setConfirmationDatetime(new Timestamp(convertedDate.getTime()));
-        allocationMastEntity.setConfirmation(confirmationAllowed);
-        allocationMastEntity.setFinalConfirmation(finalconfirmation);
-        allocationMastEntity.setSmsSendDatetime(new Timestamp(convertedDate.getTime()));
-        allocationMastEntity.setKycCollected("N");
-        allocationMastEntity.setRemarkMastByRemarksCode(remarkMastEntity);
-        result = allocationDao.saveAllocation(allocationMastEntity);
-    }catch (Exception e){
-        result="err";
+            allocationMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
+            allocationMastEntity.setAllocationDatetime(new Timestamp(convertedDate.getTime()));
+            allocationMastEntity.setVisitDateTime(new Timestamp(convertedDate.getTime()));
+            allocationMastEntity.setImportBy(paytmcustomerDataEntity.getPcdImportBy());
+            allocationMastEntity.setImportDate(new Timestamp(new Date().getTime()));
+            allocationMastEntity.setConfirmationDatetime(new Timestamp(convertedDate.getTime()));
+            allocationMastEntity.setConfirmation(confirmationAllowed);
+            allocationMastEntity.setFinalConfirmation(finalconfirmation);
+            allocationMastEntity.setSmsSendDatetime(new Timestamp(convertedDate.getTime()));
+            allocationMastEntity.setKycCollected("N");
+            allocationMastEntity.setRemarkMastByRemarksCode(remarkMastEntity);
+            result = allocationDao.saveAllocation(allocationMastEntity);
+        } catch (Exception e) {
+            result = "err";
+
+        }
+        return result;
 
     }
-    return   result;
 
-}
+    public String saveSmsSendLog(String agentMobileNumber, String agentCode, String text) {
 
-    public String saveSmsSendLog(String agentMobileNumber,String agentCode,String text){
-
-        String result=null;
+        String result = null;
         try {
             ReceiverMastEntity receiverMastEntity = postCallingDao.getRecivedByCode(2);
             ProcessMastEntity processMastEntity = postCallingDao.getProcessByCode(2);
@@ -398,30 +428,30 @@ public String saveAllocationMast(String confirmationAllowed,String finalconfirma
             smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
             smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
             smsSendlogEntity.setReceiverMastByReceiverCode(receiverMastEntity);
-            result =postCallingDao.saveSmsSendEntity(smsSendlogEntity);
-        }catch (Exception e){
+            result = postCallingDao.saveSmsSendEntity(smsSendlogEntity);
+        } catch (Exception e) {
             e.printStackTrace();
-            result="err";
+            result = "err";
         }
-       return  result;
+        return result;
     }
 
-     public String saveTblNotificationLogEntity(String text,String agentCode){
-         String result=null;
+    public String saveTblNotificationLogEntity(String text, String agentCode) {
+        String result = null;
         try {
-              TblNotificationLogEntity tblNotificationLogEntity = new TblNotificationLogEntity();
-              tblNotificationLogEntity.setNotificationType("Leads");
-              tblNotificationLogEntity.setNotificationText(text);
-              tblNotificationLogEntity.setNotificationLoginid(agentCode);
-              tblNotificationLogEntity.setNotificationSenddt(new Timestamp(new Date().getTime()));
-              result=postCallingDao.saveTabNotification(tblNotificationLogEntity);
-            } catch (Exception e){
-                e.printStackTrace();
-              result="err";
-         }
-         return result;
-     }
-   }
+            TblNotificationLogEntity tblNotificationLogEntity = new TblNotificationLogEntity();
+            tblNotificationLogEntity.setNotificationType("Leads");
+            tblNotificationLogEntity.setNotificationText(text);
+            tblNotificationLogEntity.setNotificationLoginid(agentCode);
+            tblNotificationLogEntity.setNotificationSenddt(new Timestamp(new Date().getTime()));
+            result = postCallingDao.saveTabNotification(tblNotificationLogEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = "err";
+        }
+        return result;
+    }
+}
 
 
 

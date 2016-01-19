@@ -22,6 +22,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.*;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -41,79 +42,80 @@ import javax.servlet.http.Part;
 @Controller
 class HomeController {
 
-	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
-	@Autowired
-	private PaytmMasterService paytmMasterService;
-	@Autowired
-	private AgentPaytmService agentPaytmService;
-	@Autowired
-	public CircleService circleService;
-	@Autowired
-	public PostCallingService postCallingService;
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private ReportService reportService;
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    @Autowired
+    private PaytmMasterService paytmMasterService;
+    @Autowired
+    private AgentPaytmService agentPaytmService;
+    @Autowired
+    public CircleService circleService;
+    @Autowired
+    public PostCallingService postCallingService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ReportService reportService;
 
-	/**
-	 * Simply selects the home view to render by returning its name.
-	 */
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {
-		logger.info("Welcome home! The client locale is {}.", locale);
+    /**
+     * Simply selects the home view to render by returning its name.
+     */
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String home(Locale locale, Model model) {
+        logger.info("Welcome home! The client locale is {}.", locale);
 
-		return "app";
-	}
-
-
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	@ResponseBody
-	public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
-		//logger.info("Welcome home! The client locale is {}.", locale);
-		String result = null;
-		JSONObject jsonObject = new JSONObject();
-		String user = request.getParameter("userName");
-		String password = request.getParameter("password");
-		String dbUser = null;
-		EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
-		if (emplogintableEntity != null) {
-
-			if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
-				dbUser = emplogintableEntity.getEmpCode();
-				HttpSession session = request.getSession();
-				session.setAttribute("name", user);
-				session.setAttribute("role", emplogintableEntity.getRoleCode());
-				session.setAttribute("cirCode", emplogintableEntity.getCirCode());
-				result = "success";
-			}
-		} else {
-			result = "error";
-		}
-		jsonObject.put("status", result);
-		jsonObject.put("user", dbUser);
-		return jsonObject;
-	}
+        return "app";
+    }
 
 
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	@ResponseBody
-	public JSONObject logout(HttpServletRequest request, HttpServletResponse response) {
-		//logger.info("Welcome home! The client locale is {}.", locale);
-		JSONObject jsonObject = new JSONObject();
-		String result = null;
-		HttpSession session = request.getSession();
-		if (session != null) {
-			session.invalidate();
-			result = "success";
-		} else {
-			result = "error";
-		}
-		jsonObject.put("status", result);
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
+        //logger.info("Welcome home! The client locale is {}.", locale);
+        String result = null;
+        JSONObject jsonObject = new JSONObject();
+        String user = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String dbUser = null;
+        EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+        if (emplogintableEntity != null) {
 
-		return jsonObject;
-	}
+            if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                dbUser = emplogintableEntity.getEmpCode();
+                HttpSession session = request.getSession();
+                session.setAttribute("name", user);
+                session.setAttribute("role", emplogintableEntity.getRoleCode());
+                session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                result = "success";
+            }
+        } else {
+            result = "error";
+        }
+        jsonObject.put("status", result);
+        jsonObject.put("user", dbUser);
+        return jsonObject;
+    }
 
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject logout(HttpServletRequest request, HttpServletResponse response) {
+        //logger.info("Welcome home! The client locale is {}.", locale);
+        JSONObject jsonObject = new JSONObject();
+        String result = null;
+        HttpSession session = request.getSession();
+        if (session != null) {
+            session.invalidate();
+            result = "success";
+        } else {
+            result = "error";
+        }
+        jsonObject.put("status", result);
+
+        return jsonObject;
+    }
+
+/*
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public
 	@ResponseBody
 	JSONObject upload(MultipartHttpServletRequest request, HttpServletResponse response) {
@@ -154,7 +156,9 @@ class HomeController {
 					+ serverFile.getAbsolutePath());
 
 
-		/*File serverFile=null;*/
+		*/
+/*File serverFile=null;*//*
+
 			List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 
 
@@ -223,8 +227,152 @@ class HomeController {
 return jsonObject;
 	}
 
+*/
 
 
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    JSONObject upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+        BufferedReader br = null;
+        InputStream inputStream = null;
+        FileOutputStream outputStream = null;
+        String result = null;
+        File serverFile = null;
+        File serverFile1 = null;
+        String line = "";
+        String cvsSplitBy = "\\|";
+
+        JSONObject jsonObject = new JSONObject();
+
+        Iterator<String> itr = request.getFileNames();
+
+        MultipartFile mpf = request.getFile(itr.next());
+
+        try {
+            //just temporary save file info into ufile
+            byte[] bytes = mpf.getBytes();
+            mpf.getContentType();
+            String filename = mpf.getOriginalFilename();
+            Random randomGenerator = new Random();
+            int randomInt = randomGenerator.nextInt(10000);
+            String serverPath = System.getenv("JBOSS_BASE_DIR");
+            File dir1 = new File(serverPath + File.separator + "RejectedFile");
+            File dir = new File(serverPath + File.separator + "FileUploder");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            if (!dir1.exists()) {
+                dir1.mkdirs();
+            }
+            serverFile1 = new File(dir1.getAbsolutePath()
+                    + File.separator + filename);
+            serverFile = new File(dir.getAbsolutePath()
+                    + File.separator + filename);
+            BufferedOutputStream stream = new BufferedOutputStream(
+                    new FileOutputStream(serverFile));
+            stream.write(bytes);
+            stream.close();
+
+            logger.info("Server File Location="
+                    + serverFile.getAbsolutePath());
+
+
+		/*File serverFile=null;*/
+            List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+            List<Map<String, String>> list1 = new ArrayList<Map<String, String>>();
+
+
+            br = new BufferedReader(new FileReader(serverFile));
+            int count = 0;
+            while ((line = br.readLine()) != null) {
+                String[] customerData = line.split(cvsSplitBy);
+                int lent = customerData.length;
+                if (count != 0) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    HashMap<String, String> map1 = new HashMap<String, String>();
+                    if (!StringUtils.isEmpty(customerData[1]) && customerData[0].length() == 6 && customerData[3].length() == 10 && customerData[12].length() == 6) {
+                        System.out.println(customerData[0]);
+                        map.put("kycRequestId", customerData[0]);
+                        map.put("CustomerID", customerData[1]);
+                        map.put("Username", customerData[2]);
+                        map.put("CustomerPhone", customerData[3]);
+                        map.put("Email", customerData[4]);
+                        map.put("AddressID", customerData[5]);
+                        map.put("TimeSlot", customerData[6]);
+                        map.put("Priority", customerData[7]);
+                        map.put("AddressStreet1", customerData[8]);
+                        map.put("AddressStreet2", customerData[9]);
+                        map.put("City", customerData[10]);
+                        map.put("State", customerData[11]);
+                        map.put("Pincode", customerData[12]);
+                        map.put("AddressPhone", customerData[13]);
+                        map.put("VendorName", customerData[14]);
+                        map.put("StageId", customerData[15]);
+                        map.put("SubStageId", customerData[16]);
+                        map.put("CreatedTimestamp", customerData[17]);
+                        list.add(map);
+                    } else {
+                        map1.put("kycRequestId", customerData[0]);
+                        map1.put("CustomerID", customerData[1]);
+                        map1.put("Username", customerData[2]);
+                        map1.put("CustomerPhone", customerData[3]);
+                        map1.put("Email", customerData[4]);
+                        map1.put("AddressID", customerData[5]);
+                        map1.put("TimeSlot", customerData[6]);
+                        map1.put("Priority", customerData[7]);
+                        map1.put("AddressStreet1", customerData[8]);
+                        map1.put("AddressStreet2", customerData[9]);
+                        map1.put("City", customerData[10]);
+                        map1.put("State", customerData[11]);
+                        map1.put("Pincode", customerData[12]);
+                        map1.put("AddressPhone", customerData[13]);
+                        map1.put("VendorName", customerData[14]);
+                        map1.put("StageId", customerData[15]);
+                        map1.put("SubStageId", customerData[16]);
+                        map1.put("CreatedTimestamp", customerData[17]);
+                        list1.add(map1);
+                    }
+                }
+                count++;
+
+            }
+            if (list1.size() > 0) {
+                paytmMasterService.uploadRejectedData(list1, serverFile1);
+
+            }
+
+            System.out.println("list   " + list);
+            result = paytmMasterService.savePaytmMaster(list);
+            if ("done".equalsIgnoreCase(result)) {
+                result = "File Successfully Uploaded";
+            }
+            jsonObject.put("status", "success");
+        } catch (FileNotFoundException e) {
+            logger.error("File Not Found ", e);
+
+            e.printStackTrace();
+            result = "File not Uploaded";
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(" ", e);
+            result = "File not Uploaded";
+        } finally
+
+        {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        jsonObject.put("Message", result);
+
+        return jsonObject;
+    }
 
 
 
@@ -255,370 +403,380 @@ return jsonObject;
 	}*/
 
 
+    @RequestMapping(value = "/getFilePath", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getFilePath(@RequestParam("name") String name,
+                                  @RequestParam("file") MultipartFile file) {
+
+        JSONObject jsonObject = new JSONObject();
+        BufferedReader br = null;
+        InputStream inputStream = null;
+        FileOutputStream outputStream = null;
+        String result = null;
+        File serverFile = null;
+        String line = "";
+        String cvsSplitBy = "\\|";
+        try {
 
 
+            Random randomGenerator = new Random();
+            int randomInt = randomGenerator.nextInt(10000);
+            String serverPath = System.getenv("JBOSS_BASE_DIR");
+            String name1 = file.getName();
+            if (!file.isEmpty()) {
+                byte[] bytes = file.getBytes();
 
+                File dir = new File(serverPath + File.separator + "FileUploder");
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                // Create the file on server
+                serverFile = new File(dir.getAbsolutePath()
+                        + File.separator + "Test3" + randomInt + ".csv");
+                BufferedOutputStream stream = new BufferedOutputStream(
+                        new FileOutputStream(serverFile));
+                stream.write(bytes);
+                stream.close();
 
+                logger.info("Server File Location="
+                        + serverFile.getAbsolutePath());
 
-
-	@RequestMapping(value = "/getFilePath", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject getFilePath(@RequestParam("name") String name,
-							@RequestParam("file") MultipartFile file) {
-
-		JSONObject jsonObject=new JSONObject();
-		BufferedReader br = null;
-		InputStream inputStream = null;
-		FileOutputStream outputStream =null;
-		String result=null;
-		File serverFile=null;
-		String line = "";
-		String cvsSplitBy = "\\|";
-		try{
-
-
-
-
-			Random randomGenerator = new Random();
-			int randomInt = randomGenerator.nextInt(10000);
-			  String  serverPath=  System.getenv("JBOSS_BASE_DIR");
-			   String name1=  file.getName();
-			  if (!file.isEmpty()) {
-				byte[] bytes = file.getBytes();
-
-				File dir = new File(serverPath+File.separator+"FileUploder");
-				if (!dir.exists()) {
-					dir.mkdirs();
-				}
-				// Create the file on server
-				serverFile = new File(dir.getAbsolutePath()
-						+ File.separator + "Test3"+randomInt+".csv");
-				BufferedOutputStream stream = new BufferedOutputStream(
-						new FileOutputStream(serverFile));
-				stream.write(bytes);
-				stream.close();
-
-				logger.info("Server File Location="
-						+ serverFile.getAbsolutePath());
-
-			}
+            }
 
 
 		/*File serverFile=null;*/
-		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+            List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 
 
+            br = new BufferedReader(new FileReader(serverFile));
 
-			br = new BufferedReader(new FileReader(serverFile));
+            int count = 0;
+            while ((line = br.readLine()) != null) {
+                String[] customerData = line.split(cvsSplitBy);
+                int lent = customerData.length;
+                if (count != 0) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    System.out.println(customerData[0]);
+                    map.put("kycRequestId", customerData[0]);
+                    map.put("CustomerID", customerData[1]);
+                    map.put("Username", customerData[2]);
+                    map.put("CustomerPhone", customerData[3]);
+                    map.put("Email", customerData[4]);
+                    map.put("AddressID", customerData[5]);
+                    map.put("TimeSlot", customerData[6]);
+                    map.put("Priority", customerData[7]);
+                    map.put("AddressStreet1", customerData[8]);
+                    map.put("AddressStreet2", customerData[9]);
+                    map.put("City", customerData[10]);
+                    map.put("State", customerData[11]);
+                    map.put("Pincode", customerData[12]);
+                    System.out.println(customerData[12]);
+                    map.put("AddressPhone", customerData[13]);
+                    map.put("VendorName", customerData[14]);
+                    map.put("StageId", customerData[15]);
+                    map.put("SubStageId", customerData[16]);
+                    map.put("CreatedTimestamp", customerData[17]);
+                    list.add(map);
+                }
+                count++;
 
-			int count=0;
-			while ((line = br.readLine()) != null) {
-				String[] customerData = line.split(cvsSplitBy);
-				int lent= customerData.length;
-				if(count!=0 ) {
-					HashMap<String, String> map = new HashMap<String, String>();
-					System.out.println(customerData[0]);
-					map.put("kycRequestId", customerData[0]);
-					map.put("CustomerID", customerData[1]);
-					map.put("Username", customerData[2]);
-					map.put("CustomerPhone", customerData[3]);
-					map.put("Email", customerData[4]);
-					map.put("AddressID", customerData[5]);
-					map.put("TimeSlot", customerData[6]);
-					map.put("Priority", customerData[7]);
-					map.put("AddressStreet1", customerData[8]);
-					map.put("AddressStreet2", customerData[9]);
-					map.put("City", customerData[10]);
-					map.put("State", customerData[11]);
-					map.put("Pincode", customerData[12]);
-					System.out.println(customerData[12]);
-					map.put("AddressPhone", customerData[13]);
-					map.put("VendorName", customerData[14]);
-					map.put("StageId", customerData[15]);
-					map.put("SubStageId", customerData[16]);
-					map.put("CreatedTimestamp", customerData[17]);
-					list.add(map);
-				}
-				count++;
-
-			}
-			System.out.println("list   "+list);
-		   result=	paytmMasterService.savePaytmMaster(list);
-			if ("done".equalsIgnoreCase(result)){
-				result="success";
-			}
-			jsonObject.put("status","success");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			result="error";
-		} catch (Exception e) {
-			e.printStackTrace();
-			result="error";
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return jsonObject;
-	}
-
+            }
+            System.out.println("list   " + list);
+            result = paytmMasterService.savePaytmMaster(list);
+            if ("done".equalsIgnoreCase(result)) {
+                result = "success";
+            }
+            jsonObject.put("status", "success");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            result = "error";
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = "error";
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return jsonObject;
+    }
 
 
-	@RequestMapping(value = "/telecallingScreen", method ={ RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject telecallingScreen(HttpServletRequest  request){
-		String userName=null;
-		int cirCode=0;
-		HttpSession session=request.getSession(false);
-		if(session!=null){
-			userName=(String)session.getAttribute("name");
-			EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
-			if (emplogintableEntity!=null){
-				cirCode=emplogintableEntity.getCirCode();
-			}
-		}
-		JSONObject jsonObject =new JSONObject();
-		JSONObject teleJson=paytmMasterService.telecallingScreen(userName,cirCode);
-        List<StateMasterEntity> stateList=paytmMasterService.getStateList();
-		List<CallStatusMasterEntity> statusList= paytmMasterService.getStatusList();
-		JSONObject json= paytmMasterService.getPaytmMastData((String)teleJson.get("mobileNo"));
-		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-		Calendar date = Calendar.getInstance();
-		String dateList1[]=new String[7];
-		List<String> dateList=new ArrayList<>();
-		for(int i = 0; i < 7;i++){
+    @RequestMapping(value = "/telecallingScreen", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject telecallingScreen(HttpServletRequest request) {
+        String userName = null;
+        int cirCode = 0;
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            userName = (String) session.getAttribute("name");
+            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
+            if (emplogintableEntity != null) {
+                cirCode = emplogintableEntity.getCirCode();
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        JSONObject teleJson = paytmMasterService.telecallingScreen(userName, cirCode);
+        List<StateMasterEntity> stateList = paytmMasterService.getStateList();
+        List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
+        JSONObject json = paytmMasterService.getPaytmMastData((String) teleJson.get("mobileNo"));
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar date = Calendar.getInstance();
+        String dateList1[] = new String[7];
+        List<String> dateList = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
 
-			dateList1[i]  = format.format(date.getTime());
-			date.add(Calendar.DATE  , 1);
-			dateList.add(dateList1[i]);
-		}
+            dateList1[i] = format.format(date.getTime());
+            date.add(Calendar.DATE, 1);
+            dateList.add(dateList1[i]);
+        }
 
-        jsonObject.put("teleData",teleJson);
-		jsonObject.put("stateList",stateList);
-		jsonObject.put("statusList",statusList);
-		jsonObject.put("dateList",dateList);
-		jsonObject.put("paytmmastjson",json);
-		return jsonObject;
-	}
-	@RequestMapping(value = "/agentRegistration", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject agentRegistration(HttpServletRequest request){
-		String msg="";
-		JSONObject jsonObject=new JSONObject();
-		try {
+        jsonObject.put("teleData", teleJson);
+        jsonObject.put("stateList", stateList);
+        jsonObject.put("statusList", statusList);
+        jsonObject.put("dateList", dateList);
+        jsonObject.put("paytmmastjson", json);
+        return jsonObject;
+    }
 
-			String userName="system";
-			HttpSession session=request.getSession(false);
-			if(session!=null){
-				userName=(String)session.getAttribute("name");
-			}
+    @RequestMapping(value = "/agentRegistration", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject agentRegistration(HttpServletRequest request) {
+        String msg = "";
+        JSONObject jsonObject = new JSONObject();
+        try {
 
-			String agentName = request.getParameter("agent_name");
-			String agentCode = request.getParameter("agent_code");
-			String empCode = request.getParameter("employee");
-			String mobileNo = request.getParameter("phone");
-			String circleOffice = request.getParameter("circle_office");
-			String spokeCode = request.getParameter("spoke_code");
-			String avalTime = request.getParameter("avl_time");
-			String pincode = request.getParameter("pin_code");
-			String multipin = request.getParameter("multi_pin");
-			String email = request.getParameter("email");
-			PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
-			       paytmagententryEntity.setAfullname(agentName);
-			       paytmagententryEntity.setAcode(agentCode);
-			       paytmagententryEntity.setEmpcode(empCode);
-			       paytmagententryEntity.setAphone(mobileNo);
-			       paytmagententryEntity.setAspokecode(spokeCode);
-			       paytmagententryEntity.setAavailslot(avalTime);
-			       paytmagententryEntity.setApincode(pincode);
-			       paytmagententryEntity.setMulitplePin(multipin);
-			       paytmagententryEntity.setAemailId(email);
-			       paytmagententryEntity.setImportby(userName);
-			       paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
-		           msg= agentPaytmService.saveAgent(paytmagententryEntity);
-			if ("done".equalsIgnoreCase(msg)){
-				msg="success";
-			}
-          jsonObject.put("status",msg);
+            String userName = "system";
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                userName = (String) session.getAttribute("name");
+            }
 
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		    return  jsonObject;
-	}
-	@RequestMapping(value = "/customerCalling", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public  String Calling(HttpServletRequest request){
+            String agentName = request.getParameter("agent_name");
+            String agentCode = request.getParameter("agent_code");
+            String empCode = request.getParameter("employee");
+            String mobileNo = request.getParameter("phone");
+            String circleOffice = request.getParameter("circle_office");
+            String spokeCode = request.getParameter("spoke_code");
+            String avalTime = request.getParameter("avl_time");
+            String pincode = request.getParameter("pin_code");
+            String multipin = request.getParameter("multi_pin");
+            String email = request.getParameter("email");
+            PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
+            paytmagententryEntity.setAfullname(agentName);
+            paytmagententryEntity.setAcode(agentCode);
+            paytmagententryEntity.setEmpcode(empCode);
+            paytmagententryEntity.setAphone(mobileNo);
+            paytmagententryEntity.setAspokecode(spokeCode);
+            paytmagententryEntity.setAavailslot(avalTime);
+            paytmagententryEntity.setApincode(pincode);
+            paytmagententryEntity.setMulitplePin(multipin);
+            paytmagententryEntity.setAemailId(email);
+            paytmagententryEntity.setImportby(userName);
+            paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
+            msg = agentPaytmService.saveAgent(paytmagententryEntity);
+            if ("done".equalsIgnoreCase(msg)) {
+                msg = "success";
+            } else {
+                msg = "error";
+            }
+            jsonObject.put("status", msg);
 
-		String userName="system";
-		String agentNo="";
-		HttpSession session=request.getSession(false);
-		if(session!=null){
-			userName=(String)session.getAttribute("name");
-			agentNo=userService.getUserByEmpcode(userName).getEmpPhone();
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
 
-		String number= request.getParameter("customer_number");
+    @RequestMapping(value = "/customerCalling", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public String Calling(HttpServletRequest request) {
 
-		String result=customerCalling(number,agentNo);
+        String userName = "system";
+        String agentNo = "";
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            userName = (String) session.getAttribute("name");
+            agentNo = userService.getUserByEmpcode(userName).getEmpPhone();
+        }
 
-		return "success";
-	}
+        String number = request.getParameter("customer_number");
 
+        String result = customerCalling(number, agentNo);
 
-	private String customerCalling(String mobileNo,String agentNumber ){
-		String msg=null;
-		String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91"+mobileNo+"&agent_number=+91"+agentNumber;
-	   try {
-	      URL obj = new URL(url);
-	      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-	      con.setRequestMethod("GET");
-
-	int responseCode = con.getResponseCode();
-	System.out.println("\nSending 'GET' request to URL : " + url);
-	System.out.println("Response Code : " + responseCode);
-
-	BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	String inputLine;
-	StringBuffer response = new StringBuffer();
-
-	while ((inputLine = in.readLine()) != null) {
-		response.append(inputLine);
-	}
-	in.close();
-
-	//print result
-	msg=response.toString();
-     } catch (Exception e){
-          e.printStackTrace();
-      }
-	return  msg;
-	}
-
-	@RequestMapping(value = "/getCirles", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-    public JSONObject getCircleName(){
+        return "success";
+    }
 
 
-		JSONObject jsonObject=new JSONObject();
-		List<String> circles= circleService.getCirleList();
-         jsonObject.put("circles",circles);
-	 return  jsonObject;
-}
-	@RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject getSpokeCode(@RequestParam (value = "circleName")String circleName){
-	  JSONObject jsonObject=new JSONObject();
-		List<String> spokeList=circleService.getSpokeList(circleName);
-		jsonObject.put("spokeList",spokeList);
-	  return  jsonObject;
-}
+    private String customerCalling(String mobileNo, String agentNumber) {
+        String msg = null;
+        String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91" + mobileNo + "&agent_number=+91" + agentNumber;
+        try {
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
 
-	@RequestMapping(value = "/postCalling", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject postCallig(HttpServletRequest request,HttpServletResponse  response){
-            String result=null;
-		    String importby="System";
-		    JSONObject  jsonObject=new JSONObject();
-		try {
-			HttpSession session=request.getSession(false);
-			if(session!=null){
-				importby=(String)session.getAttribute("name");
-			}
-			String number = request.getParameter("mobileNo");
-			String name = request.getParameter("name");
-			String address = request.getParameter("address");
-			String area = request.getParameter("area");
-			String emailId = request.getParameter("emailId");
-			String city = request.getParameter("city");
-			String state = request.getParameter("state");
-			String pinCode = request.getParameter("pincode");
-			String landMark = request.getParameter("landmark");
-			String visitDate = request.getParameter("visitDate");
-			String visitTime1 = request.getParameter("visitTime");
-			String status = request.getParameter("status");
-			String importType = "admin";
-			Map<String, String> map = new HashMap<String, String>();
-			String[]  visitTime= visitTime1.split(":");
-			System.out.println(visitTime[0]);
-			map.put("number", number);
-			map.put("name", name);
-			map.put("address", address);
-			map.put("area", area);
-			map.put("emailId", emailId);
-			map.put("city", city);
-			map.put("state", state);
-			map.put("pinCode", pinCode);
-			map.put("landmark", landMark);
-			map.put("visitDate", visitDate);
-			map.put("visitTime",visitTime[0]);
-			map.put("status", status);
-			map.put("importby", importby);
-			map.put("importType", importType);
-	     	result=postCallingService.saveCallingData(map);
-     		logger.info(" Result   "+result);
-			if ("done".equalsIgnoreCase(result)){
-				result="success";
-			}
-		}catch (Exception e){
-			logger.error("",e);
-			e.printStackTrace();
-			result="error";
-		}
-           jsonObject.put("status",result);
-		return  jsonObject;
-	}
+            int responseCode = con.getResponseCode();
+            System.out.println("\nSending 'GET' request to URL : " + url);
+            System.out.println("Response Code : " + responseCode);
 
-	@RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject postCallingStatus(HttpServletRequest request,HttpServletResponse  response){
-		       Map<String, String> map = new HashMap<String, String>();
-		       String result=null;
-		       String importby="System";
-		       JSONObject jsonObject=new JSONObject();
-		try {
-			HttpSession session=request.getSession(false);
-			if(session!=null){
-				importby=(String)session.getAttribute("name");
-			}
-			String importType = "Admin";
-			String mobileNo = request.getParameter("mobileNo");
-			String status = request.getParameter("status");
-			map.put("number", mobileNo);
-			map.put("status", status);
-			map.put("importby", importby);
-			map.put("importType", importType);
-			result = postCallingService.saveCallingData(map);
-			if("done".equalsIgnoreCase(result))
-			{
-				result="success";
-			}else{
-				result="error";
-			}
-		}catch (Exception e){
-			e.printStackTrace();;
-			logger.error("error to posting data ",e);
-		}
-		jsonObject.put("status",result);
-		return  jsonObject;
-	}
-	@RequestMapping(value = "/getReportsType", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-	public JSONObject getReportTypes(){
-		JSONObject jsonObject=new JSONObject();
-        List<ReportMastEntity> reportTypes= circleService.getReporttypes();
-         jsonObject.put("reportTypes",reportTypes);
-		return  jsonObject;
-	}
-	@RequestMapping(value = "/getReports", method = {RequestMethod.GET,RequestMethod.POST})
-	@ResponseBody
-    public JSONObject getReports(HttpServletRequest request){
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
 
-		JSONObject jsonObject=new JSONObject();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            //print result
+            msg = response.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return msg;
+    }
+
+    @RequestMapping(value = "/getCirles", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getCircleName(HttpServletRequest request) {
+        int circleCode = 4;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                circleCode = (Integer) session.getAttribute("cirCode");
+            }
+
+
+            List<String> circles = circleService.getCirleList(circleCode);
+            String circleName  = circles.get(0);
+            List<String> spokeList = circleService.getSpokeList(circleName);
+            jsonObject.put("circles", circles);
+            jsonObject.put("spokeList", spokeList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("", e);
+        }
+        return jsonObject;
+    }
+
+    @RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getSpokeCode(@RequestParam(value = "circleName") String circleName) {
+        JSONObject jsonObject = new JSONObject();
+        List<String> spokeList = circleService.getSpokeList(circleName);
+        jsonObject.put("spokeList", spokeList);
+        return jsonObject;
+    }
+
+    @RequestMapping(value = "/postCalling", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject postCallig(HttpServletRequest request, HttpServletResponse response) {
+        String result = null;
+        String importby = "System";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importby = (String) session.getAttribute("name");
+            }
+            String number = request.getParameter("mobileNo");
+            String name = request.getParameter("name");
+            String address = request.getParameter("address");
+            String area = request.getParameter("area");
+            String emailId = request.getParameter("emailId");
+            String city = request.getParameter("city");
+            String state = request.getParameter("state");
+            String pinCode = request.getParameter("pincode");
+            String landMark = request.getParameter("landmark");
+            String visitDate = request.getParameter("visitDate");
+            String visitTime1 = request.getParameter("visitTime");
+            String status = request.getParameter("status");
+            String importType = "admin";
+            Map<String, String> map = new HashMap<String, String>();
+            String[] visitTime = visitTime1.split(":");
+            System.out.println(visitTime[0]);
+            map.put("number", number);
+            map.put("name", name);
+            map.put("address", address);
+            map.put("area", area);
+            map.put("emailId", emailId);
+            map.put("city", city);
+            map.put("state", state);
+            map.put("pinCode", pinCode);
+            map.put("landmark", landMark);
+            map.put("visitDate", visitDate);
+            map.put("visitTime", visitTime[0]);
+            map.put("status", status);
+            map.put("importby", importby);
+            map.put("importType", importType);
+            result = postCallingService.saveCallingData(map);
+            logger.info(" Result   " + result);
+            if ("done".equalsIgnoreCase(result)) {
+                result = "success";
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+            e.printStackTrace();
+            result = "error";
+        }
+        jsonObject.put("status", result);
+        return jsonObject;
+    }
+
+    @RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject postCallingStatus(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> map = new HashMap<String, String>();
+        String result = null;
+        String importby = "System";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importby = (String) session.getAttribute("name");
+            }
+            String importType = "Admin";
+            String mobileNo = request.getParameter("mobileNo");
+            String status = request.getParameter("status");
+            map.put("number", mobileNo);
+            map.put("status", status);
+            map.put("importby", importby);
+            map.put("importType", importType);
+            result = postCallingService.saveCallingData(map);
+            if ("done".equalsIgnoreCase(result)) {
+                result = "success";
+            } else {
+                result = "error";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ;
+            logger.error("error to posting data ", e);
+        }
+        jsonObject.put("status", result);
+        return jsonObject;
+    }
+
+    @RequestMapping(value = "/getReportsType", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getReportTypes() {
+        JSONObject jsonObject = new JSONObject();
+        List<ReportMastEntity> reportTypes = circleService.getReporttypes();
+        jsonObject.put("reportTypes", reportTypes);
+        return jsonObject;
+    }
+
+    @RequestMapping(value = "/getReports", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getReports(HttpServletRequest request) {
+
+        JSONObject jsonObject = new JSONObject();
 
 	/*	HttpSession session=request.getSession(false);
 		if(session!=null){
@@ -630,18 +788,18 @@ return jsonObject;
 			System.out.println(System.getenv().get(key));
 		});*/
 
-		// base directory  JBOSS_BASE_DIR
-		//JBoss log directory   JBOSS_LOG_DIR
+        // base directory  JBOSS_BASE_DIR
+        //JBoss log directory   JBOSS_LOG_DIR
 
-		String from=request.getParameter("from");
-		String to= request.getParameter("to");
-		String type=  request.getParameter("type");
-		from=from.substring(6,10)+"-"+from.substring(3,5)+"-"+from.substring(0,2);
-	    to=to.substring(6,10)+"-"+to.substring(3,5)+"-"+to.substring(0,2);
-     	jsonObject=reportService.getReports(from,to,"TeleCalling");
+        String from = request.getParameter("from");
+        String to = request.getParameter("to");
+        String type = request.getParameter("type");
+        from = from.substring(6, 10) + "-" + from.substring(3, 5) + "-" + from.substring(0, 2);
+        to = to.substring(6, 10) + "-" + to.substring(3, 5) + "-" + to.substring(0, 2);
+        jsonObject = reportService.getReports(from, to, "TeleCalling");
 
-		return jsonObject;
-     }
+        return jsonObject;
+    }
 
 
 /*	public ResponseEntity<ByteArray> downLoadFile(){
@@ -661,7 +819,6 @@ return jsonObject;
 	}*/
 
 
-
 }
 /*
 
@@ -669,8 +826,8 @@ return jsonObject;
 	 }
 */
 
-		// List<Map<?, ?>> data = readObjectsFromCsv(input);
-		// writeAsJson(data, output);
+// List<Map<?, ?>> data = readObjectsFromCsv(input);
+// writeAsJson(data, output);
 
 
 

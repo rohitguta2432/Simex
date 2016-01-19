@@ -95,7 +95,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try{
             entityManager = entityManagerFactory.createEntityManager();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
-            Query query1= entityManager.createNativeQuery("{call sp_GetTeleDataFinal(?)}");
+            Query query1= entityManager.createNativeQuery("{call sp_GetTeleDataFinal1(?)}");
             query1.setParameter(1,username);
             Object[] s = (Object[])query1.getSingleResult();
             if (s.length>0) {
