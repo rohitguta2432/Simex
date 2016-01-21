@@ -141,6 +141,16 @@ public class PostCallingServiceImp implements PostCallingService {
         return result;
     }
 
+    @Override
+    public String updateTeleCall(TelecallMastEntity telecallMastEntity) {
+        return postCallingDao.updateTeleCall(telecallMastEntity);
+    }
+
+    @Override
+    public TelecallMastEntity getByPrimaryKey(String phoneNumber) {
+        return postCallingDao.getByPrimaryKey(phoneNumber);
+    }
+
     private String sendSms(String mobileno, String text) {
         String result = null;
         SmsSendlogEntity smsSendlogEntity = null;

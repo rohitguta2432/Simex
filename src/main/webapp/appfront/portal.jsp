@@ -56,8 +56,18 @@
 <body ng-app="routerApp">
 
 <%
+    String rolename="";
   String name=(String)session.getAttribute("name");
   String role=(String)session.getAttribute("role");
+    if ("ADM".equalsIgnoreCase(role)){
+        rolename="Admin";
+    }
+    if ("HR".equalsIgnoreCase(role)){
+        rolename="HR";
+    }
+    if ("A1".equalsIgnoreCase(role)){
+        rolename="Agent";
+    }
   if(name==null){
 %>
    <jsp:forward page="/"/>
@@ -93,7 +103,7 @@
                 </div>
                 <section>
                   <h2>
-                                        <span class="profile"><span>Admin Login </span>
+                                        <span class="profile"><span><%=rolename%> Login </span>
                                         </span>
                   </h2>
                 </section>
@@ -224,7 +234,7 @@
 <footer>
   <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="border-top:1px solid #ddd; text-align:center; padding-top:5px;">
-      Copyright &copy; 2015,  <img src="assets/img/softage_logo.png" alt="softage" style="margin-top: -1px; height:20px;" />
+      Copyright &copy; 2016,  <img src="assets/img/softage_logo.png" alt="softage" style="margin-top: -1px; height:20px;" />
     </div>
   </div>
 </footer>

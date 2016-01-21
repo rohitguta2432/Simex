@@ -47,7 +47,7 @@ public class ReportDaoImp implements ReportDao {
                     json.put("Attempts", objects[3]);
                     byte attempts = (Byte) objects[3];
 
-              /*      Docs Incomplete
+              /*    Docs Incomplete
                     Call Back Later
                     Not Interested
                     Not Reachable
@@ -56,7 +56,7 @@ public class ReportDaoImp implements ReportDao {
                     Wrong Number
                     Already picked By Other Person
                     User Out Of Station
-                    Ok For Docs Collection*/
+                    Ok For Docs Collection   */
                     if (callStatus.equalsIgnoreCase("Not Interested") || callStatus.equalsIgnoreCase("Wrong Number") || callStatus.equalsIgnoreCase("Already picked By Other Person")) {
                         status = "Close";
                     } else if (attempts == 9 && callStatus.equalsIgnoreCase("Ok For Docs Collection")) {

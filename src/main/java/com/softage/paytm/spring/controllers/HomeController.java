@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
 import javassist.bytecode.ByteArray;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,6 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.*;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -55,6 +55,8 @@ class HomeController {
     private UserService userService;
     @Autowired
     private ReportService reportService;
+    @Autowired
+    private PostCallingService callingService;
 
     /**
      * Simply selects the home view to render by returning its name.
@@ -231,9 +233,8 @@ return jsonObject;
 
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public
     @ResponseBody
-    JSONObject upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+    public JSONObject upload(MultipartHttpServletRequest request, HttpServletResponse response) {
         BufferedReader br = null;
         InputStream inputStream = null;
         FileOutputStream outputStream = null;
@@ -241,6 +242,8 @@ return jsonObject;
         File serverFile = null;
         File serverFile1 = null;
         String line = "";
+        int rejectCount=0;
+        TelecallMastEntity telecallMastEntity=null;
         String cvsSplitBy = "\\|";
 
         JSONObject jsonObject = new JSONObject();
@@ -285,13 +288,23 @@ return jsonObject;
 
             br = new BufferedReader(new FileReader(serverFile));
             int count = 0;
+            int successCount=0;
             while ((line = br.readLine()) != null) {
                 String[] customerData = line.split(cvsSplitBy);
                 int lent = customerData.length;
+                JSONObject json=new JSONObject();
                 if (count != 0) {
                     HashMap<String, String> map = new HashMap<String, String>();
                     HashMap<String, String> map1 = new HashMap<String, String>();
-                    if (!StringUtils.isEmpty(customerData[1]) && customerData[0].length() == 6 && customerData[3].length() == 10 && customerData[12].length() == 6) {
+                    if (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) {
+                        telecallMastEntity  =  callingService.getByPrimaryKey(customerData[3]);
+                        if (telecallMastEntity!=null){
+                            byte attempt=0;
+                            telecallMastEntity.setTmAttempts(attempt);
+                           String msg= callingService.updateTeleCall(telecallMastEntity);
+                        }
+                    }
+                    if (!StringUtils.isEmpty(customerData[1]) && customerData[0].length() == 6 && customerData[3].length() == 10 &&StringUtils.isNumeric(customerData[3])&& customerData[12].length() == 6) {
                         System.out.println(customerData[0]);
                         map.put("kycRequestId", customerData[0]);
                         map.put("CustomerID", customerData[1]);
@@ -312,40 +325,33 @@ return jsonObject;
                         map.put("SubStageId", customerData[16]);
                         map.put("CreatedTimestamp", customerData[17]);
                         list.add(map);
-                    } else {
-                        map1.put("kycRequestId", customerData[0]);
-                        map1.put("CustomerID", customerData[1]);
-                        map1.put("Username", customerData[2]);
-                        map1.put("CustomerPhone", customerData[3]);
-                        map1.put("Email", customerData[4]);
-                        map1.put("AddressID", customerData[5]);
-                        map1.put("TimeSlot", customerData[6]);
-                        map1.put("Priority", customerData[7]);
-                        map1.put("AddressStreet1", customerData[8]);
-                        map1.put("AddressStreet2", customerData[9]);
-                        map1.put("City", customerData[10]);
-                        map1.put("State", customerData[11]);
-                        map1.put("Pincode", customerData[12]);
-                        map1.put("AddressPhone", customerData[13]);
-                        map1.put("VendorName", customerData[14]);
-                        map1.put("StageId", customerData[15]);
-                        map1.put("SubStageId", customerData[16]);
-                        map1.put("CreatedTimestamp", customerData[17]);
-                        list1.add(map1);
+                        successCount++;
+                    } else if (customerData[12]==null&&customerData[3]==null){
+                        json.put("CustomerID",customerData[1]);
+                        json.put("Resion","pincode and mobile number not valid check it try again");
+
+                    }else if(customerData[12]==null){
+                        json.put("CustomerID",customerData[1]);
+                        json.put("Resion","pinCode not valid check it try again");
+                    }else if(customerData[3]==null){
+                        json.put("CustomerID",customerData[1]);
+                        json.put("Resion","mobile number not valid try again");
                     }
                 }
                 count++;
+                jsonObject.put("rejectedRecord",json);
 
             }
-            if (list1.size() > 0) {
+          /*  if (list1.size() > 0) {
                 paytmMasterService.uploadRejectedData(list1, serverFile1);
 
-            }
+            }*/
 
             System.out.println("list   " + list);
             result = paytmMasterService.savePaytmMaster(list);
+            rejectCount=(count-1)-successCount;
             if ("done".equalsIgnoreCase(result)) {
-                result = "File Successfully Uploaded";
+                result = "Successfully Uploded Record  = "+successCount+" Rejected Record ="+rejectCount;
             }
             jsonObject.put("status", "success");
         } catch (FileNotFoundException e) {
@@ -380,7 +386,25 @@ return jsonObject;
 
 
 
-
+  /*  map1.put("kycRequestId", customerData[0]);
+    map1.put("CustomerID", customerData[1]);
+    map1.put("Username", customerData[2]);
+    map1.put("CustomerPhone", customerData[3]);
+    map1.put("Email", customerData[4]);
+    map1.put("AddressID", customerData[5]);
+    map1.put("TimeSlot", customerData[6]);
+    map1.put("Priority", customerData[7]);
+    map1.put("AddressStreet1", customerData[8]);
+    map1.put("AddressStreet2", customerData[9]);
+    map1.put("City", customerData[10]);
+    map1.put("State", customerData[11]);
+    map1.put("Pincode", customerData[12]);
+    map1.put("AddressPhone", customerData[13]);
+    map1.put("VendorName", customerData[14]);
+    map1.put("StageId", customerData[15]);
+    map1.put("SubStageId", customerData[16]);
+    map1.put("CreatedTimestamp", customerData[17]);
+    list1.add(map1);*/
 
 
 
