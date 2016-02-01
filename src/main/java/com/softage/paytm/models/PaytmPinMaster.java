@@ -15,8 +15,22 @@ public class PaytmPinMaster implements Serializable{
     private String state;
     private String district;
 
+    @Override
+    public String toString() {
+        return "PaytmPinMaster{" +
+                "id=" + id +
+                ", pinCode=" + pinCode +
+                ", state='" + state + '\'' +
+                ", district='" + district + '\'' +
+                ", circleName='" + circleName + '\'' +
+                '}';
+    }
+
+    private String circleName;
+
+
+
     @Id
-    @Basic
     @GeneratedValue
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
     public int getId() {
@@ -27,7 +41,7 @@ public class PaytmPinMaster implements Serializable{
         this.id = id;
     }
     @Basic
-    @Column(name = "pincode", nullable = false, insertable = true, updatable = true)
+    @Column(name = "pin_code", nullable = false, insertable = true, updatable = true)
     public int getPinCode() {
         return pinCode;
     }
@@ -45,12 +59,21 @@ public class PaytmPinMaster implements Serializable{
         this.state = state;
     }
     @Basic
-    @Column(name = "district", nullable = false, insertable = true, updatable = true)
+    @Column(name = "districtname", nullable = false, insertable = true, updatable = true)
     public String getDistrict() {
         return district;
     }
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+    @Basic
+    @Column(name = "circle_name", nullable = false, insertable = true, updatable = true)
+    public String getCircleName() {
+        return circleName;
+    }
+
+    public void setCircleName(String circleName) {
+        this.circleName = circleName;
     }
 }

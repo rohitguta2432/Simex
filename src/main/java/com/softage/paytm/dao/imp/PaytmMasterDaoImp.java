@@ -1,6 +1,7 @@
 package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.PaytmMasterDao;
+import com.softage.paytm.models.AllocationMastEntity;
 import com.softage.paytm.models.CallStatusMasterEntity;
 import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.StateMasterEntity;
@@ -164,5 +165,31 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             }
         }
         return  listStatus;
+    }
+
+    @Override
+    public PaytmMastEntity getPaytmMaster(String mobileNo) {
+        EntityManager entityManager = null;
+        PaytmMastEntity paytmMastEntity=null;
+        Query query=null;
+        try
+        {
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select pm from PaytmMastEntity pm where pm.customerPhone=:mobileno";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("mobileno",mobileNo);
+            paytmMastEntity = (PaytmMastEntity)query.getSingleResult();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  paytmMastEntity;
     }
 }

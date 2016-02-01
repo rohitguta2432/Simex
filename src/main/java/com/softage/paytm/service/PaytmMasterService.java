@@ -18,6 +18,7 @@ public interface PaytmMasterService {
     public String savePaytmMaster(List<Map<String,String>> paytmList);
 
     public JSONObject getPaytmMastData(String mobileNo);
+    public PaytmMastEntity getPaytmMaster(String mobileNo);
     public JSONObject telecallingScreen(String userName,int cirCode);
     public List<StateMasterEntity> getStateList();
     public List<CallStatusMasterEntity> getStatusList();

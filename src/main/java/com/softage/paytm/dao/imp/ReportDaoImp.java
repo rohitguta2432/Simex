@@ -27,7 +27,7 @@ public class ReportDaoImp implements ReportDao {
         List list = new ArrayList<>();
         Query query = null;
         JSONObject jsonObject = new JSONObject();
-      //  String status = "Open";
+        //  String status = "Open";
         try {
             entityManager = entityManagerFactory.createEntityManager();
             query = entityManager.createNativeQuery("{call sp_getreportTelecalling(?,?)}");
@@ -85,6 +85,61 @@ public class ReportDaoImp implements ReportDao {
                     json.put("Agent_Code", objects[14]);
                     json.put("Status", status);
                     jsonObject.put("record-" + i, json);
+                }
+                i++;
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject getReOpenCalling(String from, String to, JSONObject jsonObject) {
+
+        EntityManager entityManager = null;
+        List list = new ArrayList<>();
+        Query query = null;
+        //  String status = "Open";
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            query = entityManager.createNativeQuery("{call sp_getReopenreportTelecalling(?,?)}");
+            query.setParameter(1, from);
+            query.setParameter(2, to);
+            List<Object[]> resultList = query.getResultList();
+            int i = 1;
+            for (Object[] objects : resultList) {
+                String status = "Open";
+                if (objects.length > 0) {
+
+                    JSONObject json = new JSONObject();
+                    json.put("CustomerId", objects[0]);
+                    json.put("MobileNumber", objects[1]);
+                    json.put("CallStatus", objects[2]);
+                    json.put("Attempts", objects[3]);
+                    byte attempts = (Byte) objects[3];
+                    if (attempts == 9) {
+                        status = "Close";
+                    }
+                    json.put("CallDateTime", objects[4].toString());
+                    System.out.println(objects[5].toString());
+                    json.put("Tele-CallerName", objects[5]);
+                    json.put("CustomerName", "");
+                    json.put("AppointmentDate", "");
+                    json.put("AppointmentTime", "");
+                    json.put("Address", "");
+                    json.put("Landmark", "");
+                    json.put("City", "");
+                    json.put("State", "");
+                    json.put("Pincode", "");
+                    json.put("Agent_Code", "");
+                    json.put("Status", "close");
+                    jsonObject.put("Rerecord-" + i, json);
                 }
                 i++;
 

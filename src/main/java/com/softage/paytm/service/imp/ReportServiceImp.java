@@ -21,6 +21,7 @@ public class ReportServiceImp implements ReportService {
               if("TeleCalling".equalsIgnoreCase(type)){
 
                   jsonObject= reportDao.getReports(from,to,type);
+                  jsonObject= reportDao.getReOpenCalling(from,to,jsonObject);
               }
         return jsonObject;
     }

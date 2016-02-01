@@ -1,4 +1,4 @@
-var routerApp = angular.module('routerApp', ['ui.router']);
+var routerApp = angular.module('routerApp', ['ui.router','ngMaterial']);
 
 routerApp.config(function($stateProvider, $urlRouterProvider) {
 
@@ -40,7 +40,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
 
 });
 
-routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', function($scope,$http,$q,$log,$location){
+routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
 
     $scope.name='';
     $scope.agent_code='';
@@ -65,8 +65,19 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
             }).error(function(error){dfr.reject("Failed");});
         return dfr.promise;
     };
+    $scope.getcircleoffice().then(function(data){
+        //console.log('data:   '+data);
+        $scope.circleofiice= data.circles;
+        $scope.offices1= data.spokeList;
+        console.log($scope.circleofiice);
+        console.log($scope.offices1);
+        // console.log( $scope.offices);
+    }, function(reason) {
+        console.log('Error:   '+reason);
+    });
 
-    $scope.spokecode = function(id){
+
+    /*$scope.spokecode = function(id){
         var dfr = $q.defer();
         $http.get('http://localhost:8080/paytm/getSpokeCode?circleName='+id).
             success(function(data) {
@@ -91,12 +102,12 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
             $scope.codes = data.spokeList;
         }, function(reason) {
         });
-    }
+    }*/
 
 
     $scope.errormessage = '';
 
-    $scope.submit = function($event) {
+    $scope.submit = function(ev) {
 
 
 
@@ -104,31 +115,31 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
         //alert('fdsfsd');
         if($scope.name.length == 0 || $scope.name == undefined){
             //alert('Agent Name is not valid');
-            $event.preventDefault();
+            ev.preventDefault();
         }
         else if($scope.agent_code.length == 0 || $scope.agent_code == undefined){
             // alert('Agent Code is not valid');
-            $event.preventDefault(); $event.preventDefault();
+            ev.preventDefault();
         }
         else if( $scope.employee.length == 0 ||  $scope.employee == undefined){
             //  alert('Enter the name Employee');
-            $event.preventDefault();
+            ev.preventDefault();
         }
         else if($scope.phone.length == 0 || $scope.phone == undefined){
             // alert('Enter the Phone Number');
-            $event.preventDefault();
+            ev.preventDefault();
         }
-        else if($scope.circle_office.length == 0 || $scope.circle_office == undefined){
+       /* else if($scope.circle_office.length == 0 || $scope.circle_office == undefined){
             // alert('Select Circle Office');
-            $event.preventDefault();
-        }
+            ev.preventDefault();
+        }*/
         else if($scope.spoke_code.length == 0 || $scope.spoke_code == undefined){
             //  alert('Select Spoke Code');
-            $event.preventDefault();
+            ev.preventDefault();
         }
         else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
             // alert('Enter Pin Number');
-            $event.preventDefault();
+            ev.preventDefault();
         }
         else {
            //
@@ -139,7 +150,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
             {
                 pin = 'N';
             }
-            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&employee=' + $scope.employee + '&phone=' + $scope.phone + '&circle_office=' + $scope.circle_office + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code + '&multi_pin=' + pin + '&email=' + $scope.email;
+            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&employee=' + $scope.employee + '&phone=' + $scope.phone + '&circle_office=' + $scope.circleofiice + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code + '&multi_pin=' + pin + '&email=' + $scope.email;
 
 
             console.log(data);
@@ -149,13 +160,42 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
                     $scope.message = data;
 
                     if(data.status == 'success'){
-                        $scope.successTextAlert = "Agent Successfully Registered";
+                        /*$scope.successTextAlert = "Agent Successfully Registered";
                         window.setTimeout(function(){
                             location.reload();
-                        }, 2000);
+                        }, 2000);*/
+                        $scope.status = '';
+                        $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                //.title('This is an alert title')
+                                .textContent(data.msg)
+                                .ariaLabel('Alert Dialog Demo')
+                                .ok('OK')
+                                .targetEvent(ev)
+
+                        );
+                        ClearForm();
                     }
                     if(data.status == 'error'){
-                        alert('Agent Already Registered');
+                       // alert('Agent Already Registered');
+                        $scope.status = '';
+                        $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title('')
+                                .textContent(data.msg)
+                                .ariaLabel('Alert Dialog Demo')
+                                .ok('OK')
+                                .targetEvent(ev)
+
+                        );
                     }
                 })
                 .error(function (data, status, headers, config) {
@@ -165,11 +205,26 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location', fun
 
         };
     }
+
+    function ClearForm() {
+        //$scope.FileDescription = '';
+        angular.forEach(angular.element("input[type='text'],select"), function (inputElem) {
+            angular.element(inputElem).val(null);
+        });
+
+        $scope.IsFormSubmitted = false;
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.SelectedFileForUpload = null;
+
+    }
 }]);
 
 
 
-routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', function($scope,$http,$q,$log,$location){
+routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
 
     /* $scope.message = {
      text: 'hello world!',
@@ -246,7 +301,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
 
     };
 
-    $scope.screen = function(){
+    $scope.screen = function(ev){
 
         var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.state.stateCode + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
         $http.get('http://localhost:8080/paytm/postCalling?'+ data)
@@ -255,10 +310,31 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location', f
                 $scope.message = data;
                  console.log(data.status);
                 if(data.status == 'success'){
-                    $scope.successTextAlert = "Data Successfully inserted";
+                  alert(data.msg);
+                    location.reload();
+                    /*$scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
                     window.setTimeout(function(){
-                        location.reload();
-                    }, 3000);
+                            location.reload();
+                        }, 3000);
+*/
+                    //ClearForm();
+
+                    //$scope.successTextAlert = "Data Successfully inserted";
+                    //window.setTimeout(function(){
+                    //    location.reload();
+                    //}, 3000);
                 }
 
             else{
@@ -460,7 +536,7 @@ routerApp.directive('fileModel', ['$parse', function ($parse) {
 }]);
 
 
-routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService', function ($scope, $http, FileProductUploadService) {
+routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$mdMedia','$mdDialog', function ($scope, $http, FileProductUploadService,$mdMedia,$mdDialog) {
 
     $scope.Message = '';
     $scope.FileInvalidMessage = '';
@@ -485,7 +561,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService', f
         $scope.SelectedFileForUpload = file[0];
     };
 
-    $scope.SaveFile = function () {
+    $scope.SaveFile = function (ev) {
         $scope.IsFormSubmitted = true;
         $scope.Message = '';
         $scope.checkFileValid($scope.SelectedFileForUpload);
@@ -493,12 +569,75 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService', f
         if ($scope.IsFormValid && $scope.IsFileValid) {
             FileProductUploadService.UploadFile($scope.SelectedFileForUpload).then(function (d) {
                 //alert(d.Message);c
-                alert(d.data.Message);
-                console.log(d.data.Message);
+                //alert(d.data.Message);
+                //console.log(d.data.Message);
+
+               /* $scope.status = '';
+                $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                $mdDialog.show(
+                    $mdDialog.alert()
+                        .parent(angular.element(document.querySelector('#popupContainer')))
+                        .clickOutsideToClose(true)
+                        .title('')
+                        .textContent(d.data.Message)
+                        .ariaLabel('Alert Dialog Demo')
+                        .ok('Got it!')
+                        .targetEvent(ev)
+                );
+
+                $scope.rejectReport = d.data.rejectedRecord
+                window.setTimeout(function(){
+                    $scope.exportToExcel();
+                    //location.reload();
+
+                }, 3000)*/
+
+                var confirm = $mdDialog.confirm()
+                    // .title('Would you like to delete your debt?')
+                    .textContent(d.data.Message)
+                    .ariaLabel('Lucky day')
+                    .targetEvent(ev)
+                    .ok('OK')
+                // .cancel('Cancel');
+                $mdDialog.show(confirm).then(function() {
+                    $scope.status = 'You decided to get rid of your debt.';
+                    $scope.rejectReport = d.data.rejectedRecord
+                    window.setTimeout(function(){
+                        $scope.exportToExcel();
+                        //location.reload();
+
+                    }, 3000)
+                    //$scope.status = 'You decided to get rid of your debt.';
+                }, function() {
+                    $scope.status = 'You decided to keep your debt.';
+                });
+
+
                 ClearForm();
 
             }, function (err) {
-                alert(err);
+               // alert(err);
+
+                var confirm = $mdDialog.confirm()
+                    // .title('Would you like to delete your debt?')
+                    .textContent(err)
+                    .ariaLabel('Lucky day')
+                    .targetEvent(ev)
+                    .ok('OK')
+                // .cancel('Cancel');
+                $mdDialog.show(confirm).then(function() {
+                    $scope.status = 'You decided to get rid of your debt.';
+                    //$scope.rejectReport = d.data.rejectedRecord
+                    window.setTimeout(function(){
+                        $scope.exportToExcel();
+                        //location.reload();
+
+                    }, 3000)
+                    //$scope.status = 'You decided to get rid of your debt.';
+                }, function() {
+                    $scope.status = 'You decided to keep your debt.';
+                });
             });
         }else {
             $scope.Message = 'all the fields are required';
@@ -526,6 +665,12 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService', f
         });
     });
 
+    $scope.exportToExcel=function(){// ex: '#my-table'
+        var blob = new Blob([document.getElementById('exportable').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
+    }
 }]).factory('FileProductUploadService', function ($http, $q) {
 
     var fac = {};

@@ -1,5 +1,6 @@
 package com.softage.paytm.service;
 
+import com.softage.paytm.models.ReOpenTaleCallMaster;
 import com.softage.paytm.models.TelecallMastEntity;
 import org.json.simple.JSONObject;
 
@@ -14,6 +15,7 @@ public interface PostCallingService {
     public String sendsmsService();
     public String updateTeleCall(TelecallMastEntity telecallMastEntity);
     public TelecallMastEntity getByPrimaryKey(String phoneNumber);
+    public String save(ReOpenTaleCallMaster openTaleCallMaster);
 
 
 

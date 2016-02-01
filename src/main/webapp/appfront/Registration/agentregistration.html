@@ -25,9 +25,9 @@
                             <div class="widget-body">
                                  <div id="horizontal-form">
                                     <form class="form-horizontal" name="myForm" role="form" ng-submit="submit($event)" ng-controller="agentCtrl" novalidate>
-                                        <div align="center">
+                                       <!-- <div align="center">
                                             <label style="color:green;margin-top: 0;">{{successTextAlert}}</label>
-                                        </div>
+                                        </div>-->
                                         <div class="form-group col-sm-6" >
                                             <label  class="col-sm-3 control-label no-padding-right" >Name</label>
                                            <div class="col-sm-9">
@@ -72,9 +72,10 @@
                                             <label for="Text8" class="col-sm-3 control-label no-padding-right">Circle Office</label>
                                             <div class="col-sm-9">
                                                 <!--<input type="text" class="form-control" ng-minlength="3" ng-maxlength="15" id="Text8" name="emp_code" ng-model="emp_code" placeholder="Emp code (if Softage employee)" allow-pattern="(\d|[a-z])" required/>-->
-                                               <select  name="circle" ng-model="circle_office"  class="form-control"  ng-options="office for office in offices" required ng-change="getspokecode()">
+                                              <!-- <select  name="circle" ng-model="circle_office"  class="form-control"  ng-options="office for office in offices" required ng-change="getspokecode()">
                                                    <option value="">Select Circle Office</option>
-                                               </select>
+                                               </select>-->
+                                                <input  class="form-control"  name="circleoffice" data-phone ng-model="circleofiice"/>
                                                <!-- <select ng-model="center" name="center" ng-options="office.office for office in offices" class="form-control" required>
                                                     &lt;!&ndash;<option value="">Select</option>&ndash;&gt;
                                                 </select>-->
@@ -85,8 +86,8 @@
                                             <label for="Text8" class="col-sm-3 control-label no-padding-right">Spoke Code</label>
                                             <div class="col-sm-9">
                                                <!-- <input type="text" class="form-control" id="Text2" ng-minlength="3" ng-maxlength="15" name="agent_spkcode" ng-model="user.agent_spkcode" placeholder="Agent Spoke code" allow-pattern="(\d|[a-z])" required/>-->
-                                                <select id="Text8" name="spoke_code" class="form-control" required ng-model="spoke_code" ng-options="code for code in codes">
-                                                    <option value="0">Select Circle Office</option>
+                                                <select id="Text8" name="spoke_code" class="form-control" required ng-model="spoke_code" ng-options="code for code in offices1">
+                                                    <option value="" selected>Select Circle Office</option>
 
                                                 </select>
 
@@ -169,7 +170,7 @@
                                         <div class="form-group col-sm-6">
                                             <label  class="col-sm-3 control-label no-padding-right">Email</label>
                                             <div class="col-sm-9">
-                                                <input type="email" class="form-control"  ng-minlength="3" ng-maxlength="40"  name="email" ng-model="email"  placeholder="Email"  />
+                                                <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="40"  name="email" ng-model="email"  placeholder="Email"  />
 
 
                                             </div>

@@ -8,7 +8,6 @@ import com.softage.paytm.models.CircleMastEntity;
 import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.StateMasterEntity;
 import com.softage.paytm.service.PaytmMasterService;
-import com.sun.deploy.util.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -93,6 +92,11 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
         JSONObject jsonObject =paytmMasterDao.getPaytmMastData(mobileNo);
         return  jsonObject;
 
+    }
+
+    @Override
+    public PaytmMastEntity getPaytmMaster(String mobileNo) {
+        return paytmMasterDao.getPaytmMaster(mobileNo);
     }
 
     @Override

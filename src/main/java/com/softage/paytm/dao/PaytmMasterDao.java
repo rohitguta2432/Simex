@@ -17,5 +17,6 @@ public interface PaytmMasterDao {
     public  JSONObject telecallingScreen(String userName,int circode);
     public List<StateMasterEntity> getStatemaster();
     public List<CallStatusMasterEntity> getStatusList();
+    public PaytmMastEntity getPaytmMaster(String mobileNo);
 
 }

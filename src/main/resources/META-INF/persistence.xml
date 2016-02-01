@@ -32,6 +32,8 @@
         <class>com.softage.paytm.models.UploadRequestEntity</class>
         <class>com.softage.paytm.models.UploadTableEntity</class>
         <class>com.softage.paytm.models.TblNotificationLogEntity</class>
+        <class>com.softage.paytm.models.PaytmPinMaster</class>
+        <class>com.softage.paytm.models.ReOpenTaleCallMaster</class>
 
         <exclude-unlisted-classes />
 

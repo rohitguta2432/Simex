@@ -410,6 +410,32 @@ public class PostCallingDaoImp implements PostCallingDao {
     }
 
     @Override
+    public String save(ReOpenTaleCallMaster openTaleCallMaster) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg=null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(openTaleCallMaster);
+            transaction.commit();
+            msg="done";
+        } catch (Exception e) {
+            msg="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  msg;
+    }
+
+    @Override
     public String callJobAllocatedProcedure(long allocationId, String moblieno, String agentcode) {
         EntityManager entityManager = null;
         List list = new ArrayList<>();

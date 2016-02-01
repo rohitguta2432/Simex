@@ -13,25 +13,32 @@
   <!--Basic Styles-->
   <link href="libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="libs/angular-material/angular-material.min.css" rel="stylesheet" />
+    <script src="libs/jquery/dist/jquery.min.js"></script>
+    <script src="libs/jquery/dist/jquery-ui.min.js"></script>
+    <script src="libs/angular/angular.min.js"></script>
+    <script src="libs/angular-animate/angular-animate.min.js"></script>
+    <script src="libs/angular-aria/angular-aria.min.js"></script>
+    <script src="libs/angular-messages/angular-messages.min.js"></script>
+    <script src="libs/angular-material/angular-material.min.js"></script>
   <%--<script src="http://code.angularjs.org/1.2.13/angular.js"></script>--%>
 
    <%-- <link href="libs/datepicker/jquery-ui.css" rel="stylesheet" />--%>
     <%--<script type="text/javascript" src="libs/angular/angular.min.js"></script>
     <script type="text/javascript" src="libs/jquery/dist/jquery-ui.min.js"></script>
     <script type="text/javascript" src="libs/jquery/dist/jquery.min.js"></script>--%>
-    <script src="libs/jquery/dist/jquery.min.js"></script>
-    <script src="libs/jquery/dist/jquery-ui.min.js"></script>
-    <script src="libs/angular/angular.min.js"></script>
+
+   <%-- <script src="libs/angular/angular.min.js"></script>--%>
     <link href="libs/jqueryui/jquery-ui.css" rel="stylesheet" />
     <%--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>--%>
-    <link rel="stylesheet" type="text/css" href="libs/jqueryui/jquery-ui.css">
+    <%--<link rel="stylesheet" type="text/css" href="libs/jqueryui/jquery-ui.css">--%>
 
 
 
   <%--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>--%>
   <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
-  <script src="libs/report/FileSaver.js"></script>
+  <script src="libs/FileSaver/FileSaver.js"></script>
   <script src="js/app.js"></script>
   <!--Beyond styles-->
   <link href="assets/css/beyond.min.css" rel="stylesheet" type="text/css" />

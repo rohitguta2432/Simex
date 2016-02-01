@@ -49,6 +49,7 @@ public class PostCallingServiceImp implements PostCallingService {
         Date parsedUtilDate=null;
         java.sql.Date checkVisitDate=null;
         java.sql.Date visitDate=null;
+        String result1=null;
         DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
         try {
             TelecallMastEntity telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
@@ -67,7 +68,9 @@ public class PostCallingServiceImp implements PostCallingService {
             telecallLogEntity.setTcCallTime(new Timestamp(new Date().getTime()));
             telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
             result = postCallingDao.saveTeleCallLog(telecallLogEntity);
-
+            if ("done".equalsIgnoreCase(result)) {
+                result1="done";
+            }
             if(map.get("visitDate")!=null) {
                 parsedUtilDate = formater.parse(map.get("visitDate"));
                 visitDate = new java.sql.Date(parsedUtilDate.getTime());
@@ -76,7 +79,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
                 calendar.add(Calendar.DAY_OF_WEEK, 5);
-                 checkVisitDate = new java.sql.Date(calendar.getTimeInMillis());
+                checkVisitDate = new java.sql.Date(calendar.getTimeInMillis());
             }
             if ("CON".equals(status) && visitDate.getTime() > checkVisitDate.getTime()) {
                 byte s = 9;
@@ -87,21 +90,21 @@ public class PostCallingServiceImp implements PostCallingService {
                 telecallMastEntity.setTmTeleCallStatus(tcStatus);
                 telecallMastEntity.setTmLastCallStatus(map.get("status"));
                 postCallingDao.updateTeleCall(telecallMastEntity);
-                result = "err";
+                result = "Customer Rejected because Date more then 5 days ";
             } else if ("CON".equals(status)) {
                 tcStatus = "D";
                 result = saveCustomer(map);
                 if ("JOB ALLOCATED".equalsIgnoreCase(result)) {
-                    result = "done";
+                    result1 = "done";
                 }
                 if ("NO AGENT AVAILABLE".equalsIgnoreCase(result)) {
-                    result = "done";
+                    result1 = "done";
                 }
             }
             byte s = (byte) (telecallMastEntity.getTmAttempts() + 1);
             //   TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
             //     telecallMastEntity.setTmCustomerPhone(map.get("number"));
-            if ("done".equalsIgnoreCase(result)) {
+            if ("done".equalsIgnoreCase(result1)) {
                 telecallMastEntity.setTmAttempts(s);
                 telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
                 telecallMastEntity.setTmLastAttemptDateTime(new Timestamp(new Date().getTime()));
@@ -151,34 +154,48 @@ public class PostCallingServiceImp implements PostCallingService {
         return postCallingDao.getByPrimaryKey(phoneNumber);
     }
 
+    @Override
+    public String save(ReOpenTaleCallMaster openTaleCallMaster) {
+       return postCallingDao.save(openTaleCallMaster);
+    }
+
     private String sendSms(String mobileno, String text) {
         String result = null;
         SmsSendlogEntity smsSendlogEntity = null;
+        BufferedReader in=null;
+        HttpURLConnection con=null;
         //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
-        //  String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
-        String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
+         // String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
+            String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
         try {
             URL obj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
+            con = (HttpURLConnection) obj.openConnection();
+            con.setReadTimeout(15*1000);
+ //           con.connect();
+            con.setRequestMethod("POST");
             int responseCode = con.getResponseCode();
-            System.out.println("\nSending 'GET' request to URL : " + url);
-            logger.info("\nSending 'GET' request to URL : " + url);
+            logger.info("\nSending 'POST' request to URL : " + url);
             System.out.println("Response Code :" + responseCode);
             logger.info("Response Code :" + responseCode);
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             StringBuffer response = new StringBuffer();
 
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            in.close();
             result = response.toString();
         } catch (Exception e) {
             logger.error("enable to send message  ", e);
             result = "err";
             e.printStackTrace();
+        }finally {
+            try{
+                in.close();
+            //    con.disconnect();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         return result;
 
