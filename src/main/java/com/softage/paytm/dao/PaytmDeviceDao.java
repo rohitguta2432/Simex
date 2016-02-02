@@ -8,6 +8,6 @@ import com.softage.paytm.models.PaytmdeviceidinfoEntity;
  */
 public interface PaytmDeviceDao {
 
-    public String savePaytmDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity);
+    public String saveDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity);
     public PaytmdeviceidinfoEntity getByloginId(String loginid);
 }
