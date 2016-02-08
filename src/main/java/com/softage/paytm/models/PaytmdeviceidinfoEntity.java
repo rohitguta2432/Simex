@@ -2,6 +2,7 @@ package com.softage.paytm.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  * Created by SS0085 on 23-12-2015.
@@ -15,7 +16,7 @@ public class PaytmdeviceidinfoEntity {
     private String importBy;
     private Timestamp importDate;
     private String loginId;
-    private TblNotificationLogEntity tblNotificationLogByLoginId;
+    private Collection <TblNotificationLogEntity> tblNotificationLogByLoginId;
 
     @Id
     @GeneratedValue
@@ -59,7 +60,7 @@ public class PaytmdeviceidinfoEntity {
     }
 
     @Basic
-    @Column(name = "LoginId", nullable = true, insertable = false, updatable = false,length = 30)
+    @Column(name = "LoginId", nullable = true, insertable = true, updatable = false,length = 30)
     public String getLoginId() {
         return loginId;
     }
@@ -94,13 +95,21 @@ public class PaytmdeviceidinfoEntity {
         return result;
     }
 
-    @ManyToOne
+  /*  @ManyToOne
     @JoinColumn(name = "LoginId", referencedColumnName = "notification_loginid")
     public TblNotificationLogEntity getTblNotificationLogByLoginId() {
         return tblNotificationLogByLoginId;
     }
 
     public void setTblNotificationLogByLoginId(TblNotificationLogEntity tblNotificationLogByLoginId) {
+        this.tblNotificationLogByLoginId = tblNotificationLogByLoginId;
+    }*/
+  @OneToMany(mappedBy = "paytmdeviceidinfoBynotificationLoginid")
+    public Collection<TblNotificationLogEntity> getTblNotificationLogByLoginId() {
+        return tblNotificationLogByLoginId;
+    }
+
+    public void setTblNotificationLogByLoginId(Collection<TblNotificationLogEntity> tblNotificationLogByLoginId) {
         this.tblNotificationLogByLoginId = tblNotificationLogByLoginId;
     }
 }

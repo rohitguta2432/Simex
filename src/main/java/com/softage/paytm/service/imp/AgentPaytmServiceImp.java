@@ -16,13 +16,14 @@ import java.util.Date;
  */
 @Service
 public class AgentPaytmServiceImp implements AgentPaytmService {
-    @Override
-    public PaytmagententryEntity findByPrimaryKey(String agentCode) {
-        return null;
-    }
+
 
     @Autowired
     private AgentPaytmDao agentPaytmDao;
+    @Override
+    public PaytmagententryEntity findByPrimaryKey(String agentCode) {
+        return agentPaytmDao.findByPrimaryKey(agentCode);
+    }
 
     @Override
     public String saveAgent(PaytmagententryEntity paytmagententryEntity) {

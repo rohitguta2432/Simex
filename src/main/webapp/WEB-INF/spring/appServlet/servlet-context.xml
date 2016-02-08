@@ -62,7 +62,21 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 		<beans:property name="prefix" value="/appfront/" />
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer"/>
+		</property>
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+			</list>
+		</property>
+	</bean>
 
+<!--	<beans:bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+
+
+	</beans:bean>-->
 
 	<beans:bean id="entityManagerFactory"
 		  class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">

@@ -79,4 +79,84 @@ public class AllocationDaoImp implements AllocationDao {
         }
         return  allocationMastEntity;
     }
+
+    @Override
+    public AllocationMastEntity findById(String agentCode, String jobid) {
+        EntityManager entityManager = null;
+        AllocationMastEntity allocationMastEntity=null;
+        Query query=null;
+        try
+        {
+            int id=  Integer.parseInt(jobid);
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select al from AllocationMastEntity al where al.id=:id and al.agentCode=:agentCode";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("id",id);
+            query.setParameter("agentCode",agentCode);
+            allocationMastEntity = (AllocationMastEntity)query.getSingleResult();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  allocationMastEntity;
+    }
+
+    @Override
+    public String updateAllocationMastEntity(AllocationMastEntity allocationMastEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg=null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.merge(allocationMastEntity);
+            transaction.commit();
+            msg="done";
+        } catch (Exception e) {
+            msg="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  msg;
+    }
+
+    @Override
+    public AllocationMastEntity findByPrimaryKey(int id) {
+        EntityManager entityManager = null;
+        AllocationMastEntity allocationMastEntity=null;
+        Query query=null;
+        try
+        {
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select al from AllocationMastEntity al where al.id=:id";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("id",id);
+            allocationMastEntity = (AllocationMastEntity)query.getSingleResult();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  allocationMastEntity;
+    }
 }

@@ -29,6 +29,7 @@ public class PaytmagententryEntity {
     private String mulitplePin;
     private Collection<AgentpinmasterEntity> agentpinmastersByAcode;
     private Collection<AllocationMastEntity> allocationMastsByAcode;
+    private Collection<DataentryEntity> dataentriesByACode;
 
 
     @Id
@@ -257,5 +258,12 @@ public class PaytmagententryEntity {
     public void setAllocationMastsByAcode(Collection<AllocationMastEntity> allocationMastsByAcode) {
         this.allocationMastsByAcode = allocationMastsByAcode;
     }
+    @OneToMany(mappedBy = "paytmagententryByAgentCode")
+    public Collection<DataentryEntity> getDataentriesByACode() {
+        return dataentriesByACode;
+    }
 
+    public void setDataentriesByACode(Collection<DataentryEntity> dataentriesByACode) {
+        this.dataentriesByACode = dataentriesByACode;
+    }
 }

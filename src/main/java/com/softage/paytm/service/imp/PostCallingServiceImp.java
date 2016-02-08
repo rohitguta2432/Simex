@@ -159,6 +159,16 @@ public class PostCallingServiceImp implements PostCallingService {
        return postCallingDao.save(openTaleCallMaster);
     }
 
+    @Override
+    public RemarkMastEntity getByPrimaryCode(String key) {
+        return postCallingDao.getByPrimaryCode(key);
+    }
+
+    @Override
+    public List<RemarkMastEntity> remarkList() {
+        return postCallingDao.remarkList();
+    }
+
     private String sendSms(String mobileno, String text) {
         String result = null;
         SmsSendlogEntity smsSendlogEntity = null;
@@ -418,7 +428,6 @@ public class PostCallingServiceImp implements PostCallingService {
             AllocationMastEntity allocationMastEntity = new AllocationMastEntity();
             allocationMastEntity.setAppointmentMastByAppointmentId(appointmentMastEntity);
             allocationMastEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
-
             allocationMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
             allocationMastEntity.setAllocationDatetime(new Timestamp(convertedDate.getTime()));
             allocationMastEntity.setVisitDateTime(new Timestamp(convertedDate.getTime()));
@@ -428,7 +437,8 @@ public class PostCallingServiceImp implements PostCallingService {
             allocationMastEntity.setConfirmation(confirmationAllowed);
             allocationMastEntity.setFinalConfirmation(finalconfirmation);
             allocationMastEntity.setSmsSendDatetime(new Timestamp(convertedDate.getTime()));
-            allocationMastEntity.setKycCollected("N");
+            allocationMastEntity.setKycCollected("P");
+            allocationMastEntity.setConfirmation("W");
             allocationMastEntity.setRemarkMastByRemarksCode(remarkMastEntity);
             result = allocationDao.saveAllocation(allocationMastEntity);
         } catch (Exception e) {

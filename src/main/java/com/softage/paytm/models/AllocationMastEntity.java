@@ -2,6 +2,7 @@ package com.softage.paytm.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  * Created by SS0085 on 23-12-2015.
@@ -30,6 +31,7 @@ public class AllocationMastEntity {
     private PaytmcustomerDataEntity paytmcustomerDataByCustomerPhone;
     private RemarkMastEntity remarkMastByRemarksCode;
     private AppointmentMastEntity appointmentMastByAppointmentId;
+    private Collection<DataentryEntity> dataentriesById;
 
     @Id
     @GeneratedValue
@@ -280,6 +282,12 @@ public class AllocationMastEntity {
     public void setAppointmentMastByAppointmentId(AppointmentMastEntity appointmentMastByAppointmentId) {
         this.appointmentMastByAppointmentId = appointmentMastByAppointmentId;
     }
+    @OneToMany(mappedBy = "allocationMastByAllocationId")
+    public Collection<DataentryEntity> getDataentriesById() {
+        return dataentriesById;
+    }
 
-
+    public void setDataentriesById(Collection<DataentryEntity> dataentriesById) {
+        this.dataentriesById = dataentriesById;
+    }
 }

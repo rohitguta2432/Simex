@@ -18,6 +18,7 @@ public class ProofMastEntity {
     private String importBy;
     private Timestamp importDate;
     private Collection<DataentryEntity> dataentriesByIdCode;
+    private Collection<DataentryEntity> dataentriesByPOA;
 
     @Id
     @Column(name = "Id_Code", nullable = false, insertable = true, updatable = true, length = 10)
@@ -114,5 +115,13 @@ public class ProofMastEntity {
 
     public void setDataentriesByIdCode(Collection<DataentryEntity> dataentriesByIdCode) {
         this.dataentriesByIdCode = dataentriesByIdCode;
+    }
+    @OneToMany(mappedBy = "proofMastByCcusPOACode")
+    public Collection<DataentryEntity> getDataentriesByPOA() {
+        return dataentriesByPOA;
+    }
+
+    public void setDataentriesByPOA(Collection<DataentryEntity> dataentriesByPOA) {
+        this.dataentriesByPOA = dataentriesByPOA;
     }
 }

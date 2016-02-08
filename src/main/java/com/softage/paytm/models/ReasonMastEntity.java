@@ -3,6 +3,7 @@ package com.softage.paytm.models;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  * Created by SS0085 on 23-12-2015.
@@ -10,13 +11,14 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "reason_mast")
 @Cacheable
-public class ReasonMastEntity implements Serializable {
+public class ReasonMastEntity  {
     private String reasonCode;
     private int id;
     private String importBy;
     private Timestamp importDate;
     private String reasonStatus;
     private String reasonText;
+    private Collection<ReasonMastEntity> reasonMastByReasonCode;
 
     @Basic
     @Id
@@ -29,8 +31,8 @@ public class ReasonMastEntity implements Serializable {
         this.reasonCode = reasonCode;
     }
 
-    @Id
-    @Basic
+   /* @Id*/
+
     @Column(name = "id", nullable = false, insertable = true, updatable = true)
     public int getId() {
         return id;
@@ -80,6 +82,15 @@ public class ReasonMastEntity implements Serializable {
         this.reasonText = reasonText;
     }
 
+/*    @OneToMany(mappedBy = "reasonMastByRejectionResion")
+    public Collection<ReasonMastEntity> getReasonMastByReasonCode() {
+        return reasonMastByReasonCode;
+    }
+
+    public void setReasonMastByReasonCode(Collection<ReasonMastEntity> reasonMastByReasonCode) {
+        this.reasonMastByReasonCode = reasonMastByReasonCode;
+    }*/
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -107,4 +118,5 @@ public class ReasonMastEntity implements Serializable {
         result = 31 * result + (reasonText != null ? reasonText.hashCode() : 0);
         return result;
     }
+
 }

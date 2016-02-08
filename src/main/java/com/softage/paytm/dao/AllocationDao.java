@@ -9,4 +9,7 @@ public interface AllocationDao {
 
     public String saveAllocation(AllocationMastEntity allocationMastEntity);
     public AllocationMastEntity findByAgentCode(long apointmantId,String agentCode);
+    public String updateAllocationMastEntity(AllocationMastEntity allocationMastEntity);
+    public AllocationMastEntity findById(String agentCode, String jobid);
+    public AllocationMastEntity findByPrimaryKey(int id);
 }

@@ -3,6 +3,7 @@ package com.softage.paytm.dao;
 import com.softage.paytm.models.*;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,7 +22,9 @@ public interface PostCallingDao {
     public String saveSmsSendEntity(SmsSendlogEntity smsSendlogEntity);
     public String saveTabNotification(TblNotificationLogEntity tblNotificationLogEntity);
     public AppointmentMastEntity getByCustomerNuber(String customerNumber);
+    public AppointmentMastEntity getByAppointmentId(long appointmentId);
     public RemarkMastEntity getByPrimaryCode(String key);
+    public List<RemarkMastEntity> remarkList();
     public ProcessMastEntity getProcessByCode(int code);
     public ReceiverMastEntity getRecivedByCode(int code);
     public String save(ReOpenTaleCallMaster openTaleCallMaster);

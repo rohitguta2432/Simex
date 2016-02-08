@@ -30,7 +30,15 @@ public class DataentryEntity implements Serializable {
     private String gender;
     private int id;
     private String cusPoiCode;
+    private String agentCode;
+    private int allocationId;
+    private String cusPOACode;
+    private String rejectionResion;
+    private PaytmagententryEntity paytmagententryByAgentCode;
+    private AllocationMastEntity allocationMastByAllocationId;
+    private ProofMastEntity proofMastByCcusPOACode;
     private ProofMastEntity proofMastByCusPoiCode;
+    private ReasonMastEntity reasonMastByRejectionResion;
 
     @Basic
     @Id
@@ -287,5 +295,79 @@ public class DataentryEntity implements Serializable {
 
     public void setProofMastByCusPoiCode(ProofMastEntity proofMastByCusPoiCode) {
         this.proofMastByCusPoiCode = proofMastByCusPoiCode;
+    }
+    @Basic
+    @Column(name = "AgentCode", nullable = false, insertable = false, updatable = false, length = 10)
+    public String getAgentCode() {
+        return agentCode;
+    }
+
+    public void setAgentCode(String agentCode) {
+        this.agentCode = agentCode;
+    }
+    @Basic
+    @Column(name = "Allocation_id", nullable = false, insertable = false, updatable = false, length = 10)
+    public int getAllocationId() {
+        return allocationId;
+    }
+
+    public void setAllocationId(int allocationId) {
+        this.allocationId = allocationId;
+    }
+    @ManyToOne
+    @JoinColumn(name = "AgentCode", referencedColumnName = "Acode", nullable = false)
+    public PaytmagententryEntity getPaytmagententryByAgentCode() {
+        return paytmagententryByAgentCode;
+    }
+
+    public void setPaytmagententryByAgentCode(PaytmagententryEntity paytmagententryByAgentCode) {
+        this.paytmagententryByAgentCode = paytmagententryByAgentCode;
+    }
+    @ManyToOne
+    @JoinColumn(name = "Allocation_id", referencedColumnName = "id", nullable = false)
+    public AllocationMastEntity getAllocationMastByAllocationId() {
+        return allocationMastByAllocationId;
+    }
+
+    public void setAllocationMastByAllocationId(AllocationMastEntity allocationMastByAllocationId) {
+        this.allocationMastByAllocationId = allocationMastByAllocationId;
+    }
+    @Basic
+    @Column(name = "CusPOACode",  nullable = false, insertable = false, updatable = false, length = 10)
+    public String getCusPOACode() {
+        return cusPOACode;
+    }
+
+    public void setCusPOACode(String cusPOACode) {
+        this.cusPOACode = cusPOACode;
+    }
+    @Basic
+    @Column(name = "rejection_reason",  nullable = false, insertable = false, updatable = false, length = 100)
+    public String getRejectionResion() {
+        return rejectionResion;
+    }
+
+    public void setRejectionResion(String rejectionResion) {
+        this.rejectionResion = rejectionResion;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "rejection_reason", referencedColumnName = "Reason_code", nullable = false)
+    public ReasonMastEntity getReasonMastByRejectionResion() {
+        return reasonMastByRejectionResion;
+    }
+
+    public void setReasonMastByRejectionResion(ReasonMastEntity reasonMastByRejectionResion) {
+        this.reasonMastByRejectionResion = reasonMastByRejectionResion;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "CusPOACode", referencedColumnName = "Id_Code", nullable = false)
+    public ProofMastEntity getProofMastByCcusPOACode() {
+        return proofMastByCcusPOACode;
+    }
+
+    public void setProofMastByCcusPOACode(ProofMastEntity proofMastByCcusPOACode) {
+        this.proofMastByCcusPOACode = proofMastByCcusPOACode;
     }
 }

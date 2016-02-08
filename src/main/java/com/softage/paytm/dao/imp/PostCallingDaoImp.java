@@ -362,6 +362,32 @@ public class PostCallingDaoImp implements PostCallingDao {
     }
 
     @Override
+    public AppointmentMastEntity getByAppointmentId(long appointmentId) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<CircleMastEntity> list=new ArrayList<>();
+        AppointmentMastEntity appointmentMastEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select am from AppointmentMastEntity am where am.appointmentId=:appointmentId";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("appointmentId",appointmentId);
+            appointmentMastEntity= (AppointmentMastEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return appointmentMastEntity;
+    }
+
+    @Override
     public RemarkMastEntity getByPrimaryCode(String remarkCode) {
         EntityManager entityManager=null;
         Query query=null;
@@ -383,6 +409,29 @@ public class PostCallingDaoImp implements PostCallingDao {
             }
         }
         return RemarkMastEntity;
+    }
+
+    @Override
+    public List<RemarkMastEntity> remarkList() {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<RemarkMastEntity> remarkMastEntities=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select am from RemarkMastEntity am ";
+            query=entityManager.createQuery(strQuery);
+            remarkMastEntities= query.getResultList();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return remarkMastEntities;
     }
 
     @Override

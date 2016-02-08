@@ -13,6 +13,8 @@ public class TblNotificationLogEntity {
     private Timestamp notificationSenddt;
     private String notificationText;
     private String notificationType;
+    private String notificationLoginid;
+    private PaytmdeviceidinfoEntity paytmdeviceidinfoBynotificationLoginid;
 
     @Id
     @GeneratedValue
@@ -24,14 +26,14 @@ public class TblNotificationLogEntity {
     public void setTblId(long tblId) {
         this.tblId = tblId;
     }
-/*
+
 
     @Basic
     @Column(name = "notification_senddt", nullable = false, insertable = true, updatable = true)
     public Timestamp getNotificationSenddt() {
         return notificationSenddt;
     }
-*/
+
 
     public void setNotificationSenddt(Timestamp notificationSenddt) {
         this.notificationSenddt = notificationSenddt;
@@ -43,12 +45,12 @@ public class TblNotificationLogEntity {
         return notificationText;
     }
 */
-   /* @Basic
+    @Basic
     @Column(name = "notification_text", nullable = true, insertable = true, updatable = true, length = 1000)
     public String getNotificationText() {
         return notificationText;
     }
-*/
+
     public void setNotificationText(String notificationText) {
         this.notificationText = notificationText;
     }
@@ -88,15 +90,24 @@ public class TblNotificationLogEntity {
         result = 31 * result + (notificationText != null ? notificationText.hashCode() : 0);
         result = 31 * result + (notificationType != null ? notificationType.hashCode() : 0);
         return result;
-    }    private String notificationLoginid;
+    }
 
     @Basic
-    @Column(name = "notification_loginid", nullable = true, insertable = true, updatable = true, length = 30)
+    @Column(name = "notification_loginid", nullable = true, insertable = false, updatable = false, length = 30)
     public String getNotificationLoginid() {
         return notificationLoginid;
     }
 
     public void setNotificationLoginid(String notificationLoginid) {
         this.notificationLoginid = notificationLoginid;
+    }
+    @ManyToOne
+    @JoinColumn(name = "notification_loginid", referencedColumnName = "LoginId", nullable = false)
+    public PaytmdeviceidinfoEntity getPaytmdeviceidinfoBynotificationLoginid() {
+        return paytmdeviceidinfoBynotificationLoginid;
+    }
+
+    public void setPaytmdeviceidinfoBynotificationLoginid(PaytmdeviceidinfoEntity paytmdeviceidinfoBynotificationLoginid) {
+        this.paytmdeviceidinfoBynotificationLoginid = paytmdeviceidinfoBynotificationLoginid;
     }
 }
