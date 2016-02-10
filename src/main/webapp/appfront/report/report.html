@@ -214,47 +214,142 @@
                                 </div>
                             </div>
 
-                            <div id="exportable" style="display:none">
+                            <div id="exportableMis" style="display:none">
                                 <table align="center" border="1" >
                                     <tr>
-                                        <th>Customer ID</th>
-                                        <th>MobileNumber</th>
-                                        <th>Call Status</th>
-                                        <th>Number of Attempts</th>
-                                        <th>Call DateTime</th>
-                                        <th>Tele-Caller Name</th>
-                                        <th>Customer Name</th>
-                                        <th>Appointment Date</th>
-                                        <th>Appointment Time</th>
-                                        <th>Address</th>
-                                        <th>Landmark</th>
-                                        <th>City</th>
-                                        <th>State</th>
-                                        <th>Pincode</th>
-                                        <th>Agent Code</th>
-                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Total Data Recevied</th>
+                                        <th>Call Pending</th>
+                                        <th>Contacted</th>
+                                        <th>Non Contacted</th>
+                                        <th>Appoinment Fixed</th>
+                                        <th>Not Agree for Kyc</th>
+                                        <th>KycDone</th>
+                                        <th>Pending For Kyc</th>
+                                        <th>Final Data Shared With Paytm</th>
+
                                     </tr>
                                     <tr ng-repeat="x in message">
-                                        <td>{{ x.CustomerId }}</td>
-                                        <td>{{ x.MobileNumber }}</td>
-                                        <td>{{ x.CallStatus }}</td>
-                                        <td>{{ x.Attempts }}</td>
-                                        <td>{{ x.CallDateTime }}</td>
-                                        <td>{{ x.TeleCallerName }}</td>
-                                        <td>{{ x.CustomerName }}</td>
-                                        <td>{{ x.AppointmentDate }}</td>
-                                        <td>{{ x.AppointmentTime }}</td>
-                                        <td>{{ x.Address }}</td>
-                                        <td>{{ x.Landmark }}</td>
-                                        <td>{{ x.City }}</td>
-                                        <td>{{ x.State }}</td>
-                                        <td>{{ x.Pincode }}</td>
-                                        <td>{{ x.Agent_Code }}</td>
-                                        <td>{{ x.Status }}</td>
+                                        <td>{{ x.Date }}</td>
+                                        <td>{{ x.TotalDataRecevied }}</td>
+                                        <td>{{ x.CallPending }}</td>
+                                        <td>{{ x.Contacted }}</td>
+                                        <td>{{ x.NonContacted }}</td>
+                                        <td>{{ x.AppoinmentFixed }}</td>
+                                        <td>{{ x.NotAgreeforKyc }}</td>
+                                        <td>{{ x.KycDone }}</td>
+                                        <td>{{ x.PendingForKyc }}</td>
+                                        <td>{{ x.FinalDataSharedWithPaytm }}</td>
+
                                     </tr>
                                 </table>
 
                             </div>
+                            <div id="exportable" style="display:none">
+                            <table align="center" border="1" >
+                                <tr>
+                                    <th>Customer ID</th>
+                                    <th>MobileNumber</th>
+                                    <th>Call Status</th>
+                                    <th>Number of Attempts</th>
+                                    <th>Call DateTime</th>
+                                    <th>Tele-Caller Name</th>
+                                    <th>Customer Name</th>
+                                    <th>Appointment Date</th>
+                                    <th>Appointment Time</th>
+                                    <th>Address</th>
+                                    <th>Landmark</th>
+                                    <th>City</th>
+                                    <th>State</th>
+                                    <th>Pincode</th>
+                                    <th>Agent Code</th>
+                                    <th>Status</th>
+                                </tr>
+                                <tr ng-repeat="x in message">
+                                    <td>{{ x.CustomerId }}</td>
+                                    <td>{{ x.MobileNumber }}</td>
+                                    <td>{{ x.CallStatus }}</td>
+                                    <td>{{ x.Attempts }}</td>
+                                    <td>{{ x.CallDateTime }}</td>
+                                    <td>{{ x.TeleCallerName }}</td>
+                                    <td>{{ x.CustomerName }}</td>
+                                    <td>{{ x.AppointmentDate }}</td>
+                                    <td>{{ x.AppointmentTime }}</td>
+                                    <td>{{ x.Address }}</td>
+                                    <td>{{ x.Landmark }}</td>
+                                    <td>{{ x.City }}</td>
+                                    <td>{{ x.State }}</td>
+                                    <td>{{ x.Pincode }}</td>
+                                    <td>{{ x.Agent_Code }}</td>
+                                    <td>{{ x.Status }}</td>
+                                </tr>
+                            </table>
+
+                        </div>
+                            <div id="exportableKycData" style="display:none">
+                                <table align="center" border="1" >
+                                    <tr>
+                                        <th>Customer ID</th>
+                                        <th>Mobile Number</th>
+                                        <th>Customer Name</th>
+                                        <th>Date Of Birth</th>
+                                        <th>Gender</th>
+                                        <th>Status</th>
+                                        <th>Rejection Reason</th>
+                                        <th>POI Type</th>
+                                        <th>POI Number</th>
+                                        <th>POA Type</th>
+                                        <th>POA Number</th>
+                                        <th>Address</th>
+                                        <th>Agency</th>
+                                        <th>Date Of Collection</th>
+
+                                    </tr>
+                                    <tr ng-repeat="x in message">
+                                        <td>{{ x.CustomerId }}</td>
+                                        <td>{{ x.MobileNumber }}</td>
+                                        <td>{{ x.CustomerName }}</td>
+                                        <td>{{ x.DateOfBirth }}</td>
+                                        <td>{{ x.Gender }}</td>
+                                        <td>{{ x.status }}</td>
+                                        <td>{{ x.RejectionReason }}</td>
+                                        <td>{{ x.POIType }}</td>
+                                        <td>{{ x.POINumber }}</td>
+                                        <td>{{ x.POAType }}</td>
+                                        <td>{{ x.POANumber }}</td>
+                                        <td>{{ x.Address }}</td>
+                                        <td>{{ x.Agency }}</td>
+                                        <td>{{ x.DateOfCollection }}</td>
+
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                            <div id="exportableOutput" style="display:none">
+                                <table align="center" border="1" >
+                                    <tr>
+                                        <th>Circle Name</th>
+                                        <th>Customer Number</th>
+                                        <th>Call Status</th>
+                                        <th>Attempts</th>
+                                        <th>Call DateTime</th>
+                                        <th>Tele-CallerName</th>
+
+                                    </tr>
+                                    <tr ng-repeat="x in message">
+                                        <td>{{ x.circleName }}</td>
+                                        <td>{{ x.mobileNumber }}</td>
+                                        <td>{{ x.CallStatus }}</td>
+                                        <td>{{ x.Attempts }}</td>
+                                        <td>{{ x.CallDateTime }}</td>
+                                        <td>{{ x.TeleCallerName }}</td>
+
+                                    </tr>
+                                </table>
+
+                            </div>
+
                             <div class="form-group">
                                 <div class="col-sm-offset-5 col-sm-10">
                                     <button class="btn btn-azure shiny" ng-click="send($event)"

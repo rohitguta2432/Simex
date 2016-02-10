@@ -45,6 +45,8 @@ public class RestWebController {
     private PostCallingService postCallingService;
     @Autowired
     private ProofService proofService;
+    @Autowired
+    private PaytmMasterService paytmMasterService;
 
     @RequestMapping(value = "/getTest", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONObject test() {
@@ -172,7 +174,7 @@ public class RestWebController {
         PaytmagententryEntity paytmagententryEntity = null;
         ProofMastEntity proofMastEntityPOICode = null;
         ProofMastEntity proofMastEntityPOACode = null;
-        String result = null;
+        String result = "98833";
 
 
         try {
@@ -188,10 +190,10 @@ public class RestWebController {
             String jobid = request.getParameter("jobid");
             String remarksCode = request.getParameter("remarksCode");
             String customerId = request.getParameter("customerId");
-            if (StringUtils.isEmpty(agentCode)) {
+            if (!StringUtils.isEmpty(agentCode)) {
                 paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
             }
-            if (StringUtils.isEmpty(jobid)) {
+            if (!StringUtils.isEmpty(jobid)) {
                 allocationMastEntity = allocationService.findByPrimaryKey(Integer.parseInt(jobid));
             }
 
@@ -231,12 +233,15 @@ public class RestWebController {
             result = dataEntryService.saveDataEntry(dataentryEntity);
             if ("done".equals(result)) {
                 updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+                result="0";
+
             }
         } catch (Exception e) {
             e.printStackTrace();
+
         }
 
-        return "0";
+        return result;
     }
 
     @RequestMapping(value = "/RejectedEntry", method = {RequestMethod.GET, RequestMethod.POST})
@@ -248,6 +253,38 @@ public class RestWebController {
           String result=updateRemarkStatus(agentCode,jobid,statusCode,"N");
           return result;
     }
+
+    @RequestMapping(value = "/ValidateCustomerId", method = {RequestMethod.GET, RequestMethod.POST})
+    public String validateCustomer(@RequestParam(value = "jobid") String jobid,
+                                   @RequestParam(value = "customerid") String customerid){
+        String customerPhone=null;
+        String result="false";
+
+        try{
+          AllocationMastEntity allocationMastEntity = allocationService.findByPrimaryKey(Integer.parseInt(jobid));
+            if(allocationMastEntity!=null){
+                    customerPhone=allocationMastEntity.getCustomerPhone();
+                if (customerPhone!=null){
+                    PaytmMastEntity paytmMastData  = paytmMasterService.getPaytmMaster(customerPhone);
+                    if(paytmMastData!=null){
+                             if (paytmMastData.getCustomerId().equals(customerid)){
+                                 result="true";
+                             }
+                    }
+                }
+            } else {
+                result="false";
+            }
+
+        }catch (Exception e){
+            logger.error("",e);
+              result="false";
+
+        }
+
+        return result;
+    }
+
 
     @RequestMapping(value = "/RasonsList", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray reasonList() {
@@ -294,7 +331,7 @@ public class RestWebController {
     }
 
     @RequestMapping(value = "/IdentityProofTypes", method = {RequestMethod.GET, RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
-    public JSONObject identifyProofType(){
+    public JSONArray identifyProofType(){
         String applicable="I";
         JSONObject jsonObject=new JSONObject();
         List<ProofMastEntity>  proofMastEntities=proofService.getProofMastEntity(applicable);
@@ -306,15 +343,23 @@ public class RestWebController {
             json.put("Text",proofMastEntity.getIdText());
             array.add(json);
         }
-          jsonObject.put("ArrayOfProofType",array);
-          return  jsonObject;
+        //  jsonObject.put("ArrayOfProofType",array);
+          return  array;
     }
     @RequestMapping(value = "/AddressProofTypes", method = {RequestMethod.GET, RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
-    public JSONObject addressProofType(){
+    public JSONArray addressProofType(){
         String applicable="A";
         JSONObject jsonObject=new JSONObject();
+        JSONArray array=new JSONArray();
         List<ProofMastEntity>  proofMastEntities =proofService.getProofMastEntity(applicable);
-        return  jsonObject;
+        for (ProofMastEntity proofMastEntity:proofMastEntities){
+            JSONObject json=new JSONObject();
+            json.put("Applicable",proofMastEntity.getApplicable());
+            json.put("Code",proofMastEntity.getIdCode());
+            json.put("Text",proofMastEntity.getIdText());
+            array.add(json);
+        }
+        return  array;
     }
 
     private String updateRemarkStatus(String AgentCode, String JobId, String remarksCode, String kycStatus) {

@@ -18,11 +18,22 @@ public class ReportServiceImp implements ReportService {
     @Override
     public JSONObject getReports(String from, String to, String type) {
      JSONObject jsonObject=new JSONObject();
-              if("TeleCalling".equalsIgnoreCase(type)){
+        if ("TeleCalling".equalsIgnoreCase(type)) {
+            jsonObject = reportDao.getReports(from, to, type);
+            jsonObject = reportDao.getReOpenCalling(from, to, jsonObject);
+        }
+        if ("KycMis".equals(type)) {
+            jsonObject = reportDao.getReportMis(from,to,type);
+        }
+        if ("KycData".equals(type)) {
+            jsonObject= reportDao.getReportData(from,to,type);
 
-                  jsonObject= reportDao.getReports(from,to,type);
-                  jsonObject= reportDao.getReOpenCalling(from,to,jsonObject);
-              }
+        }
+        if ("Telecalling Output".equalsIgnoreCase(type)) {
+            jsonObject= reportDao.getReportTelecallingOutput(from,to,type);
+
+        }
+
         return jsonObject;
     }
 }

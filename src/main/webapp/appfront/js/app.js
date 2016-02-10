@@ -752,23 +752,82 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
             var data = 'from=' + $scope.date + '&to=' + $scope.date1 + '&type=' + $scope.report1.reportName;
             ExportService.SendData(data).then(function(result){
                 $scope.message = result.data;
-               // $scope.successTextAlert = 'Data Submit Successfully ';
+                if($scope.report1.reportName == 'KycMis')    ////////////function for kycMic
+                {
+                    console.log('KycMis '+ $scope.report1.reportName);
+                    window.setTimeout(function(){
+                        console.log($scope.message);
+                        $scope.exportToExcelMis();
+                        location.reload();
+
+                    }, 3000);
+                }
+               else if($scope.report1.reportName == 'KycData') {    ////////////function for KycData
+
+                    window.setTimeout(function(){
+                        console.log($scope.message);
+                        $scope.exportToExcelKycData();
+                        location.reload();
+
+                    }, 3000);
+
+                }
+                else if($scope.report1.reportName == 'Telecalling Output') {   ////////////function for TeleCallingOutput
+
+                    window.setTimeout(function(){
+                        console.log($scope.message);
+                        $scope.exportToExcelOutput();
+                        location.reload();
+
+                    }, 3000);
+
+                }
+                else if($scope.report1.reportName == 'TeleCalling'){                                          ////////////function for Tellicalling
+
+                    window.setTimeout(function(){
+                        console.log($scope.message);
+                        $scope.exportToExcel();
+                        location.reload();
+
+                    }, 3000);
+
+                }
+                // $scope.successTextAlert = 'Data Submit Successfully ';
             }, function(err){
                 console.log(err);
             }).catch(function(err){
                 console.log(err);
             }).finally(function(){
-                window.setTimeout(function(){
-                    $scope.exportToExcel();
-                    location.reload();
-
-                }, 3000);
+                //window.setTimeout(function(){
+                //
+                //        $scope.exportToExcel();
+                //        location.reload();
+                //
+                //}, 3000);
             })
 
         };
     }
-    $scope.exportToExcel=function(){// ex: '#my-table'
+    $scope.exportToExcel=function(){// ex: '#my-table'    ///////////////////report for telecalling
         var blob = new Blob([document.getElementById('exportable').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
+    }
+    $scope.exportToExcelMis=function(){// ex: '#my-table'    ///////////////////report for KycMis
+        var blob = new Blob([document.getElementById('exportableMis').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
+    }
+    $scope.exportToExcelKycData=function(){// ex: '#my-table'    ///////////////////report for KycMis
+        var blob = new Blob([document.getElementById('exportableKycData').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
+    }
+    $scope.exportToExcelOutput=function(){// ex: '#my-table'    ///////////////////report for KycMis
+        var blob = new Blob([document.getElementById('exportableOutput').innerHTML], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
         });
         saveAs(blob, "Report.xls");

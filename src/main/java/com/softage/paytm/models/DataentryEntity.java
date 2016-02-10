@@ -202,7 +202,7 @@ public class DataentryEntity implements Serializable {
     }
 
     @Basic
-    @Column(name = "gender", nullable = false, insertable = true, updatable = true, length = 1)
+    @Column(name = "gender", nullable = false, insertable = true, updatable = true, length = 10)
     public String getGender() {
         return gender;
     }

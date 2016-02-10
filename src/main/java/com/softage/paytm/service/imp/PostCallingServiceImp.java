@@ -1,5 +1,8 @@
 package com.softage.paytm.service.imp;
 
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.Result;
+import com.google.android.gcm.server.Sender;
 import com.softage.paytm.dao.*;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.PostCallingService;
@@ -46,10 +49,10 @@ public class PostCallingServiceImp implements PostCallingService {
         String status = map.get("status");
         String tcStatus = "U";
         String result = null;
-        Date parsedUtilDate=null;
-        java.sql.Date checkVisitDate=null;
-        java.sql.Date visitDate=null;
-        String result1=null;
+        Date parsedUtilDate = null;
+        java.sql.Date checkVisitDate = null;
+        java.sql.Date visitDate = null;
+        String result1 = null;
         DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
         try {
             TelecallMastEntity telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
@@ -69,9 +72,9 @@ public class PostCallingServiceImp implements PostCallingService {
             telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
             result = postCallingDao.saveTeleCallLog(telecallLogEntity);
             if ("done".equalsIgnoreCase(result)) {
-                result1="done";
+                result1 = "done";
             }
-            if(map.get("visitDate")!=null) {
+            if (map.get("visitDate") != null) {
                 parsedUtilDate = formater.parse(map.get("visitDate"));
                 visitDate = new java.sql.Date(parsedUtilDate.getTime());
 
@@ -113,7 +116,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 postCallingDao.updateTeleCall(telecallMastEntity);
             }
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
         }
         return result;
     }
@@ -156,7 +159,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
     @Override
     public String save(ReOpenTaleCallMaster openTaleCallMaster) {
-       return postCallingDao.save(openTaleCallMaster);
+        return postCallingDao.save(openTaleCallMaster);
     }
 
     @Override
@@ -172,16 +175,16 @@ public class PostCallingServiceImp implements PostCallingService {
     private String sendSms(String mobileno, String text) {
         String result = null;
         SmsSendlogEntity smsSendlogEntity = null;
-        BufferedReader in=null;
-        HttpURLConnection con=null;
+        BufferedReader in = null;
+        HttpURLConnection con = null;
         //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
-         // String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
-            String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
+        // String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
+        String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
         try {
             URL obj = new URL(url);
             con = (HttpURLConnection) obj.openConnection();
-            con.setReadTimeout(15*1000);
- //           con.connect();
+            con.setReadTimeout(15 * 1000);
+            //           con.connect();
             con.setRequestMethod("POST");
             int responseCode = con.getResponseCode();
             logger.info("\nSending 'POST' request to URL : " + url);
@@ -199,11 +202,11 @@ public class PostCallingServiceImp implements PostCallingService {
             logger.error("enable to send message  ", e);
             result = "err";
             e.printStackTrace();
-        }finally {
-            try{
+        } finally {
+            try {
                 in.close();
-            //    con.disconnect();
-            }catch (Exception e){
+                //    con.disconnect();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -317,9 +320,8 @@ public class PostCallingServiceImp implements PostCallingService {
         }
         if (appointmentMastEntity != null) {
             appointmentId = appointmentMastEntity.getAppointmentId();
-    //        String result1= postCallingDao.callJobAllocatedProcedure(appointmentId, customerNo, "0");
+            //        String result1= postCallingDao.callJobAllocatedProcedure(appointmentId, customerNo, "0");
         }
-
 
 
         long appointmentId1 = postCallingDao.checkAppointmentId(appointmentId);
@@ -396,7 +398,7 @@ public class PostCallingServiceImp implements PostCallingService {
                     }
 
                     if (loginId != null) {
-                        String res2 = saveTblNotificationLogEntity(text, agentCode);
+                        String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
                     } else {
                         String res = saveSmsSendLog(agentMobileNumber, agentCode, text);
                     }
@@ -410,7 +412,6 @@ public class PostCallingServiceImp implements PostCallingService {
         } else {
             result = "JOB ALREADY ALLOCATED";
         }
-
 
 
         return result;
@@ -473,22 +474,93 @@ public class PostCallingServiceImp implements PostCallingService {
         return result;
     }
 
-    public String saveTblNotificationLogEntity(String text, String agentCode) {
+    public String saveTblNotificationLogEntity(String text, String agentCode, PaytmdeviceidinfoEntity paytmdeviceidinfoEntity) {
         String result = null;
         try {
             TblNotificationLogEntity tblNotificationLogEntity = new TblNotificationLogEntity();
             tblNotificationLogEntity.setNotificationType("Leads");
             tblNotificationLogEntity.setNotificationText(text);
-            tblNotificationLogEntity.setNotificationLoginid(agentCode);
+            tblNotificationLogEntity.setPaytmdeviceidinfoBynotificationLoginid(paytmdeviceidinfoEntity);
+            //   tblNotificationLogEntity.setNotificationLoginid(agentCode);
             tblNotificationLogEntity.setNotificationSenddt(new Timestamp(new Date().getTime()));
             result = postCallingDao.saveTabNotification(tblNotificationLogEntity);
+
+            if ("done".equals(result)) {
+                sendNotification("Leads", text, paytmdeviceidinfoEntity.getDeviceId());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             result = "err";
         }
         return result;
     }
+
+
+    private String sendNotification(String notificationType, String notificationText, String deviceId) {
+        String googleAppId = "AIzaSyBOW6Q1BE1Z7saniilA415tKISi1c4npyw";
+        String messageKey = "message";
+        String result = "";
+
+        try {
+
+            Sender sender = new Sender(googleAppId);
+            Message message = new Message.Builder().timeToLive(30)
+                    .delayWhileIdle(true)
+                    .addData(messageKey, notificationText)
+                    .addData("title", "Leads")
+                    .addData("time", new Date().toString()).build();
+            logger.info("device Id >>>   "+deviceId);
+            Result result1 = sender.send(message, deviceId, 1);
+            result = result1.toString();
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return  result;
+    }
+
+   /*     String result = null;
+        SmsSendlogEntity smsSendlogEntity = null;
+        BufferedReader in=null;
+        HttpURLConnection con=null;
+        //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
+        // String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
+        String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
+        try {
+            URL obj = new URL(url);
+            con = (HttpURLConnection) obj.openConnection();
+            con.setReadTimeout(15*1000);
+            //           con.connect();
+            con.setRequestMethod("POST");
+            int responseCode = con.getResponseCode();
+            logger.info("\nSending 'POST' request to URL : " + url);
+            System.out.println("Response Code :" + responseCode);
+            logger.info("Response Code :" + responseCode);
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            result = response.toString();
+        } catch (Exception e) {
+            logger.error("enable to send notification  ", e);
+            result = "err";
+            e.printStackTrace();
+        }finally {
+            try{
+                in.close();
+                //    con.disconnect();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return result;*/
+
 }
+
+
 
 
 

@@ -698,7 +698,7 @@ class HomeController {
         String type = request.getParameter("type");
         from = from.substring(6, 10) + "-" + from.substring(3, 5) + "-" + from.substring(0, 2);
         to = to.substring(6, 10) + "-" + to.substring(3, 5) + "-" + to.substring(0, 2);
-        jsonObject = reportService.getReports(from, to, "TeleCalling");
+        jsonObject = reportService.getReports(from, to, type);
 
         return jsonObject;
     }

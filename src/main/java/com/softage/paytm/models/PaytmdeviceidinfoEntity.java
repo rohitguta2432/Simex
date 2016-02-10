@@ -1,6 +1,7 @@
 package com.softage.paytm.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -10,7 +11,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "paytmdeviceidinfo")
 @Cacheable
-public class PaytmdeviceidinfoEntity {
+public class PaytmdeviceidinfoEntity implements Serializable{
     private long id;
     private String deviceId;
     private String importBy;
