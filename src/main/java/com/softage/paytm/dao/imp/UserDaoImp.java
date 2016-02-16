@@ -48,5 +48,29 @@ public class UserDaoImp implements UserDao {
         return emplogintableEntity;
 
       }
+
+    @Override
+    public EmplogintableEntity getUserByEmpNumber(String empNumber) {
+        EntityManager entityManager=null;
+        Query query=null;
+        EmplogintableEntity emplogintableEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select emp from EmplogintableEntity emp where emp.empPhone=:empNumber";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("empNumber",empNumber);
+            emplogintableEntity= (EmplogintableEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return emplogintableEntity;
+    }
 }
 

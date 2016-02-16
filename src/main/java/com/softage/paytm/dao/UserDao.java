@@ -7,4 +7,5 @@ import com.softage.paytm.models.EmplogintableEntity;
  */
 public interface UserDao {
     public EmplogintableEntity getUserByEmpcode(String empCode);
+    public EmplogintableEntity getUserByEmpNumber(String empNumber);
 }

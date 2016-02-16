@@ -74,11 +74,11 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 int randomInt = randomGenerator.nextInt(10000);
                 paytmMastEntity.setOtp(new Integer(randomInt).toString());
                 paytmMastEntity.setRefCode(randomInt);
-                paytmMastEntity.setImportBy("Afjal");
+                paytmMastEntity.setImportBy(map.get("importBy"));
                 custList.add(paytmMastEntity);
                 i++;
             }
-            result=  paytmMasterDao.savePaytmMaster(custList);
+             result=  paytmMasterDao.savePaytmMaster(custList);
         }catch (Exception e){
             e.printStackTrace();
             result="error";
@@ -243,11 +243,13 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 circleCode = "11";
             } else if (state.equalsIgnoreCase("WEST BENGAL") || state.equalsIgnoreCase("SIKKIM") || state.startsWith("ANDAMAN") || (pin1 >= 70 && pin2 <= 74)) {
                 circleCode = "12";
+            }else if (state.equalsIgnoreCase("UTTARAKHAND") || (pin1 >= 24 && pin1 <= 28)) {
+                circleCode = "14";
             } else if (state.equalsIgnoreCase("UTTAR PARDESH") || (pin2 > 201 && pin1 >= 20 && pin1 <= 23)) {
                 circleCode = "13";
-            } else if (state.equalsIgnoreCase("UTTARAKHAND") || (pin1 >= 24 && pin1 <= 26)) {
-                circleCode = "14";
-            } else circleCode = "0";
+            }  else {
+                circleCode = "0";
+            }
 
             circode = Integer.parseInt(circleCode);
         }catch (Exception e){

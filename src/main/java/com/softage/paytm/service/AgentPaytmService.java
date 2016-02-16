@@ -1,5 +1,6 @@
 package com.softage.paytm.service;
 
+import com.softage.paytm.models.CircleMastEntity;
 import com.softage.paytm.models.PaytmagententryEntity;
 
 /**
@@ -7,7 +8,7 @@ import com.softage.paytm.models.PaytmagententryEntity;
  */
 public interface AgentPaytmService {
 
-    public String saveAgent(PaytmagententryEntity paytmagententryEntity);
+    public String saveAgent(PaytmagententryEntity paytmagententryEntity,CircleMastEntity circleMastEntity);
     public PaytmagententryEntity findByPrimaryKey(String agentCode);
 
 }

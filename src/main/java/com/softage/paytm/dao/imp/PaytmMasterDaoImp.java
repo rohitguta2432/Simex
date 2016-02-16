@@ -38,7 +38,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
                 entityManager.persist(mastEntity);
             }
             transaction.commit();
-            result="success";
+            result="done";
         }catch (Exception e) {
 
            e.printStackTrace();
@@ -64,7 +64,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "select new map (pm.addressStreet1 as address1,pm.addressStreet2 as address2,pm.city as city,pm.pincode as pincode,pm.email as email) from PaytmMastEntity pm  where pm.customerPhone=:mobileNo";
+            String strQuery = "select new map (pm.addressStreet1 as address1,pm.addressStreet2 as address2,pm.city as city,pm.pincode as pincode,pm.email as email,pm.state as state) from PaytmMastEntity pm  where pm.customerPhone=:mobileNo";
             query=entityManager.createQuery(strQuery);
             query.setParameter("mobileNo",mobileNo);
             HashMap<String,Object> map=(HashMap<String,Object>)query.getSingleResult();
@@ -73,6 +73,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             json.put("city",map.get("city"));
             json.put("pincode",map.get("pincode"));
             json.put("email",map.get("email"));
+            json.put("state",map.get("state"));
         }
         catch (Exception e)
         {
@@ -101,7 +102,9 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             Object[] s = (Object[])query1.getSingleResult();
             if (s.length>0) {
                 json.put("mobileNo", s[0]);
+                System.out.println(s[0]);
                 json.put("customerName", s[1]);
+                System.out.println(s[1]);
             }
         }catch (Exception e){
             e.printStackTrace();

@@ -10,6 +10,7 @@ import java.util.List;
  */
 public interface CircleService {
     public List<String> getCirleList(int cirCode);
+    public CircleMastEntity findByPrimaryKey(int circleCode);
     List<String> getSpokeList(String circleName);
     public List<ReportMastEntity> getReporttypes();
 

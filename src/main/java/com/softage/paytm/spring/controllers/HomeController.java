@@ -48,6 +48,9 @@ class HomeController {
     @Autowired
     private PaytmPinMasterService pinMasterService;
 
+    @Autowired
+    private CircleJPATestService circleJPATestService;
+
     /**
      * Simply selects the home view to render by returning its name.
      */
@@ -119,6 +122,7 @@ class HomeController {
         String line = "";
         int rejectCount = 0;
         int reopenCount=0;
+        String importBy="System";
 
         TelecallMastEntity telecallMastEntity = null;
         PaytmMastEntity paytmMastEntity=null;
@@ -132,6 +136,12 @@ class HomeController {
 
         try {
             //just temporary save file info into ufile
+
+
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importBy = (String) session.getAttribute("name");
+            }
             byte[] bytes = mpf.getBytes();
             mpf.getContentType();
             String filename = mpf.getOriginalFilename();
@@ -177,7 +187,7 @@ class HomeController {
                     HashMap<String, String> map1 = new HashMap<String, String>();
                     if (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) {
                         telecallMastEntity = callingService.getByPrimaryKey(customerData[3]);
-                        //paytmMastEntity= paytmMasterService.getPaytmMaster(customerData[3]);
+                        paytmMastEntity= paytmMasterService.getPaytmMaster(customerData[3]);
                         if (telecallMastEntity != null) {
 
                             ReOpenTaleCallMaster reOpenTaleCallMaster=   new ReOpenTaleCallMaster();
@@ -187,11 +197,13 @@ class HomeController {
                             reOpenTaleCallMaster.setTmLastAttemptDateTime(telecallMastEntity.getTmLastAttemptDateTime());
                             reOpenTaleCallMaster.setTmLastCallStatus(telecallMastEntity.getTmLastCallStatus());
                             reOpenTaleCallMaster.setTmTeleCallStatus(telecallMastEntity.getTmTeleCallStatus());
-                          //  String msg=callingService.save(reOpenTaleCallMaster);
+                            String msg=callingService.save(reOpenTaleCallMaster);
+                            logger.info("Customer Reopen>>>>>>> "+msg);
                             byte attempt = 0;
                             telecallMastEntity.setTmAttempts(attempt);
                             reopenCount++;
-                         //   String msg = callingService.updateTeleCall(telecallMastEntity);
+                            String msg1 = callingService.updateTeleCall(telecallMastEntity);
+                            logger.info("TeleCallMastEntity Successfully Updated>>>>>>>>  "+msg1);
                         }
                     }
                     if ((customerData[12].length() == 6 && StringUtils.isNumeric(customerData[12]))) {
@@ -219,6 +231,7 @@ class HomeController {
                         map.put("StageId", customerData[15]);
                         map.put("SubStageId", customerData[16]);
                         map.put("CreatedTimestamp", customerData[17]);
+                        map.put("importBy",importBy);
                         list.add(map);
                         successCount++;
                     } else if (paytmPinMaster == null && (customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3])||paytmMastEntity!=null)) {
@@ -246,7 +259,7 @@ class HomeController {
             jsonObject.put("rejectedRecord", json1);
 
             System.out.println("list   " + list);
-         //   result = paytmMasterService.savePaytmMaster(list);
+            result = paytmMasterService.savePaytmMaster(list);
             rejectCount = (count - 1) - successCount-reopenCount;
             if ("done".equalsIgnoreCase("done")) {
                 result = "Successfully Uploded Customer  = " + successCount +" Reopen Customer  = "+reopenCount+ " Rejected Customer  =" + rejectCount;
@@ -254,7 +267,6 @@ class HomeController {
             jsonObject.put("status", "success");
         } catch (FileNotFoundException e) {
             logger.error("File Not Found ", e);
-
             e.printStackTrace();
             result = "File not Uploaded";
         } catch (Exception e) {
@@ -277,6 +289,24 @@ class HomeController {
 
         return jsonObject;
     }
+
+
+    @RequestMapping(value = "/saveCircle", method = {RequestMethod.POST,RequestMethod.GET})
+    @ResponseBody
+    public String saveCircle(){
+
+        CircleMastEntity circleMastEntity=new CircleMastEntity();
+        circleMastEntity.setCirCode(21);
+        circleMastEntity.setCircleName("TestCircle1");
+        circleMastEntity.setImportBy("Afjal");
+        circleMastEntity.setImportDate(new Timestamp(new Date().getTime()));
+       CircleMastEntity circleMastEntity1= circleJPATestService.save(circleMastEntity);
+        System.out.println(circleMastEntity1);
+
+        return "done";
+    }
+
+
 
    /* it is not use currently*/
 
@@ -388,35 +418,44 @@ class HomeController {
     public JSONObject telecallingScreen(HttpServletRequest request) {
         String userName = null;
         int cirCode = 0;
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            userName = (String) session.getAttribute("name");
-            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
-            if (emplogintableEntity != null) {
-                cirCode = emplogintableEntity.getCirCode();
-            }
-        }
+        JSONObject json=new JSONObject();
         JSONObject jsonObject = new JSONObject();
-        JSONObject teleJson = paytmMasterService.telecallingScreen(userName, cirCode);
-        List<StateMasterEntity> stateList = paytmMasterService.getStateList();
-        List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
-        JSONObject json = paytmMasterService.getPaytmMastData((String) teleJson.get("mobileNo"));
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Calendar date = Calendar.getInstance();
-        String dateList1[] = new String[7];
-        List<String> dateList = new ArrayList<String>();
-        for (int i = 0; i < 7; i++) {
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                userName = (String) session.getAttribute("name");
+                EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
+                if (emplogintableEntity != null) {
+                    cirCode = emplogintableEntity.getCirCode();
+                }
+            }
 
-            dateList1[i] = format.format(date.getTime());
-            date.add(Calendar.DATE, 1);
-            dateList.add(dateList1[i]);
+            JSONObject teleJson = paytmMasterService.telecallingScreen(userName, cirCode);
+            List<StateMasterEntity> stateList = paytmMasterService.getStateList();
+            List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
+            if (teleJson.get("mobileNo").toString() != null && !teleJson.get("mobileNo").toString().equals("")) {
+                json = paytmMasterService.getPaytmMastData((String) teleJson.get("mobileNo"));
+            }
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            Calendar date = Calendar.getInstance();
+            String dateList1[] = new String[7];
+            List<String> dateList = new ArrayList<String>();
+            for (int i = 0; i < 7; i++) {
+
+                dateList1[i] = format.format(date.getTime());
+                date.add(Calendar.DATE, 1);
+                dateList.add(dateList1[i]);
+            }
+
+            jsonObject.put("teleData", teleJson);
+            jsonObject.put("stateList", stateList);
+            jsonObject.put("statusList", statusList);
+            jsonObject.put("dateList", dateList);
+            jsonObject.put("paytmmastjson", json);
+            logger.info("telecalling screen data fatch sucessfully>>>>>>>>");
+        }catch (Exception e){
+              logger.error("",e);
         }
-
-        jsonObject.put("teleData", teleJson);
-        jsonObject.put("stateList", stateList);
-        jsonObject.put("statusList", statusList);
-        jsonObject.put("dateList", dateList);
-        jsonObject.put("paytmmastjson", json);
         return jsonObject;
     }
 
@@ -426,12 +465,18 @@ class HomeController {
         String msg = "";
         JSONObject jsonObject = new JSONObject();
         PaytmPinMaster paytmPinMaster=null;
+        int circleCode=0;
+        CircleMastEntity circleMastEntity=null;
         try {
 
             String userName = "system";
             HttpSession session = request.getSession(false);
             if (session != null) {
                 userName = (String) session.getAttribute("name");
+                circleCode=(Integer)session.getAttribute("cirCode");
+                if (circleCode!=0){
+                    circleMastEntity=circleService.findByPrimaryKey(circleCode);
+                }
             }
 
             String agentName = request.getParameter("agent_name");
@@ -465,7 +510,7 @@ class HomeController {
                 return jsonObject;
             }
 
-            msg = agentPaytmService.saveAgent(paytmagententryEntity);
+            msg = agentPaytmService.saveAgent(paytmagententryEntity,circleMastEntity);
             if ("done".equalsIgnoreCase(msg)) {
                 msg = "Agent Succesfully Registered";
                 jsonObject.put("msg", msg);
@@ -580,11 +625,13 @@ class HomeController {
     public JSONObject postCallig(HttpServletRequest request, HttpServletResponse response) {
         String result = null;
         String importby = "System";
+        String importType="Admin";
         JSONObject jsonObject = new JSONObject();
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
                 importby = (String) session.getAttribute("name");
+                importType = (String) session.getAttribute("role");
             }
             String number = request.getParameter("mobileNo");
             String name = request.getParameter("name");
@@ -598,7 +645,6 @@ class HomeController {
             String visitDate = request.getParameter("visitDate");
             String visitTime1 = request.getParameter("visitTime");
             String status = request.getParameter("status");
-            String importType = "admin";
             Map<String, String> map = new HashMap<String, String>();
             String[] visitTime = visitTime1.split(":");
             System.out.println(visitTime[0]);

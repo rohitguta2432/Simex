@@ -1,4 +1,4 @@
-var routerApp = angular.module('routerApp', ['ui.router','ngMaterial']);
+var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner']);
 
 routerApp.config(function($stateProvider, $urlRouterProvider) {
 
@@ -10,7 +10,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
 
         .state('registration', {
             url: '/registration',
-            templateUrl: 'registration/agentregistration.html',
+            templateUrl: 'Registration/agentregistration.html',
             controller:'agentCtrl'
         })
 
@@ -27,7 +27,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
         })
         .state('telecalling', {
             url: '/telecalling',
-            templateUrl: 'telecalling/telecalling.html',
+            templateUrl: 'Telecalling/telecalling.html',
             controller:'telecalling'
 
         })
@@ -303,7 +303,8 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
     $scope.screen = function(ev){
 
-        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.state.stateCode + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
+        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
+          console.log(data);
         $http.get('http://localhost:8080/paytm/postCalling?'+ data)
             .success(function(data, status, headers, config) {
                 // alert('jfgkfj');
@@ -535,8 +536,7 @@ routerApp.directive('fileModel', ['$parse', function ($parse) {
     };
 }]);
 
-
-routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$mdMedia','$mdDialog', function ($scope, $http, FileProductUploadService,$mdMedia,$mdDialog) {
+routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$mdDialog','$mdMedia', function ($scope, $http, FileProductUploadService,$mdDialog, $mdMedia) {
 
     $scope.Message = '';
     $scope.FileInvalidMessage = '';
@@ -546,12 +546,10 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
     $scope.IsFileValid = false;
     $scope.IsFormValid = false;
     $scope.selectedProduct = {};
-
     $scope.$watch("f1.$valid", function (isValid) {
         $scope.IsFormValid = isValid;
 
     });
-
     $scope.checkFileValid = function (file) {
         var isValid = true;
         $scope.IsFileValid = isValid;
@@ -562,36 +560,14 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
     };
 
     $scope.SaveFile = function (ev) {
+
+
         $scope.IsFormSubmitted = true;
         $scope.Message = '';
         $scope.checkFileValid($scope.SelectedFileForUpload);
 
         if ($scope.IsFormValid && $scope.IsFileValid) {
             FileProductUploadService.UploadFile($scope.SelectedFileForUpload).then(function (d) {
-                //alert(d.Message);c
-                //alert(d.data.Message);
-                //console.log(d.data.Message);
-
-               /* $scope.status = '';
-                $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
-
-                $mdDialog.show(
-                    $mdDialog.alert()
-                        .parent(angular.element(document.querySelector('#popupContainer')))
-                        .clickOutsideToClose(true)
-                        .title('')
-                        .textContent(d.data.Message)
-                        .ariaLabel('Alert Dialog Demo')
-                        .ok('Got it!')
-                        .targetEvent(ev)
-                );
-
-                $scope.rejectReport = d.data.rejectedRecord
-                window.setTimeout(function(){
-                    $scope.exportToExcel();
-                    //location.reload();
-
-                }, 3000)*/
 
                 var confirm = $mdDialog.confirm()
                     // .title('Would you like to delete your debt?')
@@ -607,17 +583,14 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
                         $scope.exportToExcel();
                         //location.reload();
 
-                    }, 3000)
-                    //$scope.status = 'You decided to get rid of your debt.';
+                    }, 2000)
                 }, function() {
                     $scope.status = 'You decided to keep your debt.';
                 });
-
-
                 ClearForm();
 
             }, function (err) {
-               // alert(err);
+
 
                 var confirm = $mdDialog.confirm()
                     // .title('Would you like to delete your debt?')
@@ -628,18 +601,14 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
                 // .cancel('Cancel');
                 $mdDialog.show(confirm).then(function() {
                     $scope.status = 'You decided to get rid of your debt.';
-                    //$scope.rejectReport = d.data.rejectedRecord
-                    window.setTimeout(function(){
-                        $scope.exportToExcel();
-                        //location.reload();
-
-                    }, 3000)
-                    //$scope.status = 'You decided to get rid of your debt.';
                 }, function() {
                     $scope.status = 'You decided to keep your debt.';
                 });
+
             });
-        }else {
+        }
+        else
+        {
             $scope.Message = 'all the fields are required';
         }
     };
@@ -665,12 +634,16 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
         });
     });
 
+
     $scope.exportToExcel=function(){// ex: '#my-table'
         var blob = new Blob([document.getElementById('exportable').innerHTML], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
         });
         saveAs(blob, "Report.xls");
     }
+
+
+
 }]).factory('FileProductUploadService', function ($http, $q) {
 
     var fac = {};
@@ -687,8 +660,8 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
             transformRequest: angular.identity
         }).then(
             function (d) {
-            defer.resolve(d);
-        },function (err) {
+                defer.resolve(d);
+            },function (err) {
                 defer.reject("File Upload Failed");
             });
         return defer.promise;

@@ -52,6 +52,7 @@ public class CircleMastDaoImp implements CircleMastDao {
         return circleMastEntity;
     }
 
+
     @Override
     public List<String> getCircleList() {
         EntityManager entityManager=null;

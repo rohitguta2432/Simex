@@ -6,14 +6,28 @@ import com.google.android.gcm.server.Sender;
 import com.softage.paytm.dao.*;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.PostCallingService;
+import org.apache.http.HttpRequest;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.utils.HttpClientUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -177,39 +191,59 @@ public class PostCallingServiceImp implements PostCallingService {
         SmsSendlogEntity smsSendlogEntity = null;
         BufferedReader in = null;
         HttpURLConnection con = null;
+        //  text="Hell Hai";
         //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
         // String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
-        String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
-        try {
-            URL obj = new URL(url);
+        //String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
+        String url = "http://www.mysmsapp.in/api/push";
+        try (CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build())
+        {
+        try (CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(RequestBuilder.post(url)
+                .addParameter(new BasicNameValuePair("apikey", "56274f9a48b66"))
+                .addParameter(new BasicNameValuePair("route", "trans5"))
+                .addParameter(new BasicNameValuePair("sender", "SPAYTM"))
+                .addParameter(new BasicNameValuePair("mobileno", mobileno))
+                .addParameter(new BasicNameValuePair("text", text)).build())) {
+            InputStream is = closeableHttpResponse.getEntity().getContent();
+            in = new BufferedReader(new InputStreamReader(is));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+
+            }
+            result = response.toString();
+        } catch (IOException io) {
+            io.printStackTrace();
+            result="err";
+
+        }
+    }
+            catch (Exception e){
+                e.printStackTrace();
+                result="err";
+            }
+         /*  URL obj = new URL(url);
             con = (HttpURLConnection) obj.openConnection();
             con.setReadTimeout(15 * 1000);
-            //           con.connect();
+     //       con.connect();
             con.setRequestMethod("POST");
             int responseCode = con.getResponseCode();
             logger.info("\nSending 'POST' request to URL : " + url);
             System.out.println("Response Code :" + responseCode);
             logger.info("Response Code :" + responseCode);
-            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+           in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        //    in = new BufferedReader(new InputStreamReader(is);
             String inputLine;
             StringBuffer response = new StringBuffer();
 
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            result = response.toString();
-        } catch (Exception e) {
-            logger.error("enable to send message  ", e);
-            result = "err";
-            e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-                //    con.disconnect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+            result = response.toString();*/
+
+
         return result;
 
 
@@ -464,7 +498,6 @@ public class PostCallingServiceImp implements PostCallingService {
             smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
             smsSendlogEntity.setImportDate(new Timestamp(new Date().getTime()));
             smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
-            smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
             smsSendlogEntity.setReceiverMastByReceiverCode(receiverMastEntity);
             result = postCallingDao.saveSmsSendEntity(smsSendlogEntity);
         } catch (Exception e) {
@@ -512,8 +545,10 @@ public class PostCallingServiceImp implements PostCallingService {
             logger.info("device Id >>>   "+deviceId);
             Result result1 = sender.send(message, deviceId, 1);
             result = result1.toString();
+            logger.info("Notification send successfully to the Agent >>>  "+result);
             System.out.println(result);
         } catch (Exception e) {
+            logger.error("Notification not send to Agent>>>  ",e);
             e.printStackTrace();
         }
         return  result;

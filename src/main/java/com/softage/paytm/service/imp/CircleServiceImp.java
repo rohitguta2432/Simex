@@ -31,6 +31,12 @@ public class CircleServiceImp implements CircleService {
     }
 
     @Override
+    public CircleMastEntity findByPrimaryKey(int circleCode) {
+        return circleMastDao.findByPrimaryKey(circleCode);
+    }
+
+
+    @Override
     public List<String> getSpokeList(String circleName) {
        List<String> list= circleMastDao.getSpokeList(circleName);
         return list;

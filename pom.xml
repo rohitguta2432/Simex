@@ -5,8 +5,13 @@
 	<groupId>com.softage</groupId>
 	<artifactId>paytmkyc</artifactId>
 	<name>paytmkyc</name>
-	<!-- <packaging>war</packaging> -->
+    <packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
+	<scm>
+		<url>https://gitlab.com/paytm/PaytmCentral.git</url>
+		<connection>scm:git:https://gitlab.com/paytm/PaytmCentral.git</connection>
+		<developerConnection>scm:git:https://gitlab.com/paytm/PaytmCentral.git</developerConnection>
+	</scm>
 	<properties>
 		<java-version>1.8</java-version>
 		<org.springframework-version>4.0.3.RELEASE</org.springframework-version>
@@ -115,11 +120,17 @@
 			<version>2.4.2.RELEASE</version>
 		</dependency>
 		<!-- Spring Data JPA -->
-		<!--<dependency>
+		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
 			<version>${spring-data-jpa.version}</version>
-		</dependency>-->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons-core</artifactId>
+			<version>1.0.0.RELEASE</version>
+		</dependency>
+
 
 		<!-- AspectJ -->
 		<dependency>
@@ -228,7 +239,12 @@
 		  <version>1.0.2</version>
 	   </dependency>
 
-
+       <!--Closeable HttpClient Dependency-->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.1</version>
+		</dependency>
 
 
 		<!-- Servlet -->
@@ -482,6 +498,49 @@
 		                    <mainClass>org.test.int1.Main</mainClass>
 		                </configuration>
 		            </plugin>
+
+					<!--war plugin-->
+
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>buildnumber-maven-plugin</artifactId>
+						<version>1.0</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>create</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<doCheck>false</doCheck>
+							<doUpdate>false</doUpdate>
+						</configuration>
+					</plugin>
+
+
+					<plugin>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>2.1.1</version>
+						<configuration>
+							<outputDirectory>war/WEB-INF/classes</outputDirectory>
+							<warName>paytm</warName>
+							<attachClasses>true</attachClasses>
+							<archive>
+								<manifest>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+								</manifest>
+								<manifestEntries>
+									<Implementation-Build>${buildNumber}</Implementation-Build>
+									<Implementation-Timestamp>${timestamp}</Implementation-Timestamp>
+								</manifestEntries>
+							</archive>
+						</configuration>
+					</plugin>
+
+
+
 		        </plugins>
 		    </build>
     	</profile>

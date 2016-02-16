@@ -29,11 +29,17 @@
     <script type="text/javascript" src="libs/jquery/dist/jquery.min.js"></script>--%>
 
    <%-- <script src="libs/angular/angular.min.js"></script>--%>
-    <link href="libs/jqueryui/jquery-ui.css" rel="stylesheet" />
+    <%--<link href="libs/jqueryui/jquery-ui.css" rel="stylesheet" />--%>
+    <link href="libs/jquery-ui/themes/smoothness/jquery-ui.css" rel="stylesheet" />
     <%--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>--%>
     <%--<link rel="stylesheet" type="text/css" href="libs/jqueryui/jquery-ui.css">--%>
 
+
+    <!--Loader -->
+    <script src="libs/spin.js/spin.js"></script>
+    <script src="libs/angular-spinner/angular-spinner.min.js"></script>
+    <script src="libs/angular-loading-spinner/angular-loading-spinner.js"></script>
 
 
   <%--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>--%>
@@ -100,7 +106,7 @@
       </div>
       <!-- /Sidebar Collapse -->
       <!-- Account Area and Settings --->
-      <div class="navbar-header pull-right">
+      <div class="navbar-header pull-right" ng-controller="logout">
         <div class="navbar-account">
           <ul class="account-area">
             <li>
@@ -117,8 +123,10 @@
               </a>
               <!--Login Area Dropdown-->
               <ul class=" dropdown-menu dropdown-arrow dropdown-login-area">
-                <li class="dropdown-footer pull-left"><i class="icon fa fa-sign-out"></i><a href="login.html">
-                  &nbsp;&nbsp;Sign out </a></li>
+                <%--<li class="dropdown-footer pull-left"><i class="icon fa fa-sign-out"></i><a href="login.html">
+                  &nbsp;&nbsp;Sign out </a></li>--%>
+                    <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        &nbsp;&nbsp;Sign out</span> </a></li>
               </ul>
               <!--Login Area Dropdown-->
             </li>

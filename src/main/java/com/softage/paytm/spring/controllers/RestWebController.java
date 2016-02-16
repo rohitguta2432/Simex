@@ -175,10 +175,26 @@ public class RestWebController {
         ProofMastEntity proofMastEntityPOICode = null;
         ProofMastEntity proofMastEntityPOACode = null;
         String result = "98833";
+        PaytmMastEntity paytmMastEntity=null;
+        String address="";
+        String state="";
+        String emailId="";
+        String city="";
+        String pincode="";
 
 
         try {
             String phoneNumber = request.getParameter("custPhone");
+            if (phoneNumber!=null){
+                paytmMastEntity =paytmMasterService.getPaytmMaster(phoneNumber);
+                if (paytmMastEntity!=null){
+                    address=paytmMastEntity.getAddressStreet1();
+                    city=paytmMastEntity.getCity();
+                    state=paytmMastEntity.getState();
+                    pincode=paytmMastEntity.getPincode();
+                    emailId=paytmMastEntity.getEmail();
+                }
+            }
             String custName = request.getParameter("custName");
             String dob = request.getParameter("dob");
             String custPOICode = request.getParameter("custPOICode");
@@ -211,16 +227,16 @@ public class RestWebController {
             //  dataentryEntity.setCusPOACode(custPOACode);
             dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
             // dataentryEntity.setCusPoiCode(custPOICode);
-            dataentryEntity.setCusAdd("");
+            dataentryEntity.setCusAdd(address);
             dataentryEntity.setCusArea("");
-            dataentryEntity.setCusCity("");
+            dataentryEntity.setCusCity(city);
             dataentryEntity.setCusDob(dob);
-            dataentryEntity.setCusEmailId("");
+            dataentryEntity.setCusEmailId(emailId);
             dataentryEntity.setCusName(custName);
-            dataentryEntity.setCusPincode("");
+            dataentryEntity.setCusPincode(pincode);
             dataentryEntity.setCusPoaNumber(custPOANumber);
             dataentryEntity.setCusPoiNumber(custPOINumber);
-            dataentryEntity.setCusState("");
+            dataentryEntity.setCusState(state);
             dataentryEntity.setCustomerPhone(phoneNumber);
             dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
             dataentryEntity.setDocStatus("");
@@ -238,7 +254,6 @@ public class RestWebController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-
         }
 
         return result;
