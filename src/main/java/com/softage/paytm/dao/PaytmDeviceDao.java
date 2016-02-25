@@ -10,4 +10,5 @@ public interface PaytmDeviceDao {
 
     public String saveDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity);
     public PaytmdeviceidinfoEntity getByloginId(String loginid);
+    public String updateDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity);
 }

@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -155,8 +156,64 @@ public class AllocationDaoImp implements AllocationDao {
             if (entityManager != null && entityManager.isOpen())
             {
                 entityManager.close();
+
             }
         }
         return  allocationMastEntity;
+    }
+
+    @Override
+    public <S extends AllocationMastEntity> S save(S s) {
+        return null;
+    }
+
+    @Override
+    public <S extends AllocationMastEntity> Iterable<S> save(Iterable<S> iterable) {
+        return null;
+    }
+
+    @Override
+    public AllocationMastEntity findOne(Integer integer) {
+        return null;
+    }
+
+    @Override
+    public boolean exists(Integer integer) {
+        return false;
+    }
+
+    @Override
+    public Iterable<AllocationMastEntity> findAll() {
+        return null;
+    }
+
+    @Override
+    public Iterable<AllocationMastEntity> findAll(Iterable<Integer> iterable) {
+        return null;
+    }
+
+    @Override
+    public long count() {
+        return 0;
+    }
+
+    @Override
+    public void delete(Integer integer) {
+
+    }
+
+    @Override
+    public void delete(AllocationMastEntity allocationMastEntity) {
+
+    }
+
+    @Override
+    public void delete(Iterable<? extends AllocationMastEntity> iterable) {
+
+    }
+
+    @Override
+    public void deleteAll() {
+
     }
 }

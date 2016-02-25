@@ -54,7 +54,7 @@ public class ProcessMastEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "processMastByProcessCode")
+    @OneToMany(mappedBy = "processMastByProcessCode",cascade = CascadeType.ALL)
     public Collection<SmsSendlogEntity> getSmsSendlogsByProcessCode() {
         return smsSendlogsByProcessCode;
     }

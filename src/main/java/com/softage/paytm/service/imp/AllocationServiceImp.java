@@ -26,6 +26,10 @@ public class AllocationServiceImp implements AllocationService {
 
     @Override
     public String updateAllocationMastEntity(AllocationMastEntity allocationMastEntity) {
-        return allocationDao.updateAllocationMastEntity(allocationMastEntity);
+        String result=null;
+        for(int i=1; i<=4; i++) {
+            result= allocationDao.updateAllocationMastEntity(allocationMastEntity);
+        }
+        return result;
     }
 }

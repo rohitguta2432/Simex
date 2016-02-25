@@ -195,4 +195,80 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         }
         return  paytmMastEntity;
     }
+
+    @Override
+    public <S extends PaytmMastEntity> S save(S s) {
+        return null;
+    }
+
+    @Override
+    public <S extends PaytmMastEntity> Iterable<S> save(Iterable<S> iterable) {
+        return null;
+    }
+
+    @Override
+    public PaytmMastEntity findOne(String s) {
+        EntityManager entityManager = null;
+        PaytmMastEntity paytmMastEntity=null;
+        Query query=null;
+        try
+        {
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select pm from PaytmMastEntity pm where pm.customerPhone=:mobileno";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("mobileno",s);
+            paytmMastEntity = (PaytmMastEntity)query.getSingleResult();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  paytmMastEntity;
+    }
+
+    @Override
+    public boolean exists(String s) {
+        return false;
+    }
+
+    @Override
+    public Iterable<PaytmMastEntity> findAll() {
+        return null;
+    }
+
+    @Override
+    public Iterable<PaytmMastEntity> findAll(Iterable<String> iterable) {
+        return null;
+    }
+
+    @Override
+    public long count() {
+        return 0;
+    }
+
+    @Override
+    public void delete(String s) {
+
+    }
+
+    @Override
+    public void delete(PaytmMastEntity paytmMastEntity) {
+
+    }
+
+    @Override
+    public void delete(Iterable<? extends PaytmMastEntity> iterable) {
+
+    }
+
+    @Override
+    public void deleteAll() {
+
+    }
 }

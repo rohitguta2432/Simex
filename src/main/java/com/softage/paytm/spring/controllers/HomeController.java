@@ -261,7 +261,7 @@ class HomeController {
             System.out.println("list   " + list);
             result = paytmMasterService.savePaytmMaster(list);
             rejectCount = (count - 1) - successCount-reopenCount;
-            if ("done".equalsIgnoreCase("done")) {
+            if ("done".equalsIgnoreCase(result)) {
                 result = "Successfully Uploded Customer  = " + successCount +" Reopen Customer  = "+reopenCount+ " Rejected Customer  =" + rejectCount;
             }
             jsonObject.put("status", "success");

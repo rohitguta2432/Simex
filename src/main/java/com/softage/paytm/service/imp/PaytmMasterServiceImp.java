@@ -96,7 +96,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
 
     @Override
     public PaytmMastEntity getPaytmMaster(String mobileNo) {
-        return paytmMasterDao.getPaytmMaster(mobileNo);
+        return paytmMasterDao.findOne(mobileNo);
     }
 
     @Override

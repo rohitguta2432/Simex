@@ -250,7 +250,7 @@ public class PaytmagententryEntity {
     }
 
 
-    @OneToMany(mappedBy = "paytmagententryByAgentCode")
+    @OneToMany(mappedBy = "paytmagententryByAgentCode",cascade = CascadeType.ALL)
     public Collection<AllocationMastEntity> getAllocationMastsByAcode() {
         return allocationMastsByAcode;
     }

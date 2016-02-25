@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "dataentry")
-@Cacheable
+@Cacheable(false)
 public class DataentryEntity implements Serializable {
     private String customerPhone;
     private String cusAdd;

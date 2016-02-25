@@ -41,7 +41,8 @@ public class SmsSendLogDaoImp implements SmsSendLogDao {
             query.setParameter("status","N");
             query.setMaxResults(10);
             entityList=query.getResultList();
-           /* smsSendlogEntity=(SmsSendlogEntity)query.getSingleResult();*/
+
+            /* smsSendlogEntity=(SmsSendlogEntity)query.getSingleResult();*/
         }catch (Exception e){
             logger.error("error to geting SmsSendlogEntity",e);
         }

@@ -104,6 +104,7 @@ public class RestWebController {
     @RequestMapping(value = "/UpdateDeviceInfo", method = {RequestMethod.GET, RequestMethod.POST})
     public String UpdateDeviceInfo(HttpServletRequest request, HttpServletResponse response) {
         String msg = "0";
+        PaytmdeviceidinfoEntity paytmdeviceidinfoEntity1=null;
         try {
             String loginId = request.getParameter("loginid");
             String deviceId = request.getParameter("deviceId");
@@ -113,8 +114,14 @@ public class RestWebController {
             paytmdeviceidinfoEntity.setLoginId(loginId);
             paytmdeviceidinfoEntity.setImportBy(importby);
             paytmdeviceidinfoEntity.setImportDate(new Timestamp(new Date().getTime()));
-            msg = paytmDeviceService.saveDevice(paytmdeviceidinfoEntity);
-
+            paytmdeviceidinfoEntity1= paytmDeviceService.getByloginId(loginId);
+            if (paytmdeviceidinfoEntity1!=null) {
+                msg = paytmDeviceService.saveDevice(paytmdeviceidinfoEntity);
+            }else {
+                paytmdeviceidinfoEntity1.setDeviceId(deviceId);
+                paytmdeviceidinfoEntity1.setImportBy(importby);
+                msg=paytmDeviceService.updateDevice(paytmdeviceidinfoEntity1);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("", e);

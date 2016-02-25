@@ -9,7 +9,6 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "circle_mast")
-@Cacheable
 public class CircleMastEntity {
     private int cirCode;
     private String chMobileNumber;

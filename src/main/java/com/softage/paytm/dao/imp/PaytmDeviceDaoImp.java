@@ -72,4 +72,29 @@ public class PaytmDeviceDaoImp implements PaytmDeviceDao {
         }
         return paytmdeviceidinfoEntity;
     }
+
+    @Override
+    public String updateDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg = "0";
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.merge(paytmdeviceidinfoEntity);
+            transaction.commit();
+            msg = "1";
+        } catch (Exception e) {
+            msg = "0";
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+
+        return msg;
+    }
 }

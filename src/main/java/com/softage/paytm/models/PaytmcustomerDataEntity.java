@@ -252,7 +252,7 @@ public class PaytmcustomerDataEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "paytmcustomerDataByCustomerPhone")
+    @OneToMany(mappedBy = "paytmcustomerDataByCustomerPhone",cascade = CascadeType.ALL)
     public Collection<AllocationMastEntity> getAllocationMastsByPcdCustomerPhone() {
         return allocationMastsByPcdCustomerPhone;
     }

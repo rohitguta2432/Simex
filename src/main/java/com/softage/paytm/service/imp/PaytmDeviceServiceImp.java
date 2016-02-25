@@ -18,4 +18,14 @@ public class PaytmDeviceServiceImp implements PaytmDeviceService {
     public String saveDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity) {
         return paytmDeviceDao.saveDevice(paytmdeviceidinfoEntity);
     }
+
+    @Override
+    public PaytmdeviceidinfoEntity getByloginId(String loginid) {
+        return paytmDeviceDao.getByloginId(loginid);
+    }
+
+    @Override
+    public String updateDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity) {
+        return paytmDeviceDao.updateDevice(paytmdeviceidinfoEntity);
+    }
 }

@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "allocation_mast")
-@Cacheable
+@Cacheable(false)
 public class AllocationMastEntity {
     private int id;
     private Timestamp allocationDatetime;
@@ -282,7 +282,7 @@ public class AllocationMastEntity {
     public void setAppointmentMastByAppointmentId(AppointmentMastEntity appointmentMastByAppointmentId) {
         this.appointmentMastByAppointmentId = appointmentMastByAppointmentId;
     }
-    @OneToMany(mappedBy = "allocationMastByAllocationId")
+    @OneToMany(mappedBy = "allocationMastByAllocationId",cascade =CascadeType.ALL )
     public Collection<DataentryEntity> getDataentriesById() {
         return dataentriesById;
     }

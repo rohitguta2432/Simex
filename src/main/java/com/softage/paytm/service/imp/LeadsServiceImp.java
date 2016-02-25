@@ -40,6 +40,7 @@ public class LeadsServiceImp implements LeadsService {
         String status = null;
         AppointmentMastEntity appointmentMastEntity = null;
         String msg = "";
+        String result="";
         long appointmentid = 0;
         try {
             if (response) {
@@ -52,7 +53,9 @@ public class LeadsServiceImp implements LeadsService {
                 allocationMastEntity.setConfirmation(status);
                 allocationMastEntity.setFinalConfirmation(status);
                 allocationMastEntity.setConfirmationDatetime(new Timestamp(new Date().getTime()));
-                String result = allocationDao.updateAllocationMastEntity(allocationMastEntity);
+                for (int i=1; i<=4; i++) {
+                    result = allocationDao.updateAllocationMastEntity(allocationMastEntity);
+                }
                 if ("done".equalsIgnoreCase(result)) {
                     msg = "1";
                 }
@@ -60,7 +63,7 @@ public class LeadsServiceImp implements LeadsService {
             if ("Y".equals(status) && appointmentid != 0) {
                 appointmentMastEntity = postCallingDao.getByAppointmentId(appointmentid);
                 if (appointmentMastEntity != null) {
-                    String result = leadsDao.jobConfirmtocustomer(appointmentid, allocationMastEntity.getCustomerPhone(), allocationMastEntity.getAgentCode());
+                  result = leadsDao.jobConfirmtocustomer(appointmentid, allocationMastEntity.getCustomerPhone(), allocationMastEntity.getAgentCode());
                 }
             }
         } catch (Exception e) {

@@ -8,4 +8,6 @@ import com.softage.paytm.models.PaytmdeviceidinfoEntity;
 public interface PaytmDeviceService {
 
     public String saveDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity);
+    public PaytmdeviceidinfoEntity getByloginId(String loginid);
+    public String updateDevice(PaytmdeviceidinfoEntity paytmdeviceidinfoEntity);
 }

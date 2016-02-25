@@ -7,7 +7,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "call_status_master")
-@Cacheable
 public class CallStatusMasterEntity {
     private String csmCode;
     private String statusText;

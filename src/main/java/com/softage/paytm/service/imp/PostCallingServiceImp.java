@@ -67,7 +67,7 @@ public class PostCallingServiceImp implements PostCallingService {
         java.sql.Date checkVisitDate = null;
         java.sql.Date visitDate = null;
         String result1 = null;
-        DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
+        DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
         try {
             TelecallMastEntity telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
             if (telecallMastEntity == null) {
@@ -89,10 +89,9 @@ public class PostCallingServiceImp implements PostCallingService {
                 result1 = "done";
             }
             if (map.get("visitDate") != null) {
+                System.out.println(map.get("visitDate"));
                 parsedUtilDate = formater.parse(map.get("visitDate"));
                 visitDate = new java.sql.Date(parsedUtilDate.getTime());
-
-
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
                 calendar.add(Calendar.DAY_OF_WEEK, 5);
@@ -116,6 +115,10 @@ public class PostCallingServiceImp implements PostCallingService {
                 }
                 if ("NO AGENT AVAILABLE".equalsIgnoreCase(result)) {
                     result1 = "done";
+                }
+                if("err".equalsIgnoreCase(result)){
+                    result="Record not Submited try again";
+                    result1="error";
                 }
             }
             byte s = (byte) (telecallMastEntity.getTmAttempts() + 1);
@@ -252,7 +255,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
     public String saveCustomer(Map<String, String> map) {
         String result = null;
-        DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
+        DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
         try {
             PaytmcustomerDataEntity paytmcustomerDataEntity = new PaytmcustomerDataEntity();
             paytmcustomerDataEntity.setPcdCustomerPhone(map.get("number"));
@@ -288,7 +291,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
     public String saveAppoinment(Map<String, String> map, PaytmcustomerDataEntity paytmcustomerDataEntity) {
         String result = null;
-        DateFormat formater = new SimpleDateFormat("dd/mm/yyyy");
+        DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
         try {
             AppointmentMastEntity appointmentMastEntity = new AppointmentMastEntity();
             Date parsedUtilDate = formater.parse(map.get("visitDate"));
@@ -458,7 +461,7 @@ public class PostCallingServiceImp implements PostCallingService {
         try {
             String allocationDate1 = vistDate + " " + visitTime;
             RemarkMastEntity remarkMastEntity = postCallingDao.getByPrimaryCode("U");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date convertedDate = dateFormat.parse(allocationDate1);
             AllocationMastEntity allocationMastEntity = new AllocationMastEntity();
             allocationMastEntity.setAppointmentMastByAppointmentId(appointmentMastEntity);
