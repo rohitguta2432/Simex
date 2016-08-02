@@ -15,7 +15,8 @@ package com.softage.paytm.service.imp;
         import com.softage.paytm.dao.UserDao;
         import com.softage.paytm.models.EmplogintableEntity;
         import com.softage.paytm.service.UserService;
-        import org.springframework.beans.factory.annotation.Autowired;
+      import org.json.simple.JSONObject;
+      import org.springframework.beans.factory.annotation.Autowired;
         import org.springframework.security.core.GrantedAuthority;
         import org.springframework.security.core.authority.SimpleGrantedAuthority;
         import org.springframework.security.core.userdetails.User;
@@ -34,6 +35,9 @@ public class UserServiceImp implements UserService{
     @Override
     public EmplogintableEntity getUserByEmpcode(String empCode) {
         return userDao.getUserByEmpcode(empCode);
+    }
+    public JSONObject getEmpFtpDetails(int circleCode){
+        return userDao.getEmpFtpDetailsDao(circleCode);
     }
 }
 

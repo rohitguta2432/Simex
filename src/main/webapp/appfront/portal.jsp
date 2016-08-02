@@ -49,11 +49,16 @@
   <!--Beyond styles-->
   <link href="assets/css/beyond.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/animate.min.css" rel="stylesheet" />
+    <link href="assets/css/angularjs-datetime-picker.css" rel="stylesheet" />
   <script src="assets/js/skins.min.js"></script>
+    <script src="assets/js/angularjs-datetime-picker.js"></script>
+
     <%--<style>
         input.ng-invalid{border-color:red;}
         select.ng-invalid{border-color:red;}
     </style>--%>
+
+
   <style type="text/css">
     form.ng-submitted input.ng-invalid {
       background: red;
@@ -69,9 +74,21 @@
 <body ng-app="routerApp">
 
 <%
+    response.setHeader("Pragma", "no-cache");
+    response.setHeader("Cache-Control", "no-store");
+    response.setHeader("Expires", "0");
+    response.setDateHeader("Expires", -1);
+
     String rolename="";
   String name=(String)session.getAttribute("name");
+    if(name==null) {
+
+        response.sendRedirect("/paytm/#/auth");
+    }
+
   String role=(String)session.getAttribute("role");
+
+
     if ("ADM".equalsIgnoreCase(role)){
         rolename="Admin";
     }
@@ -83,7 +100,7 @@
     }
   if(name==null){
 %>
-   <jsp:forward page="/"/>
+   <jsp:forward page=""/>
 <%
   }
 
@@ -165,6 +182,8 @@
                         Telecalling </span></a></li>
         <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         Reports </span></a></li>
+            <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                        QC Interface </span></a></li>
         <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
         <%
@@ -246,7 +265,7 @@
   <!-- Main Container -->
 </div>
 
-<footer>
+<footer style="background: #fff;">
   <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="border-top:1px solid #ddd; text-align:center; padding-top:5px;">
       Copyright &copy; 2016,  <img src="assets/img/softage_logo.png" alt="softage" style="margin-top: -1px; height:20px;" />
@@ -261,6 +280,13 @@
 <script src="assets/js/jquery.slimscroll.min.js"></script>
 <!--Beyond Scripts-->
 <script src="assets/js/beyond.js"></script>
+<script src="assets/js/datetime-picker.js"></script>
+<script src="assets/js/index.js"></script>
+<script src="assets/js/ui-bootstrap-tpls.js"></script>
+<script src="assets/js/ui-bootstrap-tpls-0.14.3.min.js"></script>
+<%--<script src="assets/js/ngDialog.js"></script>--%>
+
+
 
 </body>
 <!--/Body -->

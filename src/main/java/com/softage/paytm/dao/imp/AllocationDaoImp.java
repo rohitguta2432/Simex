@@ -163,6 +163,55 @@ public class AllocationDaoImp implements AllocationDao {
     }
 
     @Override
+    public String allocationMastEntityUpdate(String jobId, String agentCode, String response) {
+        EntityManager entityManager=null;
+        String message=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            entityManager.getTransaction().begin();
+            Query query=entityManager.createNativeQuery("{call usp_updateAllocationMastEntity(?,?,?)}");
+            query.setParameter(1,jobId);
+            query.setParameter(2,agentCode);
+            query.setParameter(3,response);
+            message=(String)query.getSingleResult();
+            entityManager.getTransaction().commit();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (entityManager!=null && entityManager.isOpen()){
+                entityManager.close();
+            }
+        }
+        return message;
+    }
+
+    @Override
+    public String updateKycAllocation(String AgentCode, String JobId, String remarksCode, String kycStatus) {
+        EntityManager entityManager=null;
+        String result=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            entityManager.getTransaction().begin();
+            Query query=entityManager.createNativeQuery("{call usp_updateKycAllocation(?,?,?,?)}");
+            query.setParameter(1,AgentCode);
+            query.setParameter(2,JobId);
+            query.setParameter(3,remarksCode);
+            query.setParameter(4,kycStatus);
+            result=(String)query.getSingleResult();
+            entityManager.getTransaction().commit();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (entityManager!=null && entityManager.isOpen()){
+                entityManager.close();
+            }
+        }
+        return result;
+    }
+
+
+
+    @Override
     public <S extends AllocationMastEntity> S save(S s) {
         return null;
     }

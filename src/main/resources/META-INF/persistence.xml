@@ -37,9 +37,12 @@
 
         <exclude-unlisted-classes />
 
-		<properties>
+            <properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytm"/>
+           <!-- <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmqa"/>-->
+           <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.185:3306/pehchaandev"/>
+          <!--  <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.185:3306/pahchhanQaTest"/>-->
+	    	<!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmqa"/>-->
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
 			<property name="hibernate.connection.username" value="root"/>
 			<property name="hibernate.connection.password" value="trainspotting@123"/>

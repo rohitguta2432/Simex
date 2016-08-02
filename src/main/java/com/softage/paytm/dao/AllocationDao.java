@@ -13,4 +13,6 @@ public interface AllocationDao extends CrudRepository<AllocationMastEntity ,Inte
     public String updateAllocationMastEntity(AllocationMastEntity allocationMastEntity);
     public AllocationMastEntity findById(String agentCode, String jobid);
     public AllocationMastEntity findByPrimaryKey(int id);
+    public String allocationMastEntityUpdate(String jobId,String agentCode,String response);
+    public String updateKycAllocation(String AgentCode,String JobId, String remarksCode, String kycStatus);
 }

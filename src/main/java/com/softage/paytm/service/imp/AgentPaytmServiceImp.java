@@ -32,10 +32,17 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     }
 
     @Override
+    public String saveAgentPinMaster1(PaytmagententryEntity paytmagententryEntity) {
+        String result = savePinmaster(paytmagententryEntity);
+        return result;
+    }
+
+    @Override
     public String saveAgent(PaytmagententryEntity paytmagententryEntity,CircleMastEntity circleMastEntity) {
         EmplogintableEntity emplogintableEntity=null;
 
         String msg = agentPaytmDao.saveAgent(paytmagententryEntity);
+
         if ("done".equalsIgnoreCase(msg)) {
             String result = savePinmaster(paytmagententryEntity);
             emplogintableEntity=userDao.getUserByEmpNumber(paytmagententryEntity.getAphone());
@@ -83,6 +90,15 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 
         String result = agentPaytmDao.saveEmployee(emplogintableEntity);
+        if ("err".equalsIgnoreCase(result)) {
+            for (int i = 0; i <= 5; i++) {
+                result = agentPaytmDao.saveEmployee(emplogintableEntity);
+                if ("done".equalsIgnoreCase(result)) {
+                    break;
+                }
+            }
+
+        }
 
         String text = "Dear Agent you are Successfully Registered in Softage ,Your Credetial to use Mobile App  UserName "
                 + paytmagententryEntity.getAcode() + " Password " + password;

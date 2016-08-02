@@ -32,4 +32,9 @@ public class AllocationServiceImp implements AllocationService {
         }
         return result;
     }
+
+    @Override
+    public String updateKycAllocation(String AgentCode, String JobId, String remarksCode, String kycStatus) {
+        return allocationDao.updateKycAllocation(AgentCode,JobId,remarksCode,kycStatus);
+    }
 }

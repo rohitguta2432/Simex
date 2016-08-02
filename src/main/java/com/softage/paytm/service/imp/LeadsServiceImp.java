@@ -53,8 +53,10 @@ public class LeadsServiceImp implements LeadsService {
                 allocationMastEntity.setConfirmation(status);
                 allocationMastEntity.setFinalConfirmation(status);
                 allocationMastEntity.setConfirmationDatetime(new Timestamp(new Date().getTime()));
-                for (int i=1; i<=4; i++) {
-                    result = allocationDao.updateAllocationMastEntity(allocationMastEntity);
+                for (int i=1; i<=1; i++) {
+                    //result = allocationDao.updateAllocationMastEntity(allocationMastEntity);
+                    result=allocationDao.allocationMastEntityUpdate(jobid,agentCode,status);
+
                 }
                 if ("done".equalsIgnoreCase(result)) {
                     msg = "1";

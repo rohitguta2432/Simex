@@ -1,5 +1,6 @@
 package com.softage.paytm.service;
 
+import com.softage.paytm.models.AgentpinmasterEntity;
 import com.softage.paytm.models.CircleMastEntity;
 import com.softage.paytm.models.PaytmagententryEntity;
 
@@ -10,5 +11,6 @@ public interface AgentPaytmService {
 
     public String saveAgent(PaytmagententryEntity paytmagententryEntity,CircleMastEntity circleMastEntity);
     public PaytmagententryEntity findByPrimaryKey(String agentCode);
+    public String saveAgentPinMaster1(PaytmagententryEntity paytmagententryEntity);
 
 }

@@ -1,6 +1,12 @@
-var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner']);
-
+var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap', 'ui.bootstrap.datetimepicker','angularjs-datetime-picker']);
+// var domain='http://localhost:8080/paytm';
+var domain='http://172.25.38.131:8080/paytm';
+//var domain='http://172.25.38.185:8080/paytm';
+ //  var domain ='http://172.25.38.131:8080/paytm';
 routerApp.config(function($stateProvider, $urlRouterProvider) {
+   // var domain ='172.25.37.185:8080/paytm';
+   //  var domain ='http://localhost:8080/paytm';
+
 
     $urlRouterProvider.otherwise('/index');
 
@@ -30,6 +36,11 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'Telecalling/telecalling.html',
             controller:'telecalling'
 
+        }) .state('QCInterface', {
+            url: '/QCInterface',
+            templateUrl: 'QCInterface/qcInterface.html',
+            controller:'QCInterface'
+
         })
         .state('report', {
             url: '/report',
@@ -37,6 +48,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             controller:'report'
 
         });
+
 
 });
 
@@ -59,7 +71,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
     /* Function for get CircleOffice and Spoke office */
     $scope.getcircleoffice = function(){
         var dfr = $q.defer();
-        $http.get('http://localhost:8080/paytm/getCirles').
+        $http.get(domain+'/getCirles').
             success(function(data) {
                 dfr.resolve(data);
             }).error(function(error){dfr.reject("Failed");});
@@ -154,12 +166,15 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
 
             console.log(data);
-            $http.get('http://localhost:8080/paytm/agentRegistration?' + data)
+            $http.get(domain+'/agentRegistration?' + data)
                 /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
                 .success(function (data, status, headers, config) {
                     $scope.message = data;
 
                     if(data.status == 'success'){
+
+
+
                         /*$scope.successTextAlert = "Agent Successfully Registered";
                         window.setTimeout(function(){
                             location.reload();
@@ -223,13 +238,242 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 }]);
 
 
+routerApp.controller('QCInterface',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
 
-routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
+    //$scope.cust_number='';
+   // $scope.url='';
+   // $scope.flag=false;
+    $scope.state1=true;
+    $scope.trustSrc = function(src) {
+        return $sce.trustAsResourceUrl(src);
+    }
+
+
+
+    $scope.errormessage = '';
+
+
+    $scope.change=function(){
+
+        $http.get(domain+'/getCustomer')
+            .success(function (data, status, headers, config) {
+                $scope.cust_number=data.mobile;
+
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+
+
+    };
+
+
+    var call=function(){
+        $scope.change();
+    }
+
+     call();
+
+
+    $scope.submit = function(ev) {
+        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
+            ev.preventDefault();
+        } else
+            var data = 'customer_Number=' + $scope.cust_number;
+
+
+           //console.log(data);
+            //alert(" data   "+data);
+
+            $http.get(domain+'/getPdfUrl?' + data)
+                .success(function (data, status, headers, config) {
+                    $scope.url1= data.url;
+                    $scope.resuri = {src: data.url, title:data.url.toString()};
+                    $scope.abc=true;
+
+                        console.log("dataa" +$scope.url1);
+
+                    if(data.status == 'error'){
+                        // alert('Agent Already Registered');
+                        $scope.status = '';
+                        $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title('')
+                                .textContent(data.msg)
+                                .ariaLabel('Alert Dialog Demo')
+                                .ok('OK')
+                                .targetEvent(ev)
+
+                        );
+                    }
+                })
+                .error(function (data, status, headers, config) {
+                    alert("failure message: " + JSON.stringify({data: data}));
+                });
+
+
+        };
+
+    $scope.qcReject= function(ev) {
+        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
+            ev.preventDefault();
+        } else
+        //    alert(" Reject "+ $scope.rejct_pages);
+
+        var data = '&mobileNo=' + $scope.cust_number +'&status=3' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
+
+
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/qcstatus?' + data)
+         .success(function (data, status, headers, config) {
+     //    $scope.url1= data.url;
+
+         console.log("dataa" +$scope.url1);
+
+                location.reload();
+
+         if(data.status == 'error'){
+         // alert('Agent Already Registered');
+         $scope.status = '';
+         $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+         $mdDialog.show(
+         $mdDialog.alert()
+         .parent(angular.element(document.querySelector('#popupContainer')))
+         .clickOutsideToClose(true)
+         .title('')
+         .textContent(data.msg)
+         .ariaLabel('Alert Dialog Demo')
+         .ok('OK')
+         .targetEvent(ev)
+
+         );
+         }
+         })
+         .error(function (data, status, headers, config) {
+         alert("failure message: " + JSON.stringify({data: data}));
+         });
+
+
+    };
+
+
+   /* $scope.checkStatus2= function(ev) {
+        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
+            ev.preventDefault();
+        }
+        alert("hello checked ");
+
+    };*/
+
+ /*   $scope.change = function() {
+
+        $scope.state1=true;
+        $scope.state2=false;
+
+    };
+    $scope.change1 = function() {
+        $scope.state2=true;
+        $scope.state1=false;
+
+
+    };*/
+    $scope.qcOK= function(ev) {
+        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
+            ev.preventDefault();
+        } else
+            alert(" OK  "+$scope.rejct_pages);
+        var data = '&mobileNo=' + $scope.cust_number +'&status=2' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
+
+
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/qcstatus?' + data)
+            .success(function (data, status, headers, config) {
+           //     $scope.url1= data.url;
+
+                console.log("dataa" +$scope.url1);
+                location.reload();
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+
+    };
+
+
+}]);
+
+
+
+
+
+routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal' ,function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal){
 
     /* $scope.message = {
+
      text: 'hello world!',
      time: new Date()
      };*/
+
+    var that = this;
+
+
+ this.picker3 = {
+        date: new Date()
+    };
+
+
+    this.openCalendar = function(e, picker) {
+       that[picker].open = true;
+
+    };
+
+
+
 
     $scope.states= [];
     $scope.times = [];
@@ -237,10 +481,11 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     $scope.mob={};
     $scope.codes=[];
     $scope.statuses = [{csmCode: 1, status:"Delhi"}];
+    $scope.statuscode;
     /* Function for get Telecalling Screen */
     $scope.getscreen = function(){
         var dfr = $q.defer();
-        $http.get('http://localhost:8080/paytm/telecallingScreen').
+        $http.get(domain+'/telecallingScreen').
             success(function(data) {
                 $scope.date = data.dateList;
                 console.log( $scope.date);
@@ -264,17 +509,31 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
         });
     }
     GetScreen();
+    $scope.ab=false;
+
 
     $scope.changestatus = function(){
+
+        $scope.ab=true;
         var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.mob.mobileNo;
 
-        if($scope.status.csmCode == 'CON')
+
+       if($scope.status.csmCode == '2-CB')
         {
+            var modalInstance = $modal.open({
+                templateUrl: 'Telecalling/EnterDateTime.html',
+                controller: 'telecalling',
+            });
+
+        } else if($scope.status.csmCode == 'CON')
+        {
+            //$scope.ab=true;
             //alert(data);
             // $scope.screen();
             //$scope.disabled= true;
             // location.reload();
         }
+
         else {
 
             var cnf= confirm('Are You Sure?');
@@ -283,7 +542,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
             }
             else {
 
-                $http.get('http://localhost:8080/paytm/postCallingStatus?' + data)
+                $http.get(domain+'/postCallingStatus?' + data)
                     .success(function (data, status, headers, config) {
                         $scope.postss = data;
                         console.log( $scope.postss);
@@ -301,11 +560,15 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
     };
 
+
+
+
+
     $scope.screen = function(ev){
 
         var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
           console.log(data);
-        $http.get('http://localhost:8080/paytm/postCalling?'+ data)
+        $http.get(domain+'/postCalling?'+ data)
             .success(function(data, status, headers, config) {
                 // alert('jfgkfj');
                 $scope.message = data;
@@ -350,7 +613,28 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
 
     };
+    $scope.getdateTime=function(){
 
+
+        var data ='status=2-CB'+'&mobileNo=' + $scope.mob.mobileNo+'&visit_date=' + $scope.visit_date + '&visit_time=' + $scope.visit_time;
+
+
+        $http.get(domain+'/postCallingStatus?' + data)
+            .success(function (data, status, headers, config) {
+                $scope.postss = data;
+                console.log( $scope.postss);
+
+                if(data.status == 'success'){
+                    location.reload();
+                }
+
+            })
+            .error(function (data, status, headers, config) {
+            });
+
+
+
+    };
 
     $scope.getTime = function(){      /////get visit time according to date
         var myarr = [];
@@ -409,7 +693,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
         var data = 'customer_number=' + $scope.mob.mobileNo;
         //alert(data);
-        $http.get('http://localhost:8080/paytm/customerCalling?'+ data)
+        $http.get(domain+'/customerCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
             .success(function(data, status, headers, config) {
                 // alert(data);
@@ -654,7 +938,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
         formData.append("file", file);
 
         var defer = $q.defer();
-        $http.post("http://localhost:8080/paytm/upload", formData, {
+        $http.post(domain+"/upload", formData, {
             withCredentials: true,
             headers: { "Content-Type": undefined },
             transformRequest: angular.identity
@@ -670,10 +954,182 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
     return fac;
 });
 
+routerApp.controller('DateTimeController', ['$scope', function($scope) {
+
+    var that = this;
+
+    // date picker
+    this.picker1 = {
+        date: new Date('2015-03-01T00:00:00Z'),
+        datepickerOptions: {
+            showWeeks: false,
+            startingDay: 1,
+            dateDisabled: function(data) {
+                return (data.mode === 'day' && (new Date().toDateString() == data.date.toDateString()));
+            }
+        }
+    };
+
+    // time picker
+    this.picker2 = {
+        date: new Date('2015-03-01T12:30:00Z'),
+        timepickerOptions: {
+            readonlyInput: false,
+            showMeridian: false
+        }
+    };
+
+    // date and time picker
+    this.picker3 = {
+        date: new Date()
+    };
+
+    // min date picker
+    this.picker4 = {
+        date: new Date(),
+        datepickerOptions: {
+            maxDate: null
+        }
+    };
+
+    // max date picker
+    this.picker5 = {
+        date: new Date(),
+        datepickerOptions: {
+            minDate: null
+        }
+    };
+
+    // set date for max picker, 10 days in future
+    this.picker5.date.setDate(this.picker5.date.getDate() + 10);
+
+    // global config picker
+    this.picker6 = {
+        date: new Date()
+    };
+
+    // dropdown up picker
+    this.picker7 = {
+        date: new Date()
+    };
+
+    // view mode picker
+    this.picker8 = {
+        date: new Date(),
+        datepickerOptions: {
+            mode: 'year',
+            minMode: 'year',
+            maxMode: 'year'
+        }
+    };
+
+    // dropdown up picker
+    this.picker9 = {
+        date: null
+    };
+
+    // min time picker
+    this.picker10 = {
+        date: new Date('2016-03-01T09:00:00Z'),
+        timepickerOptions: {
+            max: null
+        }
+    };
+
+    // max time picker
+    this.picker11 = {
+        date: new Date('2016-03-01T10:00:00Z'),
+        timepickerOptions: {
+            min: null
+        }
+    };
+
+    // button bar
+    this.picker12 = {
+        date: new Date(),
+        buttonBar: {
+            show: true,
+            now: {
+                show: true,
+                text: 'Now!'
+            },
+            today: {
+                show: true,
+                text: 'Today!'
+            },
+            clear: {
+                show: false,
+                text: 'Wipe'
+            },
+            date: {
+                show: true,
+                text: 'Date'
+            },
+            time: {
+                show: true,
+                text: 'Time'
+            },
+            close: {
+                show: true,
+                text: 'Shut'
+            }
+        }
+    };
+
+    // when closed picker
+    this.picker13 = {
+        date: new Date(),
+        closed: function(args) {
+            that.closedArgs = args;
+        }
+    };
+
+    // saveAs - ISO
+    this.picker14 = {
+        date: new Date().toISOString()
+    }
+
+    this.openCalendar = function(e, picker) {
+        that[picker].open = true;
+    };
+
+    // watch min and max dates to calculate difference
+    var unwatchMinMaxValues = $scope.$watch(function() {
+        return [that.picker4, that.picker5, that.picker10, that.picker11];
+    }, function() {
+        // min max dates
+        that.picker4.datepickerOptions.maxDate = that.picker5.date;
+        that.picker5.datepickerOptions.minDate = that.picker4.date;
+
+        if (that.picker4.date && that.picker5.date) {
+            var diff = that.picker4.date.getTime() - that.picker5.date.getTime();
+            that.dayRange = Math.round(Math.abs(diff/(1000*60*60*24)))
+        } else {
+            that.dayRange = 'n/a';
+        }
+
+        // min max times
+        that.picker10.timepickerOptions.max = that.picker11.date;
+        that.picker11.timepickerOptions.min = that.picker10.date;
+    }, true);
+
+
+    // destroy watcher
+    $scope.$on('$destroy', function() {
+        unwatchMinMaxValues();
+    });
+
+}]);
+
+
+
+
+
+
 
 routerApp.controller('logout', ['$scope','$http','$window', function($scope, $http, $window) {
     $scope.logout = function () {
-        $http.get('http://localhost:8080/paytm/logout').success(function (data, status, headers, config) {
+        $http.get(domain+'/logout').success(function (data, status, headers, config) {
             // alert('daata');
             $scope.msg = data;
             console.log(data);
@@ -688,7 +1144,7 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
     //$scope.reports =[];
     $scope.getreport = function(){
         var dfr = $q.defer();
-        $http.get('http://localhost:8080/paytm/getReportsType').
+        $http.get(domain+'/getReportsType').
             success(function(data) {
                 dfr.resolve(data);
             }).error(function(error){dfr.reject("Failed");});
@@ -813,7 +1269,7 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
     fac.SendData = function (data) {
 
         var defer = $q.defer();
-        $http.get('http://localhost:8080/paytm/getReports?' + data).then(function (data) {
+        $http.get(domain+'/getReports?' + data).then(function (data) {
             defer.resolve(data);
         },function (errData) {
             defer.reject("failure message: " + JSON.stringify({data: errData}));

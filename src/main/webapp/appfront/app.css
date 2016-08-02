@@ -28,3 +28,10 @@
   content: "";
   padding: 0;
 }
+.red {
+  color: red;
+}
+
+.green {
+  color: green;
+}

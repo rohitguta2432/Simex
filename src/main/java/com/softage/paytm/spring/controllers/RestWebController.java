@@ -47,6 +47,8 @@ public class RestWebController {
     private ProofService proofService;
     @Autowired
     private PaytmMasterService paytmMasterService;
+    @Autowired
+    private FtpDetailsService ftpDetailsService;
 
     @RequestMapping(value = "/getTest", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONObject test() {
@@ -81,7 +83,7 @@ public class RestWebController {
         }
     }
 
-    @RequestMapping(value = "/EmployeeNumber", method = {RequestMethod.GET, RequestMethod.POST})
+   /* @RequestMapping(value = "/EmployeeNumber", method = {RequestMethod.GET, RequestMethod.POST})
     public String employeeNumber(@RequestParam(value = "username") String userName) {
         String phoneNumber="0";
         try {
@@ -98,7 +100,7 @@ public class RestWebController {
             phoneNumber="0";
         }
         return phoneNumber;
-    }
+    }*/
 
 
     @RequestMapping(value = "/UpdateDeviceInfo", method = {RequestMethod.GET, RequestMethod.POST})
@@ -115,7 +117,7 @@ public class RestWebController {
             paytmdeviceidinfoEntity.setImportBy(importby);
             paytmdeviceidinfoEntity.setImportDate(new Timestamp(new Date().getTime()));
             paytmdeviceidinfoEntity1= paytmDeviceService.getByloginId(loginId);
-            if (paytmdeviceidinfoEntity1!=null) {
+            if (paytmdeviceidinfoEntity1==null) {
                 msg = paytmDeviceService.saveDevice(paytmdeviceidinfoEntity);
             }else {
                 paytmdeviceidinfoEntity1.setDeviceId(deviceId);
@@ -255,7 +257,8 @@ public class RestWebController {
             dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
             result = dataEntryService.saveDataEntry(dataentryEntity);
             if ("done".equals(result)) {
-                updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+              updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+            //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
                 result="0";
 
             }
@@ -273,8 +276,36 @@ public class RestWebController {
           String  jobid= request.getParameter("Jobid");
           String  statusCode= request.getParameter("statusCode");
           String result=updateRemarkStatus(agentCode,jobid,statusCode,"N");
+        //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
           return result;
     }
+    @RequestMapping(value = "/ftpdetails",method ={RequestMethod.GET,RequestMethod.POST} )
+    public String ftpDetails(HttpServletRequest request){
+        String result="";
+        System.out.println("Service done ");
+        String customer_number=request.getParameter("customer_no");
+        String image_path=request.getParameter("image_path");
+        int page_number=Integer.parseInt(request.getParameter("page_number"));
+        String created_on=request.getParameter("created_on");
+        String created_by=request.getParameter("created_by");
+        int qc_status=Integer.parseInt(request.getParameter("qc_status"));
+        if (customer_number==""||customer_number.equals(null)||customer_number==" "||customer_number.equals("")){
+            result="Customer Number is empty";
+        }else if (image_path==""||image_path.equals(null)||image_path==" "||image_path.equals("")){
+            result="Image path is empty";
+        }else {
+            result = ftpDetailsService.saveFTPData(customer_number, image_path, page_number, created_by, qc_status);
+            if (result.equals("done")) {
+                result = "success";
+                logger.info(" Result   " + result);
+            } else {
+                result = "Fail";
+                logger.info(" Result   " + result);
+            }
+        }
+        return result;
+    }
+
 
     @RequestMapping(value = "/ValidateCustomerId", method = {RequestMethod.GET, RequestMethod.POST})
     public String validateCustomer(@RequestParam(value = "jobid") String jobid,
@@ -306,6 +337,16 @@ public class RestWebController {
 
         return result;
     }
+    @RequestMapping(value = "/ftpDocumentDetails", method = {RequestMethod.GET, RequestMethod.POST})
+    public String ftpDocumentDetails(HttpServletRequest request) {
+
+
+
+
+        return "done";
+    }
+
+
 
 
     @RequestMapping(value = "/RasonsList", method = {RequestMethod.GET, RequestMethod.POST})
@@ -403,5 +444,34 @@ public class RestWebController {
         }
         return result;
     }
+
+    @RequestMapping(value = "/EmployeeNumber", method = {RequestMethod.GET, RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
+    public JSONObject employeeNumber(@RequestParam(value = "username") String userName) {
+        String phoneNumber="0";
+        int circleCode=0;
+        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject1=new JSONObject();
+        try {
+            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
+            if (emplogintableEntity != null) {
+                phoneNumber = emplogintableEntity.getEmpPhone();
+                circleCode=emplogintableEntity.getCirCode();
+                jsonObject=userService.getEmpFtpDetails(circleCode);
+                jsonObject1.put("phoneNumber",phoneNumber);
+                jsonObject1.put("circleCode",circleCode);
+                jsonObject1.put("FtpDetails",jsonObject);
+
+            } else {
+                phoneNumber="0";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            phoneNumber="0";
+        }
+        return jsonObject1;
+    }
+
+
 
 }

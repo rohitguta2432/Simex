@@ -9,4 +9,5 @@ public interface AllocationService {
     public AllocationMastEntity findByPrimaryKey(int id);
     public AllocationMastEntity findById(String agentCode, String jobid);
     public String updateAllocationMastEntity(AllocationMastEntity allocationMastEntity);
+    public String updateKycAllocation(String AgentCode,String JobId, String remarksCode, String kycStatus);
 }

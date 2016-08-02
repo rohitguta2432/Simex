@@ -436,9 +436,11 @@ public class PostCallingServiceImp implements PostCallingService {
 
                     if (loginId != null) {
                         String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
+                        String res = saveSmsSendLog(agentMobileNumber, agentCode, text);
                     } else {
                         String res = saveSmsSendLog(agentMobileNumber, agentCode, text);
                     }
+
                     result = "JOB ALLOCATED";
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -478,7 +480,16 @@ public class PostCallingServiceImp implements PostCallingService {
             allocationMastEntity.setKycCollected("P");
             allocationMastEntity.setConfirmation("W");
             allocationMastEntity.setRemarkMastByRemarksCode(remarkMastEntity);
+
             result = allocationDao.saveAllocation(allocationMastEntity);
+            if(result=="err"){
+                for (int i = 1; i <= 5; i++) {
+                    result = allocationDao.saveAllocation(allocationMastEntity);
+                    if ("done".equals(result)) {
+                        break;
+                    }
+                }
+            }
         } catch (Exception e) {
             result = "err";
 
@@ -512,6 +523,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
     public String saveTblNotificationLogEntity(String text, String agentCode, PaytmdeviceidinfoEntity paytmdeviceidinfoEntity) {
         String result = null;
+        String notificationResult=null;
         try {
             TblNotificationLogEntity tblNotificationLogEntity = new TblNotificationLogEntity();
             tblNotificationLogEntity.setNotificationType("Leads");
@@ -522,13 +534,13 @@ public class PostCallingServiceImp implements PostCallingService {
             result = postCallingDao.saveTabNotification(tblNotificationLogEntity);
 
             if ("done".equals(result)) {
-                sendNotification("Leads", text, paytmdeviceidinfoEntity.getDeviceId());
+                notificationResult=sendNotification("Leads", text, paytmdeviceidinfoEntity.getDeviceId());
             }
         } catch (Exception e) {
             e.printStackTrace();
             result = "err";
         }
-        return result;
+        return notificationResult;
     }
 
 
