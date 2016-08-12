@@ -88,6 +88,66 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
+    public String savePaytmMasterExcel(List<Map<String, String>> paytmList) {
+
+
+
+        List<PaytmMastEntity> custList=new ArrayList<PaytmMastEntity>();
+        PaytmMastEntity paytmMastEntity=null;
+        String circleCode=null;
+        CircleMastEntity circleMastEntity=null;
+        String result=null;
+        try {
+            int i=1;
+            for (Map<String, String> map : paytmList) {
+                paytmMastEntity = new PaytmMastEntity();
+                paytmMastEntity.setKycRequestId("");
+                paytmMastEntity.setCustomerId(map.get("customerID"));
+                paytmMastEntity.setUsername(map.get("name"));
+                paytmMastEntity.setCustomerPhone(map.get("mobileNumber"));
+                paytmMastEntity.setEmail("");
+                paytmMastEntity.setAddressId("");
+                paytmMastEntity.setTimeSlot("");
+                //  paytmMastEntity.setPriority(map.get("Priority"));
+                paytmMastEntity.setAddressStreet1(map.get("address"));
+                paytmMastEntity.setAddressStreet2("");
+                paytmMastEntity.setCity(map.get("city"));
+                paytmMastEntity.setState("");
+                paytmMastEntity.setPincode(map.get("pincode"));
+                String pincode=map.get("pincode");
+                String pincode1=pincode.substring(0,2);
+                String pincode2=pincode.substring(0,3);
+                int pin1=Integer.parseInt(pincode1);
+                int pin2=Integer.parseInt(pincode2);
+                int circleCodevalue= getCircleCode(pin1,pin2,"");
+                circleMastEntity= circleMastDao.findByPrimaryKey(circleCodevalue);
+                if(circleMastEntity!=null){
+                    paytmMastEntity.setCircleMastByCirCode(circleMastEntity);
+                }
+                paytmMastEntity.setAddressPhone("");
+                paytmMastEntity.setVendorName("Softage");
+                paytmMastEntity.setStageId("");
+                paytmMastEntity.setSubStageId("");
+                paytmMastEntity.setCreatedTimestamp("");
+                paytmMastEntity.setImportDate(new Timestamp(new Date().getTime()));
+                Random randomGenerator = new Random();
+                int randomInt = randomGenerator.nextInt(10000);
+                paytmMastEntity.setOtp(new Integer(randomInt).toString());
+                paytmMastEntity.setRefCode(randomInt);
+                paytmMastEntity.setImportBy(map.get("importBy"));
+                custList.add(paytmMastEntity);
+                i++;
+            }
+            result=  paytmMasterDao.savePaytmMaster(custList);
+        }catch (Exception e){
+            e.printStackTrace();
+            result="error";
+        }
+
+        return  result;
+    }
+
+    @Override
     public JSONObject getPaytmMastData(String mobileNo) {
         JSONObject jsonObject =paytmMasterDao.getPaytmMastData(mobileNo);
         return  jsonObject;
@@ -241,13 +301,17 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 circleCode = "10";
             } else if (state.equalsIgnoreCase("PUNJAB") || (pin1 >= 14 && pin1 <= 16)) {
                 circleCode = "11";
-            } else if (state.equalsIgnoreCase("WEST BENGAL") || state.equalsIgnoreCase("SIKKIM") || state.startsWith("ANDAMAN") || (pin1 >= 70 && pin2 <= 74)) {
+            } else if (state.equalsIgnoreCase("WEST BENGAL") || state.equalsIgnoreCase("SIKKIM") || state.startsWith("ANDAMAN") || (pin1 >= 70 && pin1 <= 74)) {
                 circleCode = "12";
             }else if (state.equalsIgnoreCase("UTTARAKHAND") || (pin1 >= 24 && pin1 <= 28)) {
                 circleCode = "14";
-            } else if (state.equalsIgnoreCase("UTTAR PARDESH") || (pin2 > 201 && pin1 >= 20 && pin1 <= 23)) {
+            } else if (state.equalsIgnoreCase("CHENNAI") || ( pin1 >= 60 && pin1 <= 61)) {
+                circleCode = "17";
+            } else if (state.equalsIgnoreCase("HYDERABAD") || ( pin1 >= 50 && pin1 <= 51)) {
+                circleCode = "16";
+            }  else if (state.equalsIgnoreCase("UTTAR PARDESH") || (pin2 > 201 && pin1 >= 20 && pin1 <= 23)) {
                 circleCode = "13";
-            }  else {
+            } else {
                 circleCode = "0";
             }
 

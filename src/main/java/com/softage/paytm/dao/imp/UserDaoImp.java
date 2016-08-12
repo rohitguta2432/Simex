@@ -39,11 +39,13 @@ public class UserDaoImp implements UserDao {
             emplogintableEntity= (EmplogintableEntity)query.getSingleResult();
 
         }catch (Exception e){
-            e.printStackTrace();;
+            e.printStackTrace();
         }
         finally {
             if (entityManager != null && entityManager.isOpen())
             {
+               /* entityManager.flush();
+                entityManager.clear();*/
                 entityManager.close();
             }
         }

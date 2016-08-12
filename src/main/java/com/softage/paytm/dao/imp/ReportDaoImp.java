@@ -46,6 +46,9 @@ public class ReportDaoImp implements ReportDao {
                     String callStatus = (String) objects[2];
                     json.put("Attempts", objects[3]);
                     byte attempts = (Byte) objects[3];
+                   String callStatus1=(String)objects[17];
+                    System.out.println("call Status  "+callStatus1);
+
 
               /*    Docs Incomplete
                     Call Back Later
@@ -66,14 +69,17 @@ public class ReportDaoImp implements ReportDao {
                         status = "Close";
                     } else if (attempts == 3 && callStatus.equalsIgnoreCase("User Out Of Station")) {
                         status = "Close";
-                    } else if (callStatus.equalsIgnoreCase("Ok For Docs Collection")) {
+                    }
+                    else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && callStatus1.equalsIgnoreCase("NA")) {
+                        status = "Agent Not Found";
+                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") ) {
                         status = "Done";
                     }
 
 
                     json.put("CallDateTime", objects[4].toString());
                     System.out.println(objects[4].toString());
-                    json.put("Tele-CallerName", objects[5]);
+                    json.put("TeleCallerName", objects[5]);
                     json.put("CustomerName", objects[6]);
                     json.put("AppointmentDate", objects[7]);
                     json.put("AppointmentTime", objects[8]);
@@ -83,6 +89,10 @@ public class ReportDaoImp implements ReportDao {
                     json.put("State", objects[12]);
                     json.put("Pincode", objects[13]);
                     json.put("Agent_Code", objects[14]);
+                    json.put("ScanOn",objects[15]);
+                    System.out.println("ScanOn = "+objects[15] +"ScanBy = "+objects[16]);
+                    json.put("ScanBy",objects[16]);
+                    json.put("importdate",objects[18].toString());
                     json.put("Status", status);
                     jsonObject.put("record-" + i, json);
                 }

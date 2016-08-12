@@ -53,15 +53,16 @@ public class CircleMastDaoImp implements CircleMastDao {
     }
 
 
+
     @Override
-    public List<String> getCircleList() {
+    public List<CircleMastEntity> getCircleList() {
         EntityManager entityManager=null;
         Query query=null;
-        List<String> Circles=null;
+        List<CircleMastEntity> Circles=null;
         CircleMastEntity circleMastEntity=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "select circlemast.circleName from CircleMastEntity circlemast";
+            String strQuery = "select circlemast from CircleMastEntity circlemast";
             query=entityManager.createQuery(strQuery);
             Circles=query.getResultList();
 

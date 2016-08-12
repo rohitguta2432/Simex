@@ -6,7 +6,7 @@
 
 
   <meta charset="utf-8" />
-  <title>Paytm Dashboard</title>
+  <title>Pahchaan Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -44,14 +44,14 @@
 
   <%--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>--%>
   <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
-  <script src="libs/FileSaver/FileSaver.js"></script>
+  <script src="libs/filesaver/FileSaver.js"></script>
   <script src="js/app.js"></script>
   <!--Beyond styles-->
   <link href="assets/css/beyond.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/animate.min.css" rel="stylesheet" />
-    <link href="assets/css/angularjs-datetime-picker.css" rel="stylesheet" />
+<%--    <link href="assets/css/angularjs-datetime-picker.css" rel="stylesheet" />--%>
   <script src="assets/js/skins.min.js"></script>
-    <script src="assets/js/angularjs-datetime-picker.js"></script>
+<%--    <script src="assets/js/angularjs-datetime-picker.js"></script>--%>
 
     <%--<style>
         input.ng-invalid{border-color:red;}
@@ -182,8 +182,10 @@
                         Telecalling </span></a></li>
         <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         Reports </span></a></li>
-            <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+        <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         QC Interface </span></a></li>
+         <li><a ui-sref="HRRegistration"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                        Registration</span></a></li>
         <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
         <%
@@ -210,7 +212,7 @@
           %>
 
           <%
-            if("A1".equalsIgnoreCase(role))
+            if("Tlec".equalsIgnoreCase(role))
             {
 
           %>

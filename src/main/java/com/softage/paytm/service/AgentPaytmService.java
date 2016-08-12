@@ -2,6 +2,7 @@ package com.softage.paytm.service;
 
 import com.softage.paytm.models.AgentpinmasterEntity;
 import com.softage.paytm.models.CircleMastEntity;
+import com.softage.paytm.models.EmplogintableEntity;
 import com.softage.paytm.models.PaytmagententryEntity;
 
 /**
@@ -10,7 +11,10 @@ import com.softage.paytm.models.PaytmagententryEntity;
 public interface AgentPaytmService {
 
     public String saveAgent(PaytmagententryEntity paytmagententryEntity,CircleMastEntity circleMastEntity);
+    public String saveEmployee(EmplogintableEntity emplogintableEntity);
     public PaytmagententryEntity findByPrimaryKey(String agentCode);
+    public PaytmagententryEntity findByPincode(String pincode);
     public String saveAgentPinMaster1(PaytmagententryEntity paytmagententryEntity);
+    public String saveAgentLocation(String agentCode,String CustomerNumber,String location);
 
 }

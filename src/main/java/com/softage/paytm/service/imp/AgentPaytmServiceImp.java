@@ -32,9 +32,19 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     }
 
     @Override
+    public PaytmagententryEntity findByPincode(String pincode) {
+        return agentPaytmDao.findByPincode(pincode);
+    }
+
+    @Override
     public String saveAgentPinMaster1(PaytmagententryEntity paytmagententryEntity) {
         String result = savePinmaster(paytmagententryEntity);
         return result;
+    }
+
+    @Override
+    public String saveAgentLocation(String agentCode, String CustomerNumber, String location) {
+        return agentPaytmDao.saveAgentLocation(agentCode,CustomerNumber,location);
     }
 
     @Override
@@ -42,6 +52,15 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         EmplogintableEntity emplogintableEntity=null;
 
         String msg = agentPaytmDao.saveAgent(paytmagententryEntity);
+        if(msg.equalsIgnoreCase("err"))
+        {
+            for(int i=1; i<=5; i++) {
+                msg = agentPaytmDao.saveAgent(paytmagententryEntity);
+                if ("done".equalsIgnoreCase(msg)) {
+                    break;
+                }
+            }
+        }
 
         if ("done".equalsIgnoreCase(msg)) {
             String result = savePinmaster(paytmagententryEntity);
@@ -54,6 +73,45 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         return msg;
     }
 
+      @Override
+      public String saveEmployee(EmplogintableEntity emplogintableEntity) {
+
+        String result = agentPaytmDao.saveEmployee(emplogintableEntity);
+        if ("err".equalsIgnoreCase(result)) {
+            for (int i = 0; i <= 5; i++) {
+                result = agentPaytmDao.saveEmployee(emplogintableEntity);
+                if ("done".equalsIgnoreCase(result)) {
+                    break;
+                }
+            }
+
+        }
+
+        String text = "Dear Employee you are Successfully Registered in Softage ,Your Credential   Username "
+                + emplogintableEntity.getEmpCode() + " Password " + emplogintableEntity.getEmpPassword();
+        if ("done".equalsIgnoreCase(result)) {
+            ReceiverMastEntity receiverMastEntity = postCallingDao.getRecivedByCode(2);
+            ProcessMastEntity processMastEntity = postCallingDao.getProcessByCode(13);
+            SmsSendlogEntity smsSendlogEntity = new SmsSendlogEntity();
+            smsSendlogEntity.setMobileNumber(emplogintableEntity.getEmpPhone());
+            smsSendlogEntity.setReceiverId(emplogintableEntity.getEmpCode());
+            smsSendlogEntity.setSmsText(text);
+            smsSendlogEntity.setSmsDelivered("N");
+            smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
+            smsSendlogEntity.setImportDate(new Timestamp(new Date().getTime()));
+            smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
+            smsSendlogEntity.setReceiverMastByReceiverCode(receiverMastEntity);
+            postCallingDao.saveSmsSendEntity(smsSendlogEntity);
+
+        }
+
+
+        return result;
+
+
+
+    }
+
     public String savePinmaster(PaytmagententryEntity paytmagententryEntity) {
 
         AgentpinmasterEntity agentpinmasterEntity = new AgentpinmasterEntity();
@@ -63,7 +121,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
 
         String result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
         if ("err".equalsIgnoreCase(result)) {
-            for (int i = 0; i <= 5; i++) {
+            for (int i = 0; i <=7; i++) {
                 result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
                 if ("done".equalsIgnoreCase(result)) {
                     break;
@@ -100,7 +158,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
 
         }
 
-        String text = "Dear Agent you are Successfully Registered in Softage ,Your Credetial to use Mobile App  UserName "
+        String text = "Dear Agent you are Successfully Registered in Softage ,Your Credential to use Mobile App  Username "
                 + paytmagententryEntity.getAcode() + " Password " + password;
         if ("done".equalsIgnoreCase(result)) {
             ReceiverMastEntity receiverMastEntity = postCallingDao.getRecivedByCode(2);

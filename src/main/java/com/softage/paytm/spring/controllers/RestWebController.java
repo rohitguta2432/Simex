@@ -150,12 +150,18 @@ public class RestWebController {
 
     @RequestMapping(value = "/UpdateLeadStatus", method = {RequestMethod.GET, RequestMethod.POST})
     public String updateLeadStatus(HttpServletRequest request) {
-
+        String result=null;
         String agentCode = request.getParameter("AgentCode");
         String jobid = request.getParameter("Jobid");
         String response1 = request.getParameter("response");
         boolean response = Boolean.parseBoolean(response1);
-        String result = leadsService.updateLeadStatus(agentCode, jobid, response);
+
+
+        for(int i=1; i<=5; i++) {
+
+            result = leadsService.updateLeadStatus(agentCode, jobid, response);
+        }
+
 
         return result;
     }
@@ -175,6 +181,18 @@ public class RestWebController {
         List<JSONObject> listjson = leadsService.agentRejectedLeads(agentCode);
         array.addAll(listjson);
         return array;
+    }
+
+
+    @RequestMapping(value = "/getagentLocation", method = {RequestMethod.GET, RequestMethod.POST})
+    public String getagentLocation(HttpServletRequest request) {
+        JSONArray array = new JSONArray();
+
+           String agentCode =  request.getParameter("agentcode");
+           String customerNumber =  request.getParameter("customerNumber");
+           String location =  request.getParameter("location");
+           String result = agentPaytmService.saveAgentLocation(agentCode,customerNumber,location);
+          return result;
     }
 
     @RequestMapping(value = "/AcceptedEntry", method = {RequestMethod.GET, RequestMethod.POST})

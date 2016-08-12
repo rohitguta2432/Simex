@@ -1,8 +1,11 @@
-var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap', 'ui.bootstrap.datetimepicker','angularjs-datetime-picker']);
-// var domain='http://localhost:8080/paytm';
+var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap']);
+  // var domain='http://localhost:8080/paytm';
 var domain='http://172.25.38.131:8080/paytm';
-//var domain='http://172.25.38.185:8080/paytm';
- //  var domain ='http://172.25.38.131:8080/paytm';
+//var domain='http://172.43.44.203:8080/paytm';
+// var domain='http://172.25.38.185:8080/paytm';
+  /*var domain ='http://172.25.38.185:8080/paytm';*/
+//var domain ='http://14.142.136.19:8080/paytm';
+/*var domain ='http://42.104.108.116:8081/paytm';*/
 routerApp.config(function($stateProvider, $urlRouterProvider) {
    // var domain ='172.25.37.185:8080/paytm';
    //  var domain ='http://localhost:8080/paytm';
@@ -40,6 +43,11 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             url: '/QCInterface',
             templateUrl: 'QCInterface/qcInterface.html',
             controller:'QCInterface'
+
+        }).state('HRRegistration', {
+            url: '/HRRegistration',
+            templateUrl: 'HRRegistration/HRRegistration.html',
+            controller:'HRRegistration'
 
         })
         .state('report', {
@@ -141,6 +149,10 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
             // alert('Enter the Phone Number');
             ev.preventDefault();
         }
+        else if($scope.avl_time.length == 0 || $scope.avl_time == undefined){
+          //   alert('Enter the Phone Number');
+            ev.preventDefault();
+        }
        /* else if($scope.circle_office.length == 0 || $scope.circle_office == undefined){
             // alert('Select Circle Office');
             ev.preventDefault();
@@ -236,6 +248,144 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
     }
 }]);
+
+
+
+routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
+
+    $scope.emp_name='';
+    $scope.emp_code='';
+    $scope.phone='';
+    $scope.emp_Type='';
+/*
+    $scope.offices = [{id: 1, officet:"Delhi"}];
+    $scope.codes = [{id: 1, code:"ANESH11"}];*/
+    /* Function for get CircleOffice and Spoke office */
+    $scope.getcircleoffice = function(){
+        var dfr = $q.defer();
+        $http.get(domain+'/getAllCircle').
+            success(function(data) {
+                dfr.resolve(data);
+            }).error(function(error){dfr.reject("Failed");});
+        return dfr.promise;
+    };
+    $scope.getcircleoffice().then(function(data){
+        //console.log('data:   '+data);
+        $scope.circleofiices= data.circles;
+        console.log($scope.circleofiices);
+        // console.log( $scope.offices);
+    }, function(reason) {
+        console.log('Error:   '+reason);
+    });
+
+
+
+    $scope.errormessage = '';
+
+    $scope.submit = function(ev) {
+
+        if($scope.emp_name.length == 0 || $scope.emp_name == undefined){
+            //alert('Agent Name is not valid');
+            ev.preventDefault();
+        }
+        else if($scope.emp_code.length == 0 || $scope.emp_code == undefined){
+            // alert('Agent Code is not valid');
+            ev.preventDefault();
+        }
+        else if( $scope.phone.length == 0 ||  $scope.phone == undefined){
+            //  alert('Enter the name Employee');
+            ev.preventDefault();
+        }
+        else if($scope.circlecode.code.length == 0 || $scope.circlecode.code == undefined){
+            // alert('Enter the Phone Number');
+            ev.preventDefault();
+        }
+        else if($scope.emp_Type.length == 0 || $scope.emp_Type == undefined){
+            //   alert('Enter the Phone Number');
+            ev.preventDefault();
+        }
+
+        else {
+
+            var data = 'name=' + $scope.emp_name + '&empcode=' + $scope.emp_code  + '&phone=' + $scope.phone + '&circle_office=' + $scope.circlecode.code + '&empType=' + $scope.emp_Type ;
+
+
+            console.log(data);
+            $http.get(domain+'/registration?' + data)
+                /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
+                .success(function (data, status, headers, config) {
+                    $scope.message = data;
+
+                    if(data.status == 'success'){
+
+
+
+                        /*$scope.successTextAlert = "Agent Successfully Registered";
+                         window.setTimeout(function(){
+                         location.reload();
+                         }, 2000);*/
+                        $scope.status = '';
+                        $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                //.title('This is an alert title')
+                                .textContent(data.msg)
+                                .ariaLabel('Alert Dialog Demo')
+                                .ok('OK')
+                                .targetEvent(ev)
+
+                        );
+                        ClearForm();
+                    }
+                    if(data.status == 'error'){
+                        // alert('Agent Already Registered');
+                        $scope.status = '';
+                        $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title('')
+                                .textContent(data.msg)
+                                .ariaLabel('Alert Dialog Demo')
+                                .ok('OK')
+                                .targetEvent(ev)
+
+                        );
+                    }
+                })
+                .error(function (data, status, headers, config) {
+                    alert("failure message: " + JSON.stringify({data: data}));
+                });
+
+
+        };
+    }
+
+    function ClearForm() {
+        //$scope.FileDescription = '';
+        angular.forEach(angular.element("input[type='text'],select"), function (inputElem) {
+            angular.element(inputElem).val(null);
+        });
+
+        $scope.IsFormSubmitted = false;
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.SelectedFileForUpload = null;
+
+    }
+}]);
+
+
+
+
+
 
 
 routerApp.controller('QCInterface',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
@@ -339,7 +489,14 @@ routerApp.controller('QCInterface',['$scope', '$http','$q','$log','$location','$
     $scope.qcReject= function(ev) {
         if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
             ev.preventDefault();
-        } else
+        } if($scope.rejct_pages.length == 0 || $scope.rejct_pages == undefined){
+            alert("Please enter Rejected Page")
+            ev.preventDefault();
+        } else if($scope.user_comment.length == 0 || $scope.user_comment == undefined){
+            alert("Please enter Remark");
+            ev.preventDefault();
+        }
+        else
         //    alert(" Reject "+ $scope.rejct_pages);
 
         var data = '&mobileNo=' + $scope.cust_number +'&status=3' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
@@ -405,8 +562,11 @@ routerApp.controller('QCInterface',['$scope', '$http','$q','$log','$location','$
     $scope.qcOK= function(ev) {
         if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
             ev.preventDefault();
+        }else if($scope.user_comment.length == 0 || $scope.user_comment == undefined){
+            alert("Please enter Remark");
+            ev.preventDefault();
         } else
-            alert(" OK  "+$scope.rejct_pages);
+
         var data = '&mobileNo=' + $scope.cust_number +'&status=2' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
 
 
@@ -459,7 +619,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
      time: new Date()
      };*/
 
-    var that = this;
+  /*  var that = this;
 
 
  this.picker3 = {
@@ -471,7 +631,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
        that[picker].open = true;
 
     };
-
+*/
 
 
 
@@ -615,24 +775,32 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     };
     $scope.getdateTime=function(){
 
-
-        var data ='status=2-CB'+'&mobileNo=' + $scope.mob.mobileNo+'&visit_date=' + $scope.visit_date + '&visit_time=' + $scope.visit_time;
-
-
-        $http.get(domain+'/postCallingStatus?' + data)
-            .success(function (data, status, headers, config) {
-                $scope.postss = data;
-                console.log( $scope.postss);
-
-                if(data.status == 'success'){
-                    location.reload();
-                }
-
-            })
-            .error(function (data, status, headers, config) {
-            });
+        if($scope.visit_date.length == 0 || $scope.visit_date == undefined){
+            alert("Please enter Date");
+            ev.preventDefault();
+        }else if($scope.visit_time.length == 0 || $scope.visit_time == undefined){
+            alert("Please enter Time");
+            ev.preventDefault();
+        }else {
 
 
+            var data = 'status=2-CB' + '&mobileNo=' + $scope.mob.mobileNo + '&visit_date=' + $scope.visit_date + '&visit_time=' + $scope.visit_time;
+
+
+            $http.get(domain + '/postCallingStatus?' + data)
+                .success(function (data, status, headers, config) {
+                    $scope.postss = data;
+                    console.log($scope.postss);
+
+                    if (data.status == 'success') {
+                        location.reload();
+                    }
+
+                })
+                .error(function (data, status, headers, config) {
+                });
+
+        }
 
     };
 
@@ -779,7 +947,7 @@ routerApp.controller('Ctrl',['$scope', '$http','$q','$log', function($scope,$htt
         alert(jgndfjg);
     };
 }]);
-routerApp.directive("datepicker", function () {
+routerApp.directive("datepicker1", function () {
     return {
         restrict: "A",
         require: "ngModel",
@@ -953,6 +1121,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
 
     return fac;
 });
+/*
 
 routerApp.controller('DateTimeController', ['$scope', function($scope) {
 
@@ -1123,6 +1292,7 @@ routerApp.controller('DateTimeController', ['$scope', function($scope) {
 
 
 
+*/
 
 
 
@@ -1164,16 +1334,32 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
     $scope.message ={};
 
     $scope.send = function($event) {
+
+        $scope.errMessage = '';
+        var curDate = new Date();
+
+        if(new Date($scope.date) > new Date($scope.date1)){
+            alert("End Date should be greater than start date ");
+          //  $scope.errMessage = 'End Date should be greater than start date';
+            return false;
+        }/*else if(new Date($scope.date1) > curDate){
+          alert("End date should not be greater today.");
+       //     $scope.errMessage = 'End date should not be greater today.';
+            return false;
+        }
+*/
+
+
         if ($scope.date.length == 0 || $scope.date == undefined) {
-            //alert('Agent Name is not valid');
+            alert('To Date cannot be blank');
             $event.preventDefault();
         }
         else if ($scope.date1.length == 0 || $scope.date1 == undefined) {
-            // alert('Agent Code is not valid');
+            alert('From Date cannot be blank');
             $event.preventDefault();
         }
         else if ($scope.report1.length == 0 || $scope.report1 == undefined) {
-            // alert('Agent Code is not valid');
+            alert('Provide report Type to be generated');
             $event.preventDefault();
         }
         else {

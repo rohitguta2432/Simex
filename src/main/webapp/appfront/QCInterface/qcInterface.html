@@ -65,7 +65,7 @@
 
                                     <label class="col-sm-3 control-label no-padding-center">Customer Number</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"   name="cust_number" ng-model="cust_number" placeholder="Customer Number" />
+                                        <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"   name="cust_number" ng-model="cust_number" ng-readonly="true" />
                                     </div>
 
                                     <div class="col-sm-2">
@@ -96,7 +96,7 @@
 
                                             <div class="col-sm-9">
                                                 <!--<input type="textArea" class="form-control"  ng-minlength="3" ng-maxlength="15"  name="user_comment" ng-model="user_comment" placeholder="Comment" />-->
-                                                  <textarea  class="form-control" style="width: 425px; height: 50px;" name="user_comment" ng-model="user_comment"></textarea>
+                                                  <textarea  class="form-control" style="width: 425px; height: 50px;" name="user_comment" ng-model="user_comment" required></textarea>
                                             </div>
 
                                             </div>
@@ -104,7 +104,7 @@
                                         <div class="form-group col-sm-5">
                                             <label class="col-sm-3 control-label no-padding-center">Rejected Pages</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control"   ng-minlength="3" ng-maxlength="15"  name="rejct_pages" ng-model="rejct_pages" placeholder="enter comma seprated value exp. 1,2,3,4...." />
+                                                <input type="text" class="form-control"   ng-minlength="3" ng-maxlength="15"  name="rejct_pages" ng-model="rejct_pages" placeholder="comma seprated value exp. 1,2,3,4...." />
 
                                             </div>
                                         </div>

@@ -11,7 +11,7 @@ import java.util.List;
 public interface CircleMastDao {
 
     public CircleMastEntity findByPrimaryKey(int circleCode);
-    public List<String> getCircleList();
+    public List<CircleMastEntity> getCircleList();
     List<String> getSpokeList(String circleName);
     List<ReportMastEntity> getReporttypes();
 

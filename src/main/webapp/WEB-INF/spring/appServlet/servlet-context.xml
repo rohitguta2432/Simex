@@ -55,7 +55,7 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 	<mvc:resources mapping="/appfront/**" location="/appfront/" />
 
 	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<beans:property name="maxUploadSize" value="100000" />
+		<beans:property name="maxUploadSize" value="1000000" />
 	</beans:bean>
 
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -91,7 +91,8 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 	<beans:bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<beans:property name="entityManagerFactory" ref="entityManagerFactory" />
 	</beans:bean>
-</beans:beans>
+
+  </beans:beans>
 
 
 

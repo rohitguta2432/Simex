@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <h3 class="modal-title">Header</h3>
+    <h3 class="modal-title"></h3>
 </div>
 <div class="modal-body">
     This is Popup example with close button.
@@ -9,10 +9,10 @@
 
 
             <div class="form-group col-sm-6">
-                <label  class="col-sm-3 control-label no-padding-right">Visit Date</label>
+                <label  class="col-sm-3 control-label no-padding-right">Call Date</label>
                 <div class="col-sm-9">
-                    <select  name="visit_date" ng-model="visit_date"  class="form-control"  ng-options="dates for dates in date" ng-change="getTime()" required>
-                        <option value="" selected="selected">Visit Date</option>
+                    <select  name="visit_date" ng-model="visit_date"  class="form-control" required ng-options="dates for dates in date" ng-change="getTime()" required>
+                        <option value="" selected="selected">Call Date</option>
 
                     </select>
                     <!--<input ng-model="date | date:'yyyy-MM-dd'" type="text">-->
@@ -20,12 +20,12 @@
 
             </div>
             <div class="form-group col-sm-6">
-                <label  class="col-sm-3 control-label no-padding-right">Visit Time</label>
+                <label  class="col-sm-3 control-label no-padding-right">Call Time</label>
                 <div class="col-sm-9">
 
 
-                    <select  name="visit_time" ng-model="visit_time"   class="form-control"  ng-options="time for time in times" required>
-                        <option value="" selected="selected">Visit Time</option>
+                    <select  name="visit_time" ng-model="visit_time"   class="form-control" required ng-options="time for time in times" required >
+                        <option value="" selected="selected">Call Time</option>
 
                     </select>
                 </div>

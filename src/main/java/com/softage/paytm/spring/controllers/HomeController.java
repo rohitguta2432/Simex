@@ -16,6 +16,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +89,14 @@ class HomeController {
         String password = request.getParameter("password");
         String dbUser = null;
         EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+
+        String  session1   = (String)request.getAttribute(user);
+         if(session1!=null){
+             HttpSession session = request.getSession();
+             if(session!=null){
+                 session.invalidate();
+             }
+         }
         if (emplogintableEntity != null) {
 
             if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
@@ -157,6 +170,9 @@ class HomeController {
             byte[] bytes = mpf.getBytes();
             mpf.getContentType();
             String filename = mpf.getOriginalFilename();
+            System.out.println("  file name  "+filename);
+            String extension  =filename.split("\\.")[1];
+
             Random randomGenerator = new Random();
             int randomInt = randomGenerator.nextInt(10000);
             String serverPath = System.getenv("JBOSS_BASE_DIR");
@@ -181,103 +197,110 @@ class HomeController {
             logger.info("Server File Location="
                     + serverFile.getAbsolutePath());
 
-
+            if(extension.equalsIgnoreCase("csv")) {
 		/*File serverFile=null;*/
-            List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-            List<Map<String, String>> list1 = new ArrayList<Map<String, String>>();
+                List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+                List<Map<String, String>> list1 = new ArrayList<Map<String, String>>();
 
 
-            br = new BufferedReader(new FileReader(serverFile));
-            JSONObject json1 = new JSONObject();
-            int count = 0;
-            int successCount = 0;
-            while ((line = br.readLine()) != null) {
-                String[] customerData = line.split(cvsSplitBy);
-                int lent = customerData.length;
-                JSONObject json = new JSONObject();
-                if (count != 0) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    HashMap<String, String> map1 = new HashMap<String, String>();
-                    if (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) {
-                        telecallMastEntity = callingService.getByPrimaryKey(customerData[3]);
-                        paytmMastEntity = paytmMasterService.getPaytmMaster(customerData[3]);
-                        if (telecallMastEntity != null) {
+                br = new BufferedReader(new FileReader(serverFile));
+                JSONObject json1 = new JSONObject();
+                int count = 0;
+                int successCount = 0;
+                while ((line = br.readLine()) != null) {
+                    String[] customerData = line.split(cvsSplitBy);
+                    int lent = customerData.length;
+                    JSONObject json = new JSONObject();
+                    if (count != 0) {
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        HashMap<String, String> map1 = new HashMap<String, String>();
+                        if (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) {
+                            telecallMastEntity = callingService.getByPrimaryKey(customerData[3]);
+                            paytmMastEntity = paytmMasterService.getPaytmMaster(customerData[3]);
+                            if (telecallMastEntity != null) {
 
-                            ReOpenTaleCallMaster reOpenTaleCallMaster = new ReOpenTaleCallMaster();
-                            reOpenTaleCallMaster.setTmCustomerPhone(telecallMastEntity.getTmCustomerPhone());
-                            reOpenTaleCallMaster.setTmAttempts(telecallMastEntity.getTmAttempts());
-                            reOpenTaleCallMaster.setTmLastAttemptBy(telecallMastEntity.getTmLastAttemptBy());
-                            reOpenTaleCallMaster.setTmLastAttemptDateTime(telecallMastEntity.getTmLastAttemptDateTime());
-                            reOpenTaleCallMaster.setTmLastCallStatus(telecallMastEntity.getTmLastCallStatus());
-                            reOpenTaleCallMaster.setTmTeleCallStatus(telecallMastEntity.getTmTeleCallStatus());
-                            String msg = callingService.save(reOpenTaleCallMaster);
-                            logger.info("Customer Reopen>>>>>>> " + msg);
-                            byte attempt = 0;
-                            telecallMastEntity.setTmAttempts(attempt);
-                            reopenCount++;
-                            String msg1 = callingService.updateTeleCall(telecallMastEntity);
-                            logger.info("TeleCallMastEntity Successfully Updated>>>>>>>>  " + msg1);
+                                ReOpenTaleCallMaster reOpenTaleCallMaster = new ReOpenTaleCallMaster();
+                                reOpenTaleCallMaster.setTmCustomerPhone(telecallMastEntity.getTmCustomerPhone());
+                                reOpenTaleCallMaster.setTmAttempts(telecallMastEntity.getTmAttempts());
+                                reOpenTaleCallMaster.setTmLastAttemptBy(telecallMastEntity.getTmLastAttemptBy());
+                                reOpenTaleCallMaster.setTmLastAttemptDateTime(telecallMastEntity.getTmLastAttemptDateTime());
+                                reOpenTaleCallMaster.setTmLastCallStatus(telecallMastEntity.getTmLastCallStatus());
+                                reOpenTaleCallMaster.setTmTeleCallStatus(telecallMastEntity.getTmTeleCallStatus());
+                                String msg = callingService.save(reOpenTaleCallMaster);
+                                logger.info("Customer Reopen>>>>>>> " + msg);
+                                byte attempt = 1;
+                                telecallMastEntity.setTmAttempts(attempt);
+                                reopenCount++;
+                                String msg1 = callingService.updateTeleCall(telecallMastEntity);
+                                logger.info("TeleCallMastEntity Successfully Updated>>>>>>>>  " + msg1);
+                            }
+                        }
+                        if ((customerData[12].length() == 6 && StringUtils.isNumeric(customerData[12]))) {
+                            int pincode = Integer.parseInt(customerData[12]);
+                            paytmPinMaster = pinMasterService.getByPincode(pincode);
+
+                        }
+                        if (!StringUtils.isEmpty(customerData[1]) && (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) && telecallMastEntity == null && paytmMastEntity == null) {
+                            System.out.println(customerData[0]);
+                            map.put("kycRequestId", customerData[0]);
+                            map.put("CustomerID", customerData[1]);
+                            map.put("Username", customerData[2]);
+                            map.put("CustomerPhone", customerData[3]);
+                            map.put("Email", customerData[4]);
+                            map.put("AddressID", customerData[5]);
+                            map.put("TimeSlot", customerData[6]);
+                            map.put("Priority", customerData[7]);
+                            map.put("AddressStreet1", customerData[8]);
+                            map.put("AddressStreet2", customerData[9]);
+                            map.put("City", customerData[10]);
+                            map.put("State", customerData[11]);
+                            map.put("Pincode", customerData[12]);
+                            map.put("AddressPhone", customerData[13]);
+                            map.put("VendorName", customerData[14]);
+                            map.put("StageId", customerData[15]);
+                            map.put("SubStageId", customerData[16]);
+                            map.put("CreatedTimestamp", customerData[17]);
+                            map.put("importBy", importBy);
+                            list.add(map);
+                            successCount++;
+                        } else if (paytmPinMaster == null && (customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3]) || paytmMastEntity != null)) {
+                            json.put("CustomerID", customerData[1]);
+                            json.put("Resion", "check pincode valid for current exits circle and it should be 6 digit and numeric , mobile should be 10 digit and numeric and not duplicate");
+                            json1.put("rejectedRecord" + count, json);
+
+                        } else if (paytmPinMaster == null) {
+                            json.put("CustomerID", customerData[1]);
+                            json.put("Resion", "This PinCode is not exist with current list of Agent so please add = " + customerData[12]);
+                            json1.put("rejectedRecord" + count, json);
+                        } else if ((customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3]) || paytmMastEntity != null)) {
+                            json.put("CustomerID", customerData[1]);
+                            json.put("Resion", " mobile should be 10 digit and numeric and not duplicate");
+                            json1.put("rejectedRecord" + count, json);
                         }
                     }
-                    if ((customerData[12].length() == 6 && StringUtils.isNumeric(customerData[12]))) {
-                        int pincode = Integer.parseInt(customerData[12]);
-                        paytmPinMaster = pinMasterService.getByPincode(pincode);
+                    count++;
 
-                    }
-                    if (!StringUtils.isEmpty(customerData[1]) && (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3]))  && telecallMastEntity == null && paytmMastEntity == null) {
-                        System.out.println(customerData[0]);
-                        map.put("kycRequestId", customerData[0]);
-                        map.put("CustomerID", customerData[1]);
-                        map.put("Username", customerData[2]);
-                        map.put("CustomerPhone", customerData[3]);
-                        map.put("Email", customerData[4]);
-                        map.put("AddressID", customerData[5]);
-                        map.put("TimeSlot", customerData[6]);
-                        map.put("Priority", customerData[7]);
-                        map.put("AddressStreet1", customerData[8]);
-                        map.put("AddressStreet2", customerData[9]);
-                        map.put("City", customerData[10]);
-                        map.put("State", customerData[11]);
-                        map.put("Pincode", customerData[12]);
-                        map.put("AddressPhone", customerData[13]);
-                        map.put("VendorName", customerData[14]);
-                        map.put("StageId", customerData[15]);
-                        map.put("SubStageId", customerData[16]);
-                        map.put("CreatedTimestamp", customerData[17]);
-                        map.put("importBy", importBy);
-                        list.add(map);
-                        successCount++;
-                    } else if (paytmPinMaster == null && (customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3]) || paytmMastEntity != null)) {
-                        json.put("CustomerID", customerData[1]);
-                        json.put("Resion", "check pincode valid for current exits circle and it should be 6 digit and numeric , mobile should be 10 digit and numeric and not duplicate");
-                        json1.put("rejectedRecord" + count, json);
-
-                    } else if (paytmPinMaster == null) {
-                        json.put("CustomerID", customerData[1]);
-                        json.put("Resion", "This PinCode is not exist with current list of Agent so please add = "+customerData[12]);
-                        json1.put("rejectedRecord" + count, json);
-                    } else if ((customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3]) || paytmMastEntity != null)) {
-                        json.put("CustomerID", customerData[1]);
-                        json.put("Resion", " mobile should be 10 digit and numeric and not duplicate");
-                        json1.put("rejectedRecord" + count, json);
-                    }
                 }
-                count++;
-
-            }
           /*  if (list1.size() > 0) {
                 paytmMasterService.uploadRejectedData(list1, serverFile1);
 
             }*/
-            jsonObject.put("rejectedRecord", json1);
+                jsonObject.put("rejectedRecord", json1);
 
-            System.out.println("list   " + list);
-            result = paytmMasterService.savePaytmMaster(list);
-            rejectCount = (count - 1) - successCount - reopenCount;
-            if ("done".equalsIgnoreCase(result)) {
-                result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + reopenCount + " Rejected Customer  =" + rejectCount;
+                System.out.println("list   " + list);
+                result = paytmMasterService.savePaytmMaster(list);
+                rejectCount = (count - 1) - successCount - reopenCount;
+                if ("done".equalsIgnoreCase(result)) {
+                    result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + reopenCount + " Rejected Customer  =" + rejectCount;
+                }
+                jsonObject.put("status", "success");
+            } else {
+
+                jsonObject =uploadExcel(serverFile,importBy,paytmMasterService,pinMasterService);
+                return jsonObject;
+
             }
-            jsonObject.put("status", "success");
+
         } catch (FileNotFoundException e) {
             logger.error("File Not Found ", e);
             e.printStackTrace();
@@ -518,6 +541,28 @@ class HomeController {
             paytmPinMaster = pinMasterService.getByPincodeState(pincode1, circleOffice);
 
            PaytmagententryEntity   paytmagententryEntity1 = agentPaytmService.findByPrimaryKey(agentCode);
+
+      //      PaytmagententryEntity   paytmagententryEntity2 = agentPaytmService.findByPincode(pincode);
+
+            if (paytmPinMaster == null) {
+                msg = " Pincode not valid for this Circle try with valid Pincode ";
+                jsonObject.put("msg", msg);
+                jsonObject.put("status", "error");
+                return jsonObject;
+            }
+
+         /*   if(paytmagententryEntity2!=null){
+
+              if(!paytmagententryEntity2.getAcode().equalsIgnoreCase(agentCode)){
+                  msg = "This Pincode bind with other Agent So please enter Correct Pincode";
+                  jsonObject.put("msg", msg);
+                  jsonObject.put("status", "error");
+                  return jsonObject;
+
+                }
+
+            }*/
+
             if(multipin.equals("N") && paytmagententryEntity1!=null){
                 msg = "Agent Already Available if you want to Insert select Multiple pin option";
                 jsonObject.put("msg", msg);
@@ -525,7 +570,7 @@ class HomeController {
                 return jsonObject;
 
             }
-            if(multipin.equals("M") && paytmagententryEntity1!=null){
+            if(paytmagententryEntity1!=null){
                String result =  agentPaytmService.saveAgentPinMaster1(paytmagententryEntity);
                 if (result.equals("done")) {
                     msg = "Agent Insert with Multiple Pin";
@@ -540,12 +585,7 @@ class HomeController {
                 return jsonObject;
             }
 
-            if (paytmPinMaster == null) {
-                msg = " Pincode not valid for this Circle try with valid Pincode ";
-                jsonObject.put("msg", msg);
-                jsonObject.put("status", "error");
-                return jsonObject;
-            }
+
 
             msg = agentPaytmService.saveAgent(paytmagententryEntity, circleMastEntity);
             if ("done".equalsIgnoreCase(msg)) {
@@ -553,7 +593,7 @@ class HomeController {
                 jsonObject.put("msg", msg);
                 jsonObject.put("status", "success");
             } else {
-                msg = "Agent not Registered ";
+                msg = "Agent not Registered Try Again ";
                 jsonObject.put("msg", msg);
                 jsonObject.put("status", "error");
             }
@@ -567,6 +607,76 @@ class HomeController {
 
         return jsonObject;
     }
+
+
+    @RequestMapping(value = "/registration", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject registration(HttpServletRequest request) {
+        String msg = "";
+        JSONObject jsonObject = new JSONObject();
+        PaytmPinMaster paytmPinMaster = null;
+        int circleCode = 0;
+        CircleMastEntity circleMastEntity = null;
+        String password=null;
+        try {
+
+            String userName = "system";
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                userName = (String) session.getAttribute("name");
+            }
+            String empName = request.getParameter("name");
+            String empcode = request.getParameter("empcode");
+            String mobileNo = request.getParameter("phone");
+            String circlecode1 = request.getParameter("circle_office");
+            String empType = request.getParameter("empType");
+            String password1 = request.getParameter("password");
+
+            circleCode = Integer.parseInt(circlecode1);
+            if (circleCode != 0) {
+                circleMastEntity = circleService.findByPrimaryKey(circleCode);
+            }
+
+            EmplogintableEntity emplogintableEntity = new EmplogintableEntity();
+            emplogintableEntity.setEmpCode(empcode);
+            emplogintableEntity.setEmpName(empName);
+            emplogintableEntity.setEmpPhone(mobileNo);
+            password = empcode.substring(0, 4) + mobileNo.substring(0, 4);
+            emplogintableEntity.setEmpPassword(password);
+            emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
+            emplogintableEntity.setRoleCode(empType);
+            emplogintableEntity.setEmpStatus(true);
+            emplogintableEntity.setImportBy(userName);
+            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+
+             msg=   agentPaytmService.saveEmployee(emplogintableEntity);
+
+            if ("done".equalsIgnoreCase(msg)) {
+                msg = "Agent Succesfully Registered";
+                jsonObject.put("msg", msg);
+                jsonObject.put("status", "success");
+            } else {
+                msg = "Agent not Registered Try Again ";
+                jsonObject.put("msg", msg);
+                jsonObject.put("status", "error");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            msg = "Agent not Registered ";
+            jsonObject.put("msg", msg);
+            jsonObject.put("status", "error");
+        }
+
+        return jsonObject;
+    }
+
+
+
+
+
+
+
 
     @RequestMapping(value = "/customerCalling", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
@@ -587,6 +697,165 @@ class HomeController {
 
         return "success";
     }
+
+
+    public static JSONObject uploadExcel( File path,String importBy,PaytmMasterService paytmMasterService,PaytmPinMasterService pinMasterService) {
+
+        Row row=null;
+
+        PaytmMastEntity paytmMastEntity=null;
+        PaytmPinMaster paytmPinMaster=null;
+        JSONObject jsonObject = new JSONObject();
+        String result="File Not Uploaded";
+
+        JSONObject json1=new JSONObject();
+        int count=0;
+        int successCount=0;
+        int rejectCount=0;
+        FileInputStream file=null;
+
+        try
+        {
+            file = new FileInputStream(path);
+
+            ArrayList<Map<String,String>> list=new ArrayList<>();
+
+            //Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+
+            //Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbook.getSheetAt(0);
+
+            for(int i=0; i<1; i++){
+
+               row =sheet.getRow(i);
+                String customerNumber = row.getCell(0).getStringCellValue().trim();
+                String appointmantDate = row.getCell(1).getStringCellValue().trim();
+                String createdDate = row.getCell(2).getStringCellValue().trim();
+                String name = row.getCell(3).getStringCellValue().trim();
+                String mobileNumber = row.getCell(4).getStringCellValue().trim();
+
+                 String address = row.getCell(5).getStringCellValue().trim();
+
+                String leadStage = row.getCell(6).getStringCellValue().trim();
+
+                String leadSubStage  = row.getCell(7).getStringCellValue().trim();
+
+                String pincode = row.getCell(8).getStringCellValue().trim();
+
+                String city = row.getCell(9).getStringCellValue().trim();
+
+           //     String circle = row.getCell(10).getStringCellValue().trim();
+
+
+
+
+            }
+
+                for(int i=1; i<sheet.getPhysicalNumberOfRows(); i++) {
+                    JSONObject json=new JSONObject();
+                    System.out.println("row start");
+                    row = sheet.getRow(i);
+                    System.out.println("get row start");
+                    if (row != null && row.getCell(0) != null) {
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        HashMap<String, String> map1 = new HashMap<String, String>();
+                        System.out.println(i);
+                        String customerId = row.getCell(0).getStringCellValue().trim();
+                    //    String appointmantDate = row.getCell(1).getStringCellValue().trim();
+                      //  String createdDate = row.getCell(2).getStringCellValue().trim();
+                        String name = row.getCell(3).getStringCellValue().trim();
+                        String  mobileNumber = row.getCell(4).getStringCellValue().trim();
+
+                        String address = row.getCell(5).getStringCellValue().trim();
+
+                        String leadStage = row.getCell(6).getStringCellValue().trim();
+
+                        String leadSubStage  = row.getCell(7).getStringCellValue().trim();
+
+                        String pincode = row.getCell(8).getStringCellValue().trim();
+
+                        String city = row.getCell(9).getStringCellValue().trim();
+
+
+
+                        if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
+                            paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
+
+                        }
+                        if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                            int pincode1 = Integer.parseInt(pincode);
+                            paytmPinMaster = pinMasterService.getByPincode(pincode1);
+
+                        }
+                        if(paytmMastEntity==null && (pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                            map.put("customerID", customerId);
+                            map.put("name", name);
+                            map.put("mobileNumber", mobileNumber);
+                            map.put("address", address);
+                            map.put("pincode", pincode);
+                            map.put("city", city);
+                            map.put("importBy", importBy);
+                            list.add(map);
+                            successCount++;
+
+                            if (paytmPinMaster==null){
+                                json.put("CustomerID", customerId);
+                                json.put("Resion", "This Customer Pincode not match with Softage Circles PinCode .");
+                                json1.put("rejectedRecord" + count, json);
+                            }
+                        }else if(paytmMastEntity!=null) {
+                            json.put("CustomerID", customerId);
+                            json.put("Resion", "Duplicate Customers");
+                            json1.put("rejectedRecord" + count, json);
+
+                        } else if((pincode.length() == 6 && StringUtils.isNumeric(pincode))){
+                            json.put("CustomerID", customerId);
+                            json.put("Resion", "PinCode not valid so please check It.");
+                            json1.put("rejectedRecord" + count, json);
+
+                        }
+
+
+
+
+                        }
+                    count++;
+                    }
+
+
+
+            jsonObject.put("rejectedRecord", json1);
+
+            System.out.println("list   " + list);
+            rejectCount = (count - 1) - successCount ;
+
+            jsonObject.put("status", "success");
+
+                result = paytmMasterService.savePaytmMasterExcel(list);
+                if ("done".equalsIgnoreCase(result)) {
+                    result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
+                }
+        }
+        catch (Exception e)
+        {
+            result="File Not Uploaded";
+            e.printStackTrace();
+
+        }
+        finally {
+            try {
+                file.close();
+
+            }catch (Exception e){
+
+            }
+        }
+        jsonObject.put("Message",result);
+        return jsonObject;
+    }
+
+
 
     @RequestMapping(value = "/getPdfUrl", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
@@ -852,6 +1121,40 @@ class HomeController {
         }
         return jsonObject;
     }
+
+    @RequestMapping(value = "/getAllCircle", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getAllCircle(HttpServletRequest request) {
+        int circleCode = 4;
+        JSONObject jsonObject = new JSONObject();
+        JSONArray list=new JSONArray();
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                circleCode = (Integer) session.getAttribute("cirCode");
+            }
+
+
+            List<CircleMastEntity> circles = circleService.getCircleList();
+
+            for (CircleMastEntity circle :circles) {
+                JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("name",circle.getCircleName());
+                jsonObject1.put("code",circle.getCirCode());
+                list.add(jsonObject1);
+            }
+
+            jsonObject.put("circles", list);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("", e);
+        }
+        return jsonObject;
+    }
+
+
+
 
     @RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody

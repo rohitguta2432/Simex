@@ -223,7 +223,44 @@ public class PostCallingDaoImp implements PostCallingDao {
     @Override
     public String getAgentCode(String pinCode, Date date, Date date1, int maxAllocation, String agentCode) {
 
-        EntityManager entityManager=null;
+
+        EntityManager entityManager = null;
+        List list = new ArrayList<>();
+        Query query = null;
+        JSONObject jsonObject = new JSONObject();
+        String agentCode1=null;
+        //  String status = "Open";
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            query = entityManager.createNativeQuery("{call sp_AllocateAgent(?,?)}");
+            query.setParameter(1, pinCode);
+            query.setParameter(2, date.toString());
+            List<Object[]> resultList = query.getResultList();
+            for (Object[] objects : resultList) {
+                if (objects.length > 0) {
+
+                    JSONObject json = new JSONObject();
+                    json.put("agent",objects[0]);
+                    json.put("count",objects[1]);
+                    agentCode1=objects[0].toString();
+
+                }
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return agentCode1;
+
+
+
+
+       /* EntityManager entityManager=null;
         Query query=null;
         AllocationMastEntity allocationMastEntity=null;
         String agentCode1=null;
@@ -236,20 +273,8 @@ public class PostCallingDaoImp implements PostCallingDao {
                 strQuery="select A.APM_Acode from agentpinmaster A join paytmagententry P on " +
                         " A.APM_Acode=P.acode where  A.APM_APincode=? and  (select count(am.Agent_Code) from allocation_mast am where am.Agent_Code=A.APM_Acode and am.Allocation_datetime>=? and am.Allocation_datetime<?)<=?";
 
-               /* strQuery = "select A.apmAcode from AgentpinmasterEntity A join PaytmagententryEntity P " +
-                        "on  A.apmAcode=P.acode where  A.apmAPincode=:agentPinCode "+
-                        " and (select count(am.agentCode) from AllocationMastEntity am" +
-                        " where am.agentCode=A.apmAcode and am.allocationDatetime>=:date and am.allocationDatetime<:date1)<=:maxAllocation";*/
             }else {
 
-
-/*                strQuery="select A.APM_Acode from agentpinmaster A join paytmagententry P on " +
-                        " A.APM_Acode=P.acode where A.APM_Acode <>? A.APM_APincode=? and (select COUNT (am.agent_code)  from allocation_mast am where am.agent_code=A.APM_Acode and am.Allocation_datetime>=? and am.Allocation_datetime<? )<=?";*/
-
-             /*  strQuery = "select A.apmAcode from AgentpinmasterEntity A join PaytmagententryEntity P " +
-                        "on  A.apmAcode=P.acode where A.apmAcode <>:agentcode and A.apmAPincode=:agentPinCode" +
-                        " and (select count(am.agentCode) from AllocationMastEntity am" +
-                        " where am.agentCode=A.apmAcode and am.allocationDatetime>=:date and am.allocationDatetime<:date1)<=:maxAllocation";*/
 
             }
           query=entityManager.createNativeQuery(strQuery);
@@ -275,7 +300,7 @@ public class PostCallingDaoImp implements PostCallingDao {
             }
         }
 
-        return agentCode1;
+        return agentCode1;*/
     }
 
     @Override

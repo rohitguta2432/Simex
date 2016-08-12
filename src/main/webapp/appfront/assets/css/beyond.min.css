@@ -18225,7 +18225,7 @@ tr.fc-last td {
 }
 
 
-footer{ position:fixed; bottom:5px; z-index:999; width:100%;}
+footer{ position:fixed; bottom:5px; z-index:999; width:100%; background:#fff;}
 
 
 

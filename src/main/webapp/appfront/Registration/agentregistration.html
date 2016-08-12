@@ -31,9 +31,11 @@
                                         <div class="form-group col-sm-6" >
                                             <label  class="col-sm-3 control-label no-padding-right" >Name</label>
                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" minlength="2" maxlength="40"  name="agent_name" ng-model="name" id="Text5" placeholder="Name" allow-pattern="[a-z_ ]" required/>
+                                                <input type="text" class="form-control" minlength="2" maxlength="40"  name="agent_name" ng-model="name" id="Text5" placeholder=" Name" ng-pattern ="/^[a-zA-Z\s]*$/"  required/>
+                                               <p class="alert" ng-show="myForm.name.$error.pattern">Numbers only, please.</p>
 
-                                              <!-- <span class="help-inline" ng-show="submitted && myForm.email.$error.email">Invalid email</span>-->
+
+                                               <!-- <span class="help-inline" ng-show="submitted && myForm.email.$error.email">Invalid email</span>-->
 
 
                                             </div>
@@ -43,9 +45,7 @@
                                         <div class="form-group col-sm-6">
                                             <label for="Text1" class="col-sm-3 control-label no-padding-right">Agent Code</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" minlength="6" maxlength="6" name="agent_code" ng-model="agent_code" id="Text1" placeholder="Agent Code" allow-pattern="(\d|[a-z])" required/>
-
-
+                                                <input type="text" class="form-control" minlength="6" maxlength="6" name="agent_code" ng-model="agent_code" id="Text1" placeholder="Agent Code"  validation="alpha|min_len:4|required" required/>
 
                                             </div>
                                         </div>
@@ -75,7 +75,7 @@
                                               <!-- <select  name="circle" ng-model="circle_office"  class="form-control"  ng-options="office for office in offices" required ng-change="getspokecode()">
                                                    <option value="">Select Circle Office</option>
                                                </select>-->
-                                                <input  class="form-control"  name="circleoffice" data-phone ng-model="circleofiice"/>
+                                                <input  class="form-control"  name="circleoffice" data-phone ng-model="circleofiice" ng-readonly="true"/>
                                                <!-- <select ng-model="center" name="center" ng-options="office.office for office in offices" class="form-control" required>
                                                     &lt;!&ndash;<option value="">Select</option>&ndash;&gt;
                                                 </select>-->
@@ -98,8 +98,7 @@
                                             <label for="Text3" class="col-sm-3 control-label no-padding-right">Available Slot</label>
                                             <div class="col-sm-9">
                                                 <!-- <input type="text" class="form-control" id="Text3"  ng-minlength="3" ng-maxlength="15" name="pin_code" ng-model="user.pin_code" placeholder="Pin Codes" allow-pattern="^\d{5}(?:[-\s]\d{4})?$" required/>-->
-                                                <select id="Text3" name="avl_time"  class="form-control" ng-model="avl_time" onchange="Fspoke(this.txt)">
-                                                    <option value="0">Time Slot</option>
+                                                <select id="Text3" name="avl_time"  class="form-control" required ng-model="avl_time" onchange="Fspoke(this.txt)">
                                                     <option value="8 AM - 12 PM">8 AM - 12 PM</option>
                                                     <option value="9 AM - 1 PM">9 AM - 1 PM</option>
                                                     <option value="10 AM - 2 PM">10 AM - 2 PM</option>

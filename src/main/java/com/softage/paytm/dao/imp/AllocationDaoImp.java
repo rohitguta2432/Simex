@@ -120,6 +120,8 @@ public class AllocationDaoImp implements AllocationDao {
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.merge(allocationMastEntity);
+            entityManager.flush();
+            entityManager.clear();
             transaction.commit();
             msg="done";
         } catch (Exception e) {
@@ -174,6 +176,8 @@ public class AllocationDaoImp implements AllocationDao {
             query.setParameter(2,agentCode);
             query.setParameter(3,response);
             message=(String)query.getSingleResult();
+            entityManager.flush();
+            entityManager.clear();
             entityManager.getTransaction().commit();
         }catch (Exception e){
             e.printStackTrace();

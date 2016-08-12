@@ -34,10 +34,18 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             entityManager = entityManagerFactory.createEntityManager();
             transaction =  entityManager.getTransaction();
             transaction.begin();
+            int i=1;
             for (PaytmMastEntity mastEntity :paytmMastEntity) {
                 entityManager.persist(mastEntity);
+                if(i%10==0){
+                    entityManager.flush();
+                    entityManager.clear();
+                }
+                i++;
             }
+
             transaction.commit();
+
             result="done";
         }catch (Exception e) {
 

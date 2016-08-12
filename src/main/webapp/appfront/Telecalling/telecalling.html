@@ -29,13 +29,13 @@
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Mobile Number</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-model="mob.mobileNo" name="mobile" placeholder="Mobile Number" />
+                                    <input type="text" class="form-control" ng-model="mob.mobileNo" name="mobile" ng-readonly="true" placeholder="Mobile Number" />
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Status</label>
                                 <div class="col-sm-9">
-                                    <select  name="status" ng-model="status" ng-options="status.statusText for status in statuses track by status.csmCode" class="form-control" required  ng-change="changestatus()">
+                                    <select  name="status" ng-model="status" ng-options="status.statusText for status in statuses track by status.csmCode" class="form-control" required   ng-change="changestatus()">
                                         <option value="" selected="selected">Status</option>
 
                                     </select>
@@ -51,7 +51,7 @@
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Name</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="Text2" name="name"  ng-model="mob.customerName" placeholder="Name" />
+                                    <input type="text" class="form-control" id="Text2" name="name"  ng-model="mob.customerName" ng-readonly="true" placeholder="Name" />
                                 </div>
                             </div>
 
@@ -74,13 +74,13 @@
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">City</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="city" ng-model="codes.city" placeholder="City" />
+                                    <input type="text" class="form-control" name="city" ng-model="codes.city" ng-readonly="true"  placeholder="City" />
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">State</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="state" ng-model="codes.state" placeholder="State" />
+                                    <input type="text" class="form-control" name="state" ng-model="codes.state" ng-readonly="true" placeholder="State" />
                                  <!--   <select  name="state" ng-model="state"  class="form-control"  ng-options="state.stateName for state in states track by state.stateCode" required>
                                         <option value="" selected="selected">State</option>
                                     </select>-->
@@ -89,7 +89,7 @@
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Pincode</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="pincode" ng-model="codes.pincode" placeholder="Pincode" />
+                                    <input type="text" class="form-control" name="pincode" ng-model="codes.pincode" ng-readonly="true" placeholder="Pincode" />
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
@@ -126,13 +126,13 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group col-sm-6">
+                            <!--<div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Ext No</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="ext_no" ng-model="ext_no" placeholder="Ext No" />
                                 </div>
 
-                            </div>
+                            </div>-->
 
                            <div class="form-group">
                                 <div class="col-sm-offset-5 col-sm-10">
