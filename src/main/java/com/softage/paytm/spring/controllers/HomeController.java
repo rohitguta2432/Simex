@@ -3,6 +3,7 @@ package com.softage.paytm.spring.controllers;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -10,6 +11,9 @@ import java.util.*;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.codec.TIFFLZWDecoder;
+import com.itextpdf.text.pdf.codec.TiffImage;
+import com.itextpdf.text.pdf.codec.TiffWriter;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
 import org.apache.commons.lang.StringUtils;
@@ -67,6 +71,9 @@ class HomeController {
 
     @Autowired
     private CallTimeService callTimeService;
+
+    @Autowired
+    private BatchService batchService;
 
     /**
      * Simply selects the home view to render by returning its name.
@@ -137,6 +144,202 @@ class HomeController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+        BufferedReader br = null;
+        InputStream inputStream = null;
+        FileOutputStream outputStream = null;
+        String result = null;
+        File serverFile = null;
+        File serverFile1 = null;
+        PaytmPinMaster paytmPinMaster = null;
+        String line = "";
+        int rejectCount = 0;
+        int reopenCount = 0;
+        String importBy = "System";
+
+        TelecallMastEntity telecallMastEntity = null;
+        PaytmMastEntity paytmMastEntity = null;
+        String cvsSplitBy = "\\|";
+
+        JSONObject jsonObject = new JSONObject();
+
+        Iterator<String> itr = request.getFileNames();
+
+        MultipartFile mpf = request.getFile(itr.next());
+
+        try {
+            //just temporary save file info into ufile
+
+
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importBy = (String) session.getAttribute("name");
+            }
+            byte[] bytes = mpf.getBytes();
+            mpf.getContentType();
+            String filename = mpf.getOriginalFilename();
+            System.out.println("  file name  "+filename);
+            String extension  =filename.split("\\.")[1];
+
+            Random randomGenerator = new Random();
+            int randomInt = randomGenerator.nextInt(10000);
+            String serverPath = System.getenv("JBOSS_BASE_DIR");
+            logger.info("server path>>>>>>>   " + serverPath);
+            /*File dir1 = new File(serverPath + File.separator + "RejectedFile");*/
+            File dir = new File(serverPath + File.separator + "FileUploder");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+           /* if (!dir1.exists()) {
+                dir1.mkdirs();
+            }*/
+           /* serverFile1 = new File(dir1.getAbsolutePath()
+                    + File.separator + filename);*/
+            serverFile = new File(dir.getAbsolutePath()
+                    + File.separator + filename);
+            BufferedOutputStream stream = new BufferedOutputStream(
+
+
+
+                    new FileOutputStream(serverFile));
+            stream.write(bytes);
+            stream.close();
+
+            logger.info("Server File Location="
+                    + serverFile.getAbsolutePath());
+
+            if(extension.equalsIgnoreCase("csv")) {
+		/*File serverFile=null;*/
+                List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+                List<Map<String, String>> list1 = new ArrayList<Map<String, String>>();
+
+
+                br = new BufferedReader(new FileReader(serverFile));
+                JSONObject json1 = new JSONObject();
+                int count = 0;
+                int successCount = 0;
+                while ((line = br.readLine()) != null) {
+                    String[] customerData = line.split(cvsSplitBy);
+                    int lent = customerData.length;
+                    JSONObject json = new JSONObject();
+                    if (count != 0) {
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        HashMap<String, String> map1 = new HashMap<String, String>();
+                        if (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) {
+                            telecallMastEntity = callingService.getByPrimaryKey(customerData[3]);
+                            paytmMastEntity = paytmMasterService.getPaytmMaster(customerData[3]);
+                            if (telecallMastEntity != null) {
+
+                                ReOpenTaleCallMaster reOpenTaleCallMaster = new ReOpenTaleCallMaster();
+                                reOpenTaleCallMaster.setTmCustomerPhone(telecallMastEntity.getTmCustomerPhone());
+                                reOpenTaleCallMaster.setTmAttempts(telecallMastEntity.getTmAttempts());
+                                reOpenTaleCallMaster.setTmLastAttemptBy(telecallMastEntity.getTmLastAttemptBy());
+                                reOpenTaleCallMaster.setTmLastAttemptDateTime(telecallMastEntity.getTmLastAttemptDateTime());
+                                reOpenTaleCallMaster.setTmLastCallStatus(telecallMastEntity.getTmLastCallStatus());
+                                reOpenTaleCallMaster.setTmTeleCallStatus(telecallMastEntity.getTmTeleCallStatus());
+                                String msg = callingService.save(reOpenTaleCallMaster);
+                                logger.info("Customer Reopen>>>>>>> " + msg);
+                                byte attempt = 1;
+                                telecallMastEntity.setTmAttempts(attempt);
+                                reopenCount++;
+                                String msg1 = callingService.updateTeleCall(telecallMastEntity);
+                                logger.info("TeleCallMastEntity Successfully Updated>>>>>>>>  " + msg1);
+                            }
+                        }
+                        if ((customerData[12].length() == 6 && StringUtils.isNumeric(customerData[12]))) {
+                            int pincode = Integer.parseInt(customerData[12]);
+                            paytmPinMaster = pinMasterService.getByPincode(pincode);
+
+                        }
+                        if (!StringUtils.isEmpty(customerData[1]) && (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) && telecallMastEntity == null && paytmMastEntity == null) {
+                            System.out.println(customerData[0]);
+                            map.put("kycRequestId", customerData[0]);
+                            map.put("CustomerID", customerData[1]);
+                            map.put("Username", customerData[2]);
+                            map.put("CustomerPhone", customerData[3]);
+                            map.put("Email", customerData[4]);
+                            map.put("AddressID", customerData[5]);
+                            map.put("TimeSlot", customerData[6]);
+                            map.put("Priority", customerData[7]);
+                            map.put("AddressStreet1", customerData[8]);
+                            map.put("AddressStreet2", customerData[9]);
+                            map.put("City", customerData[10]);
+                            map.put("State", customerData[11]);
+                            map.put("Pincode", customerData[12]);
+                            map.put("AddressPhone", customerData[13]);
+                            map.put("VendorName", customerData[14]);
+                            map.put("StageId", customerData[15]);
+                            map.put("SubStageId", customerData[16]);
+                            map.put("CreatedTimestamp", customerData[17]);
+                            map.put("importBy", importBy);
+                            list.add(map);
+                            successCount++;
+                        } else if (paytmPinMaster == null && (customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3]) || paytmMastEntity != null)) {
+                            json.put("CustomerID", customerData[1]);
+                            json.put("Resion", "check pincode valid for current exits circle and it should be 6 digit and numeric , mobile should be 10 digit and numeric and not duplicate");
+                            json1.put("rejectedRecord" + count, json);
+
+                        } else if (paytmPinMaster == null) {
+                            json.put("CustomerID", customerData[1]);
+                            json.put("Resion", "This PinCode is not exist with current list of Agent so please add = " + customerData[12]);
+                            json1.put("rejectedRecord" + count, json);
+                        } else if ((customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3]) || paytmMastEntity != null)) {
+                            json.put("CustomerID", customerData[1]);
+                            json.put("Resion", " mobile should be 10 digit and numeric and not duplicate");
+                            json1.put("rejectedRecord" + count, json);
+                        }
+                    }
+                    count++;
+
+                }
+          /*  if (list1.size() > 0) {
+                paytmMasterService.uploadRejectedData(list1, serverFile1);
+
+            }*/
+                jsonObject.put("rejectedRecord", json1);
+
+                System.out.println("list   " + list);
+                result = paytmMasterService.savePaytmMaster(list);
+                rejectCount = (count - 1) - successCount - reopenCount;
+                if ("done".equalsIgnoreCase(result)) {
+                    result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + reopenCount + " Rejected Customer  =" + rejectCount;
+                }
+                jsonObject.put("status", "success");
+            } else {
+
+                jsonObject =uploadExcel(serverFile,importBy,paytmMasterService,pinMasterService);
+                return jsonObject;
+
+            }
+
+        } catch (FileNotFoundException e) {
+            logger.error("File Not Found ", e);
+            e.printStackTrace();
+            result = "File not Uploaded";
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(" ", e);
+            result = "File not Uploaded";
+        } finally
+
+        {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        jsonObject.put("Message", result);
+
+        return jsonObject;
+    }
+
+
+    @RequestMapping(value = "/uploadAgent", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject uploadAgent(MultipartHttpServletRequest request, HttpServletResponse response) {
         BufferedReader br = null;
         InputStream inputStream = null;
         FileOutputStream outputStream = null;
@@ -296,7 +499,7 @@ class HomeController {
                 jsonObject.put("status", "success");
             } else {
 
-                jsonObject =uploadExcel(serverFile,importBy,paytmMasterService,pinMasterService);
+                jsonObject =uploadAgent(serverFile,importBy,paytmMasterService,pinMasterService);
                 return jsonObject;
 
             }
@@ -327,6 +530,11 @@ class HomeController {
     }
 
 
+
+
+
+
+
     @RequestMapping(value = "/saveCircle", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     public String saveCircle() {
@@ -341,6 +549,180 @@ class HomeController {
 
         return "done";
     }
+
+
+    @RequestMapping(value = "/downloadList", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public JSONObject downloadList(HttpServletRequest request, HttpServletResponse response ) {
+
+                 String mobilenumber  =request.getParameter("mobilenumber");
+        JSONObject jsonObject=new JSONObject();
+        try {
+            if (mobilenumber == null||mobilenumber.equalsIgnoreCase("undefined")) {
+                mobilenumber = "";
+            }
+            String to = request.getParameter("todate");
+            String from = request.getParameter("fromdate");
+            if (!to.equalsIgnoreCase("undefined") && !to.isEmpty() & !to.equalsIgnoreCase("")) {
+                from = from.substring(6, 10) + "-" + from.substring(3, 5) + "-" + from.substring(0, 2);
+                to = to.substring(6, 10) + "-" + to.substring(3, 5) + "-" + to.substring(0, 2);
+            }else {
+                from="";
+                to="";
+            }
+
+            jsonObject = qcStatusService.downloadList(mobilenumber, to, from);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+                  return  jsonObject;
+
+        }
+
+    @RequestMapping(value = "/downloadPdf", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public void downloadPdf(HttpServletRequest request, HttpServletResponse response ) {
+        String mobileNo = request.getParameter("mobileNo");
+        File localPath = null;
+        FileInputStream fis=null;
+        OutputStream outStream=null;
+        StringBuffer strbr=new StringBuffer();
+        String imagePath="";
+        int circleCode=4;
+   //   String  filename="9068225200.pdf";
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                circleCode = (Integer) session.getAttribute("cirCode");
+            }
+
+            String serverPath = System.getenv("JBOSS_BASE_DIR");
+            logger.info("server path>>>>>>>   " + serverPath);
+            /*File dir1 = new File(serverPath + File.separator + "RejectedFile");*/
+              localPath = new File(serverPath + File.separator + "downloadpdf");
+            if (!localPath.exists()) {
+                localPath.mkdirs();
+            }
+
+             String path=localPath.toString()+File.separator+ mobileNo + ".pdf";
+
+             File localpdf=new File(path);
+            JSONObject jsonObject = qcStatusService.qcCustomerDetails(mobileNo);
+            String ftpImagePath = (String) jsonObject.get("imagePath");
+
+            String[] paths = ftpImagePath.split("/");
+            for (int i = 1; i < paths.length - 1; i++) {
+                strbr = strbr.append(paths[i]);
+                strbr.append("/");
+            }
+
+                imagePath = strbr.toString();
+           //     imagePath=imagePath+File.separator;
+                localPath=new File(localPath+File.separator);
+                String result  =copyFtpToLocal(userService,path,imagePath,mobileNo,circleCode);
+                if(result.equalsIgnoreCase("done")) {
+                    localPath = new File(localPath + File.separator + mobileNo + ".pdf");
+                    FileInputStream inStream = new FileInputStream(localPath);
+                    String mimeType = "application/octet-stream";
+                    response.setContentType(mimeType);
+                    //     response.setContentLength((int) savePath.length());
+
+                    // forces download
+                    String headerKey = "Content-Disposition";
+                    String headerValue = String.format("attachment; filename=\"%s\"", localPath.getName());
+                    response.setHeader(headerKey, headerValue);
+
+                    // obtains response's output stream
+                    outStream = response.getOutputStream();
+
+                    byte[] buffer1 = new byte[4096];
+                    int bytesRead1 = -1;
+
+                    while ((bytesRead1 = inStream.read(buffer1)) != -1) {
+                        outStream.write(buffer1, 0, bytesRead1);
+                    }
+
+
+                    System.out.println("File downloaded");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+            try{
+                fis.close();
+                outStream.close();
+
+            }catch (Exception e){
+
+            }
+
+        }
+          return;
+
+    }
+
+
+    public  static String copyFtpToLocal(UserService userService,String localPath,String fptPath,String mobileNumber,int circle){
+
+          String ftpHost = "122.15.90.140";
+          String username = "administrator";
+          String password = "softage@tchad";
+           FTPClient ftpClient = new FTPClient();
+           FileOutputStream fos = null;
+           String result=null;
+
+
+
+        try{
+            JSONObject jsonObject1 = userService.getEmpFtpDetails(circle);
+            String ftpIP = (String) jsonObject1.get("ftpIp");
+            String userName1 = (String) jsonObject1.get("userName");
+            String password1 = (String) jsonObject1.get("password");
+            logger.info("FPT File IP   "+ftpIP);
+            if (ftpIP != null && userName1 != null && password1 != null) {
+                ftpHost = ftpIP;
+                username = userName1;
+                password = password1;
+
+            }
+
+            ftpClient.connect(ftpHost);
+            boolean login = ftpClient.login(username, password);
+            if (login) {
+                logger.info("Successfully Connected to FTP Server");
+            } else {
+                System.out.println("Unable to Connected to Server..... ");
+            }
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            ftpClient.changeWorkingDirectory(fptPath);
+            fos = new FileOutputStream(localPath);
+            ftpClient.retrieveFile(mobileNumber+".pdf", fos);
+            fos.flush();
+            result="done";
+
+        }catch (Exception e){
+            result="err";
+            e.printStackTrace();
+
+        }finally {
+            try{
+                fos.close();
+                ftpClient.disconnect();
+
+            }catch (Exception e){
+                e.printStackTrace();
+                logger.error("",e);
+            }
+        }
+
+
+
+
+       return result;
+    }
+
+
 
 
 
@@ -475,7 +857,9 @@ class HomeController {
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
             Calendar date = Calendar.getInstance();
             String dateList1[] = new String[7];
+            String dateList2[] = new String[3];
             List<String> dateList = new ArrayList<String>();
+            List<String> dateListReject = new ArrayList<String>();
             for (int i = 0; i < 7; i++) {
 
                 dateList1[i] = format.format(date.getTime());
@@ -483,10 +867,17 @@ class HomeController {
                 dateList.add(dateList1[i]);
             }
 
+            for (int i = 0; i < 3; i++) {
+
+                dateList2[i] = format.format(date.getTime());
+                date.add(Calendar.DATE, 1);
+                dateListReject.add(dateList1[i]);
+            }
             jsonObject.put("teleData", teleJson);
             jsonObject.put("stateList", stateList);
             jsonObject.put("statusList", statusList);
-            jsonObject.put("dateList", dateList);
+            jsonObject.put("dateList", dateListReject);
+            jsonObject.put("dateList1", dateList);
             jsonObject.put("paytmmastjson", json);
             logger.info("telecalling screen data fatch sucessfully>>>>>>>>");
         } catch (Exception e) {
@@ -645,7 +1036,7 @@ class HomeController {
             emplogintableEntity.setEmpPassword(password);
             emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
             emplogintableEntity.setRoleCode(empType);
-            emplogintableEntity.setEmpStatus(true);
+            emplogintableEntity.setEmpStatus(1);
             emplogintableEntity.setImportBy(userName);
             emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 
@@ -673,11 +1064,6 @@ class HomeController {
 
 
 
-
-
-
-
-
     @RequestMapping(value = "/customerCalling", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String Calling(HttpServletRequest request) {
@@ -697,6 +1083,8 @@ class HomeController {
 
         return "success";
     }
+
+
 
 
     public static JSONObject uploadExcel( File path,String importBy,PaytmMasterService paytmMasterService,PaytmPinMasterService pinMasterService) {
@@ -832,7 +1220,7 @@ class HomeController {
 
             jsonObject.put("status", "success");
 
-                result = paytmMasterService.savePaytmMasterExcel(list);
+      //          result = paytmMasterService.savePaytmMasterExcel(list);
                 if ("done".equalsIgnoreCase(result)) {
                     result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
                 }
@@ -855,6 +1243,159 @@ class HomeController {
         return jsonObject;
     }
 
+    public static JSONObject uploadAgent( File path,String importBy,PaytmMasterService paytmMasterService,PaytmPinMasterService pinMasterService) {
+
+        Row row=null;
+
+        PaytmMastEntity paytmMastEntity=null;
+        PaytmPinMaster paytmPinMaster=null;
+        JSONObject jsonObject = new JSONObject();
+        String result="File Not Uploaded";
+
+        JSONObject json1=new JSONObject();
+        int count=0;
+        int successCount=0;
+        int rejectCount=0;
+        FileInputStream file=null;
+
+        try
+        {
+            file = new FileInputStream(path);
+
+            ArrayList<Map<String,String>> list=new ArrayList<>();
+
+            //Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+
+            //Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbook.getSheetAt(0);
+
+            for(int i=0; i<1; i++){
+
+                row =sheet.getRow(i);
+                String customerNumber = row.getCell(0).getStringCellValue().trim();
+                String appointmantDate = row.getCell(1).getStringCellValue().trim();
+                String createdDate = row.getCell(2).getStringCellValue().trim();
+                String name = row.getCell(3).getStringCellValue().trim();
+                String mobileNumber = row.getCell(4).getStringCellValue().trim();
+
+                String address = row.getCell(5).getStringCellValue().trim();
+
+                String leadStage = row.getCell(6).getStringCellValue().trim();
+
+                String leadSubStage  = row.getCell(7).getStringCellValue().trim();
+
+                String pincode = row.getCell(8).getStringCellValue().trim();
+
+                String city = row.getCell(9).getStringCellValue().trim();
+
+                //     String circle = row.getCell(10).getStringCellValue().trim();
+
+
+
+
+            }
+
+            for(int i=1; i<sheet.getPhysicalNumberOfRows(); i++) {
+                JSONObject json=new JSONObject();
+                System.out.println("row start");
+                row = sheet.getRow(i);
+                System.out.println("get row start");
+                if (row != null && row.getCell(0) != null) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    HashMap<String, String> map1 = new HashMap<String, String>();
+                    System.out.println(i);
+                    String customerId = row.getCell(0).getStringCellValue().trim();
+                    //    String appointmantDate = row.getCell(1).getStringCellValue().trim();
+                    //  String createdDate = row.getCell(2).getStringCellValue().trim();
+                    String name = row.getCell(3).getStringCellValue().trim();
+                    String  mobileNumber = row.getCell(4).getStringCellValue().trim();
+
+                    String address = row.getCell(5).getStringCellValue().trim();
+
+                    String leadStage = row.getCell(6).getStringCellValue().trim();
+
+                    String leadSubStage  = row.getCell(7).getStringCellValue().trim();
+
+                    String pincode = row.getCell(8).getStringCellValue().trim();
+
+                    String city = row.getCell(9).getStringCellValue().trim();
+
+
+
+                    if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
+                        paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
+
+                    }
+                    if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                        int pincode1 = Integer.parseInt(pincode);
+                        paytmPinMaster = pinMasterService.getByPincode(pincode1);
+
+                    }
+                    if(paytmMastEntity==null && (pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                        map.put("customerID", customerId);
+                        map.put("name", name);
+                        map.put("mobileNumber", mobileNumber);
+                        map.put("address", address);
+                        map.put("pincode", pincode);
+                        map.put("city", city);
+                        map.put("importBy", importBy);
+                        list.add(map);
+                        successCount++;
+
+                        if (paytmPinMaster==null){
+                            json.put("CustomerID", customerId);
+                            json.put("Resion", "This Customer Pincode not match with Softage Circles PinCode .");
+                            json1.put("rejectedRecord" + count, json);
+                        }
+                    }else if(paytmMastEntity!=null) {
+                        json.put("CustomerID", customerId);
+                        json.put("Resion", "Duplicate Customers");
+                        json1.put("rejectedRecord" + count, json);
+
+                    } else if((pincode.length() == 6 && StringUtils.isNumeric(pincode))){
+                        json.put("CustomerID", customerId);
+                        json.put("Resion", "PinCode not valid so please check It.");
+                        json1.put("rejectedRecord" + count, json);
+
+                    }
+
+                }
+                count++;
+            }
+
+
+
+            jsonObject.put("rejectedRecord", json1);
+
+            System.out.println("list   " + list);
+            rejectCount = (count - 1) - successCount ;
+
+            jsonObject.put("status", "success");
+
+            result = paytmMasterService.savePaytmMasterExcel(list);
+
+            if ("done".equalsIgnoreCase(result)) {
+                result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
+            }
+        }
+        catch (Exception e)
+        {
+            result="File Not Uploaded";
+            e.printStackTrace();
+
+        }
+        finally {
+            try {
+                file.close();
+
+            }catch (Exception e){
+
+            }
+        }
+        jsonObject.put("Message",result);
+        return jsonObject;
+    }
 
 
     @RequestMapping(value = "/getPdfUrl", method = {RequestMethod.GET, RequestMethod.POST})
@@ -862,7 +1403,7 @@ class HomeController {
     public JSONObject getPdfUrl(HttpServletRequest request) {
 
         String localPath = null;
-        String ftpHost = "14.142.136.22";
+        String ftpHost = "122.15.90.140";
         String port = "";
         String username = "administrator";
         String password = "softage@tchad";
@@ -876,7 +1417,7 @@ class HomeController {
         JSONObject json = new JSONObject();
         StringBuffer strbr=new StringBuffer("/");
         String customerNumber = request.getParameter("customer_Number");
-        url = "ftp://" + username + ":" + password + "@" + ftpHost;
+
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
@@ -894,7 +1435,7 @@ class HomeController {
                 password = password1;
 
             }
-
+            url = "ftp://" + username + ":" + password + "@" + ftpHost;
             String serverPath = System.getenv("JBOSS_BASE_DIR");
             logger.info("server path>>>>>>>   " + serverPath);
             /*File dir1 = new File(serverPath + File.separator + "RejectedFile");*/
@@ -935,6 +1476,7 @@ class HomeController {
 
                 String status = generatePdf(imagePath, customerNumber, localPath, username, password, ftpHost);
                 ftpPath = url + imagePath + customerNumber + ".pdf";
+                System.out.println("pdfurl = "+ftpPath);
 
             }
         }catch (Exception e){
@@ -1355,6 +1897,8 @@ class HomeController {
 		});*/
 
         // base directory  JBOSS_BASE_DIR
+
+
         //JBoss log directory   JBOSS_LOG_DIR
 
         String from = request.getParameter("from");
@@ -1417,19 +1961,246 @@ class HomeController {
     }
 
 
-  /*  @RequestMapping(value="/callTime",method = {RequestMethod.GET,RequestMethod.POST})
+
+    @RequestMapping(value = "/getInwordFrom",method = {RequestMethod.GET,RequestMethod.POST})
     @ResponseBody
-    public String callTimeDetails(HttpServletRequest request){
-        String customerNumber=request.getParameter("customerNumber");
-        String Status=request.getParameter("status");
-        String result=callTimeService.insertCallTimeDetails(customerNumber,Status);
-        String message="";
-        if (result.equals("done")){
-            message="success";
-        }else {
-            message="fail";
+    public  JSONObject getInwordFrom(HttpServletRequest request ){
+        JSONObject json=new JSONObject();
+        String importby=null;
+        int cirCode=0;
+        String role=null;
+
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importby = (String) session.getAttribute("name");
+                cirCode = (Integer) session.getAttribute("cirCode");
+                role = (String) session.getAttribute("role");
+
+            }
+
+            String getinwardfrom = batchService.getinwardfrom(cirCode);
+            json.put("inWordFrom", getinwardfrom);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        return message;
-    }*/
+        return  json;
+    }
+
+    @RequestMapping(value = "/createBatch",method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    public  JSONObject createBatch(HttpServletRequest request,HttpServletResponse response){
+        String inWordFrom = request.getParameter("inWordFrom");
+        String inWordTo = request.getParameter("inWordTo");
+        String importby=null;
+        int cirCode=0;
+        String role=null;
+        JSONObject  jsonObject=null;
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importby = (String) session.getAttribute("name");
+                cirCode = (Integer) session.getAttribute("cirCode");
+                role = (String) session.getAttribute("role");
+
+            }
+
+            int inFrom=Integer.parseInt(inWordFrom);
+            int inTO=Integer.parseInt(inWordTo);
+            int totaldoc=inTO-inFrom+1;
+            jsonObject  = batchService.saveBatch(inFrom,inTO,totaldoc,cirCode,importby);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("",e);
+        }
+
+        return  jsonObject;
+    }
+
+
+
+    @RequestMapping(value = "/indexCustomerValidation",method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    public  JSONObject indexCustomerValidation(HttpServletRequest request,HttpServletResponse response){
+        String mobileno = request.getParameter("mobileno");
+        String importby=null;
+        int cirCode=0;
+        String role=null;
+        JSONObject  jsonObject=null;
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importby = (String) session.getAttribute("name");
+                cirCode = (Integer) session.getAttribute("cirCode");
+                role = (String) session.getAttribute("role");
+
+            }
+            jsonObject=batchService.getuserDetails(mobileno);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("",e);
+        }
+
+        return  jsonObject;
+    }
+
+
+    @RequestMapping(value = "/getBatchDetails",method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    public  JSONObject getBatchDetails(HttpServletRequest request,HttpServletResponse response){
+        String importby=null;
+        int cirCode=0;
+        String role=null;
+        JSONObject  jsonObject=null;
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importby = (String) session.getAttribute("name");
+                cirCode = (Integer) session.getAttribute("cirCode");
+                role = (String) session.getAttribute("role");
+
+            }
+            jsonObject  = batchService.getBatchDetails(cirCode);
+
+            jsonObject.put("status","done");
+
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("",e);
+        }
+
+        return  jsonObject;
+    }
+
+
+    @RequestMapping(value = "/updateindexing",method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    public  JSONObject updateindexing(HttpServletRequest request,HttpServletResponse response){
+        String importby=null;
+        int cirCode=0;
+        String role=null;
+        JSONObject  jsonObject=null;
+        try {
+
+
+
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importby = (String) session.getAttribute("name");
+                cirCode = (Integer) session.getAttribute("cirCode");
+                role = (String) session.getAttribute("role");
+
+            }
+        //    var data = '&mobileno=' + $scope.mobileno +'&status=N' + '&batchno=' + $scope.batchno +'&uid=' + $scope.uid+'&emp_name=' + $scope.emp_name+'&customerId=' + $scope.customerId+'&remarks=' + $scope.user_comment;
+            String mobileNo= request.getParameter("mobileno");
+            String status= request.getParameter("status");
+            String batchno1= request.getParameter("batchno");
+            int batchno=Integer.parseInt(batchno1);
+            String uid1= request.getParameter("uid");
+            int uid=Integer.parseInt(uid1);
+            String name= request.getParameter("emp_name");
+            String customerId= request.getParameter("customerId");
+            String remarks= request.getParameter("remarks");
+            jsonObject=batchService.updateBatch(mobileNo,status,batchno,uid,name,customerId,remarks,importby);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("",e);
+        }
+
+        return  jsonObject;
+    }
+
+
+    @RequestMapping(value = "/searchIndexing",method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    public  JSONObject searchIndexing(HttpServletRequest request,HttpServletResponse response){
+        String importby=null;
+        int cirCode=0;
+        String role=null;
+        JSONObject  jsonObject=null;
+        int batchno=0;
+        int uid=0;
+        try {
+
+
+
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                importby = (String) session.getAttribute("name");
+                cirCode = (Integer) session.getAttribute("cirCode");
+                role = (String) session.getAttribute("role");
+
+            }
+            //    var data = '&mobileno=' + $scope.mobileno +'&status=N' + '&batchno=' + $scope.batchno +'&uid=' + $scope.uid+'&emp_name=' + $scope.emp_name+'&customerId=' + $scope.customerId+'&remarks=' + $scope.user_comment;
+            String mobileNo= request.getParameter("cust_number");
+            if(mobileNo.equalsIgnoreCase("undefined")){
+                mobileNo="";
+            }
+            String batchno1= request.getParameter("batchSearch");
+            if(!batchno1.equalsIgnoreCase("undefined") &&!batchno1.equalsIgnoreCase("")&&!batchno1.isEmpty()){
+                 batchno=Integer.parseInt(batchno1);
+            }
+            String uid1= request.getParameter("uidnoSearch");
+            System.out.println(uid1.isEmpty());
+            if(!uid1.equalsIgnoreCase("undefined")&&!uid1.equalsIgnoreCase("")&&!uid1.isEmpty()){
+                uid=Integer.parseInt(uid1);
+            }
+       //     jsonObject=batchService.updateBatch(mobileNo,status,batchno,uid,name,customerId,remarks,importby);
+
+            //we have
+            jsonObject=batchService.searchindexng(mobileNo,batchno,uid,cirCode);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("",e);
+        }
+
+        return  jsonObject;
+    }
+
+
+    @RequestMapping(value = "/testTiff",method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    public  String TestTiff(HttpServletRequest request,HttpServletResponse response){
+        File file=null;
+        FileOutputStream fos = null;
+        FileInputStream fis = null;
+        Document document = new Document();
+        String localPath="D:/PaytmProject/PehchaanSVN/attchment/tiffFile/";
+
+   try {
+    String[] IMAGES = {""};
+    file = new File(localPath);
+
+    IMAGES = file.list();
+
+
+    String output = "D:/PaytmProject/PehchaanSVN/attchment/tiffFile.pdf";
+    fos = new FileOutputStream(output);
+    PdfWriter writer = PdfWriter.getInstance(document, fos);
+    TiffWriter write=new TiffWriter();
+
+    write.writeFile(fos);
+   /*  writer.open();
+    document.open();
+    for (String image : IMAGES) {
+            Image image2 = Image.getInstance(localPath + image);
+            System.out.println("image  " + image);
+            document.setPageSize(image2);
+            document.newPage();
+            image2.setAbsolutePosition(0, 0);
+            document.add(image2);
+
+    }
+    document.close();*/
+    logger.info("pdf genrated>>>>>>>  ");
+}catch (Exception e){
+
+}
+
+        return "";
+    }
+
+
 
 }

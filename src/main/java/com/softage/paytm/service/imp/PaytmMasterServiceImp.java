@@ -138,7 +138,12 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 custList.add(paytmMastEntity);
                 i++;
             }
-            result=  paytmMasterDao.savePaytmMaster(custList);
+          //  result=  paytmMasterDao.savePaytmMaster(custList);
+            for(PaytmMastEntity paytmMastEntity1:custList){
+                result= paytmMasterDao.savePaytmMaster(paytmMastEntity1);
+            }
+
+
         }catch (Exception e){
             e.printStackTrace();
             result="error";

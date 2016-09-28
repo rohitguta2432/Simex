@@ -108,4 +108,9 @@ public class LeadsServiceImp implements LeadsService {
     public List<ReasonMastEntity> reasonList() {
         return leadsDao.reasonList();
     }
+
+    @Override
+    public String getCustomerName(String mobileNo) {
+        return leadsDao.getCustomerName(mobileNo);
+    }
 }

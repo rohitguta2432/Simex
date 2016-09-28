@@ -34,6 +34,10 @@ public class ReportServiceImp implements ReportService {
 
         }
 
+        if ("Call Status".equalsIgnoreCase(type)) {
+            jsonObject= reportDao.getReportCallStatus(from,to,type);
+
+        }
         return jsonObject;
     }
 }

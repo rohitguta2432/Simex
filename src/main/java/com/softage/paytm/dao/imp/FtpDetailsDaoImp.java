@@ -29,7 +29,8 @@ public class FtpDetailsDaoImp implements FtpDetailsDao {
         String res="";
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            entityManager.getTransaction().begin();
+            transaction=entityManager.getTransaction();
+            transaction.begin();
             Query query=entityManager.createNativeQuery("{call sp_insertScanDetails(?,?,?,?,?)}");
             query.setParameter(1,custNumber);
             query.setParameter(2,imgPath);
@@ -37,7 +38,7 @@ public class FtpDetailsDaoImp implements FtpDetailsDao {
             query.setParameter(4,createdBy);
             query.setParameter(5,qcStatus);
             res=(String)query.getSingleResult();
-            entityManager.getTransaction().commit();
+            transaction.commit();
             /*if(message.equals("")||message.equals(null)){
                 res="Unsuccessful";
             }else{

@@ -318,5 +318,30 @@ public class LeadsDaoImp implements LeadsDao {
         return  reasonMastEntities;
     }
 
+    @Override
+    public String getCustomerName(String mobileNo) {
+        EntityManager entityManager = null;
+        List list = new ArrayList<>();
+        Query query = null;
+        JSONArray array = new JSONArray();
+        List<JSONObject> arrList = new ArrayList<>();
+        String  name=null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            Query query1 = entityManager.createNativeQuery("{call usp_getRejectValidation(?)}");
+            query1.setParameter(1, mobileNo);
+            name = (String)query1.getSingleResult();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return name;
+    }
+
 
 }

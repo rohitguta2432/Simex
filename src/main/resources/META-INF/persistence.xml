@@ -41,17 +41,22 @@
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
             <!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmqa"/>-->
            <!--  <property name="hibernate.connection.url" value="jdbc:mysql://172.43.44.203:3306/pehchaanqa"/>-->
-          <!--  <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.185:3306/pahchhanqa"/>-->
-            <!-- <property name="hibernate.connection.url" value="jdbc:mysql://42.104.108.116:3306/pahchaanprod"/>-->
-            <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.185:3306/pehchaandev"/>
 
-          <!--  <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.185:3306/pahchhanQaTest"/>-->
+           <!--<property name="hibernate.connection.url" value="jdbc:mysql://14.142.136.22:3306/pahchaanprod"/>-->
+          <!-- <property name="hibernate.connection.url" value="jdbc:mysql://14.142.136.22:3306/pahchaanprod"/>-->
+          <!-- <property name="hibernate.connection.url" value="jdbc:mysql://172.16.16.254:3306/pahchaanprod"/>-->
+           <!-- <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.185:3306/pehchaandev"/>-->
+           <!--  <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.148:3306/pehchaandev"/>-->
+            <!--<property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.185:3306/pehchaandev"/>-->
+
+           <!-- <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.186:3306/pehchaanqa"/>-->
+                <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.127:3306/pehchaanqa"/>
 	    	<!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmqa"/>-->
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
 			<property name="hibernate.connection.username" value="root"/>
-            <!--<property name="hibernate.connection.password" value="redhat"/>-->
-           <!-- <property name="hibernate.connection.password" value="redhat@123"/>-->
-	        <property name="hibernate.connection.password" value="trainspotting@123"/>
+           <!-- <property name="hibernate.connection.password" value="redhat"/>-->
+            <property name="hibernate.connection.password" value="redhat"/>
+	      <!--  <property name="hibernate.connection.password" value="trainspotting@123"/>-->
 			<property name="hibernate.hbm2ddl.auto" value="update" />
             <property name="hibernate.jdbc.batch_size" value="1000" />
             <property name="connection.release_mode" value="auto"/>

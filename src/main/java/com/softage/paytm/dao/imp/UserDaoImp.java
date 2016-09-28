@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,22 +29,20 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public EmplogintableEntity getUserByEmpcode(String empCode) {
-        EntityManager entityManager=null;
-        Query query=null;
-        EmplogintableEntity emplogintableEntity=null;
-        try{
+        EntityManager entityManager = null;
+        Query query = null;
+        EmplogintableEntity emplogintableEntity = null;
+        try {
             entityManager = entityManagerFactory.createEntityManager();
             String strQuery = "select emp from EmplogintableEntity emp where emp.empCode=:empCode";
-            query=entityManager.createQuery(strQuery);
-            query.setParameter("empCode",empCode);
-            emplogintableEntity= (EmplogintableEntity)query.getSingleResult();
+            query = entityManager.createQuery(strQuery);
+            query.setParameter("empCode", empCode);
+            emplogintableEntity = (EmplogintableEntity) query.getSingleResult();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if (entityManager != null && entityManager.isOpen())
-            {
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
                /* entityManager.flush();
                 entityManager.clear();*/
                 entityManager.close();
@@ -51,26 +50,25 @@ public class UserDaoImp implements UserDao {
         }
         return emplogintableEntity;
 
-      }
+    }
 
     @Override
     public EmplogintableEntity getUserByEmpNumber(String empNumber) {
-        EntityManager entityManager=null;
-        Query query=null;
-        EmplogintableEntity emplogintableEntity=null;
-        try{
+        EntityManager entityManager = null;
+        Query query = null;
+        EmplogintableEntity emplogintableEntity = null;
+        try {
             entityManager = entityManagerFactory.createEntityManager();
             String strQuery = "select emp from EmplogintableEntity emp where emp.empPhone=:empNumber";
-            query=entityManager.createQuery(strQuery);
-            query.setParameter("empNumber",empNumber);
-            emplogintableEntity= (EmplogintableEntity)query.getSingleResult();
+            query = entityManager.createQuery(strQuery);
+            query.setParameter("empNumber", empNumber);
+            emplogintableEntity = (EmplogintableEntity) query.getSingleResult();
 
-        }catch (Exception e){
-            e.printStackTrace();;
-        }
-        finally {
-            if (entityManager != null && entityManager.isOpen())
-            {
+        } catch (Exception e) {
+            e.printStackTrace();
+            ;
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
                 entityManager.close();
             }
         }
@@ -80,37 +78,84 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public JSONObject getEmpFtpDetailsDao(int circleCode) {
-        EntityManager entityManager=null;
-        Query query=null;
-        JSONObject jsonObject=new JSONObject();
-        // JSONObject jsonObject1=new JSONObject();
-        //      JSONArray jsonArray=new JSONArray();
-        try{
-            entityManager=entityManagerFactory.createEntityManager();
-            /*String strQuery="select ftp.FtpIP,ftp.FtpUser,ftp.FtpPassword from tbl_CircleftpDetails ftp where ftp.Circle=:circleCode";
-            query=entityManager.createQuery(strQuery);*/
-            query=entityManager.createNativeQuery("{call usp_getEmployeeFtpDetails(?)}");
-            query.setParameter(1,circleCode);
-           /* query.
-             HashMap<String,String> valuse =query.getHints();*/
-
-            Object[] object     =(Object[])query.getSingleResult();
-
-
-            jsonObject.put("ftpIp",object[0]);
-            jsonObject.put("userName",object[1]);
-            jsonObject.put("password",object[2]);
+        EntityManager entityManager = null;
+        Query query = null;
+        JSONObject jsonObject = new JSONObject();
+        EntityTransaction entityTransaction=null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction= entityManager.getTransaction();
+            entityTransaction.begin();
+            query = entityManager.createNativeQuery("{call usp_getEmployeeFtpDetails(?)}");
+            query.setParameter(1, circleCode);
+            Object[] object = (Object[]) query.getSingleResult();
+            entityTransaction.commit();
+            jsonObject.put("ftpIp", object[0]);
+            jsonObject.put("userName", object[1]);
+            jsonObject.put("password", object[2]);
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally{
-            if (entityManager != null && entityManager.isOpen())
-            {
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
                 entityManager.close();
             }
         }
         return jsonObject;
+    }
+
+    @Override
+    public JSONObject getStatus(String mobileno) {
+        JSONObject jsonObject = new JSONObject();
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        boolean status=false;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            Query query = entityManager.createNativeQuery("{call usp_empstatus(?)}");
+            query.setParameter(1, mobileno);
+            Object[] object = (Object[]) query.getSingleResult();
+            transaction.commit();
+            jsonObject.put("status", object[0].toString());
+             System.out.println(object[0].getClass());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            {
+                if (entityManager != null && entityManager.isOpen()) {
+                    entityManager.close();
+                }
+            }
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public String updateAgentStatus(EmplogintableEntity emplogintableEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg = null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.merge(emplogintableEntity);
+            transaction.commit();
+            msg = "done";
+        } catch (Exception e) {
+            msg = "err";
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return msg;
     }
 }
 

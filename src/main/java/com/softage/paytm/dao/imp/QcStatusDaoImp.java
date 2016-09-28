@@ -104,12 +104,54 @@ public class QcStatusDaoImp implements QcStatusDao {
     public JSONObject qcGetCustomerDetails(String mobileNum) {
         JSONObject jsonObject=new JSONObject();
         EntityManager entityManager=null;
+        EntityTransaction entityTransaction=null;
         try {
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             Query query = entityManager.createNativeQuery("{call usp_getQcCustomerDetails(?)}");
             query.setParameter(1, mobileNum);
-            String imgPath = (String) query.getSingleResult();
-            jsonObject.put("imagePath", imgPath);
+            Object[] object     =(Object[])query.getSingleResult();
+            entityTransaction.commit();
+
+            jsonObject.put("imagePath",object[0]);
+            jsonObject.put("agentcode", object[1]);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            {
+                if(entityManager!=null && entityManager.isOpen()){
+                    entityManager.close();
+                }
+            }
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject downloadList(String mobileNumber, String todate, String fromdate) {
+        JSONObject jsonObject=new JSONObject();
+        EntityManager entityManager=null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            Query query = entityManager.createNativeQuery("{call usp_getDownloadList(?,?,?)}");
+            query.setParameter(1, mobileNumber);
+            query.setParameter(2, fromdate);
+            query.setParameter(3, todate);
+            List<Object[]> resultList = query.getResultList();
+            int i=0;
+            for (Object[] object : resultList) {
+                JSONObject jsonObject1=new JSONObject();
+                jsonObject1.put("customerNo",object[0]);
+                jsonObject1.put("agentcode", object[1]);
+                jsonObject.put("downloadList"+i,jsonObject1);
+                i++;
+            }
+
+
         }catch (Exception e){
             e.printStackTrace();
         }

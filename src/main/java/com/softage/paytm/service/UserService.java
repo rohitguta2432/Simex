@@ -9,4 +9,6 @@ import org.json.simple.JSONObject;
 public interface UserService {
     public EmplogintableEntity getUserByEmpcode(String empCode);
     public JSONObject getEmpFtpDetails(int circleCode);
+    public JSONObject getStatus(String mobileno);
+    public String updateAgentStatus(EmplogintableEntity emplogintableEntity);
 }

@@ -11,12 +11,16 @@ import java.util.Collection;
 @Table(name = "circle_mast")
 public class CircleMastEntity {
     private int cirCode;
+
+
+
     private String chMobileNumber;
     private String circleName;
     private String dailerApi;
     private String dailerIp;
     private String importBy;
     private Timestamp importDate;
+    private int startUid;
     private Collection<EmplogintableEntity> emplogintablesByCirCode;
     private Collection<PaytmMastEntity> paytmMastsByCirCode;
 
@@ -31,10 +35,21 @@ public class CircleMastEntity {
     }
 
     @Basic
+    @Column(name = "startUid", nullable = true, insertable = true, updatable = true)
+    public int getStartUid() {
+        return startUid;
+    }
+
+    public void setStartUid(int startUid) {
+        this.startUid = startUid;
+    }
+
+    @Basic
     @Column(name = "CHMobileNumber", nullable = true, insertable = true, updatable = true, length = 10)
     public String getChMobileNumber() {
         return chMobileNumber;
     }
+
 
     public void setChMobileNumber(String chMobileNumber) {
         this.chMobileNumber = chMobileNumber;

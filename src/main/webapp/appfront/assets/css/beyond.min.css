@@ -2954,8 +2954,8 @@ a:active {
 .page-breadcrumbs {
     position:relative;
     background:#f3f3f3;
-    min-height:40px;
-    line-height:39px;
+    /*min-height:40px;
+    line-height:39px;*/ /* add hn*/
     padding:0;
     display:block;
     z-index:1;

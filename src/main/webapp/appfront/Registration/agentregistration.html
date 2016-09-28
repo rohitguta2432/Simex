@@ -62,9 +62,7 @@
                                         <div class="form-group col-sm-6">
                                             <label for="Text7" class="col-sm-3 control-label no-padding-right">Mobile Number</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" minlength="10" maxlength="10" id="Text7" name="phone" data-phone ng-model="phone"   placeholder="Mobile Number"  required />
-
-
+                                                <input type="text" class="form-control" minlength="10" maxlength="10" id="Text7" name="phone" data-phone ng-model="phone"   placeholder="Mobile Number" ng-pattern="/^[0-9]+$/" required />
                                             </div>
                                         </div>
 
@@ -87,7 +85,7 @@
                                             <div class="col-sm-9">
                                                <!-- <input type="text" class="form-control" id="Text2" ng-minlength="3" ng-maxlength="15" name="agent_spkcode" ng-model="user.agent_spkcode" placeholder="Agent Spoke code" allow-pattern="(\d|[a-z])" required/>-->
                                                 <select id="Text8" name="spoke_code" class="form-control" required ng-model="spoke_code" ng-options="code for code in offices1">
-                                                    <option value="" selected>Select Circle Office</option>
+                                                    <option value="" selected>Select Spoke Code</option>
 
                                                 </select>
 

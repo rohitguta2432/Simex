@@ -14,7 +14,7 @@ public class EmplogintableEntity {
     private String empCode;
     private String empName;
     private String empPassword;
-    private boolean empStatus;
+    private Integer empStatus;
     private String importBy;
     private Timestamp importDate;
     private String roles;
@@ -24,11 +24,11 @@ public class EmplogintableEntity {
 
     @Basic
     @Column(name = "Emp_Status", nullable = false, insertable = true, updatable = true)
-    public boolean getEmpStatus() {
+    public Integer getEmpStatus() {
         return empStatus;
     }
 
-    public void setEmpStatus(boolean empStatus) {
+    public void setEmpStatus(Integer empStatus) {
         this.empStatus = empStatus;
     }
 
@@ -72,11 +72,11 @@ public class EmplogintableEntity {
         this.empPassword = empPassword;
     }
 
-    @Basic
+   /* @Basic
     @Column(name = "Emp_Status", nullable = false, insertable = true, updatable = true)
     public boolean isEmpStatus() {
         return empStatus;
-    }
+    }*/
 
     /*public void setEmpStatus(boolean empStatus) {
         this.empStatus = empStatus;
@@ -148,7 +148,6 @@ public class EmplogintableEntity {
         result = 31 * result + (empCode != null ? empCode.hashCode() : 0);
         result = 31 * result + (empName != null ? empName.hashCode() : 0);
         result = 31 * result + (empPassword != null ? empPassword.hashCode() : 0);
-        result = 31 * result + (empStatus ? 1 : 0);
         result = 31 * result + (importBy != null ? importBy.hashCode() : 0);
         result = 31 * result + (importDate != null ? importDate.hashCode() : 0);
         result = 31 * result + (roles != null ? roles.hashCode() : 0);

@@ -39,6 +39,16 @@ public class UserServiceImp implements UserService{
     public JSONObject getEmpFtpDetails(int circleCode){
         return userDao.getEmpFtpDetailsDao(circleCode);
     }
+
+    @Override
+    public JSONObject getStatus(String mobileno) {
+        return userDao.getStatus(mobileno);
+    }
+
+    @Override
+    public String updateAgentStatus(EmplogintableEntity emplogintableEntity) {
+        return userDao.updateAgentStatus(emplogintableEntity);
+    }
 }
 
 

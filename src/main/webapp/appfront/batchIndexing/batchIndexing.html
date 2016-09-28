@@ -1,0 +1,121 @@
+
+<div class="page-body" style="padding: 2px 5px 24px;">
+
+    <div class="row">
+
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+            <div class="widget">
+                <div class="widget-header bordered-bottom bordered-themeprimary">
+                    <span class="widget-caption">Batch Indexing</span>
+                    <div class="widget-buttons">
+                        <a href="#" data-toggle="maximize">
+                            <i class="fa fa-expand"></i>
+                        </a>
+                        <a href="#" data-toggle="collapse">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                        <a href="#" data-toggle="dispose">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget-body">
+                    <div id="horizontal-form">
+                        <form class="form-horizontal" name="myForm" role="form" ng-submit="submit($event)" ng-controller="batchIndexing" novalidate>
+                           <div>
+                            <div class="form-group col-sm-4">
+                                <label for="Text7" class="col-sm-3 control-label no-padding-right">BatchNo</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" minlength="10" maxlength="10" id="Text6" name="batchno" data-phone ng-model="batchno" readonly="true" required />
+
+
+                                </div>
+                            </div>
+                            <div ng-if="uidflag" class="form-group col-sm-4">
+                                <label for="Text7" class="col-sm-3 control-label no-padding-right">UID</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" minlength="10" maxlength="10" id="Text7" name="uid" data-phone ng-model="uid" readonly="true" required />
+
+
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label for="Text7" class="col-sm-3 control-label no-padding-right">Mobile</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" minlength="10" maxlength="10" id="Text8" ng-change="submit($event)" name="mobileno" data-phone ng-model="mobileno" ng-pattern="/^[0-9]+$/" required />
+
+                                </div>
+                            </div>
+                              <!-- <div ng-if="flag1" class="form-group">
+                                   <div class="col-sm-offset-5 col-sm-10">
+                                       <input type="submit" class="btn btn-azure shiny" value="Submit" >
+                                       &lt;!&ndash; <button type="button" class="btn btn-azure shiny">Submit</button>&ndash;&gt;
+                                   </div>
+                               </div>-->
+                           </div>
+
+                            <div style="clear: both; height: 0px;"></div>
+
+                            <div ng-show="flag">
+                            <div class="form-group col-sm-4" >
+                                <label  class="col-sm-3 control-label no-padding-right" >Name</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" minlength="2" maxlength="40"  name="emp_name" ng-model="emp_name" id="Text1"  readonly="true" required/>
+                                </div>
+
+                            </div>
+                            <div class="form-group col-sm-4" >
+                                <label  class="col-sm-3 control-label no-padding-right" >CustomerID</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" minlength="2" maxlength="40"  name="customerId" ng-model="customerId" id="Text2"  readonly="true"  required/>
+                                </div>
+
+                            </div>
+                                <div class="form-group col-sm-4" >
+                                    <label  class="col-sm-3 control-label no-padding-right" >Last UID</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" minlength="3" maxlength="3" id="Text" name="uniqueuid"  data-phone ng-model="uniqueuid" required />
+
+                                    </div>
+
+                                </div>
+
+                                <div style="clear: both; height: 0px;"></div>
+
+                                <div class="form-group col-sm-12">
+
+                                    <label  class="col-sm-1 control-label no-padding-center">Remarks</label>
+
+                                    <div class="col-sm-10">
+                                        <!--<input type="textArea" class="form-control"  ng-minlength="3" ng-maxlength="15"  name="user_comment" ng-model="user_comment" placeholder="Comment" />-->
+                                        <textarea  class="form-control" style="min-width: 865px; height: 50px; margin-left: -5px;" name="user_comment" ng-model="user_comment" required></textarea>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-4 col-sm-offset-5 ">
+
+                                        <button ng-click="custAccept($event)" class="btn btn-azure shiny"  >Accept</button>
+                                        <button ng-click="custReject($event)" class="btn btn-azure shiny"  >Reject</button>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Body -->
+</div>
+<!-- /Page Content -->
+</div>
+<!-- /Page Content -->
+</div>
+<!-- Main Container -->

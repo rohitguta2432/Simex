@@ -10,4 +10,6 @@ public interface UserDao {
     public EmplogintableEntity getUserByEmpcode(String empCode);
     public EmplogintableEntity getUserByEmpNumber(String empNumber);
     public JSONObject getEmpFtpDetailsDao(int circleCode);
+    public JSONObject getStatus(String mobileno);
+    public String updateAgentStatus(EmplogintableEntity emplogintableEntity);
 }

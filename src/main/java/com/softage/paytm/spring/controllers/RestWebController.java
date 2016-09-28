@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +62,7 @@ public class RestWebController {
         return jsonObject;
     }
 
-    @RequestMapping(value = "/validateEmployee", method = {RequestMethod.GET, RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/validateEmployee", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String validateEmployee(HttpServletRequest request, HttpServletResponse response) {
         try {
             String empcode = request.getParameter("username");
@@ -106,7 +107,7 @@ public class RestWebController {
     @RequestMapping(value = "/UpdateDeviceInfo", method = {RequestMethod.GET, RequestMethod.POST})
     public String UpdateDeviceInfo(HttpServletRequest request, HttpServletResponse response) {
         String msg = "0";
-        PaytmdeviceidinfoEntity paytmdeviceidinfoEntity1=null;
+        PaytmdeviceidinfoEntity paytmdeviceidinfoEntity1 = null;
         try {
             String loginId = request.getParameter("loginid");
             String deviceId = request.getParameter("deviceId");
@@ -116,13 +117,13 @@ public class RestWebController {
             paytmdeviceidinfoEntity.setLoginId(loginId);
             paytmdeviceidinfoEntity.setImportBy(importby);
             paytmdeviceidinfoEntity.setImportDate(new Timestamp(new Date().getTime()));
-            paytmdeviceidinfoEntity1= paytmDeviceService.getByloginId(loginId);
-            if (paytmdeviceidinfoEntity1==null) {
+            paytmdeviceidinfoEntity1 = paytmDeviceService.getByloginId(loginId);
+            if (paytmdeviceidinfoEntity1 == null) {
                 msg = paytmDeviceService.saveDevice(paytmdeviceidinfoEntity);
-            }else {
+            } else {
                 paytmdeviceidinfoEntity1.setDeviceId(deviceId);
                 paytmdeviceidinfoEntity1.setImportBy(importby);
-                msg=paytmDeviceService.updateDevice(paytmdeviceidinfoEntity1);
+                msg = paytmDeviceService.updateDevice(paytmdeviceidinfoEntity1);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -150,14 +151,14 @@ public class RestWebController {
 
     @RequestMapping(value = "/UpdateLeadStatus", method = {RequestMethod.GET, RequestMethod.POST})
     public String updateLeadStatus(HttpServletRequest request) {
-        String result=null;
+        String result = null;
         String agentCode = request.getParameter("AgentCode");
         String jobid = request.getParameter("Jobid");
         String response1 = request.getParameter("response");
         boolean response = Boolean.parseBoolean(response1);
 
 
-        for(int i=1; i<=5; i++) {
+        for (int i = 1; i <= 5; i++) {
 
             result = leadsService.updateLeadStatus(agentCode, jobid, response);
         }
@@ -188,11 +189,11 @@ public class RestWebController {
     public String getagentLocation(HttpServletRequest request) {
         JSONArray array = new JSONArray();
 
-           String agentCode =  request.getParameter("agentcode");
-           String customerNumber =  request.getParameter("customerNumber");
-           String location =  request.getParameter("location");
-           String result = agentPaytmService.saveAgentLocation(agentCode,customerNumber,location);
-          return result;
+        String agentCode = request.getParameter("agentcode");
+        String customerNumber = request.getParameter("customerNumber");
+        String location = request.getParameter("location");
+        String result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location);
+        return result;
     }
 
     @RequestMapping(value = "/AcceptedEntry", method = {RequestMethod.GET, RequestMethod.POST})
@@ -202,24 +203,24 @@ public class RestWebController {
         ProofMastEntity proofMastEntityPOICode = null;
         ProofMastEntity proofMastEntityPOACode = null;
         String result = "98833";
-        PaytmMastEntity paytmMastEntity=null;
-        String address="";
-        String state="";
-        String emailId="";
-        String city="";
-        String pincode="";
+        PaytmMastEntity paytmMastEntity = null;
+        String address = "";
+        String state = "";
+        String emailId = "";
+        String city = "";
+        String pincode = "";
 
 
         try {
             String phoneNumber = request.getParameter("custPhone");
-            if (phoneNumber!=null){
-                paytmMastEntity =paytmMasterService.getPaytmMaster(phoneNumber);
-                if (paytmMastEntity!=null){
-                    address=paytmMastEntity.getAddressStreet1();
-                    city=paytmMastEntity.getCity();
-                    state=paytmMastEntity.getState();
-                    pincode=paytmMastEntity.getPincode();
-                    emailId=paytmMastEntity.getEmail();
+            if (phoneNumber != null) {
+                paytmMastEntity = paytmMasterService.getPaytmMaster(phoneNumber);
+                if (paytmMastEntity != null) {
+                    address = paytmMastEntity.getAddressStreet1();
+                    city = paytmMastEntity.getCity();
+                    state = paytmMastEntity.getState();
+                    pincode = paytmMastEntity.getPincode();
+                    emailId = paytmMastEntity.getEmail();
                 }
             }
             String custName = request.getParameter("custName");
@@ -275,9 +276,9 @@ public class RestWebController {
             dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
             result = dataEntryService.saveDataEntry(dataentryEntity);
             if ("done".equals(result)) {
-              updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
-            //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
-                result="0";
+                updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+                //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
+                result = "0";
 
             }
         } catch (Exception e) {
@@ -288,30 +289,31 @@ public class RestWebController {
     }
 
     @RequestMapping(value = "/RejectedEntry", method = {RequestMethod.GET, RequestMethod.POST})
-    public String rejectedEntry(HttpServletRequest request){
+    public String rejectedEntry(HttpServletRequest request) {
 
-          String  agentCode= request.getParameter("AgentCode");
-          String  jobid= request.getParameter("Jobid");
-          String  statusCode= request.getParameter("statusCode");
-          String result=updateRemarkStatus(agentCode,jobid,statusCode,"N");
+        String agentCode = request.getParameter("AgentCode");
+        String jobid = request.getParameter("Jobid");
+        String statusCode = request.getParameter("statusCode");
+        String result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
         //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
-          return result;
+        return result;
     }
-    @RequestMapping(value = "/ftpdetails",method ={RequestMethod.GET,RequestMethod.POST} )
-    public String ftpDetails(HttpServletRequest request){
-        String result="";
+
+    @RequestMapping(value = "/ftpdetails", method = {RequestMethod.GET, RequestMethod.POST})
+    public String ftpDetails(HttpServletRequest request) {
+        String result = "";
         System.out.println("Service done ");
-        String customer_number=request.getParameter("customer_no");
-        String image_path=request.getParameter("image_path");
-        int page_number=Integer.parseInt(request.getParameter("page_number"));
-        String created_on=request.getParameter("created_on");
-        String created_by=request.getParameter("created_by");
-        int qc_status=Integer.parseInt(request.getParameter("qc_status"));
-        if (customer_number==""||customer_number.equals(null)||customer_number==" "||customer_number.equals("")){
-            result="Customer Number is empty";
-        }else if (image_path==""||image_path.equals(null)||image_path==" "||image_path.equals("")){
-            result="Image path is empty";
-        }else {
+        String customer_number = request.getParameter("customer_no");
+        String image_path = request.getParameter("image_path");
+        int page_number = Integer.parseInt(request.getParameter("page_number"));
+        String created_on = request.getParameter("created_on");
+        String created_by = request.getParameter("created_by");
+        int qc_status = Integer.parseInt(request.getParameter("qc_status"));
+        if (customer_number == "" || customer_number.equals(null) || customer_number == " " || customer_number.equals("")) {
+            result = "Customer Number is empty";
+        } else if (image_path == "" || image_path.equals(null) || image_path == " " || image_path.equals("")) {
+            result = "Image path is empty";
+        } else {
             result = ftpDetailsService.saveFTPData(customer_number, image_path, page_number, created_by, qc_status);
             if (result.equals("done")) {
                 result = "success";
@@ -327,44 +329,41 @@ public class RestWebController {
 
     @RequestMapping(value = "/ValidateCustomerId", method = {RequestMethod.GET, RequestMethod.POST})
     public String validateCustomer(@RequestParam(value = "jobid") String jobid,
-                                   @RequestParam(value = "customerid") String customerid){
-        String customerPhone=null;
-        String result="false";
+                                   @RequestParam(value = "customerid") String customerid) {
+        String customerPhone = null;
+        String result = "false";
 
-        try{
-          AllocationMastEntity allocationMastEntity = allocationService.findByPrimaryKey(Integer.parseInt(jobid));
-            if(allocationMastEntity!=null){
-                    customerPhone=allocationMastEntity.getCustomerPhone();
-                if (customerPhone!=null){
-                    PaytmMastEntity paytmMastData  = paytmMasterService.getPaytmMaster(customerPhone);
-                    if(paytmMastData!=null){
-                             if (paytmMastData.getCustomerId().equals(customerid)){
-                                 result="true";
-                             }
+        try {
+            AllocationMastEntity allocationMastEntity = allocationService.findByPrimaryKey(Integer.parseInt(jobid));
+            if (allocationMastEntity != null) {
+                customerPhone = allocationMastEntity.getCustomerPhone();
+                if (customerPhone != null) {
+                    PaytmMastEntity paytmMastData = paytmMasterService.getPaytmMaster(customerPhone);
+                    if (paytmMastData != null) {
+                        if (paytmMastData.getCustomerId().equals(customerid)) {
+                            result = "true";
+                        }
                     }
                 }
             } else {
-                result="false";
+                result = "false";
             }
 
-        }catch (Exception e){
-            logger.error("",e);
-              result="false";
+        } catch (Exception e) {
+            logger.error("", e);
+            result = "false";
 
         }
 
         return result;
     }
+
     @RequestMapping(value = "/ftpDocumentDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public String ftpDocumentDetails(HttpServletRequest request) {
 
 
-
-
         return "done";
     }
-
-
 
 
     @RequestMapping(value = "/RasonsList", method = {RequestMethod.GET, RequestMethod.POST})
@@ -411,36 +410,37 @@ public class RestWebController {
         return array;
     }
 
-    @RequestMapping(value = "/IdentityProofTypes", method = {RequestMethod.GET, RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
-    public JSONArray identifyProofType(){
-        String applicable="I";
-        JSONObject jsonObject=new JSONObject();
-        List<ProofMastEntity>  proofMastEntities=proofService.getProofMastEntity(applicable);
-        JSONArray array=new JSONArray();
-        for (ProofMastEntity proofMastEntity:proofMastEntities){
-            JSONObject json=new JSONObject();
-            json.put("Applicable",proofMastEntity.getApplicable());
-            json.put("Code",proofMastEntity.getIdCode());
-            json.put("Text",proofMastEntity.getIdText());
+    @RequestMapping(value = "/IdentityProofTypes", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JSONArray identifyProofType() {
+        String applicable = "I";
+        JSONObject jsonObject = new JSONObject();
+        List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
+        JSONArray array = new JSONArray();
+        for (ProofMastEntity proofMastEntity : proofMastEntities) {
+            JSONObject json = new JSONObject();
+            json.put("Applicable", proofMastEntity.getApplicable());
+            json.put("Code", proofMastEntity.getIdCode());
+            json.put("Text", proofMastEntity.getIdText());
             array.add(json);
         }
         //  jsonObject.put("ArrayOfProofType",array);
-          return  array;
+        return array;
     }
-    @RequestMapping(value = "/AddressProofTypes", method = {RequestMethod.GET, RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
-    public JSONArray addressProofType(){
-        String applicable="A";
-        JSONObject jsonObject=new JSONObject();
-        JSONArray array=new JSONArray();
-        List<ProofMastEntity>  proofMastEntities =proofService.getProofMastEntity(applicable);
-        for (ProofMastEntity proofMastEntity:proofMastEntities){
-            JSONObject json=new JSONObject();
-            json.put("Applicable",proofMastEntity.getApplicable());
-            json.put("Code",proofMastEntity.getIdCode());
-            json.put("Text",proofMastEntity.getIdText());
+
+    @RequestMapping(value = "/AddressProofTypes", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public JSONArray addressProofType() {
+        String applicable = "A";
+        JSONObject jsonObject = new JSONObject();
+        JSONArray array = new JSONArray();
+        List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
+        for (ProofMastEntity proofMastEntity : proofMastEntities) {
+            JSONObject json = new JSONObject();
+            json.put("Applicable", proofMastEntity.getApplicable());
+            json.put("Code", proofMastEntity.getIdCode());
+            json.put("Text", proofMastEntity.getIdText());
             array.add(json);
         }
-        return  array;
+        return array;
     }
 
     private String updateRemarkStatus(String AgentCode, String JobId, String remarksCode, String kycStatus) {
@@ -453,8 +453,8 @@ public class RestWebController {
                 allocationMastEntity.setKycCollected(kycStatus);
                 allocationMastEntity.setVisitDateTime(new Timestamp(new Date().getTime()));
                 String status = allocationService.updateAllocationMastEntity(allocationMastEntity);
-                if ("done".equals(status)){
-                    result="1";
+                if ("done".equals(status)) {
+                    result = "1";
                 }
             }
         } catch (Exception e) {
@@ -463,33 +463,80 @@ public class RestWebController {
         return result;
     }
 
-    @RequestMapping(value = "/EmployeeNumber", method = {RequestMethod.GET, RequestMethod.POST},produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/EmployeeNumber", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
     public JSONObject employeeNumber(@RequestParam(value = "username") String userName) {
-        String phoneNumber="0";
-        int circleCode=0;
-        JSONObject jsonObject=new JSONObject();
-        JSONObject jsonObject1=new JSONObject();
+        String phoneNumber = "0";
+        int circleCode = 0;
+        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject1 = new JSONObject();
+        String status;
         try {
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
             if (emplogintableEntity != null) {
                 phoneNumber = emplogintableEntity.getEmpPhone();
-                circleCode=emplogintableEntity.getCirCode();
-                jsonObject=userService.getEmpFtpDetails(circleCode);
-                jsonObject1.put("phoneNumber",phoneNumber);
-                jsonObject1.put("circleCode",circleCode);
-                jsonObject1.put("FtpDetails",jsonObject);
+                circleCode = emplogintableEntity.getCirCode();
+                Integer intstatus = emplogintableEntity.getEmpStatus();
+                status = intstatus.toString();
+                jsonObject = userService.getEmpFtpDetails(circleCode);
+
+                jsonObject1.put("phoneNumber", phoneNumber);
+                jsonObject1.put("circleCode", circleCode);
+                jsonObject1.put("FtpDetails", jsonObject);
+                jsonObject1.put("status", status);
 
             } else {
-                phoneNumber="0";
+                phoneNumber = "0";
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            phoneNumber="0";
+            phoneNumber = "0";
         }
         return jsonObject1;
     }
 
+    @RequestMapping(value = "/updateStatusAgent", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public String updateStausAgent(HttpServletRequest request) {
+
+        String userName = "system";
+        String agentNo = "";
+        String result = null;
+        HttpSession session = request.getSession(false);
+        logger.info("update Agent >>>>> wait");
+        try {
+            String agentcode = request.getParameter("agentcode");
+            String status = request.getParameter("status");
+
+            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(agentcode);
+            if (emplogintableEntity != null) {
+                if (status.equals("active")) {
+                    emplogintableEntity.setEmpStatus(1);
+                    emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                }
+                if (status.equalsIgnoreCase("deactive")) {
+                    emplogintableEntity.setEmpStatus(0);
+                    emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                }
+                System.out.println(emplogintableEntity.getEmpStatus());
+                result = userService.updateAgentStatus(emplogintableEntity);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = "err";
+        }
+
+        return result;
+    }
+
+    @RequestMapping(value = "/getCustomerValidation", method = {RequestMethod.GET, RequestMethod.POST})
+    public String getCustomerValidation(@RequestParam(value = "mobileNo") String mobileNo, @RequestParam(value = "agentcode") String agentcode) {
+        JSONArray array = new JSONArray();
+        String name = leadsService.getCustomerName(mobileNo);
+
+        return name;
+
+    }
 
 
 }

@@ -11,7 +11,7 @@
             <div class="form-group col-sm-6">
                 <label  class="col-sm-3 control-label no-padding-right">Call Date</label>
                 <div class="col-sm-9">
-                    <select  name="visit_date" ng-model="visit_date"  class="form-control" required ng-options="dates for dates in date" ng-change="getTime()" required>
+                    <select  name="visit_date" ng-model="visit_date"  class="form-control" required ng-options="dates for dates in datecallback" ng-change="getTime()" required>
                         <option value="" selected="selected">Call Date</option>
 
                     </select>

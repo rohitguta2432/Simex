@@ -97,7 +97,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 visitDate = new java.sql.Date(parsedUtilDate.getTime());
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
-                calendar.add(Calendar.DAY_OF_WEEK, 5);
+                calendar.add(Calendar.DAY_OF_WEEK, 3);
                 checkVisitDate = new java.sql.Date(calendar.getTimeInMillis());
             }
             if ("CON".equals(status) && visitDate.getTime() > checkVisitDate.getTime()) {
@@ -109,7 +109,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 telecallMastEntity.setTmTeleCallStatus(tcStatus);
                 telecallMastEntity.setTmLastCallStatus(map.get("status"));
                 postCallingDao.updateTeleCall(telecallMastEntity);
-                result = "Customer Rejected because Date more then 5 days ";
+                result = "Customer Rejected because Appointment Date more then 3 days ";
             } else if ("CON".equals(status)) {
                 tcStatus = "D";
                 result = saveCustomer(map);
@@ -206,6 +206,7 @@ public class PostCallingServiceImp implements PostCallingService {
         SmsSendlogEntity smsSendlogEntity = null;
         BufferedReader in = null;
         HttpURLConnection con = null;
+     //     String url="";
         //  text="Hell Hai";
         //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
         // String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
@@ -446,10 +447,12 @@ public class PostCallingServiceImp implements PostCallingService {
                     if (loginId != null) {
                         String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
                         String res = saveSmsSendLog(agentMobileNumber, agentCode, text,"2","2");
-                        String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                     //   String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                        String res3 =  saveSmsSendLog("8588998890",paytmMastEntity.getCustomerId(),custext,"1","4");
                     } else {
                         String res = saveSmsSendLog(agentMobileNumber, agentCode, text,"2","2");
-                        String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                      //  String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                        String res3 =  saveSmsSendLog("8588998890",paytmMastEntity.getCustomerId(),custext,"1","4");
                     }
 
                     result = "JOB ALLOCATED";

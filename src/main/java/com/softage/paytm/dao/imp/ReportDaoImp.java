@@ -149,6 +149,43 @@ public class ReportDaoImp implements ReportDao {
     }
 
     @Override
+    public JSONObject getReportCallStatus(String from, String to, String type) {
+        EntityManager entityManager = null;
+        List list = new ArrayList<>();
+        Query query = null;
+        JSONObject jsonObject = new JSONObject();
+        //  String status = "Open";
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            query = entityManager.createNativeQuery("{call sp_getCallReport(?,?)}");
+            query.setParameter(1, from);
+            query.setParameter(2, to);
+            List<Object[]> resultList = query.getResultList();
+            int i = 1;
+            for (Object[] objects : resultList) {
+                if (objects.length > 0) {
+
+                    JSONObject json = new JSONObject();
+                    json.put("customerNumber",objects[0]);
+                    json.put("custname",objects[1]);
+                    json.put("callby", objects[2]);
+                    json.put("callStatus", objects[3]);
+                    jsonObject.put("record-" + i, json);
+                }
+                i++;
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return jsonObject;
+    }
+
+    @Override
     public JSONObject getReportData(String from, String to, String type) {
         EntityManager entityManager = null;
         List list = new ArrayList<>();

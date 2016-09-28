@@ -66,6 +66,32 @@
     form.ng-submitted select.ng-invalid{
       background: red;
     }
+
+    .radioButtondemoBasicUsage body {
+        padding: 20px; }
+    .radioButtondemoBasicUsage hr {
+        margin-left: -20px;
+        opacity: 0.3; }
+    .radioButtondemoBasicUsage md-radio-group {
+        width: 150px; }
+    .radioButtondemoBasicUsage p:last-child {
+        padding-bottom: 50px; }
+    .radioButtondemoBasicUsage [ng-controller] {
+        padding: 0 20px; }
+    .radioButtondemoBasicUsage .radioValue {
+        margin-left: 5px;
+        color: #0f9d58;
+        font-weight: bold;
+        padding: 5px; }
+    .radioButtondemoBasicUsage md-icon {
+        margin: 0 20px 20px;
+        width: 128px;
+        height: 128px; }
+    .radioButtondemoBasicUsage .ipsum {
+        color: saddlebrown;
+        font-size: 0.9em; }
+
+
   </style>
 
 </head>
@@ -178,14 +204,24 @@
                         Data Entry </span></a></li>--%>
         <li><a ui-sref="uploadScreen"><i class="menu-icon fa fa-upload"></i><span class="menu-text">
                         Import Paytm Data </span></a></li>
+        <li><a ui-sref="uploadAgent"><i class="menu-icon fa fa-upload"></i><span class="menu-text">
+                        Agent Upload </span></a></li>
         <li><a ui-sref="telecalling"><i class="menu-icon fa fa-phone"></i><span class="menu-text">
                         Telecalling </span></a></li>
         <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         Reports </span></a></li>
-        <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+        <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-check"></i><span class="menu-text">
                         QC Interface </span></a></li>
-         <li><a ui-sref="HRRegistration"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+         <li><a ui-sref="HRRegistration"><i class="menu-icon fa fa-group"></i><span class="menu-text">
                         Registration</span></a></li>
+        <li><a ui-sref="downloaddocuments"><i class="menu-icon fa fa-download"></i><span class="menu-text">
+                        Download Documents </span></a></li>
+        <li><a ui-sref="createBatch"><i class="menu-icon fa fa-file"></i><span class="menu-text">
+                       Create Batch </span></a></li>
+        <li><a ui-sref="batchIndexing"><i class="menu-icon fa fa-align-justify"></i><span class="menu-text">
+                       Batch Indexing </span></a></li>
+            <li><a ui-sref="searchBatch"><i class="menu-icon fa fa-search"></i><span class="menu-text">
+                       Search Batch </span></a></li>
         <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
         <%
@@ -202,6 +238,8 @@
           <li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
                        Agent Registration </span></a>
           </li>
+           <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                        QC Interface </span></a></li>
           <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
                            Data Entry </span></a></li>--%>
           <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">

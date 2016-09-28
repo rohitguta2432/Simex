@@ -1,11 +1,12 @@
 var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap']);
-  // var domain='http://localhost:8080/paytm';
-var domain='http://172.25.38.131:8080/paytm';
+//   var domain='http://localhost:8080/paytm';
+//var domain='http://172.25.38.131:8080/paytm';
 //var domain='http://172.43.44.203:8080/paytm';
-// var domain='http://172.25.38.185:8080/paytm';
-  /*var domain ='http://172.25.38.185:8080/paytm';*/
+// var domain='http://172.25.38.131:8080/paytm';
+  var domain ='http://172.25.38.52:8080/paytm';
 //var domain ='http://14.142.136.19:8080/paytm';
-/*var domain ='http://42.104.108.116:8081/paytm';*/
+// var domain ='http://172.16.16.254:8080/paytm';
+//var domain ='http://42.104.108.117:8080/paytm';
 routerApp.config(function($stateProvider, $urlRouterProvider) {
    // var domain ='172.25.37.185:8080/paytm';
    //  var domain ='http://localhost:8080/paytm';
@@ -33,6 +34,10 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             url: '/uploadScreen',
             templateUrl: 'uploadScreen/upload_screen.html',
             controller:'myCtrl'
+        }) .state('uploadAgent', {
+            url: '/uploadAgent',
+            templateUrl: 'AgentUpload/upload_agent.html',
+            controller:'uploadAgent'
         })
         .state('telecalling', {
             url: '/telecalling',
@@ -49,17 +54,35 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'HRRegistration/HRRegistration.html',
             controller:'HRRegistration'
 
-        })
-        .state('report', {
+        }).state('downloaddocuments', {
+            url: '/downloaddocuments',
+            templateUrl: 'DownloadDocuments/downloaddocuments.html',
+            controller:'downloaddocuments'
+
+        }).state('report', {
             url: '/report',
             templateUrl: 'report/report.html',
             controller:'report'
+
+        }).state('createBatch', {
+            url: '/createBatch',
+            templateUrl: 'createBatch/createBatch.html',
+            controller:'createBatch'
+
+        }).state('batchIndexing', {
+            url: '/batchIndexing',
+            templateUrl: 'batchIndexing/batchIndexing.html',
+            controller:'batchIndexing'
+
+        }).state('searchBatch', {
+            url: '/searchBatch',
+            templateUrl: 'SearchBatch/searchbatch.html',
+            controller:'searchBatch'
 
         });
 
 
 });
-
 routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
 
     $scope.name='';
@@ -383,6 +406,501 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
 }]);
 
 
+routerApp.controller('createBatch',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
+
+    $scope.submit = function(ev) {
+
+         $scope.intoword1=parseInt($scope.inWordTo);
+         $scope.infromword1=parseInt($scope.inWordFrom);
+        $scope.totaluid=parseInt($scope.intoword1-$scope.infromword1);
+
+        if($scope.inWordTo.length == 0 || $scope.inWordTo == undefined){
+            //alert('Agent Name is not valid');
+            ev.preventDefault();
+        } else if($scope.intoword1< $scope.infromword1){
+            alert("inwordTO should be greater than inWordFrom")
+            ev.preventDefault();
+        } else if($scope.totaluid>99){
+            alert("Batch Should be less then 100 form");
+            ev.preventDefault();
+        }else{
+
+            var data = 'inWordFrom=' + $scope.inWordFrom+'&inWordTo=' + $scope.inWordTo;
+
+
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/createBatch?' + data)
+            .success(function (data, status, headers, config) {
+                alert("Batch Created Sucessfully  ");
+                location.reload();
+
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+        }
+    };
+
+    $scope.getinwordfrom = function(ev) {
+
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/getInwordFrom')
+            .success(function (data, status, headers, config) {
+                $scope.inWordFrom= data.inWordFrom;
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+
+    };
+
+
+var callInwordfrom=function(){
+    $scope.getinwordfrom();
+}
+    callInwordfrom();
+
+
+    function ClearForm() {
+        //$scope.FileDescription = '';
+        angular.forEach(angular.element("input[type='text'],select"), function (inputElem) {
+            angular.element(inputElem).val(null);
+        });
+
+        $scope.IsFormSubmitted = false;
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.description = '';
+        //$scope.SelectedFileForUpload = null;
+
+    }
+
+
+}]);
+
+
+
+routerApp.controller('batchIndexing',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
+    $scope.uidflag=true;
+    $scope.submit = function(ev) {
+        if($scope.mobileno.length == 0 || $scope.mobileno == undefined){
+            // alert('Enter the Phone Number');
+            ev.preventDefault();
+        } else if($scope.mobileno.length<10){
+            ev.preventDefault();
+        } else {
+
+            var data = 'mobileno=' + $scope.mobileno;
+
+
+            //console.log(data);
+            //alert(" data   "+data);
+
+            $http.get(domain + '/indexCustomerValidation?' + data)
+                .success(function (data, status, headers, config) {
+                    $scope.customerId = data.customerid;
+                    $scope.emp_name = data.name;
+                    if($scope.emp_name!="" && $scope.emp_name!=undefined){
+                        $scope.flag = true;
+                        $scope.flag1 = false;
+                        $scope.uidflag = false;
+                    } else{
+                        alert("Mobile Number is not Valid  ");
+
+                    }
+
+
+                    //      location.reload();
+
+                    if (data.status == 'error') {
+                        // alert('Agent Already Registered');
+                        $scope.status = '';
+                        $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title('')
+                                .textContent(data.msg)
+                                .ariaLabel('Alert Dialog Demo')
+                                .ok('OK')
+                                .targetEvent(ev)
+                        );
+                    }
+                })
+                .error(function (data, status, headers, config) {
+                    alert("failure message: " + JSON.stringify({data: data}));
+                });
+
+        }
+    };
+
+    $scope.getbatchdetails = function(ev) {
+        $scope.flag1=true;
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/getBatchDetails')
+            .success(function (data, status, headers, config) {
+                $scope.batchno= data.batchNumber;
+                $scope.uid= data.uidnumber;
+                $scope.boxno1=data.boxno;
+
+                if($scope.batchno==""){
+                    alert("BoxNumber for this batch  "+$scope.boxno1);
+                }
+
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+
+    };
+
+
+    var callBatchDetails=function(){
+        $scope.getbatchdetails();
+    }
+    callBatchDetails();
+
+
+    function ClearForm() {
+        //$scope.FileDescription = '';
+        angular.forEach(angular.element("input[type='text'],select"), function (inputElem) {
+            angular.element(inputElem).val(null);
+        });
+
+        $scope.IsFormSubmitted = false;
+
+    }
+
+    $scope.custReject= function(ev) {
+        var number= $scope.uid;
+        $scope.lastuid1=number.toString().substring(7,10);
+        if($scope.user_comment == "" || $scope.user_comment == undefined){
+            alert("Please enter Remark for ");
+            ev.preventDefault();
+        } else if($scope.uniqueuid!=$scope.lastuid1){
+            alert("Please enter valid last digit of UID");
+            ev.preventDefault();
+        }else  if($scope.mobileno.length==0||$scope.mobileno == "" || $scope.mobileno == undefined){
+            alert("Please enter valid mobile Number");
+            ev.preventDefault();
+        }
+        else {
+            var data = '&mobileno=' + $scope.mobileno + '&status=R' + '&batchno=' + $scope.batchno + '&uid=' + $scope.uid + '&emp_name=' + $scope.emp_name + '&customerId=' + $scope.customerId + '&remarks=' + $scope.user_comment;
+
+
+            //console.log(data);
+            //alert(" data   "+data);
+
+            $http.get(domain + '/updateindexing?' + data)
+                .success(function (data, status, headers, config) {
+                    //    $scope.url1= data.url;
+
+                    console.log("dataa" + $scope.url1);
+
+                    location.reload();
+
+                    if (data.status == 'error') {
+                        // alert('Agent Already Registered');
+                        $scope.status = '';
+                        $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title('')
+                                .textContent(data.msg)
+                                .ariaLabel('Alert Dialog Demo')
+                                .ok('OK')
+                                .targetEvent(ev)
+                        );
+                    }
+                })
+                .error(function (data, status, headers, config) {
+                    alert("failure message: " + JSON.stringify({data: data}));
+                });
+
+        }
+    };
+
+    $scope.custAccept= function(ev) {
+       var number= $scope.uid;
+        $scope.lastuid1=number.toString().substring(7,10);
+        if($scope.uniqueuid!=$scope.lastuid1){
+           alert("Please enter valid last digit of UID");
+            ev.preventDefault();
+        }else  if($scope.mobileno.length == 0||$scope.mobileno == "" || $scope.mobileno == undefined){
+            ev.preventDefault();
+        }else{
+            var data = '&mobileno=' + $scope.mobileno +'&status=A' + '&batchno=' + $scope.batchno +'&uid=' + $scope.uid+'&emp_name=' + $scope.emp_name+'&customerId=' + $scope.customerId+'&remarks=' + $scope.user_comment;
+
+
+
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/updateindexing?' + data)
+            .success(function (data, status, headers, config) {
+                //     $scope.url1= data.url;
+
+                console.log("dataa" +$scope.url1);
+                location.reload();
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+        }
+    };
+
+
+
+}]);
+
+
+
+
+
+
+
+routerApp.controller('downloaddocuments',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
+
+    $scope.lownloadlist={};
+    var curDate = new Date();
+
+    $scope.radiodata = {
+        group1 : 'radiomobile1'
+    };
+    $scope.mobileflag1=true;
+    $scope.dateflag=false;
+    $scope.submit = function(ev) {
+        if(($scope.cust_number1 == undefined||$scope.cust_number1 == "")&&(( $scope.fromdate1 == undefined||$scope.fromdate1 =="")||( $scope.todate1 == undefined||$scope.todate1 ==""))){
+            alert("please select atlest one filter");
+            ev.preventDefault();
+        } else
+        if((( $scope.fromdate1 != undefined||$scope.fromdate1 !="")||( $scope.todate1 != undefined||$scope.todate1 !=""))){
+            if(new Date($scope.todate1) < new Date($scope.fromdate1)){
+                alert("To Date should be greater than from date ");
+                ev.preventDefault();
+        } else{
+                var data = 'mobilenumber=' + $scope.cust_number1 + '&fromdate=' + $scope.fromdate1 + '&todate=' + $scope.todate1;
+
+
+                $http.get(domain + '/downloadList?' + data)
+                    .success(function (data, status, headers, config) {
+                        $scope.lownloadlist = data;
+                        $scope.cust_number1='';
+                        $scope.fromdate1='';
+                        $scope.todate1='';
+
+                        $scope.flag = true;
+                        ClearForm();
+
+
+                        if (data.status == 'error') {
+                            // alert('Agent Already Registered');
+                            $scope.status = '';
+                            $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                            $mdDialog.show(
+                                $mdDialog.alert()
+                                    .parent(angular.element(document.querySelector('#popupContainer')))
+                                    .clickOutsideToClose(true)
+                                    .title('')
+                                    .textContent(data.msg)
+                                    .ariaLabel('Alert Dialog Demo')
+                                    .ok('OK')
+                                    .targetEvent(ev)
+                            );
+                        }
+                    })
+                    .error(function (data, status, headers, config) {
+                        alert("failure message: " + JSON.stringify({data: data}));
+                    });
+            }
+
+        } else {
+            var data = 'mobilenumber=' + $scope.cust_number1 + '&fromdate=' + $scope.fromdate1 + '&todate=' + $scope.todate1;
+
+
+            $http.get(domain + '/downloadList?' + data)
+                .success(function (data, status, headers, config) {
+                    $scope.lownloadlist = data;
+
+                    $scope.flag = true;
+                    $scope.cust_number1='';
+                    $scope.fromdate1='';
+                    $scope.todate1='';
+                    ClearForm();
+                    if (data.status == 'error') {
+                        // alert('Agent Already Registered');
+                        $scope.status = '';
+                        $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                        $mdDialog.show(
+                            $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .title('')
+                                .textContent(data.msg)
+                                .ariaLabel('Alert Dialog Demo')
+                                .ok('OK')
+                                .targetEvent(ev)
+                        );
+                    }
+                })
+                .error(function (data, status, headers, config) {
+                    alert("failure message: " + JSON.stringify({data: data}));
+                });
+        }
+
+    };
+
+    $scope.downloadpdf = function(list1) {
+        $scope.empNumber=list1.customerNo;
+
+            var data = 'mobileNo=' + $scope.empNumber;
+
+        $scope.$emit('download-start');
+        window.location.href=domain +"/downloadPdf?mobileNo="+ $scope.empNumber;
+
+        /*$http.get(domain+'/downloadPdf?' + data)
+            .success(function (response) {
+                $scope.$emit('downloaded', response.data);
+
+                alert("hello response  "+response.data);
+
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+*/
+    };
+
+    $scope.filteroption=function(radiodata1){
+        if(radiodata1=="radiomobile1")        {
+            $scope.dateflag=false;
+            $scope.mobileflag1=true;
+        }
+
+        if(radiodata1=="radioDate")        {
+            $scope.mobileflag1=false;
+            $scope.dateflag=true;
+        }
+
+
+    }
+    function ClearForm() {
+        //$scope.FileDescription = '';
+        angular.forEach(angular.element("input[type='text'],select"), function (inputElem) {
+            angular.element(inputElem).val(null);
+        });
+
+        $scope.IsFormSubmitted = false;
+
+    }
+
+}]);
+
+
+
 
 
 
@@ -663,6 +1181,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
             $scope.statuses = data.statusList;
             $scope.states = data.stateList;
             $scope.date = data.dateList;
+            $scope.datecallback = data.dateList1;
             $scope.codes = data.paytmmastjson;
             $scope.mob = data.teleData;
         }, function (reason) {
@@ -907,6 +1426,47 @@ routerApp.directive('phone', function() {
 
 
 
+/*
+app.directive('pdfDownload', function() {
+    return {
+        restrict: 'E',
+        templateUrl: '/path/to/pdfDownload.tpl.html',
+        scope: true,
+        link: function (scope, element, attr) {
+            var anchor = element.children()[0];
+
+            // When the download starts, disable the link
+            scope.$on('download-start', function () {
+                $(anchor).attr('disabled', 'disabled');
+            });
+
+            // When the download finishes, attach the data to the link. Enable the link and change its appearance.
+            scope.$on('downloaded', function (event, data) {
+                $(anchor).attr({
+                    href: 'data:application/pdf;base64,' + data,
+                    download: attr.filename
+                })
+                    .removeAttr('disabled')
+                    .text('Save')
+                    .removeClass('btn-primary')
+                    .addClass('btn-success');
+
+                // Also overwrite the download pdf function to do nothing.
+                scope.downloadPdf = function () {
+                };
+            });
+        }
+    }
+        });
+*/
+
+
+
+
+
+
+
+
 /*routerApp.directive('allowPattern', [allowPatternDirective]);
 
 function allowPatternDirective() {
@@ -988,7 +1548,179 @@ routerApp.directive('fileModel', ['$parse', function ($parse) {
     };
 }]);
 
+
+routerApp.directive('pdfDownload', ['$parse', function ($parse) {
+    return {
+        restrict: 'E',
+         templateUrl: '/path/to/pdfDownload.tpl.html',
+         scope: true,
+         link: function(scope, element, attr) {
+             var anchor = element.children()[0];
+
+             // When the download starts, disable the link
+             scope.$on('download-start', function () {
+                 $(anchor).attr('disabled', 'disabled');
+             });
+
+             // When the download finishes, attach the data to the link. Enable the link and change its appearance.
+             scope.$on('downloaded', function (event, data) {
+                 $(anchor).attr({
+                     href: 'data:application/pdf;base64,' + data,
+                     download: attr.filename
+                 })
+                     .removeAttr('disabled')
+                     .text('Save')
+                     .removeClass('btn-primary')
+                     .addClass('btn-success');
+
+                 // Also overwrite the download pdf function to do nothing.
+                 scope.downloadPdf = function () {
+                 };
+             });
+         }
+    }
+}
+]);
+
+
+
 routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$mdDialog','$mdMedia', function ($scope, $http, FileProductUploadService,$mdDialog, $mdMedia) {
+
+    $scope.Message = '';
+    $scope.FileInvalidMessage = '';
+    $scope.SelectedFileForUpload = null;
+    $scope.FileDescription = '';
+    $scope.IsFormSubmitted = false;
+    $scope.IsFileValid = false;
+    $scope.IsFormValid = false;
+    $scope.selectedProduct = {};
+    $scope.$watch("f1.$valid", function (isValid) {
+        $scope.IsFormValid = isValid;
+
+    });
+    $scope.checkFileValid = function (file) {
+        var isValid = true;
+        $scope.IsFileValid = isValid;
+    };
+
+    $scope.selectedFileforUpload = function (file) {
+
+
+        $scope.SelectedFileForUpload = file[0];
+    };
+
+    $scope.SaveFile = function (ev) {
+
+
+        $scope.IsFormSubmitted = true;
+        $scope.Message = '';
+        $scope.checkFileValid($scope.SelectedFileForUpload);
+
+        if ($scope.IsFormValid && $scope.IsFileValid) {
+            FileProductUploadService.UploadFile($scope.SelectedFileForUpload).then(function (d) {
+
+                var confirm = $mdDialog.confirm()
+                    // .title('Would you like to delete your debt?')
+                    .textContent(d.data.Message)
+                    .ariaLabel('Lucky day')
+                    .targetEvent(ev)
+                    .ok('OK')
+                // .cancel('Cancel');
+                $mdDialog.show(confirm).then(function() {
+                    $scope.status = 'You decided to get rid of your debt.';
+                    $scope.rejectReport = d.data.rejectedRecord
+                    window.setTimeout(function(){
+                        $scope.exportToExcel();
+                        //location.reload();
+
+                    }, 2000)
+                }, function() {
+                    $scope.status = 'You decided to keep your debt.';
+                });
+                ClearForm();
+
+            }, function (err) {
+
+
+                var confirm = $mdDialog.confirm()
+                    // .title('Would you like to delete your debt?')
+                    .textContent(err)
+                    .ariaLabel('Lucky day')
+                    .targetEvent(ev)
+                    .ok('OK')
+                // .cancel('Cancel');
+                $mdDialog.show(confirm).then(function() {
+                    $scope.status = 'You decided to get rid of your debt.';
+                }, function() {
+                    $scope.status = 'You decided to keep your debt.';
+                });
+
+            });
+        }
+        else
+        {
+            $scope.Message = 'all the fields are required';
+        }
+    };
+
+    function ClearForm() {
+        $scope.FileDescription = '';
+        angular.forEach(angular.element("input[type='file']"), function (inputElem) {
+            angular.element(inputElem).val(null);
+        });
+
+        $scope.IsFormSubmitted = false;
+        $scope.description = '';
+        $scope.SelectedFileForUpload = null;
+
+    }
+
+    $scope.files = [];
+
+    $scope.$on("fileSelected", function (event, args) {
+        $scope.$apply(function () {
+            //add the file object to the scope's files collection
+            $scope.files.push(args.file);
+        });
+    });
+
+
+    $scope.exportToExcel=function(){// ex: '#my-table'
+        var blob = new Blob([document.getElementById('exportable').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
+    }
+
+
+
+}]).factory('FileProductUploadService', function ($http, $q) {
+
+    var fac = {};
+
+    fac.UploadFile = function (file) {
+
+        var formData = new FormData();
+        formData.append("file", file);
+
+        var defer = $q.defer();
+        $http.post(domain+"/upload", formData, {
+            withCredentials: true,
+            headers: { "Content-Type": undefined },
+            transformRequest: angular.identity
+        }).then(
+            function (d) {
+                defer.resolve(d);
+            },function (err) {
+                defer.reject("File Upload Failed");
+            });
+        return defer.promise;
+    }
+
+    return fac;
+});
+
+routerApp.controller('uploadAgent', ['$scope', '$http', 'FileProductUploadService','$mdDialog','$mdMedia', function ($scope, $http, FileProductUploadService,$mdDialog, $mdMedia) {
 
     $scope.Message = '';
     $scope.FileInvalidMessage = '';
@@ -1106,7 +1838,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
         formData.append("file", file);
 
         var defer = $q.defer();
-        $http.post(domain+"/upload", formData, {
+        $http.post(domain+"/uploadAgent", formData, {
             withCredentials: true,
             headers: { "Content-Type": undefined },
             transformRequest: angular.identity
@@ -1121,179 +1853,92 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
 
     return fac;
 });
-/*
 
-routerApp.controller('DateTimeController', ['$scope', function($scope) {
 
-    var that = this;
 
-    // date picker
-    this.picker1 = {
-        date: new Date('2015-03-01T00:00:00Z'),
-        datepickerOptions: {
-            showWeeks: false,
-            startingDay: 1,
-            dateDisabled: function(data) {
-                return (data.mode === 'day' && (new Date().toDateString() == data.date.toDateString()));
-            }
+routerApp.controller('searchBatch',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
+
+
+    $scope.radiodata = {
+        group1 : 'radiomobile'
+    };
+    $scope.mobileflag=true;
+
+    $scope.submit = function(ev) {
+       if(($scope.cust_number== "" || $scope.cust_number == undefined)&&($scope.batchSearch == "" || $scope.batchSearch == undefined)&&($scope.uidnoSearch== "" || $scope.uidnoSearch == undefined)){
+           alert("please select atleast one filter");
+            ev.preventDefault();
+        }else{
+            var data = 'cust_number=' + $scope.cust_number+'&batchSearch=' + $scope.batchSearch+'&uidnoSearch=' + $scope.uidnoSearch;
+
+
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/searchIndexing?' + data)
+            .success(function (data, status, headers, config) {
+                $scope.batchdocumentslist= data;
+                $scope.cust_number="";
+                $scope.batchSearch="";
+                $scope.uidnoSearch="";
+                $scope.flag=true;
+                ClearForm();
+
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+       }
+    };
+
+    $scope.filteroption=function(radiodata1){
+        if(radiodata1=="radiomobile")        {
+            $scope.uidflag1=false;
+            $scope.batchflag=false;
+            $scope.mobileflag=true;
         }
-    };
 
-    // time picker
-    this.picker2 = {
-        date: new Date('2015-03-01T12:30:00Z'),
-        timepickerOptions: {
-            readonlyInput: false,
-            showMeridian: false
+      if(radiodata1=="radiobatch")        {
+            $scope.uidflag1=false;
+            $scope.mobileflag=false;
+            $scope.batchflag=true;
         }
-    };
-
-    // date and time picker
-    this.picker3 = {
-        date: new Date()
-    };
-
-    // min date picker
-    this.picker4 = {
-        date: new Date(),
-        datepickerOptions: {
-            maxDate: null
+        if(radiodata1=="radioUID")        {
+            $scope.batchflag=false;
+            $scope.mobileflag=false;
+            $scope.uidflag1=true;
         }
-    };
 
-    // max date picker
-    this.picker5 = {
-        date: new Date(),
-        datepickerOptions: {
-            minDate: null
-        }
-    };
+    }
+    function ClearForm() {
+        //$scope.FileDescription = '';
+        angular.forEach(angular.element("input[type='text'],select"), function (inputElem) {
+            angular.element(inputElem).val(null);
+        });
 
-    // set date for max picker, 10 days in future
-    this.picker5.date.setDate(this.picker5.date.getDate() + 10);
+        $scope.IsFormSubmitted = false;
 
-    // global config picker
-    this.picker6 = {
-        date: new Date()
-    };
-
-    // dropdown up picker
-    this.picker7 = {
-        date: new Date()
-    };
-
-    // view mode picker
-    this.picker8 = {
-        date: new Date(),
-        datepickerOptions: {
-            mode: 'year',
-            minMode: 'year',
-            maxMode: 'year'
-        }
-    };
-
-    // dropdown up picker
-    this.picker9 = {
-        date: null
-    };
-
-    // min time picker
-    this.picker10 = {
-        date: new Date('2016-03-01T09:00:00Z'),
-        timepickerOptions: {
-            max: null
-        }
-    };
-
-    // max time picker
-    this.picker11 = {
-        date: new Date('2016-03-01T10:00:00Z'),
-        timepickerOptions: {
-            min: null
-        }
-    };
-
-    // button bar
-    this.picker12 = {
-        date: new Date(),
-        buttonBar: {
-            show: true,
-            now: {
-                show: true,
-                text: 'Now!'
-            },
-            today: {
-                show: true,
-                text: 'Today!'
-            },
-            clear: {
-                show: false,
-                text: 'Wipe'
-            },
-            date: {
-                show: true,
-                text: 'Date'
-            },
-            time: {
-                show: true,
-                text: 'Time'
-            },
-            close: {
-                show: true,
-                text: 'Shut'
-            }
-        }
-    };
-
-    // when closed picker
-    this.picker13 = {
-        date: new Date(),
-        closed: function(args) {
-            that.closedArgs = args;
-        }
-    };
-
-    // saveAs - ISO
-    this.picker14 = {
-        date: new Date().toISOString()
     }
 
-    this.openCalendar = function(e, picker) {
-        that[picker].open = true;
-    };
-
-    // watch min and max dates to calculate difference
-    var unwatchMinMaxValues = $scope.$watch(function() {
-        return [that.picker4, that.picker5, that.picker10, that.picker11];
-    }, function() {
-        // min max dates
-        that.picker4.datepickerOptions.maxDate = that.picker5.date;
-        that.picker5.datepickerOptions.minDate = that.picker4.date;
-
-        if (that.picker4.date && that.picker5.date) {
-            var diff = that.picker4.date.getTime() - that.picker5.date.getTime();
-            that.dayRange = Math.round(Math.abs(diff/(1000*60*60*24)))
-        } else {
-            that.dayRange = 'n/a';
-        }
-
-        // min max times
-        that.picker10.timepickerOptions.max = that.picker11.date;
-        that.picker11.timepickerOptions.min = that.picker10.date;
-    }, true);
-
-
-    // destroy watcher
-    $scope.$on('$destroy', function() {
-        unwatchMinMaxValues();
-    });
-
 }]);
-
-
-
-*/
-
 
 
 
@@ -1406,6 +2051,15 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
 
                     }, 3000);
 
+                }else if($scope.report1.reportName == 'Call Status'){                                          ////////////function for Tellicalling
+
+                    window.setTimeout(function(){
+                        console.log($scope.message);
+                        $scope.exportToCallExcel();
+                        location.reload();
+
+                    }, 3000);
+
                 }
                 // $scope.successTextAlert = 'Data Submit Successfully ';
             }, function(err){
@@ -1443,6 +2097,12 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
     }
     $scope.exportToExcelOutput=function(){// ex: '#my-table'    ///////////////////report for KycMis
         var blob = new Blob([document.getElementById('exportableOutput').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
+    }
+    $scope.exportToCallExcel=function(){// ex: '#my-table'    ///////////////////report for KycMis
+        var blob = new Blob([document.getElementById('exportableCallSatus').innerHTML], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
         });
         saveAs(blob, "Report.xls");

@@ -21,4 +21,5 @@ public interface LeadsService {
     public ProofMastEntity findBykey(String key);
     public ReasonMastEntity findByprimaryKey(String key);
     public List<ReasonMastEntity> reasonList();
+    public String getCustomerName(String mobileNo);
 }

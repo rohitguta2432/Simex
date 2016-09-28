@@ -14,7 +14,7 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
         {
             //alert('Login.');
             var daata = 'userName='+$scope.user+'&password='+$scope.pass;
-            $http.get('http://172.25.38.131:8080/paytm/login?'+daata).success(function(data, status, headers, config){
+            $http.get('http://172.25.38.52:8080/paytm/login?'+daata).success(function(data, status, headers, config){
                    // alert('daata');
                 $scope.msg=data;
                // console.log(data.status);

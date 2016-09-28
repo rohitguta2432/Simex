@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by SS0085 on 30-12-2015.
@@ -45,6 +47,11 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     @Override
     public String saveAgentLocation(String agentCode, String CustomerNumber, String location) {
         return agentPaytmDao.saveAgentLocation(agentCode,CustomerNumber,location);
+    }
+
+    @Override
+    public String saveBulkAgent(List<Map<String, String>> agentList) {
+        return null;
     }
 
     @Override
@@ -143,7 +150,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         emplogintableEntity.setEmpPassword(password);
         emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
         emplogintableEntity.setRoleCode("A1");
-        emplogintableEntity.setEmpStatus(true);
+        emplogintableEntity.setEmpStatus(1);
         emplogintableEntity.setImportBy(paytmagententryEntity.getImportby());
         emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 

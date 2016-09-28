@@ -353,6 +353,23 @@
 
                                     </tr>
                                 </table>
+                                </div>
+                                <div id="exportableCallSatus" style="display:none">
+                                    <table align="center" border="1" >
+                                        <tr>
+                                            <th>Customer Number</th>
+                                            <th>Customer Name</th>
+                                            <th>Tele-CallerName</th>
+                                            <th>Call Status</th>
+                                        </tr>
+                                        <tr ng-repeat="x in message">
+                                            <td>{{ x.customerNumber }}</td>
+                                            <td>{{ x.custname }}</td>
+                                            <td>{{ x.callby }}</td>
+                                            <td>{{ x.callStatus }}</td>
+
+                                        </tr>
+                                    </table>
 
                             </div>
 

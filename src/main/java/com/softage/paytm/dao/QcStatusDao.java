@@ -14,4 +14,5 @@ public interface QcStatusDao {
     public String qcStatusUpdate(String mobile_no, String status, String rejected_page, String remarks);
     public JSONObject qcGetMobileNumber();
     public JSONObject qcGetCustomerDetails(String mobileNum);
+    public JSONObject downloadList(String mobileNumber,String todate,String fromdate);
 }

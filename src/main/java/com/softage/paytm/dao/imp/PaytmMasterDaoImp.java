@@ -34,14 +34,9 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             entityManager = entityManagerFactory.createEntityManager();
             transaction =  entityManager.getTransaction();
             transaction.begin();
-            int i=1;
+
             for (PaytmMastEntity mastEntity :paytmMastEntity) {
                 entityManager.persist(mastEntity);
-                if(i%10==0){
-                    entityManager.flush();
-                    entityManager.clear();
-                }
-                i++;
             }
 
             transaction.commit();
@@ -60,6 +55,40 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         }
         return  result;
     }
+
+    @Override
+    public String savePaytmMaster(PaytmMastEntity paytmMastEntity) {
+
+        EntityManager entityManager=null;
+        EntityTransaction transaction = null;
+        String result=null;
+
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction =  entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(paytmMastEntity);
+          /*  entityManager.flush();
+            entityManager.clear();*/
+            transaction.commit();
+
+            result="done";
+        }catch (Exception e) {
+
+            e.printStackTrace();
+            result="error";
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  result;
+    }
+
+
+
 
     @Override
     public JSONObject getPaytmMastData(String mobileNo) {
