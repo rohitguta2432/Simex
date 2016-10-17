@@ -20,6 +20,7 @@ public interface PostCallingService {
     public String save(ReOpenTaleCallMaster openTaleCallMaster);
     public RemarkMastEntity getByPrimaryCode(String key);
     public List<RemarkMastEntity> remarkList();
+    public JSONObject getAvailableslot(String date,List<String> agents,String time,String datekey);
 
 
 

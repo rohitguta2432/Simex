@@ -52,6 +52,32 @@ public class CircleMastDaoImp implements CircleMastDao {
         return circleMastEntity;
     }
 
+    @Override
+    public CircleMastEntity findByPrimaryKey(String circleName) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<CircleMastEntity> list=new ArrayList<>();
+        CircleMastEntity circleMastEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select c from CircleMastEntity c where c.circleName=:circleName";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("circleName",circleName);
+            circleMastEntity=(CircleMastEntity)query.getSingleResult();
+            //  circleMastEntity=entityManager.find(CircleMastEntity.class,1);
+            logger.info("circle successfully geting by circle_code");
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("error to getting Circle List",e);
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return circleMastEntity;
+    }
 
 
     @Override

@@ -1,10 +1,10 @@
 var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap']);
-//   var domain='http://localhost:8080/paytm';
-//var domain='http://172.25.38.131:8080/paytm';
+ //  var domain='http://localhost:8080/paytm';
+var domain='http://172.25.38.13:8080/paytm';
 //var domain='http://172.43.44.203:8080/paytm';
 // var domain='http://172.25.38.131:8080/paytm';
-  var domain ='http://172.25.38.52:8080/paytm';
-//var domain ='http://14.142.136.19:8080/paytm';
+/*var domain ='http://182.71.212.110:8080/paytm';*/
+//var domain ='http://182.71.212.110:8080/paytm';
 // var domain ='http://172.16.16.254:8080/paytm';
 //var domain ='http://42.104.108.117:8080/paytm';
 routerApp.config(function($stateProvider, $urlRouterProvider) {
@@ -79,6 +79,16 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'SearchBatch/searchbatch.html',
             controller:'searchBatch'
 
+        }).state('companyRegistration', {
+            url: '/companyRegistration',
+            templateUrl: 'CompanyRegistration/companyRegistration.html',
+            controller:'companyRegistration'
+
+        }).state('projectRegistration', {
+            url: '/projectRegistration',
+            templateUrl: 'projectRegistration/projectRegistration.html',
+            controller:'projectRegistration'
+
         });
 
 
@@ -152,8 +162,8 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
     $scope.submit = function(ev) {
 
-
-
+      var phone1=  $scope.phone;
+        var firstphone=phone1.substring(0,1);
         // $scope.submit = function($event) {
         //alert('fdsfsd');
         if($scope.name.length == 0 || $scope.name == undefined){
@@ -172,7 +182,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
             // alert('Enter the Phone Number');
             ev.preventDefault();
         }
-        else if($scope.avl_time.length == 0 || $scope.avl_time == undefined){
+        else if(firstphone == 0 || firstphone==1 ||firstphone==2 || firstphone == 3 || firstphone==4 || firstphone == 5 || firstphone==6){
           //   alert('Enter the Phone Number');
             ev.preventDefault();
         }
@@ -185,6 +195,9 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
             ev.preventDefault();
         }
         else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
+            // alert('Enter Pin Number');
+            ev.preventDefault();
+        }else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
             // alert('Enter Pin Number');
             ev.preventDefault();
         }
@@ -201,7 +214,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
 
             console.log(data);
-            $http.get(domain+'/agentRegistration?' + data)
+            $http.get(domain+'/agentRegistrationremove?' + data)
                 /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
                 .success(function (data, status, headers, config) {
                     $scope.message = data;
@@ -1153,6 +1166,18 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
 
 
+/*
+    var myInit = function () {
+     alert('Hello Angularjs Function ');
+    };
+    angular.element(document).ready(myInit);*/
+
+
+
+
+
+
+
     $scope.states= [];
     $scope.times = [];
     $scope.date = new Date();
@@ -1160,6 +1185,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     $scope.codes=[];
     $scope.statuses = [{csmCode: 1, status:"Delhi"}];
     $scope.statuscode;
+    $scope.status1;
     /* Function for get Telecalling Screen */
     $scope.getscreen = function(){
         var dfr = $q.defer();
@@ -1175,23 +1201,30 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     };
 
     var GetScreen = function() {
-        $scope.getscreen().then(function (data) {
 
-            //alert('getscreen');
-            $scope.statuses = data.statusList;
-            $scope.states = data.stateList;
-            $scope.date = data.dateList;
-            $scope.datecallback = data.dateList1;
-            $scope.codes = data.paytmmastjson;
-            $scope.mob = data.teleData;
-        }, function (reason) {
-        });
+            $scope.getscreen().then(function (data) {
+
+                //alert('getscreen');
+                $scope.statuses = data.statusList;
+                $scope.states = data.stateList;
+                $scope.date = data.dateList;
+                $scope.datecallback = data.dateList1;
+                $scope.codes = data.paytmmastjson;
+                $scope.mob = data.teleData;
+                agentslot();
+            }, function (reason) {
+            });
     }
     GetScreen();
     $scope.ab=false;
 
+    $scope.callgetscreen = function(){
+        location.reload();
+    }
+
 
     $scope.changestatus = function(){
+
 
         $scope.ab=true;
         var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.mob.mobileNo;
@@ -1323,6 +1356,122 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
     };
 
+
+
+
+    $scope.getAvlAgentChart=function(){
+
+
+            var data = 'pincode='+$scope.codes.pincode;
+
+              //    alert("pincode "+$scope.codes.pincode);
+            $http.get(domain + '/getAvailableSlot?' + data)
+                .success(function (data, status, headers, config) {
+
+
+
+                    $scope.dataSets = data.slotList;
+                    $scope.dateList2 = data.dateList;
+                    $scope.timediff  = data.timedeff;
+
+
+                })
+                .error(function (data, status, headers, config) {
+                });
+
+
+    };
+
+    $scope.selectDateTime=function(time,vstdate,status){
+
+     //   alert(" key "+ key +" value "+value );
+        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' +vstdate + '&visitTime=' + time+':00' + '&status=' +status ;
+        console.log(data);
+        $http.get(domain+'/postCalling?'+ data)
+            .success(function(data, status, headers, config) {
+                // alert('jfgkfj');
+                $scope.message = data;
+                console.log(data.status);
+                if(data.status == 'success'){
+                    alert(data.msg);
+                    location.reload();
+                    $scope.status = '';
+                     $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+                     $mdDialog.show(
+                     $mdDialog.alert()
+                     .parent(angular.element(document.querySelector('#popupContainer')))
+                     .clickOutsideToClose(true)
+                     .title('')
+                     .textContent(data.msg)
+                     .ariaLabel('Alert Dialog Demo')
+                     .ok('OK')
+                     .targetEvent(ev)
+
+                     );
+                     window.setTimeout(function(){
+                     location.reload();
+                     }, 3000);
+
+                    //ClearForm();
+
+                    //$scope.successTextAlert = "Data Successfully inserted";
+                    //window.setTimeout(function(){
+                    //    location.reload();
+                    //}, 3000);
+                }
+
+                else{
+                    alert('Record not Inserted due to Visit Date more than 5 Days');
+                    location.reload();
+                }
+            })
+            .error(function(data, status, headers, config) {
+
+                alert( "failure message: " + JSON.stringify({data: data}));
+            });
+
+    }
+
+
+  var agentslot=function(){
+        $scope.getAvlAgentChart();
+    }
+
+
+
+
+    $scope.showchart=function(){
+
+        $scope.flagcall=false;
+            var modalInstance = $modal.open({
+                templateUrl: 'Telecalling/availableAgentChart.html',
+                controller: 'telecalling',
+            });
+
+
+    }
+
+
+    $scope.getTimebyDate=function(){
+
+
+        var data = 'pincode='+$scope.codes.pincode+'&date='+$scope.visit_date;
+
+        //    alert("pincode "+$scope.codes.pincode);
+        $http.get(domain + '/getAvailableSlotByDate?' + data)
+            .success(function (data, status, headers, config) {
+
+                $scope.times1 = data.timeList;
+            })
+            .error(function (data, status, headers, config) {
+            });
+
+
+    };
+
+
+
+
     $scope.getTime = function(){      /////get visit time according to date
         var myarr = [];
         var varDate = $scope.visit_date;
@@ -1426,79 +1575,6 @@ routerApp.directive('phone', function() {
 
 
 
-/*
-app.directive('pdfDownload', function() {
-    return {
-        restrict: 'E',
-        templateUrl: '/path/to/pdfDownload.tpl.html',
-        scope: true,
-        link: function (scope, element, attr) {
-            var anchor = element.children()[0];
-
-            // When the download starts, disable the link
-            scope.$on('download-start', function () {
-                $(anchor).attr('disabled', 'disabled');
-            });
-
-            // When the download finishes, attach the data to the link. Enable the link and change its appearance.
-            scope.$on('downloaded', function (event, data) {
-                $(anchor).attr({
-                    href: 'data:application/pdf;base64,' + data,
-                    download: attr.filename
-                })
-                    .removeAttr('disabled')
-                    .text('Save')
-                    .removeClass('btn-primary')
-                    .addClass('btn-success');
-
-                // Also overwrite the download pdf function to do nothing.
-                scope.downloadPdf = function () {
-                };
-            });
-        }
-    }
-        });
-*/
-
-
-
-
-
-
-
-
-/*routerApp.directive('allowPattern', [allowPatternDirective]);
-
-function allowPatternDirective() {
-    return {
-        restrict: "A",
-        compile: function(tElement, tAttrs) {
-            return function(scope, element, attrs) {
-                // I handle key events
-                element.bind("keypress", function(event,key) {
-                    var keyCode = event.which || event.keyCode; // I safely get the keyCode pressed from the event.
-
-                    if (key < 48 || key > 57) {
-                        if(key == 10 || key == 127){} //allow backspace and delete and whitespace
-                        else{
-                            if (e.preventDefault) e.preventDefault();
-                            e.returnValue = false;
-                        }
-                    }
-                    var keyCodeChar = String.fromCharCode(keyCode); // I determine the char from the keyCode.
-
-                    // If the keyCode char does not match the allowed Regex Pattern, then don't allow the input into the field.
-                    if (!keyCodeChar.match(new RegExp(attrs.allowPattern, "i"))) {
-                        event.preventDefault();
-                        return false;
-                    }
-
-                });
-            };
-        }
-    };
-}*/
-
 
 routerApp.controller('Ctrl',['$scope', '$http','$q','$log', function($scope,$http,$q,$log){
 
@@ -1507,6 +1583,7 @@ routerApp.controller('Ctrl',['$scope', '$http','$q','$log', function($scope,$htt
         alert(jgndfjg);
     };
 }]);
+
 routerApp.directive("datepicker1", function () {
     return {
         restrict: "A",
@@ -1584,7 +1661,7 @@ routerApp.directive('pdfDownload', ['$parse', function ($parse) {
 
 
 
-routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$mdDialog','$mdMedia', function ($scope, $http, FileProductUploadService,$mdDialog, $mdMedia) {
+routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','$mdDialog','$mdMedia', function ($scope, $http, FileProductUploadService1,$mdDialog, $mdMedia) {
 
     $scope.Message = '';
     $scope.FileInvalidMessage = '';
@@ -1609,7 +1686,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
         $scope.SelectedFileForUpload = file[0];
     };
 
-    $scope.SaveFile = function (ev) {
+    $scope.SaveFile1 = function (ev) {
 
 
         $scope.IsFormSubmitted = true;
@@ -1617,7 +1694,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
         $scope.checkFileValid($scope.SelectedFileForUpload);
 
         if ($scope.IsFormValid && $scope.IsFileValid) {
-            FileProductUploadService.UploadFile($scope.SelectedFileForUpload).then(function (d) {
+            FileProductUploadService1.UploadFile($scope.SelectedFileForUpload).then(function (d) {
 
                 var confirm = $mdDialog.confirm()
                     // .title('Would you like to delete your debt?')
@@ -1694,11 +1771,11 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
 
 
 
-}]).factory('FileProductUploadService', function ($http, $q) {
+}]).factory('FileProductUploadService1', function ($http, $q) {
+    var fac1 = {};
 
-    var fac = {};
+    fac1.UploadFile = function (file) {
 
-    fac.UploadFile = function (file) {
 
         var formData = new FormData();
         formData.append("file", file);
@@ -1717,7 +1794,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService','$
         return defer.promise;
     }
 
-    return fac;
+    return fac1;
 });
 
 routerApp.controller('uploadAgent', ['$scope', '$http', 'FileProductUploadService','$mdDialog','$mdMedia', function ($scope, $http, FileProductUploadService,$mdDialog, $mdMedia) {
@@ -1829,10 +1906,12 @@ routerApp.controller('uploadAgent', ['$scope', '$http', 'FileProductUploadServic
 
 
 }]).factory('FileProductUploadService', function ($http, $q) {
-
+   // alert("factory of agent");
     var fac = {};
 
     fac.UploadFile = function (file) {
+
+        alert("Agent Uplaod Data");
 
         var formData = new FormData();
         formData.append("file", file);

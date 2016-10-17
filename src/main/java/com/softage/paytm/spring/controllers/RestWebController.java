@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -134,20 +135,54 @@ public class RestWebController {
     }
 
     @RequestMapping(value = "/AgentLeads", method = {RequestMethod.GET, RequestMethod.POST})
-    public JSONArray agentLeads(HttpServletRequest request) {
+    public JSONObject agentLeads(HttpServletRequest request) {
+        int timedeff=1;
         JSONArray array = new JSONArray();
+        JSONObject leadsObject=new JSONObject();
+        String cuurentDate=null;
+        List<JSONObject> arrayList=new ArrayList<>();
         try {
-            String agentCaode = request.getParameter("AgentCode");
-            List<JSONObject> arrayList = leadsService.getAgentLeads(agentCaode);
+            String agentCode = request.getParameter("AgentCode");
+            String leaddate = request.getParameter("leaddate");
+            arrayList = leadsService.getAgentLeads(agentCode,timedeff,leaddate);
             array.addAll(arrayList);
-
 
         } catch (Exception e) {
             logger.error("", e);
         }
+        leadsObject.put("leads",array);
+        leadsObject.put("timediff",1);
+        leadsObject.put("starttime",9);
+        leadsObject.put("endtime",18);
+        return leadsObject;
+
+    }
+
+
+    @RequestMapping(value = "/agentNewLeads", method = {RequestMethod.GET, RequestMethod.POST})
+    public JSONArray agentNewLeads(HttpServletRequest request) {
+        int timedeff=1;
+        JSONArray array = new JSONArray();
+        JSONObject leadsObject=new JSONObject();
+        String cuurentDate=null;
+        List<JSONObject> arrayList=new ArrayList<>();
+        try {
+            String agentCode = request.getParameter("AgentCode");
+            String leaddate = request.getParameter("leaddate");
+            arrayList = leadsService.getAgentLeads(agentCode,timedeff,leaddate);
+            array.addAll(arrayList);
+
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+     /*   leadsObject.put("leads",array);
+        leadsObject.put("timediff",1);
+        leadsObject.put("starttime",9);
+        leadsObject.put("endtime",18);*/
         return array;
 
     }
+
 
     @RequestMapping(value = "/UpdateLeadStatus", method = {RequestMethod.GET, RequestMethod.POST})
     public String updateLeadStatus(HttpServletRequest request) {
@@ -192,7 +227,12 @@ public class RestWebController {
         String agentCode = request.getParameter("agentcode");
         String customerNumber = request.getParameter("customerNumber");
         String location = request.getParameter("location");
-        String result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location);
+        String latitude= request.getParameter("latitude");
+        String longitude= request.getParameter("longitude");
+        double lati=Double.parseDouble(latitude);
+        double longi=Double.parseDouble(longitude);
+
+        String result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location,lati,longi);
         return result;
     }
 
@@ -224,13 +264,13 @@ public class RestWebController {
                 }
             }
             String custName = request.getParameter("custName");
-            String dob = request.getParameter("dob");
-            String custPOICode = request.getParameter("custPOICode");
-            String custPOINumber = request.getParameter("custPOINumber");
-            String custPOACode = request.getParameter("custPOACode");
-            String custPOANumber = request.getParameter("custPOANumber");
+            String dob = request.getParameter("dob"); // not required
+            String custPOICode = request.getParameter("custPOICode"); // not required
+            String custPOINumber = request.getParameter("custPOINumber"); // not required
+            String custPOACode = request.getParameter("custPOACode");  // not requied
+            String custPOANumber = request.getParameter("custPOANumber"); // not reqired
             String agentCode = request.getParameter("agentCode");
-            String gender = request.getParameter("gender");
+            String gender = request.getParameter("gender");     // not requied
             String jobid = request.getParameter("jobid");
             String remarksCode = request.getParameter("remarksCode");
             String customerId = request.getParameter("customerId");
@@ -381,13 +421,19 @@ public class RestWebController {
 
     @RequestMapping(value = "/RemarkList", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray remarkList() {
+
         JSONArray array = new JSONArray();
         List<RemarkMastEntity> remarkMastEntityList = postCallingService.remarkList();
         for (RemarkMastEntity remarkMastEntity : remarkMastEntityList) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("Code", remarkMastEntity.getRemarksCode());
-            jsonObject.put("Text", remarkMastEntity.getRemarksText());
-            array.add(jsonObject);
+            if(!remarkMastEntity.getRemarksCode().equalsIgnoreCase("U")){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("Code", remarkMastEntity.getRemarksCode());
+                jsonObject.put("Text", remarkMastEntity.getRemarksText());
+                array.add(jsonObject);
+            }
+
+
+
         }
         return array;
     }

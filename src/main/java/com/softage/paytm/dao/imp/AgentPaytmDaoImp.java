@@ -77,6 +77,37 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
     }
 
     @Override
+    public List<String> getAgentPinMastList(String pincode) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<String> agentList=null;
+        SpokeMastEntity spokeMastEntity=null;
+        EntityTransaction transaction = null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction=entityManager.getTransaction();
+            transaction.begin();
+            String strQuery = "select agents.apmAcode from AgentpinmasterEntity agents where agents.apmAPincode=:pincode";
+            System.out.println("query>>>>>    "+strQuery);
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("pincode",pincode);
+            agentList=query.getResultList();
+            transaction.commit();
+
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return agentList;
+    }
+
+    @Override
     public String saveEmployee(EmplogintableEntity emplogintableEntity) {
         EntityManager entityManager = null;
         EntityTransaction transaction = null;
@@ -156,7 +187,7 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
     }
 
     @Override
-    public String saveAgentLocation(String agentCode, String CustomerNumber, String location) {
+    public String saveAgentLocation(String agentCode, String CustomerNumber, String location,double lati,double longi) {
         EntityManager entityManager=null;
         EntityTransaction transaction=null;
         List message=new ArrayList<>();
@@ -164,10 +195,12 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
         try{
             entityManager=entityManagerFactory.createEntityManager();
             entityManager.getTransaction().begin();
-            Query query=entityManager.createNativeQuery("{call usp_insertAgentLocation(?,?,?)}");
+            Query query=entityManager.createNativeQuery("{call usp_insertAgentLocation(?,?,?,?,?)}");
             query.setParameter(1,agentCode);
             query.setParameter(2,CustomerNumber);
             query.setParameter(3,location);
+            query.setParameter(4,lati);
+            query.setParameter(5,longi);
             res=(String)query.getSingleResult();
             entityManager.getTransaction().commit();
             /*if(message.equals("")||message.equals(null)){

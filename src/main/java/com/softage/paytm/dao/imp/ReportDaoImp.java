@@ -1,16 +1,19 @@
 package com.softage.paytm.dao.imp;
 
+import com.google.code.geocoder.Geocoder;
 import com.softage.paytm.dao.ReportDao;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.naming.Context;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by SS0085 on 08-01-2016.
@@ -38,8 +41,16 @@ public class ReportDaoImp implements ReportDao {
             for (Object[] objects : resultList) {
                 String status = "Open";
                 if (objects.length > 0) {
-
                     JSONObject json = new JSONObject();
+
+                    String latitude=(String)objects[20];
+                    String longitude=(String)objects[21];
+                    String location=(String)objects[19];
+                    if(location.equalsIgnoreCase("")){
+                        location="LocationNotFound";
+                    location=getlocation(latitude,longitude);
+                    }
+
                     json.put("CustomerId", objects[0]);
                     json.put("MobileNumber", objects[1]);
                     json.put("CallStatus", objects[2]);
@@ -93,8 +104,11 @@ public class ReportDaoImp implements ReportDao {
                     System.out.println("ScanOn = "+objects[15] +"ScanBy = "+objects[16]);
                     json.put("ScanBy",objects[16]);
                     json.put("importdate",objects[18].toString());
+                    json.put("location",location);
                     json.put("Status", status);
                     jsonObject.put("record-" + i, json);
+
+                    System.out.println("latitude  ="+latitude+" longitude  = "+longitude);
                 }
                 i++;
 
@@ -330,5 +344,21 @@ public class ReportDaoImp implements ReportDao {
             }
         }
         return jsonObject;
+    }
+
+    public static String getlocation(String lati,String longi){
+      Context context=null;
+
+        try{
+
+
+        }catch (Exception e){
+
+        }
+
+
+
+
+        return "location";
     }
 }

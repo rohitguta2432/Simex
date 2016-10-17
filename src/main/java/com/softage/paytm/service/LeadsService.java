@@ -12,7 +12,7 @@ package com.softage.paytm.service;
  */
 public interface LeadsService {
 
-    public List<JSONObject> getAgentLeads(String agentCode);
+    public List<JSONObject> getAgentLeads(String agentCode,int timedeff,String cuurentDate);
     public String updateLeadStatus(String agentCode,String jobid,boolean response);
     public List<JSONObject> agentAcceptedLeads(String agentCode);
     public List<JSONObject> kycDone(String agentCode);

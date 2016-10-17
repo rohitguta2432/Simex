@@ -98,9 +98,11 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         JSONObject json=new JSONObject();
         Query query=null;
 
+
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
+
             String strQuery = "select new map (pm.addressStreet1 as address1,pm.addressStreet2 as address2,pm.city as city,pm.pincode as pincode,pm.email as email,pm.state as state) from PaytmMastEntity pm  where pm.customerPhone=:mobileNo";
             query=entityManager.createQuery(strQuery);
             query.setParameter("mobileNo",mobileNo);
@@ -108,7 +110,9 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             json.put("address1",map.get("address1").toString().replace("#",""));
             json.put("address2",map.get("address2").toString().replace("#",""));
             json.put("city",map.get("city"));
-            json.put("pincode",map.get("pincode"));
+            // put here static pincode for testing purpose
+          //  json.put("pincode",map.get("pincode"));
+            json.put("pincode","134109");
             json.put("email",map.get("email"));
             json.put("state",map.get("state"));
         }
@@ -131,12 +135,17 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         List list = new ArrayList<>();
         Query query=null;
         JSONObject json=new JSONObject();
+        EntityTransaction transaction = null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            transaction=  entityManager.getTransaction();
+    //        transaction.begin();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
             Query query1= entityManager.createNativeQuery("{call sp_GetTeleDataFinal1(?)}");
             query1.setParameter(1,username);
+         //   query1.setMaxResults(1);
             Object[] s = (Object[])query1.getSingleResult();
+       //     transaction.commit();
             if (s.length>0) {
                 json.put("mobileNo", s[0]);
                 System.out.println(s[0]);

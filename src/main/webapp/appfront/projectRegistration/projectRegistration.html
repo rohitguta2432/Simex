@@ -1,0 +1,103 @@
+
+<div class="page-body" style="padding: 2px 5px 24px;">
+
+    <div class="row">
+
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+            <div class="widget">
+                <div class="widget-header bordered-bottom bordered-themeprimary">
+                    <span class="widget-caption">Project Registration</span>
+                    <div class="widget-buttons">
+                        <a href="#" data-toggle="maximize">
+                            <i class="fa fa-expand"></i>
+                        </a>
+                        <a href="#" data-toggle="collapse">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                        <a href="#" data-toggle="dispose">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget-body">
+                    <div id="horizontal-form">
+                        <form class="form-horizontal" name="myForm" role="form" ng-submit="submit($event)" ng-controller="HRRegistration" novalidate>
+                            <!-- <div align="center">
+                                 <label style="color:green;margin-top: 0;">{{successTextAlert}}</label>
+                             </div>-->
+                            <div class="form-group col-sm-6" >
+                                <label  class="col-sm-3 control-label no-padding-right" >Name</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" minlength="2" maxlength="40"  name="emp_name" ng-model="emp_name" id="Text5" placeholder=" Name" ng-pattern ="/^[a-zA-Z\s]*$/"  required/>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="Text1" class="col-sm-3 control-label no-padding-right">Emp Code</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" minlength="6" maxlength="6" name="emp_code" ng-model="emp_code" id="Text1" placeholder="Employee Code"  validation="alpha|min_len:4|required" required/>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="Text7" class="col-sm-3 control-label no-padding-right">Mobile Number</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" minlength="10" maxlength="10" id="Text7" name="phone" data-phone ng-model="phone"   placeholder="Mobile Number" ng-pattern="/^[0-9]+$/" required />
+
+
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-6">
+                                <label for="Text8" class="col-sm-3 control-label no-padding-right">Circle Office</label>
+                                <div class="col-sm-9">
+                                    <select id="Text8" name="circlecode" class="form-control" required ng-model="circlecode" ng-options="circlecode.name for circlecode in circleofiices">
+                                        <option value="" selected>Select Circle Office</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group col-sm-6">
+                                <label for="Text3" class="col-sm-3 control-label no-padding-right">Emp Type</label>
+                                <div class="col-sm-9">
+                                    <!-- <input type="text" class="form-control" id="Text3"  ng-minlength="3" ng-maxlength="15" name="pin_code" ng-model="user.pin_code" placeholder="Pin Codes" allow-pattern="^\d{5}(?:[-\s]\d{4})?$" required/>-->
+                                    <select id="Text3" name="emp_Type"  class="form-control" required ng-model="emp_Type" >
+                                        <option value="HR">HR</option>
+                                        <option value="Tlec">Telecaller</option>
+                                        <option value="ADM">Admin</option>
+
+                                    </select>
+
+
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-5 col-sm-10">
+                                    <input type="submit" class="btn btn-azure shiny" value="Submit" >
+                                    <!-- <button type="button" class="btn btn-azure shiny">Submit</button>-->
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Body -->
+</div>
+<!-- /Page Content -->
+</div>
+<!-- /Page Content -->
+</div>
+<!-- Main Container -->

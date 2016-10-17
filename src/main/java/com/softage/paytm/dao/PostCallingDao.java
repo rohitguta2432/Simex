@@ -18,7 +18,7 @@ public interface PostCallingDao {
     public TelecallMastEntity getByPrimaryKey(String phoneNumber);
     public long checkAppointmentId(long appointmentid);
     public Map<String,Object> getData(long appointmentid,String mobileNo);
-    public String getAgentCode(String pinCode,Date date,Date date1,int maxAllocation,String agentCode);
+    public String getAgentCode(String pinCode,Date date,String date1,int maxAllocation,String agentCode);
     public String saveSmsSendEntity(SmsSendlogEntity smsSendlogEntity);
     public String saveTabNotification(TblNotificationLogEntity tblNotificationLogEntity);
     public AppointmentMastEntity getByCustomerNuber(String customerNumber);

@@ -18,11 +18,12 @@ import java.util.Map;
 /**
  * Created by SS0085 on 31-12-2015.
  */
+
 @Repository
 public class PostCallingDaoImp implements PostCallingDao {
     private static final Logger logger = LoggerFactory.getLogger(PostCallingDaoImp.class);
-   @Autowired
-   public EntityManagerFactory entityManagerFactory;
+    @Autowired
+    public EntityManagerFactory entityManagerFactory;
 
 
     @Override
@@ -113,7 +114,7 @@ public class PostCallingDaoImp implements PostCallingDao {
             entityManager = entityManagerFactory.createEntityManager();
             transaction = entityManager.getTransaction();
             transaction.begin();
-           // entityManager.persist(telecallMastEntity);
+            // entityManager.persist(telecallMastEntity);
             entityManager.merge(telecallMastEntity);
             transaction.commit();
             msg="done";
@@ -136,13 +137,17 @@ public class PostCallingDaoImp implements PostCallingDao {
         Query query=null;
         List<CircleMastEntity> list=new ArrayList<>();
         TelecallMastEntity telecallMastEntity=null;
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             String strQuery = "select telemast from TelecallMastEntity telemast where telemast.tmCustomerPhone=:phoneNumber";
             query=entityManager.createQuery(strQuery);
             query.setParameter("phoneNumber",phoneNumber);
             telecallMastEntity= (TelecallMastEntity)query.getSingleResult();
-          //  telecallMastEntity=entityManager.find(CircleMastEntity.class,1);
+            entityTransaction.commit();
+            //  telecallMastEntity=entityManager.find(CircleMastEntity.class,1);
 
         }catch (Exception e){
             e.printStackTrace();;
@@ -163,8 +168,10 @@ public class PostCallingDaoImp implements PostCallingDao {
         Query query=null;
         AllocationMastEntity allocationMastEntity=null;
         long appoinmentId=0;
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
             String strQuery = "select al.appointmentId from AllocationMastEntity al where al.appointmentId=:appointmentId and (al.confirmation=:con1 or al.confirmation=:con2 or al.finalConfirmation=:con3)";
             query=entityManager.createQuery(strQuery);
             query.setParameter("appointmentId",appointmentid);
@@ -172,6 +179,7 @@ public class PostCallingDaoImp implements PostCallingDao {
             query.setParameter("con2","Y");
             query.setParameter("con3","Y");
             appoinmentId = (long)query.getSingleResult();
+            entityTransaction.commit();
             //  telecallMastEntity=entityManager.find(CircleMastEntity.class,1);
 
         }catch (Exception e){
@@ -192,19 +200,23 @@ public class PostCallingDaoImp implements PostCallingDao {
         EntityManager entityManager=null;
         Query query=null;
         AllocationMastEntity allocationMastEntity=null;
-       Map<String, Object> map=new HashMap<>();
+        Map<String, Object> map=new HashMap<>();
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
 
             String strQuery = "select pc.pcdName as name,pc.pcdAddress as address,pc.pcdArea as area,pc.pcdCity as city,pc.pcdPincode as pinCode," +
-                              "pc.pcdVisitDate as visitDate,pc.pcdVisitTIme  as visitTime" +
-                             " from PaytmcustomerDataEntity pc join AppointmentMastEntity am on" +
+                    "pc.pcdVisitDate as visitDate,pc.pcdVisitTIme  as visitTime" +
+                    " from PaytmcustomerDataEntity pc join AppointmentMastEntity am on" +
                     " pc.pcdCustomerPhone=am.customerPhone where am.appointmentId=:appoinmentId" +
                     " and am.customerPhone=:customerno";
             query=entityManager.createQuery(strQuery);
             query.setParameter("appoinmentId",appointmentid);
             query.setParameter("customerno",customerNo);
             map=query.getHints();
+            entityTransaction.commit();
             //  telecallMastEntity=entityManager.find(CircleMastEntity.class,1);
 
         }catch (Exception e){
@@ -221,7 +233,7 @@ public class PostCallingDaoImp implements PostCallingDao {
     }
 
     @Override
-    public String getAgentCode(String pinCode, Date date, Date date1, int maxAllocation, String agentCode) {
+    public String getAgentCode(String pinCode, Date date, String visitDateTime, int maxAllocation, String agentCode) {
 
 
         EntityManager entityManager = null;
@@ -230,13 +242,18 @@ public class PostCallingDaoImp implements PostCallingDao {
         JSONObject jsonObject = new JSONObject();
         String agentCode1=null;
         //  String status = "Open";
-        try {
+        EntityTransaction entityTransaction=null;
+        try{
             entityManager = entityManagerFactory.createEntityManager();
-            query = entityManager.createNativeQuery("{call sp_AllocateAgent(?,?)}");
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
+            query = entityManager.createNativeQuery("{call sp_AllocateAgentNew(?,?,?)}");
             query.setParameter(1, pinCode);
             query.setParameter(2, date.toString());
-            List<Object[]> resultList = query.getResultList();
-            for (Object[] objects : resultList) {
+            query.setParameter(3, visitDateTime);
+            agentCode1 = (String)query.getSingleResult();
+            entityTransaction.commit();
+       /*     for (Object[] objects : resultList) {
                 if (objects.length > 0) {
 
                     JSONObject json = new JSONObject();
@@ -245,9 +262,7 @@ public class PostCallingDaoImp implements PostCallingDao {
                     agentCode1=objects[0].toString();
 
                 }
-
-
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -366,12 +381,16 @@ public class PostCallingDaoImp implements PostCallingDao {
         Query query=null;
         List<CircleMastEntity> list=new ArrayList<>();
         AppointmentMastEntity appointmentMastEntity=null;
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             String strQuery = "select am from AppointmentMastEntity am where am.customerPhone=:phoneNumber";
             query=entityManager.createQuery(strQuery);
             query.setParameter("phoneNumber",customerNumber);
             appointmentMastEntity= (AppointmentMastEntity)query.getSingleResult();
+            entityTransaction.commit();
 
         }catch (Exception e){
             e.printStackTrace();;
@@ -392,12 +411,16 @@ public class PostCallingDaoImp implements PostCallingDao {
         Query query=null;
         List<CircleMastEntity> list=new ArrayList<>();
         AppointmentMastEntity appointmentMastEntity=null;
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             String strQuery = "select am from AppointmentMastEntity am where am.appointmentId=:appointmentId";
             query=entityManager.createQuery(strQuery);
             query.setParameter("appointmentId",appointmentId);
             appointmentMastEntity= (AppointmentMastEntity)query.getSingleResult();
+            entityTransaction.commit();
 
         }catch (Exception e){
             e.printStackTrace();;
@@ -417,12 +440,16 @@ public class PostCallingDaoImp implements PostCallingDao {
         EntityManager entityManager=null;
         Query query=null;
         RemarkMastEntity RemarkMastEntity=null;
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             String strQuery = "select am from RemarkMastEntity am where am.remarksCode=:remarkCode";
             query=entityManager.createQuery(strQuery);
             query.setParameter("remarkCode",remarkCode);
             RemarkMastEntity= (RemarkMastEntity)query.getSingleResult();
+            entityTransaction.commit();
 
         }catch (Exception e){
             e.printStackTrace();;
@@ -441,11 +468,15 @@ public class PostCallingDaoImp implements PostCallingDao {
         EntityManager entityManager=null;
         Query query=null;
         List<RemarkMastEntity> remarkMastEntities=null;
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             String strQuery = "select am from RemarkMastEntity am ";
             query=entityManager.createQuery(strQuery);
             remarkMastEntities= query.getResultList();
+            entityTransaction.commit();
 
         }catch (Exception e){
             e.printStackTrace();;
@@ -464,12 +495,16 @@ public class PostCallingDaoImp implements PostCallingDao {
         EntityManager entityManager=null;
         Query query=null;
         ReceiverMastEntity receiverMastEntity=null;
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             String strQuery = "select am from ReceiverMastEntity am where am.receiverCode=:code";
             query=entityManager.createQuery(strQuery);
             query.setParameter("code",code);
             receiverMastEntity= (ReceiverMastEntity)query.getSingleResult();
+            entityTransaction.commit();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -516,14 +551,18 @@ public class PostCallingDaoImp implements PostCallingDao {
         Query query=null;
         JSONObject json=new JSONObject();
         String result="";
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
             Query query1= entityManager.createNativeQuery("{call sp_allocate1(?,?,?)}");
             query1.setParameter(1,allocationId);
             query1.setParameter(2,moblieno);
             query1.setParameter(3,agentcode);
             String s = (String)query1.getSingleResult();
+            entityTransaction.commit();
           /*  if (s.length>0) {
                *//* json.put("mobileNo", s[0]);
                 json.put("customerName", s[1]);*//*
@@ -546,12 +585,16 @@ public class PostCallingDaoImp implements PostCallingDao {
         EntityManager entityManager=null;
         Query query=null;
         ProcessMastEntity processMastEntity=null;
+        EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
             String strQuery = "select am from ProcessMastEntity am where am.processCode=:code";
             query=entityManager.createQuery(strQuery);
             query.setParameter("code",code);
             processMastEntity= (ProcessMastEntity)query.getSingleResult();
+            entityTransaction.commit();
 
         }catch (Exception e){
             e.printStackTrace();

@@ -23,7 +23,7 @@ public class LeadsDaoImp implements LeadsDao {
     private EntityManagerFactory entityManagerFactory;
 
     @Override
-    public List<JSONObject> getAgentLeads(String agentCode) {
+    public List<JSONObject> getAgentLeads(String agentCode,int timedeff,String cuurentDate) {
 
         EntityManager entityManager = null;
         List list = new ArrayList<>();
@@ -31,14 +31,17 @@ public class LeadsDaoImp implements LeadsDao {
         JSONArray array = new JSONArray();
         List<JSONObject> arrList = new ArrayList<>();
 
+
         try {
             entityManager = entityManagerFactory.createEntityManager();
-            Query query1 = entityManager.createNativeQuery("{call sp_AgentLeads(?)}");
+            Query query1 = entityManager.createNativeQuery("{call sp_AgentLeads(?,?)}");
             query1.setParameter(1, agentCode);
+            query1.setParameter(2, cuurentDate);
             List<Object[]> list1 = query1.getResultList();
             for (Object[] s : list1) {
                 JSONObject json = new JSONObject();
                 if (s.length > 0) {
+
                     json.put("JobNumber", s[0]);
                     json.put("PhoneNumber", s[1]);
                     json.put("CustomerName", s[2]);
@@ -47,6 +50,7 @@ public class LeadsDaoImp implements LeadsDao {
                     json.put("PinCode", s[5]);
                     json.put("AppointmentDate", s[6]);
                     json.put("AppointmentTime", s[7]);
+
                 }
                 arrList.add(json);
 

@@ -30,8 +30,8 @@ public class LeadsServiceImp implements LeadsService {
     private PostCallingDao postCallingDao;
 
     @Override
-    public List<JSONObject> getAgentLeads(String agentCode) {
-        return leadsDao.getAgentLeads(agentCode);
+    public List<JSONObject> getAgentLeads(String agentCode,int timedeff,String cuurentDate) {
+        return leadsDao.getAgentLeads(agentCode,timedeff,cuurentDate);
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.List;
  * Created by SS0085 on 02-02-2016.
  */
 public interface LeadsDao {
-    public List<JSONObject> getAgentLeads(String agentCode);
+    public List<JSONObject> getAgentLeads(String agentCode,int timedeff,String cuurentDate);
     public String jobConfirmtocustomer(long appointmentId,String customerPhone,String agentCode);
     public List<JSONObject> agentAcceptedLeads(String agentCode);
     public List<JSONObject> agentRejectedLeads(String agentCode);

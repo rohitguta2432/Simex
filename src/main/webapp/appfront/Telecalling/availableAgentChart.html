@@ -1,0 +1,50 @@
+<style>
+
+    .Available-b{background-color:green; color:#fff;}
+    .Booked-b{background-color:red; color:#fff;}
+
+</style>
+
+
+<div class="modal-header">
+    <h3 class="modal-title">Schedule Chart </h3>
+
+</div>
+<div class="modal-body">
+    <form class="form-horizontal">
+        <div class="form-group" ng-controller="telecalling">
+            <button   class="btn Available-b " ng-click="callgetscreen()" >Cancle</button>
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>Time Slot</th>
+                    <th ng-repeat="date1  in dateList2">
+                        {{date1}}
+                    </th>
+                </tr>
+
+                <tr ng-repeat="(key, value) in dataSets">
+                      <th>
+                        {{key}}:00-{{ key -- timediff }}:00
+                      </th>
+                        <th ng-repeat="(key1,val1)  in value">
+                            <table ng-repeat="(key2,val2)  in val1" >
+                                <tr>
+                                    <!--<th><a ng-href ng-click="selectDateTime(key,key2,'CON')">{{val2}}</a></th>-->
+                                    <th><button   class="btn {{val2}}-b " ng-click="selectDateTime(key,key2,'CON')">{{val2}}</button></th>
+                                </tr>
+                            </table>
+
+                        </th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+
+            </table>
+        </div>
+    </form>
+</div>
+
+
+

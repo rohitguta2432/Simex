@@ -89,9 +89,9 @@
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Pincode</label>
                                 <div class="col-sm-9">
-                                 <!--   <input type="text" class="form-control" name="pincode" ng-model="codes.pincode" ng-readonly="true" placeholder="Pincode" />-->
-                                    <input type="text" class="form-control" name="pincode" ng-model="codes.pincode"  placeholder="Pincode" />
-                                </div>
+                                <!--   <input type="text" class="form-control" name="pincode" ng-model="codes.pincode" ng-readonly="true" placeholder="Pincode" />-->
+                                <input type="text" class="form-control" name="pincode" ng-model="codes.pincode"  placeholder="Pincode" />
+                            </div>
                             </div>
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Landmark</label>
@@ -108,7 +108,7 @@
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Visit Date</label>
                                 <div class="col-sm-9">
-                                    <select  name="visit_date" ng-model="visit_date"  class="form-control"  ng-options="dates for dates in date" ng-change="getTime()" required>
+                                    <select  name="visit_date" ng-model="visit_date"  class="form-control"  ng-options="dates for dates in date" ng-change="getTimebyDate()" required>
                                         <option value="" selected="selected">Visit Date</option>
 
                                     </select>
@@ -121,7 +121,7 @@
                                 <div class="col-sm-9">
 
 
-                                    <select  name="visit_time" ng-model="visit_time"   class="form-control"  ng-options="time for time in times" required>
+                                    <select  name="visit_time" ng-model="visit_time"   class="form-control"  ng-options="time for time in times1" required>
                                         <option value="" selected="selected">Visit Time</option>
 
                                     </select>
@@ -139,6 +139,7 @@
                                 <div class="col-sm-offset-5 col-sm-10">
                                     <button type="submit" class="btn btn-azure shiny" ng-disabled="myForm.state.$invalid || myForm.visit_date.$invalid || myForm.status.$invalid || myForm.visit_time.$invalid">Submit</button>
                                     <input type="button" value="Call" id="Call" ng-click="calling()" class="btn btn-azure shiny">
+                                    <input type="button" value="AvailableSlot" id="AvailableSlot" ng-click="showchart()" class="btn btn-azure shiny">
                                 </div>
                             </div>
 
@@ -166,11 +167,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
         </div>
     </div>
 </div>

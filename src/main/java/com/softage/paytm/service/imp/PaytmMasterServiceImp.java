@@ -166,8 +166,14 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
 
     @Override
     public JSONObject telecallingScreen(String userName,int cirCode) {
+        JSONObject json=null;
+        for(int i=0; i<=5; i++){
+            json= paytmMasterDao.telecallingScreen(userName,cirCode);
+            if(json.size()>1){
+                break;
+            }
+        }
 
-       JSONObject json= paytmMasterDao.telecallingScreen(userName,cirCode);
         return json;
     }
 

@@ -22,6 +22,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
@@ -37,7 +38,6 @@ import org.springframework.web.multipart.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 
 
 /**
@@ -97,13 +97,13 @@ class HomeController {
         String dbUser = null;
         EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
 
-        String  session1   = (String)request.getAttribute(user);
-         if(session1!=null){
-             HttpSession session = request.getSession();
-             if(session!=null){
-                 session.invalidate();
-             }
-         }
+        String session1 = (String) request.getAttribute(user);
+        if (session1 != null) {
+            HttpSession session = request.getSession();
+            if (session != null) {
+                session.invalidate();
+            }
+        }
         if (emplogintableEntity != null) {
 
             if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
@@ -177,8 +177,8 @@ class HomeController {
             byte[] bytes = mpf.getBytes();
             mpf.getContentType();
             String filename = mpf.getOriginalFilename();
-            System.out.println("  file name  "+filename);
-            String extension  =filename.split("\\.")[1];
+            System.out.println("  file name  " + filename);
+            String extension = filename.split("\\.")[1];
 
             Random randomGenerator = new Random();
             int randomInt = randomGenerator.nextInt(10000);
@@ -199,7 +199,6 @@ class HomeController {
             BufferedOutputStream stream = new BufferedOutputStream(
 
 
-
                     new FileOutputStream(serverFile));
             stream.write(bytes);
             stream.close();
@@ -207,8 +206,8 @@ class HomeController {
             logger.info("Server File Location="
                     + serverFile.getAbsolutePath());
 
-            if(extension.equalsIgnoreCase("csv")) {
-		/*File serverFile=null;*/
+            if (extension.equalsIgnoreCase("csv")) {
+        /*File serverFile=null;*/
                 List<Map<String, String>> list = new ArrayList<Map<String, String>>();
                 List<Map<String, String>> list1 = new ArrayList<Map<String, String>>();
 
@@ -306,7 +305,7 @@ class HomeController {
                 jsonObject.put("status", "success");
             } else {
 
-                jsonObject =uploadExcel(serverFile,importBy,paytmMasterService,pinMasterService);
+                jsonObject = uploadExcel(serverFile, importBy, paytmMasterService, pinMasterService);
                 return jsonObject;
 
             }
@@ -351,6 +350,7 @@ class HomeController {
         int rejectCount = 0;
         int reopenCount = 0;
         String importBy = "System";
+        int circleCode = 0;
 
         TelecallMastEntity telecallMastEntity = null;
         PaytmMastEntity paytmMastEntity = null;
@@ -368,13 +368,13 @@ class HomeController {
 
             HttpSession session = request.getSession(false);
             if (session != null) {
-                importBy = (String) session.getAttribute("name");
+                circleCode = (Integer) session.getAttribute("cirCode");
             }
             byte[] bytes = mpf.getBytes();
             mpf.getContentType();
             String filename = mpf.getOriginalFilename();
-            System.out.println("  file name  "+filename);
-            String extension  =filename.split("\\.")[1];
+            System.out.println("  file name  " + filename);
+            String extension = filename.split("\\.")[1];
 
             Random randomGenerator = new Random();
             int randomInt = randomGenerator.nextInt(10000);
@@ -400,106 +400,12 @@ class HomeController {
             logger.info("Server File Location="
                     + serverFile.getAbsolutePath());
 
-            if(extension.equalsIgnoreCase("csv")) {
-		/*File serverFile=null;*/
-                List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-                List<Map<String, String>> list1 = new ArrayList<Map<String, String>>();
+            if (extension.equalsIgnoreCase("csv")) {
+                // we are getting  csv  file of agent then have to write code here
 
-
-                br = new BufferedReader(new FileReader(serverFile));
-                JSONObject json1 = new JSONObject();
-                int count = 0;
-                int successCount = 0;
-                while ((line = br.readLine()) != null) {
-                    String[] customerData = line.split(cvsSplitBy);
-                    int lent = customerData.length;
-                    JSONObject json = new JSONObject();
-                    if (count != 0) {
-                        HashMap<String, String> map = new HashMap<String, String>();
-                        HashMap<String, String> map1 = new HashMap<String, String>();
-                        if (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) {
-                            telecallMastEntity = callingService.getByPrimaryKey(customerData[3]);
-                            paytmMastEntity = paytmMasterService.getPaytmMaster(customerData[3]);
-                            if (telecallMastEntity != null) {
-
-                                ReOpenTaleCallMaster reOpenTaleCallMaster = new ReOpenTaleCallMaster();
-                                reOpenTaleCallMaster.setTmCustomerPhone(telecallMastEntity.getTmCustomerPhone());
-                                reOpenTaleCallMaster.setTmAttempts(telecallMastEntity.getTmAttempts());
-                                reOpenTaleCallMaster.setTmLastAttemptBy(telecallMastEntity.getTmLastAttemptBy());
-                                reOpenTaleCallMaster.setTmLastAttemptDateTime(telecallMastEntity.getTmLastAttemptDateTime());
-                                reOpenTaleCallMaster.setTmLastCallStatus(telecallMastEntity.getTmLastCallStatus());
-                                reOpenTaleCallMaster.setTmTeleCallStatus(telecallMastEntity.getTmTeleCallStatus());
-                                String msg = callingService.save(reOpenTaleCallMaster);
-                                logger.info("Customer Reopen>>>>>>> " + msg);
-                                byte attempt = 1;
-                                telecallMastEntity.setTmAttempts(attempt);
-                                reopenCount++;
-                                String msg1 = callingService.updateTeleCall(telecallMastEntity);
-                                logger.info("TeleCallMastEntity Successfully Updated>>>>>>>>  " + msg1);
-                            }
-                        }
-                        if ((customerData[12].length() == 6 && StringUtils.isNumeric(customerData[12]))) {
-                            int pincode = Integer.parseInt(customerData[12]);
-                            paytmPinMaster = pinMasterService.getByPincode(pincode);
-
-                        }
-                        if (!StringUtils.isEmpty(customerData[1]) && (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) && telecallMastEntity == null && paytmMastEntity == null) {
-                            System.out.println(customerData[0]);
-                            map.put("kycRequestId", customerData[0]);
-                            map.put("CustomerID", customerData[1]);
-                            map.put("Username", customerData[2]);
-                            map.put("CustomerPhone", customerData[3]);
-                            map.put("Email", customerData[4]);
-                            map.put("AddressID", customerData[5]);
-                            map.put("TimeSlot", customerData[6]);
-                            map.put("Priority", customerData[7]);
-                            map.put("AddressStreet1", customerData[8]);
-                            map.put("AddressStreet2", customerData[9]);
-                            map.put("City", customerData[10]);
-                            map.put("State", customerData[11]);
-                            map.put("Pincode", customerData[12]);
-                            map.put("AddressPhone", customerData[13]);
-                            map.put("VendorName", customerData[14]);
-                            map.put("StageId", customerData[15]);
-                            map.put("SubStageId", customerData[16]);
-                            map.put("CreatedTimestamp", customerData[17]);
-                            map.put("importBy", importBy);
-                            list.add(map);
-                            successCount++;
-                        } else if (paytmPinMaster == null && (customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3]) || paytmMastEntity != null)) {
-                            json.put("CustomerID", customerData[1]);
-                            json.put("Resion", "check pincode valid for current exits circle and it should be 6 digit and numeric , mobile should be 10 digit and numeric and not duplicate");
-                            json1.put("rejectedRecord" + count, json);
-
-                        } else if (paytmPinMaster == null) {
-                            json.put("CustomerID", customerData[1]);
-                            json.put("Resion", "This PinCode is not exist with current list of Agent so please add = " + customerData[12]);
-                            json1.put("rejectedRecord" + count, json);
-                        } else if ((customerData[3].length() != 10 || !StringUtils.isNumeric(customerData[3]) || paytmMastEntity != null)) {
-                            json.put("CustomerID", customerData[1]);
-                            json.put("Resion", " mobile should be 10 digit and numeric and not duplicate");
-                            json1.put("rejectedRecord" + count, json);
-                        }
-                    }
-                    count++;
-
-                }
-          /*  if (list1.size() > 0) {
-                paytmMasterService.uploadRejectedData(list1, serverFile1);
-
-            }*/
-                jsonObject.put("rejectedRecord", json1);
-
-                System.out.println("list   " + list);
-                result = paytmMasterService.savePaytmMaster(list);
-                rejectCount = (count - 1) - successCount - reopenCount;
-                if ("done".equalsIgnoreCase(result)) {
-                    result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + reopenCount + " Rejected Customer  =" + rejectCount;
-                }
-                jsonObject.put("status", "success");
             } else {
 
-                jsonObject =uploadAgent(serverFile,importBy,paytmMasterService,pinMasterService);
+                jsonObject = uploadAgent(serverFile, importBy, agentPaytmService, circleCode);
                 return jsonObject;
 
             }
@@ -530,11 +436,6 @@ class HomeController {
     }
 
 
-
-
-
-
-
     @RequestMapping(value = "/saveCircle", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     public String saveCircle() {
@@ -553,12 +454,12 @@ class HomeController {
 
     @RequestMapping(value = "/downloadList", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
-    public JSONObject downloadList(HttpServletRequest request, HttpServletResponse response ) {
+    public JSONObject downloadList(HttpServletRequest request, HttpServletResponse response) {
 
-                 String mobilenumber  =request.getParameter("mobilenumber");
-        JSONObject jsonObject=new JSONObject();
+        String mobilenumber = request.getParameter("mobilenumber");
+        JSONObject jsonObject = new JSONObject();
         try {
-            if (mobilenumber == null||mobilenumber.equalsIgnoreCase("undefined")) {
+            if (mobilenumber == null || mobilenumber.equalsIgnoreCase("undefined")) {
                 mobilenumber = "";
             }
             String to = request.getParameter("todate");
@@ -566,30 +467,30 @@ class HomeController {
             if (!to.equalsIgnoreCase("undefined") && !to.isEmpty() & !to.equalsIgnoreCase("")) {
                 from = from.substring(6, 10) + "-" + from.substring(3, 5) + "-" + from.substring(0, 2);
                 to = to.substring(6, 10) + "-" + to.substring(3, 5) + "-" + to.substring(0, 2);
-            }else {
-                from="";
-                to="";
+            } else {
+                from = "";
+                to = "";
             }
 
             jsonObject = qcStatusService.downloadList(mobilenumber, to, from);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-                  return  jsonObject;
+        return jsonObject;
 
-        }
+    }
 
     @RequestMapping(value = "/downloadPdf", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
-    public void downloadPdf(HttpServletRequest request, HttpServletResponse response ) {
+    public void downloadPdf(HttpServletRequest request, HttpServletResponse response) {
         String mobileNo = request.getParameter("mobileNo");
         File localPath = null;
-        FileInputStream fis=null;
-        OutputStream outStream=null;
-        StringBuffer strbr=new StringBuffer();
-        String imagePath="";
-        int circleCode=4;
-   //   String  filename="9068225200.pdf";
+        FileInputStream fis = null;
+        OutputStream outStream = null;
+        StringBuffer strbr = new StringBuffer();
+        String imagePath = "";
+        int circleCode = 4;
+        //   String  filename="9068225200.pdf";
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
@@ -599,14 +500,14 @@ class HomeController {
             String serverPath = System.getenv("JBOSS_BASE_DIR");
             logger.info("server path>>>>>>>   " + serverPath);
             /*File dir1 = new File(serverPath + File.separator + "RejectedFile");*/
-              localPath = new File(serverPath + File.separator + "downloadpdf");
+            localPath = new File(serverPath + File.separator + "downloadpdf");
             if (!localPath.exists()) {
                 localPath.mkdirs();
             }
 
-             String path=localPath.toString()+File.separator+ mobileNo + ".pdf";
+            String path = localPath.toString() + File.separator + mobileNo + ".pdf";
 
-             File localpdf=new File(path);
+            File localpdf = new File(path);
             JSONObject jsonObject = qcStatusService.qcCustomerDetails(mobileNo);
             String ftpImagePath = (String) jsonObject.get("imagePath");
 
@@ -616,69 +517,68 @@ class HomeController {
                 strbr.append("/");
             }
 
-                imagePath = strbr.toString();
-           //     imagePath=imagePath+File.separator;
-                localPath=new File(localPath+File.separator);
-                String result  =copyFtpToLocal(userService,path,imagePath,mobileNo,circleCode);
-                if(result.equalsIgnoreCase("done")) {
-                    localPath = new File(localPath + File.separator + mobileNo + ".pdf");
-                    FileInputStream inStream = new FileInputStream(localPath);
-                    String mimeType = "application/octet-stream";
-                    response.setContentType(mimeType);
-                    //     response.setContentLength((int) savePath.length());
+            imagePath = strbr.toString();
+            //     imagePath=imagePath+File.separator;
+            localPath = new File(localPath + File.separator);
+            String result = copyFtpToLocal(userService, path, imagePath, mobileNo, circleCode);
+            if (result.equalsIgnoreCase("done")) {
+                localPath = new File(localPath + File.separator + mobileNo + ".pdf");
+                FileInputStream inStream = new FileInputStream(localPath);
+                String mimeType = "application/octet-stream";
+                response.setContentType(mimeType);
+                //     response.setContentLength((int) savePath.length());
 
-                    // forces download
-                    String headerKey = "Content-Disposition";
-                    String headerValue = String.format("attachment; filename=\"%s\"", localPath.getName());
-                    response.setHeader(headerKey, headerValue);
+                // forces download
+                String headerKey = "Content-Disposition";
+                String headerValue = String.format("attachment; filename=\"%s\"", localPath.getName());
+                response.setHeader(headerKey, headerValue);
 
-                    // obtains response's output stream
-                    outStream = response.getOutputStream();
+                // obtains response's output stream
+                outStream = response.getOutputStream();
 
-                    byte[] buffer1 = new byte[4096];
-                    int bytesRead1 = -1;
+                byte[] buffer1 = new byte[4096];
+                int bytesRead1 = -1;
 
-                    while ((bytesRead1 = inStream.read(buffer1)) != -1) {
-                        outStream.write(buffer1, 0, bytesRead1);
-                    }
-
-
-                    System.out.println("File downloaded");
+                while ((bytesRead1 = inStream.read(buffer1)) != -1) {
+                    outStream.write(buffer1, 0, bytesRead1);
                 }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
-            try{
+
+
+                System.out.println("File downloaded");
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
                 fis.close();
                 outStream.close();
 
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
 
         }
-          return;
+        return;
 
     }
 
 
-    public  static String copyFtpToLocal(UserService userService,String localPath,String fptPath,String mobileNumber,int circle){
+    public static String copyFtpToLocal(UserService userService, String localPath, String fptPath, String mobileNumber, int circle) {
 
-          String ftpHost = "122.15.90.140";
-          String username = "administrator";
-          String password = "softage@tchad";
-           FTPClient ftpClient = new FTPClient();
-           FileOutputStream fos = null;
-           String result=null;
+        String ftpHost = "122.15.90.140";
+        String username = "administrator";
+        String password = "softage@tchad";
+        FTPClient ftpClient = new FTPClient();
+        FileOutputStream fos = null;
+        String result = null;
 
 
-
-        try{
+        try {
             JSONObject jsonObject1 = userService.getEmpFtpDetails(circle);
             String ftpIP = (String) jsonObject1.get("ftpIp");
             String userName1 = (String) jsonObject1.get("userName");
             String password1 = (String) jsonObject1.get("password");
-            logger.info("FPT File IP   "+ftpIP);
+            logger.info("FPT File IP   " + ftpIP);
             if (ftpIP != null && userName1 != null && password1 != null) {
                 ftpHost = ftpIP;
                 username = userName1;
@@ -697,29 +597,27 @@ class HomeController {
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             ftpClient.changeWorkingDirectory(fptPath);
             fos = new FileOutputStream(localPath);
-            ftpClient.retrieveFile(mobileNumber+".pdf", fos);
+            ftpClient.retrieveFile(mobileNumber + ".pdf", fos);
             fos.flush();
-            result="done";
+            result = "done";
 
-        }catch (Exception e){
-            result="err";
+        } catch (Exception e) {
+            result = "err";
             e.printStackTrace();
 
-        }finally {
-            try{
+        } finally {
+            try {
                 fos.close();
                 ftpClient.disconnect();
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-                logger.error("",e);
+                logger.error("", e);
             }
         }
 
 
-
-
-       return result;
+        return result;
     }
 
 
@@ -860,17 +758,16 @@ class HomeController {
             String dateList2[] = new String[3];
             List<String> dateList = new ArrayList<String>();
             List<String> dateListReject = new ArrayList<String>();
-            for (int i = 0; i < 7; i++) {
+      /*      for (int i = 0; i < 7; i++) {
 
                 dateList1[i] = format.format(date.getTime());
                 date.add(Calendar.DATE, 1);
                 dateList.add(dateList1[i]);
             }
-
+*/
             for (int i = 0; i < 3; i++) {
-
-                dateList2[i] = format.format(date.getTime());
                 date.add(Calendar.DATE, 1);
+                dateList1[i] = format.format(date.getTime());
                 dateListReject.add(dateList1[i]);
             }
             jsonObject.put("teleData", teleJson);
@@ -931,9 +828,9 @@ class HomeController {
             int pincode1 = Integer.parseInt(pincode);
             paytmPinMaster = pinMasterService.getByPincodeState(pincode1, circleOffice);
 
-           PaytmagententryEntity   paytmagententryEntity1 = agentPaytmService.findByPrimaryKey(agentCode);
+            PaytmagententryEntity paytmagententryEntity1 = agentPaytmService.findByPrimaryKey(agentCode);
 
-      //      PaytmagententryEntity   paytmagententryEntity2 = agentPaytmService.findByPincode(pincode);
+            //      PaytmagententryEntity   paytmagententryEntity2 = agentPaytmService.findByPincode(pincode);
 
             if (paytmPinMaster == null) {
                 msg = " Pincode not valid for this Circle try with valid Pincode ";
@@ -954,28 +851,27 @@ class HomeController {
 
             }*/
 
-            if(multipin.equals("N") && paytmagententryEntity1!=null){
+            if (multipin.equals("N") && paytmagententryEntity1 != null) {
                 msg = "Agent Already Available if you want to Insert select Multiple pin option";
                 jsonObject.put("msg", msg);
                 jsonObject.put("status", "error");
                 return jsonObject;
 
             }
-            if(paytmagententryEntity1!=null){
-               String result =  agentPaytmService.saveAgentPinMaster1(paytmagententryEntity);
+            if (paytmagententryEntity1 != null) {
+                String result = agentPaytmService.saveAgentPinMaster1(paytmagententryEntity);
                 if (result.equals("done")) {
                     msg = "Agent Insert with Multiple Pin";
                     jsonObject.put("msg", msg);
                     jsonObject.put("status", "success");
 
-                }else {
+                } else {
                     msg = "Agent not Registered ";
                     jsonObject.put("msg", msg);
                     jsonObject.put("status", "error");
                 }
                 return jsonObject;
             }
-
 
 
             msg = agentPaytmService.saveAgent(paytmagententryEntity, circleMastEntity);
@@ -1008,7 +904,7 @@ class HomeController {
         PaytmPinMaster paytmPinMaster = null;
         int circleCode = 0;
         CircleMastEntity circleMastEntity = null;
-        String password=null;
+        String password = null;
         try {
 
             String userName = "system";
@@ -1040,7 +936,7 @@ class HomeController {
             emplogintableEntity.setImportBy(userName);
             emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 
-             msg=   agentPaytmService.saveEmployee(emplogintableEntity);
+            msg = agentPaytmService.saveEmployee(emplogintableEntity);
 
             if ("done".equalsIgnoreCase(msg)) {
                 msg = "Agent Succesfully Registered";
@@ -1061,7 +957,6 @@ class HomeController {
 
         return jsonObject;
     }
-
 
 
     @RequestMapping(value = "/customerCalling", method = {RequestMethod.GET, RequestMethod.POST})
@@ -1085,28 +980,25 @@ class HomeController {
     }
 
 
+    public static JSONObject uploadExcel(File path, String importBy, PaytmMasterService paytmMasterService, PaytmPinMasterService pinMasterService) {
 
+        Row row = null;
 
-    public static JSONObject uploadExcel( File path,String importBy,PaytmMasterService paytmMasterService,PaytmPinMasterService pinMasterService) {
-
-        Row row=null;
-
-        PaytmMastEntity paytmMastEntity=null;
-        PaytmPinMaster paytmPinMaster=null;
+        PaytmMastEntity paytmMastEntity = null;
+        PaytmPinMaster paytmPinMaster = null;
         JSONObject jsonObject = new JSONObject();
-        String result="File Not Uploaded";
+        String result = "File Not Uploaded";
 
-        JSONObject json1=new JSONObject();
-        int count=0;
-        int successCount=0;
-        int rejectCount=0;
-        FileInputStream file=null;
+        JSONObject json1 = new JSONObject();
+        int count = 0;
+        int successCount = 0;
+        int rejectCount = 0;
+        FileInputStream file = null;
 
-        try
-        {
+        try {
             file = new FileInputStream(path);
 
-            ArrayList<Map<String,String>> list=new ArrayList<>();
+            ArrayList<Map<String, String>> list = new ArrayList<>();
 
             //Create Workbook instance holding reference to .xlsx file
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -1114,165 +1006,9 @@ class HomeController {
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbook.getSheetAt(0);
 
-            for(int i=0; i<1; i++){
+            for (int i = 0; i < 1; i++) {
 
-               row =sheet.getRow(i);
-                String customerNumber = row.getCell(0).getStringCellValue().trim();
-                String appointmantDate = row.getCell(1).getStringCellValue().trim();
-                String createdDate = row.getCell(2).getStringCellValue().trim();
-                String name = row.getCell(3).getStringCellValue().trim();
-                String mobileNumber = row.getCell(4).getStringCellValue().trim();
-
-                 String address = row.getCell(5).getStringCellValue().trim();
-
-                String leadStage = row.getCell(6).getStringCellValue().trim();
-
-                String leadSubStage  = row.getCell(7).getStringCellValue().trim();
-
-                String pincode = row.getCell(8).getStringCellValue().trim();
-
-                String city = row.getCell(9).getStringCellValue().trim();
-
-           //     String circle = row.getCell(10).getStringCellValue().trim();
-
-
-
-
-            }
-
-                for(int i=1; i<sheet.getPhysicalNumberOfRows(); i++) {
-                    JSONObject json=new JSONObject();
-                    System.out.println("row start");
-                    row = sheet.getRow(i);
-                    System.out.println("get row start");
-                    if (row != null && row.getCell(0) != null) {
-                        HashMap<String, String> map = new HashMap<String, String>();
-                        HashMap<String, String> map1 = new HashMap<String, String>();
-                        System.out.println(i);
-                        String customerId = row.getCell(0).getStringCellValue().trim();
-                    //    String appointmantDate = row.getCell(1).getStringCellValue().trim();
-                      //  String createdDate = row.getCell(2).getStringCellValue().trim();
-                        String name = row.getCell(3).getStringCellValue().trim();
-                        String  mobileNumber = row.getCell(4).getStringCellValue().trim();
-
-                        String address = row.getCell(5).getStringCellValue().trim();
-
-                        String leadStage = row.getCell(6).getStringCellValue().trim();
-
-                        String leadSubStage  = row.getCell(7).getStringCellValue().trim();
-
-                        String pincode = row.getCell(8).getStringCellValue().trim();
-
-                        String city = row.getCell(9).getStringCellValue().trim();
-
-
-
-                        if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
-                            paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
-
-                        }
-                        if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
-                            int pincode1 = Integer.parseInt(pincode);
-                            paytmPinMaster = pinMasterService.getByPincode(pincode1);
-
-                        }
-                        if(paytmMastEntity==null && (pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
-                            map.put("customerID", customerId);
-                            map.put("name", name);
-                            map.put("mobileNumber", mobileNumber);
-                            map.put("address", address);
-                            map.put("pincode", pincode);
-                            map.put("city", city);
-                            map.put("importBy", importBy);
-                            list.add(map);
-                            successCount++;
-
-                            if (paytmPinMaster==null){
-                                json.put("CustomerID", customerId);
-                                json.put("Resion", "This Customer Pincode not match with Softage Circles PinCode .");
-                                json1.put("rejectedRecord" + count, json);
-                            }
-                        }else if(paytmMastEntity!=null) {
-                            json.put("CustomerID", customerId);
-                            json.put("Resion", "Duplicate Customers");
-                            json1.put("rejectedRecord" + count, json);
-
-                        } else if((pincode.length() == 6 && StringUtils.isNumeric(pincode))){
-                            json.put("CustomerID", customerId);
-                            json.put("Resion", "PinCode not valid so please check It.");
-                            json1.put("rejectedRecord" + count, json);
-
-                        }
-
-
-
-
-                        }
-                    count++;
-                    }
-
-
-
-            jsonObject.put("rejectedRecord", json1);
-
-            System.out.println("list   " + list);
-            rejectCount = (count - 1) - successCount ;
-
-            jsonObject.put("status", "success");
-
-      //          result = paytmMasterService.savePaytmMasterExcel(list);
-                if ("done".equalsIgnoreCase(result)) {
-                    result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
-                }
-        }
-        catch (Exception e)
-        {
-            result="File Not Uploaded";
-            e.printStackTrace();
-
-        }
-        finally {
-            try {
-                file.close();
-
-            }catch (Exception e){
-
-            }
-        }
-        jsonObject.put("Message",result);
-        return jsonObject;
-    }
-
-    public static JSONObject uploadAgent( File path,String importBy,PaytmMasterService paytmMasterService,PaytmPinMasterService pinMasterService) {
-
-        Row row=null;
-
-        PaytmMastEntity paytmMastEntity=null;
-        PaytmPinMaster paytmPinMaster=null;
-        JSONObject jsonObject = new JSONObject();
-        String result="File Not Uploaded";
-
-        JSONObject json1=new JSONObject();
-        int count=0;
-        int successCount=0;
-        int rejectCount=0;
-        FileInputStream file=null;
-
-        try
-        {
-            file = new FileInputStream(path);
-
-            ArrayList<Map<String,String>> list=new ArrayList<>();
-
-            //Create Workbook instance holding reference to .xlsx file
-            XSSFWorkbook workbook = new XSSFWorkbook(file);
-
-            //Get first/desired sheet from the workbook
-            XSSFSheet sheet = workbook.getSheetAt(0);
-
-            for(int i=0; i<1; i++){
-
-                row =sheet.getRow(i);
+                row = sheet.getRow(i);
                 String customerNumber = row.getCell(0).getStringCellValue().trim();
                 String appointmantDate = row.getCell(1).getStringCellValue().trim();
                 String createdDate = row.getCell(2).getStringCellValue().trim();
@@ -1283,7 +1019,7 @@ class HomeController {
 
                 String leadStage = row.getCell(6).getStringCellValue().trim();
 
-                String leadSubStage  = row.getCell(7).getStringCellValue().trim();
+                String leadSubStage = row.getCell(7).getStringCellValue().trim();
 
                 String pincode = row.getCell(8).getStringCellValue().trim();
 
@@ -1292,12 +1028,10 @@ class HomeController {
                 //     String circle = row.getCell(10).getStringCellValue().trim();
 
 
-
-
             }
 
-            for(int i=1; i<sheet.getPhysicalNumberOfRows(); i++) {
-                JSONObject json=new JSONObject();
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                JSONObject json = new JSONObject();
                 System.out.println("row start");
                 row = sheet.getRow(i);
                 System.out.println("get row start");
@@ -1309,18 +1043,17 @@ class HomeController {
                     //    String appointmantDate = row.getCell(1).getStringCellValue().trim();
                     //  String createdDate = row.getCell(2).getStringCellValue().trim();
                     String name = row.getCell(3).getStringCellValue().trim();
-                    String  mobileNumber = row.getCell(4).getStringCellValue().trim();
+                    String mobileNumber = row.getCell(4).getStringCellValue().trim();
 
                     String address = row.getCell(5).getStringCellValue().trim();
 
                     String leadStage = row.getCell(6).getStringCellValue().trim();
 
-                    String leadSubStage  = row.getCell(7).getStringCellValue().trim();
+                    String leadSubStage = row.getCell(7).getStringCellValue().trim();
 
                     String pincode = row.getCell(8).getStringCellValue().trim();
 
                     String city = row.getCell(9).getStringCellValue().trim();
-
 
 
                     if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
@@ -1332,7 +1065,7 @@ class HomeController {
                         paytmPinMaster = pinMasterService.getByPincode(pincode1);
 
                     }
-                    if(paytmMastEntity==null && (pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                    if (paytmMastEntity == null && (pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
                         map.put("customerID", customerId);
                         map.put("name", name);
                         map.put("mobileNumber", mobileNumber);
@@ -1343,19 +1076,128 @@ class HomeController {
                         list.add(map);
                         successCount++;
 
-                        if (paytmPinMaster==null){
+                        if (paytmPinMaster == null) {
                             json.put("CustomerID", customerId);
                             json.put("Resion", "This Customer Pincode not match with Softage Circles PinCode .");
                             json1.put("rejectedRecord" + count, json);
                         }
-                    }else if(paytmMastEntity!=null) {
+                    } else if (paytmMastEntity != null) {
                         json.put("CustomerID", customerId);
                         json.put("Resion", "Duplicate Customers");
                         json1.put("rejectedRecord" + count, json);
 
-                    } else if((pincode.length() == 6 && StringUtils.isNumeric(pincode))){
+                    } else if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
                         json.put("CustomerID", customerId);
                         json.put("Resion", "PinCode not valid so please check It.");
+                        json1.put("rejectedRecord" + count, json);
+
+                    }
+
+
+                }
+                count++;
+            }
+
+
+            jsonObject.put("rejectedRecord", json1);
+
+            System.out.println("list   " + list);
+            rejectCount = (count - 1) - successCount;
+
+            jsonObject.put("status", "success");
+
+                result = paytmMasterService.savePaytmMasterExcel(list);
+            if ("done".equalsIgnoreCase(result)) {
+                result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
+            }
+        } catch (Exception e) {
+            result = "File Not Uploaded";
+            e.printStackTrace();
+
+        } finally {
+            try {
+                file.close();
+
+            } catch (Exception e) {
+
+            }
+        }
+        jsonObject.put("Message", result);
+        return jsonObject;
+    }
+
+    public static JSONObject uploadAgent(File path, String importBy, AgentPaytmService agentPaytmService, int circleCode) {
+
+        Row row = null;
+
+        PaytmMastEntity paytmMastEntity = null;
+        PaytmPinMaster paytmPinMaster = null;
+        JSONObject jsonObject = new JSONObject();
+        String result = "File Not Uploaded";
+
+        JSONObject json1 = new JSONObject();
+        int count = 0;
+        int successCount = 0;
+        int rejectCount = 0;
+        FileInputStream file = null;
+
+        try {
+            file = new FileInputStream(path);
+
+            ArrayList<Map<String, String>> list = new ArrayList<>();
+
+            //Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+
+            //Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 0; i < 1; i++) {
+
+                row = sheet.getRow(i);
+                String agentName = row.getCell(0).getStringCellValue().trim();
+                String agentCode = row.getCell(1).getStringCellValue().trim();
+                String mobileNo = row.getCell(2).getStringCellValue().trim();
+                String pinCode = row.getCell(3).getStringCellValue().trim();
+                String circle = row.getCell(4).getStringCellValue().trim();
+
+                String spoke = row.getCell(5).getStringCellValue().trim();
+
+                String avialableSlot = row.getCell(6).getStringCellValue().trim();
+
+
+            }
+
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                JSONObject json = new JSONObject();
+                System.out.println("row start");
+                row = sheet.getRow(i);
+                System.out.println("get row start");
+                if (row != null && row.getCell(0) != null) {
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    HashMap<String, String> map1 = new HashMap<String, String>();
+                    System.out.println(i);
+                    String agentName = row.getCell(0).getStringCellValue().trim();
+                    String agentCode = row.getCell(1).getStringCellValue().trim();
+                    String mobileNo = NumberToTextConverter.toText(row.getCell(2).getNumericCellValue());
+                    String pincode = NumberToTextConverter.toText(row.getCell(3).getNumericCellValue());
+                    String circle = row.getCell(4).getStringCellValue().trim();
+                    String spoke = row.getCell(5).getStringCellValue().trim();
+                    String avialableSlot = row.getCell(6).getStringCellValue().trim();
+                    if ((pincode.length() == 6 && StringUtils.isNumeric(pincode)) && ((mobileNo.length() == 10 && StringUtils.isNumeric(mobileNo)))) {
+                        map.put("agentName", agentName);
+                        map.put("agentCode", agentCode);
+                        map.put("mobileNo", mobileNo);
+                        map.put("circle", circle);
+                        map.put("pincode", pincode);
+                        map.put("spoke", spoke);
+                        map.put("avialableSlot", avialableSlot);
+                        map.put("importBy", importBy);
+                        list.add(map);
+                        successCount++;
+
+                    } else {
+                        json.put("Resion", " Please check Mobile Number and PinCode for Agentcode " + agentCode);
                         json1.put("rejectedRecord" + count, json);
 
                     }
@@ -1365,35 +1207,31 @@ class HomeController {
             }
 
 
-
             jsonObject.put("rejectedRecord", json1);
 
             System.out.println("list   " + list);
-            rejectCount = (count - 1) - successCount ;
+            rejectCount = (count - 1) - successCount;
 
             jsonObject.put("status", "success");
 
-            result = paytmMasterService.savePaytmMasterExcel(list);
+            result = agentPaytmService.saveBulkAgent(list, circleCode);
 
             if ("done".equalsIgnoreCase(result)) {
                 result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
             }
-        }
-        catch (Exception e)
-        {
-            result="File Not Uploaded";
+        } catch (Exception e) {
+            result = "File Not Uploaded";
             e.printStackTrace();
 
-        }
-        finally {
+        } finally {
             try {
                 file.close();
 
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
-        jsonObject.put("Message",result);
+        jsonObject.put("Message", result);
         return jsonObject;
     }
 
@@ -1410,12 +1248,12 @@ class HomeController {
         String path1 = "";
         String userName = "system";
         String agentNo = "";
-        String ftpPath="";
+        String ftpPath = "";
         String url = "";
-        int circleCode=4;
+        int circleCode = 4;
         String imagePath = "/F6Images/20072016/4/KYCNumber1445/";
         JSONObject json = new JSONObject();
-        StringBuffer strbr=new StringBuffer("/");
+        StringBuffer strbr = new StringBuffer("/");
         String customerNumber = request.getParameter("customer_Number");
 
         try {
@@ -1476,10 +1314,10 @@ class HomeController {
 
                 String status = generatePdf(imagePath, customerNumber, localPath, username, password, ftpHost);
                 ftpPath = url + imagePath + customerNumber + ".pdf";
-                System.out.println("pdfurl = "+ftpPath);
+                System.out.println("pdfurl = " + ftpPath);
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1495,7 +1333,7 @@ class HomeController {
 
 
 /*String user="poc";
-		String password="P0@C@0@1234";
+        String password="P0@C@0@1234";
 		String ip="182.19.6.70";*/
         String port = "";
         File file = null;
@@ -1664,227 +1502,362 @@ class HomeController {
         return jsonObject;
     }
 
-    @RequestMapping(value = "/getAllCircle", method = {RequestMethod.GET, RequestMethod.POST})
+
+    @RequestMapping(value = "/getAvailableSlot", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public JSONObject getAllCircle(HttpServletRequest request) {
+    public JSONObject getAvailableSlot(HttpServletRequest request) {
         int circleCode = 4;
+        int pincode1 = 0;
         JSONObject jsonObject = new JSONObject();
-        JSONArray list=new JSONArray();
+        JSONObject finalJson=new JSONObject();
+
+        int timediff=1;
+        List<String> dateArray= new ArrayList<String>();
         try {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                circleCode = (Integer) session.getAttribute("cirCode");
+
+
+            String pincode = request.getParameter("pincode");
+
+
+            List<String> agentList = agentPaytmService.getAgentPinMastList(pincode);
+
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            Calendar date = Calendar.getInstance();
+            String dateList1[] = new String[7];
+            String dateList2[] = new String[3];
+            List<String> dateListReject = new ArrayList<String>();
+
+
+            for (int i = 0; i < 3; i++) {
+                date.add(Calendar.DATE, 1);
+                dateList1[i] = format.format(date.getTime());
+                dateListReject.add(dateList1[i]);
+
+
+            }
+
+            for (String date1 : dateListReject) {
+                date1 = date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
+                dateArray.add(date1);
+
+            }
+            List<JSONObject> finalList=new ArrayList<JSONObject>();
+
+            for (Integer i = 9; i <= 18; i=i+timediff)
+                {
+
+
+                    String time = i.toString();
+                    Integer nextTime=i+timediff;
+                    String strNextTime=nextTime.toString();
+                 //   JSONArray jsonArray = new JSONArray();
+                    List<JSONObject> jsonArray=new ArrayList<JSONObject>();
+
+                    for (String date1 : dateListReject) {
+                        System.out.println(" date   " + date1);
+                        String date2 = date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
+                        JSONObject jsonObject1 = postCallingService.getAvailableslot(date2, agentList, time,date1);
+                        jsonArray.add(jsonObject1);
+
+                    }
+
+                    String timeKey=time+":00-"+strNextTime+":00";
+                    jsonObject.put(i, jsonArray);
+                   // finalList.add(jsonObject);
+
+                }
+
+                 finalJson.put("slotList",jsonObject);
+                 finalJson.put("dateList",dateArray);
+                 finalJson.put("timedeff",timediff);
+
+             //   finalArray.add(jsonObject);
+
+
+            }catch(Exception e){
+                e.printStackTrace();
+                logger.error("", e);
             }
 
 
-            List<CircleMastEntity> circles = circleService.getCircleList();
 
-            for (CircleMastEntity circle :circles) {
-                JSONObject jsonObject1 = new JSONObject();
-                jsonObject1.put("name",circle.getCircleName());
-                jsonObject1.put("code",circle.getCirCode());
-                list.add(jsonObject1);
+            return finalJson;
+        }
+
+    @RequestMapping(value = "/getAvailableSlotByDate", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getAvailableSlotByDate(HttpServletRequest request) {
+        int circleCode = 4;
+        int pincode1 = 0;
+        int timediff=1;
+        JSONObject jsonObject = new JSONObject();
+        JSONObject finalJson=new JSONObject();
+
+        List<String> timeList= new ArrayList<String>();
+        try {
+
+
+            String pincode = request.getParameter("pincode");
+            String date1 = request.getParameter("date");
+            date1 = date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
+
+
+            List<String> agentList = agentPaytmService.getAgentPinMastList(pincode);
+
+
+            for (Integer i = 9; i <= 18; i=i+timediff)
+            {
+
+                String time = i.toString();
+                JSONArray jsonArray = new JSONArray();
+
+
+                    System.out.println(" date   " + date1);
+                    JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentList, time,date1);
+                    String result = (String)jsonObject1.get(date1);
+                    if(result.equalsIgnoreCase("Available")){
+                        timeList.add(time+":00");
+                    }
             }
 
-            jsonObject.put("circles", list);
+            finalJson.put("timeList",timeList);
 
-        } catch (Exception e) {
+
+            //   finalArray.add(jsonObject);
+
+
+        }catch(Exception e){
             e.printStackTrace();
             logger.error("", e);
         }
-        return jsonObject;
+
+
+
+        return finalJson;
     }
 
 
 
 
-    @RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject getSpokeCode(@RequestParam(value = "circleName") String circleName) {
-        JSONObject jsonObject = new JSONObject();
-        List<String> spokeList = circleService.getSpokeList(circleName);
-        jsonObject.put("spokeList", spokeList);
-        return jsonObject;
-    }
 
-    @RequestMapping(value = "/postCalling", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject postCallig(HttpServletRequest request, HttpServletResponse response) {
-        String result = null;
-        String importby = "System";
-        String importType = "Admin";
-        JSONObject jsonObject = new JSONObject();
-        try {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                importType = (String) session.getAttribute("role");
+    @RequestMapping(value = "/getAllCircle", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject getAllCircle (HttpServletRequest request){
+            int circleCode = 4;
+            JSONObject jsonObject = new JSONObject();
+            JSONArray list = new JSONArray();
+            try {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    circleCode = (Integer) session.getAttribute("cirCode");
+                }
+
+
+                List<CircleMastEntity> circles = circleService.getCircleList();
+
+                for (CircleMastEntity circle : circles) {
+                    JSONObject jsonObject1 = new JSONObject();
+                    jsonObject1.put("name", circle.getCircleName());
+                    jsonObject1.put("code", circle.getCirCode());
+                    list.add(jsonObject1);
+                }
+
+                jsonObject.put("circles", list);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("", e);
             }
-            String number = request.getParameter("mobileNo");
-            String name = request.getParameter("name");
-            String address = request.getParameter("address");
-            String area = request.getParameter("area");
-            String emailId = request.getParameter("emailId");
-            String city = request.getParameter("city");
-            String state = request.getParameter("state");
-            String pinCode = request.getParameter("pincode");
-            String landMark = request.getParameter("landmark");
-            String visitDate = request.getParameter("visitDate");
-            String visitTime1 = request.getParameter("visitTime");
-            String status = request.getParameter("status");
-            Map<String, String> map = new HashMap<String, String>();
-            String[] visitTime = visitTime1.split(":");
-            System.out.println(visitTime[0]);
-            map.put("number", number);
-            map.put("name", name);
-            map.put("address", address);
-            map.put("area", area);
-            map.put("emailId", emailId);
-            map.put("city", city);
-            map.put("state", state);
-            map.put("pinCode", pinCode);
-            map.put("landmark", landMark);
-            map.put("visitDate", visitDate);
-            map.put("visitTime", visitTime[0]);
-            map.put("status", status);
-            map.put("importby", importby);
-            map.put("importType", importType);
-            result = postCallingService.saveCallingData(map);
-            logger.info(" Result   " + result);
+            return jsonObject;
+        }
+
+
+        @RequestMapping(value = "/getSpokeCode", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject getSpokeCode (@RequestParam(value = "circleName") String circleName){
+            JSONObject jsonObject = new JSONObject();
+            List<String> spokeList = circleService.getSpokeList(circleName);
+            jsonObject.put("spokeList", spokeList);
+            return jsonObject;
+        }
+
+        @RequestMapping(value = "/postCalling", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject postCallig (HttpServletRequest request, HttpServletResponse response){
+            String result = null;
+            String importby = "System";
+            String importType = "Admin";
+            JSONObject jsonObject = new JSONObject();
+            try {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    importType = (String) session.getAttribute("role");
+                }
+                String number = request.getParameter("mobileNo");
+                String name = request.getParameter("name");
+                String address = request.getParameter("address");
+                String area = request.getParameter("area");
+                String emailId = request.getParameter("emailId");
+                String city = request.getParameter("city");
+                String state = request.getParameter("state");
+                String pinCode = request.getParameter("pincode");
+                String landMark = request.getParameter("landmark");
+                String visitDate = request.getParameter("visitDate");
+                String visitTime1 = request.getParameter("visitTime");
+                String status = request.getParameter("status");
+                Map<String, String> map = new HashMap<String, String>();
+                String[] visitTime = visitTime1.split(":");
+                System.out.println(visitTime[0]);
+                map.put("number", number);
+                map.put("name", name);
+                map.put("address", address);
+                map.put("area", area);
+                map.put("emailId", emailId);
+                map.put("city", city);
+                map.put("state", state);
+                map.put("pinCode", pinCode);
+                map.put("landmark", landMark);
+                map.put("visitDate", visitDate);
+                map.put("visitTime", visitTime[0]);
+                map.put("status", status);
+                map.put("importby", importby);
+                map.put("importType", importType);
+                result = postCallingService.saveCallingData(map);
+                logger.info(" Result   " + result);
            /* if ("done".equalsIgnoreCase(result)) {
                 result = "success";
             }*/
-        } catch (Exception e) {
-            logger.error("", e);
-            e.printStackTrace();
-            result = "Customer Records not Inserted ";
-        }
-        jsonObject.put("status", "success");
-        jsonObject.put("msg", result);
-        return jsonObject;
-    }
-
-
-    @RequestMapping(value = "/againCallingStatus", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject againCallingStatus(HttpServletRequest request, HttpServletResponse response) {
-        String result = null;
-        String importby = "System";
-        JSONObject jsonObject = new JSONObject();
-        String message="";
-        int cirCode=0;
-        String role=null;
-
-    try {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                cirCode = (Integer) session.getAttribute("cirCode");
-                role = (String) session.getAttribute("role");
+            } catch (Exception e) {
+                logger.error("", e);
+                e.printStackTrace();
+                result = "Customer Records not Inserted ";
             }
-
-            String mobileNo = request.getParameter("mobileNo");
-            String callingDate= request.getParameter("visit_date");
-            String callingTime= request.getParameter("visit_time");
-            String dateTime = callingDate.substring(6, 10) + "-" + callingDate.substring(3, 5) + "-" + callingDate.substring(0, 2)+" "+callingTime+":00";
-
-             result=callTimeService.insertCallTimeDetails(mobileNo,dateTime,cirCode,importby);
-
-        if (result.equals("done")){
-            message="success";
-        }else {
-            message="error";
+            jsonObject.put("status", "success");
+            jsonObject.put("msg", result);
+            return jsonObject;
         }
 
-        } catch (Exception e) {
-            e.printStackTrace();
 
-            logger.error("error to posting data ", e);
-        }
-        jsonObject.put("status", "success");
-        return jsonObject;
-    }
+        @RequestMapping(value = "/againCallingStatus", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject againCallingStatus (HttpServletRequest request, HttpServletResponse response){
+            String result = null;
+            String importby = "System";
+            JSONObject jsonObject = new JSONObject();
+            String message = "";
+            int cirCode = 0;
+            String role = null;
 
+            try {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    cirCode = (Integer) session.getAttribute("cirCode");
+                    role = (String) session.getAttribute("role");
+                }
 
-    @RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject postCallingStatus(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, String> map = new HashMap<String, String>();
-        String result = null;
-        String importby = "System";
-        JSONObject jsonObject = new JSONObject();
-        String message="";
-        String importType = "Admin";
+                String mobileNo = request.getParameter("mobileNo");
+                String callingDate = request.getParameter("visit_date");
+                String callingTime = request.getParameter("visit_time");
+                String dateTime = callingDate.substring(6, 10) + "-" + callingDate.substring(3, 5) + "-" + callingDate.substring(0, 2) + " " + callingTime + ":00";
 
-        int cirCode=0;
-        String role=null;
-        try {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                cirCode = (Integer) session.getAttribute("cirCode");
-                role = (String) session.getAttribute("role");
+                result = callTimeService.insertCallTimeDetails(mobileNo, dateTime, cirCode, importby);
 
+                if (result.equals("done")) {
+                    message = "success";
+                } else {
+                    message = "error";
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                logger.error("error to posting data ", e);
             }
-            if(role.equals("ADM")){
+            jsonObject.put("status", "success");
+            return jsonObject;
+        }
+
+
+        @RequestMapping(value = "/postCallingStatus", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject postCallingStatus (HttpServletRequest request, HttpServletResponse response){
+            Map<String, String> map = new HashMap<String, String>();
+            String result = null;
+            String importby = "System";
+            JSONObject jsonObject = new JSONObject();
+            String message = "";
+            String importType = "Admin";
+
+            int cirCode = 0;
+            String role = null;
+            try {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    cirCode = (Integer) session.getAttribute("cirCode");
+                    role = (String) session.getAttribute("role");
+
+                }
+                if (role.equals("ADM")) {
+                    importType = "Admin";
+                }
+
+                if (role.equals("A1")) {
+                    importType = "Agent";
+                }
+                if (role.equals("HR")) {
+                    importType = "HR";
+                }
                 importType = "Admin";
+                String mobileNo = request.getParameter("mobileNo");
+                String status = request.getParameter("status");
+                String callingDate = request.getParameter("visit_date");
+                String callingTime = request.getParameter("visit_time");
+
+                if (status.equals("2-CB")) {
+                    String dateTime = callingDate.substring(6, 10) + "-" + callingDate.substring(3, 5) + "-" + callingDate.substring(0, 2) + " " + callingTime + ":00";
+                    result = callTimeService.insertCallTimeDetails(mobileNo, dateTime, cirCode, importby);
+                }
+
+
+                System.out.println("callingTime " + callingDate + "callingTime " + callingTime);
+
+
+                map.put("number", mobileNo);
+                map.put("status", status);
+                map.put("importby", importby);
+                map.put("importType", importType);
+                result = postCallingService.saveCallingData(map);
+                if ("done".equalsIgnoreCase(result)) {
+                    result = "success";
+                } else {
+                    result = "error";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                logger.error("error to posting data ", e);
             }
-
-            if(role.equals("A1")){
-                importType = "Agent";
-            }
-            if(role.equals("HR")){
-                importType = "HR";
-            }
-           importType = "Admin";
-            String mobileNo = request.getParameter("mobileNo");
-            String status = request.getParameter("status");
-            String callingDate= request.getParameter("visit_date");
-            String callingTime= request.getParameter("visit_time");
-
-            if(status.equals("2-CB")){
-                String dateTime = callingDate.substring(6, 10) + "-" + callingDate.substring(3, 5) + "-" + callingDate.substring(0, 2)+" "+callingTime+":00";
-                result=callTimeService.insertCallTimeDetails(mobileNo,dateTime,cirCode,importby);
-            }
-
-
-            System.out.println("callingTime "+callingDate +"callingTime "+callingTime );
-
-
-
-            map.put("number", mobileNo);
-            map.put("status", status);
-            map.put("importby", importby);
-            map.put("importType", importType);
-            result = postCallingService.saveCallingData(map);
-            if ("done".equalsIgnoreCase(result)) {
-                result = "success";
-            } else {
-                result = "error";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            logger.error("error to posting data ", e);
+            jsonObject.put("status", result);
+            return jsonObject;
         }
-        jsonObject.put("status", result);
-        return jsonObject;
-    }
 
-    @RequestMapping(value = "/getReportsType", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject getReportTypes() {
-        JSONObject jsonObject = new JSONObject();
-        List<ReportMastEntity> reportTypes = circleService.getReporttypes();
-        jsonObject.put("reportTypes", reportTypes);
-        return jsonObject;
-    }
+        @RequestMapping(value = "/getReportsType", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject getReportTypes () {
+            JSONObject jsonObject = new JSONObject();
+            List<ReportMastEntity> reportTypes = circleService.getReporttypes();
+            jsonObject.put("reportTypes", reportTypes);
+            return jsonObject;
+        }
 
-    @RequestMapping(value = "/getReports", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject getReports(HttpServletRequest request) {
+        @RequestMapping(value = "/getReports", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject getReports (HttpServletRequest request){
 
-        JSONObject jsonObject = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
 
 	/*	HttpSession session=request.getSession(false);
         if(session!=null){
@@ -1896,291 +1869,285 @@ class HomeController {
 			System.out.println(System.getenv().get(key));
 		});*/
 
-        // base directory  JBOSS_BASE_DIR
+            // base directory  JBOSS_BASE_DIR
 
 
-        //JBoss log directory   JBOSS_LOG_DIR
+            //JBoss log directory   JBOSS_LOG_DIR
 
-        String from = request.getParameter("from");
-        String to = request.getParameter("to");
-        String type = request.getParameter("type");
-        from = from.substring(6, 10) + "-" + from.substring(3, 5) + "-" + from.substring(0, 2);
-        to = to.substring(6, 10) + "-" + to.substring(3, 5) + "-" + to.substring(0, 2);
-        jsonObject = reportService.getReports(from, to, type);
+            String from = request.getParameter("from");
+            String to = request.getParameter("to");
+            String type = request.getParameter("type");
+            from = from.substring(6, 10) + "-" + from.substring(3, 5) + "-" + from.substring(0, 2);
+            to = to.substring(6, 10) + "-" + to.substring(3, 5) + "-" + to.substring(0, 2);
+            jsonObject = reportService.getReports(from, to, type);
 
-        return jsonObject;
-    }
-
-    @RequestMapping(value = "/qcstatus" ,method ={ RequestMethod.POST,RequestMethod.GET})
-    @ResponseBody
-    public JSONObject getQcStatus(HttpServletRequest request){
-        String result="";
-        JSONObject jsonObject=new JSONObject();
-        String mobileNo=request.getParameter("mobileNo");
-        String status=request.getParameter("status");
-        String rejectedPage=request.getParameter("rejectedPage");
-        String remarks=request.getParameter("remarks");
-        String message=qcStatusService.updateQcStatus(mobileNo,status,rejectedPage,remarks);
-        //JSONObject mobileNum=qcStatusService.getMobileNumber();
-       // String mobileNumber= (String) mobileNum.get("mobile");
-      //  JSONObject imgPath=qcStatusService.qcCustomerDetails(mobileNumber);
-      //  String img=(String)imgPath.get(1);
-
-         String message1=qcStatusService.saveQcStatus(mobileNo,status,rejectedPage,remarks);
-        if(message.equals("done") && status.equals("A")){
-            result="QC status successfully inserted successfully";
-            jsonObject.put("result",result);
-            jsonObject.put("mobile",mobileNo);
-         //   jsonObject.put("imagePath",img);
-            logger.info(" Result   " + result);
-        }
-        else if (message.equals("done") && status.equals("R")){
-            result="QC status successfully rejected successfully";
-            jsonObject.put("result",result);
-            jsonObject.put("mobile",mobileNo);
-      //      jsonObject.put("imagePath",img);
-            logger.info(" Result   " + result);
-        }
-        else{
-            result="Unable to insert data";
-            jsonObject.put("result",result);
-            jsonObject.put("mobile",mobileNo);
-           // jsonObject.put("imagePath",img);
-            logger.info(" Result   " + result);
-        }
-        return jsonObject;
-
-    }
-
-
-    @RequestMapping(value = "/getCustomer",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public  JSONObject getCustomerMobileNumber(){
-
-        return  qcStatusService.getMobileNumber();
-    }
-
-
-
-    @RequestMapping(value = "/getInwordFrom",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public  JSONObject getInwordFrom(HttpServletRequest request ){
-        JSONObject json=new JSONObject();
-        String importby=null;
-        int cirCode=0;
-        String role=null;
-
-        try {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                cirCode = (Integer) session.getAttribute("cirCode");
-                role = (String) session.getAttribute("role");
-
-            }
-
-            String getinwardfrom = batchService.getinwardfrom(cirCode);
-            json.put("inWordFrom", getinwardfrom);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return  json;
-    }
-
-    @RequestMapping(value = "/createBatch",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public  JSONObject createBatch(HttpServletRequest request,HttpServletResponse response){
-        String inWordFrom = request.getParameter("inWordFrom");
-        String inWordTo = request.getParameter("inWordTo");
-        String importby=null;
-        int cirCode=0;
-        String role=null;
-        JSONObject  jsonObject=null;
-        try {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                cirCode = (Integer) session.getAttribute("cirCode");
-                role = (String) session.getAttribute("role");
-
-            }
-
-            int inFrom=Integer.parseInt(inWordFrom);
-            int inTO=Integer.parseInt(inWordTo);
-            int totaldoc=inTO-inFrom+1;
-            jsonObject  = batchService.saveBatch(inFrom,inTO,totaldoc,cirCode,importby);
-
-        }catch (Exception e){
-            e.printStackTrace();
-            logger.error("",e);
+            return jsonObject;
         }
 
-        return  jsonObject;
-    }
+        @RequestMapping(value = "/qcstatus", method = {RequestMethod.POST, RequestMethod.GET})
+        @ResponseBody
+        public JSONObject getQcStatus (HttpServletRequest request){
+            String result = "";
+            JSONObject jsonObject = new JSONObject();
+            String mobileNo = request.getParameter("mobileNo");
+            String status = request.getParameter("status");
+            String rejectedPage = request.getParameter("rejectedPage");
+            String remarks = request.getParameter("remarks");
+            String message = qcStatusService.updateQcStatus(mobileNo, status, rejectedPage, remarks);
+            //JSONObject mobileNum=qcStatusService.getMobileNumber();
+            // String mobileNumber= (String) mobileNum.get("mobile");
+            //  JSONObject imgPath=qcStatusService.qcCustomerDetails(mobileNumber);
+            //  String img=(String)imgPath.get(1);
 
-
-
-    @RequestMapping(value = "/indexCustomerValidation",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public  JSONObject indexCustomerValidation(HttpServletRequest request,HttpServletResponse response){
-        String mobileno = request.getParameter("mobileno");
-        String importby=null;
-        int cirCode=0;
-        String role=null;
-        JSONObject  jsonObject=null;
-        try {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                cirCode = (Integer) session.getAttribute("cirCode");
-                role = (String) session.getAttribute("role");
-
+            String message1 = qcStatusService.saveQcStatus(mobileNo, status, rejectedPage, remarks);
+            if (message.equals("done") && status.equals("A")) {
+                result = "QC status successfully inserted successfully";
+                jsonObject.put("result", result);
+                jsonObject.put("mobile", mobileNo);
+                //   jsonObject.put("imagePath",img);
+                logger.info(" Result   " + result);
+            } else if (message.equals("done") && status.equals("R")) {
+                result = "QC status successfully rejected successfully";
+                jsonObject.put("result", result);
+                jsonObject.put("mobile", mobileNo);
+                //      jsonObject.put("imagePath",img);
+                logger.info(" Result   " + result);
+            } else {
+                result = "Unable to insert data";
+                jsonObject.put("result", result);
+                jsonObject.put("mobile", mobileNo);
+                // jsonObject.put("imagePath",img);
+                logger.info(" Result   " + result);
             }
-            jsonObject=batchService.getuserDetails(mobileno);
-        }catch (Exception e){
-            e.printStackTrace();
-            logger.error("",e);
+            return jsonObject;
+
         }
 
-        return  jsonObject;
-    }
 
+        @RequestMapping(value = "/getCustomer", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject getCustomerMobileNumber () {
 
-    @RequestMapping(value = "/getBatchDetails",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public  JSONObject getBatchDetails(HttpServletRequest request,HttpServletResponse response){
-        String importby=null;
-        int cirCode=0;
-        String role=null;
-        JSONObject  jsonObject=null;
-        try {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                cirCode = (Integer) session.getAttribute("cirCode");
-                role = (String) session.getAttribute("role");
-
-            }
-            jsonObject  = batchService.getBatchDetails(cirCode);
-
-            jsonObject.put("status","done");
-
-        }catch (Exception e){
-            e.printStackTrace();
-            logger.error("",e);
+            return qcStatusService.getMobileNumber();
         }
 
-        return  jsonObject;
-    }
 
+        @RequestMapping(value = "/getInwordFrom", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject getInwordFrom (HttpServletRequest request){
+            JSONObject json = new JSONObject();
+            String importby = null;
+            int cirCode = 0;
+            String role = null;
 
-    @RequestMapping(value = "/updateindexing",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public  JSONObject updateindexing(HttpServletRequest request,HttpServletResponse response){
-        String importby=null;
-        int cirCode=0;
-        String role=null;
-        JSONObject  jsonObject=null;
-        try {
+            try {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    cirCode = (Integer) session.getAttribute("cirCode");
+                    role = (String) session.getAttribute("role");
 
+                }
 
-
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                cirCode = (Integer) session.getAttribute("cirCode");
-                role = (String) session.getAttribute("role");
-
+                String getinwardfrom = batchService.getinwardfrom(cirCode);
+                json.put("inWordFrom", getinwardfrom);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        //    var data = '&mobileno=' + $scope.mobileno +'&status=N' + '&batchno=' + $scope.batchno +'&uid=' + $scope.uid+'&emp_name=' + $scope.emp_name+'&customerId=' + $scope.customerId+'&remarks=' + $scope.user_comment;
-            String mobileNo= request.getParameter("mobileno");
-            String status= request.getParameter("status");
-            String batchno1= request.getParameter("batchno");
-            int batchno=Integer.parseInt(batchno1);
-            String uid1= request.getParameter("uid");
-            int uid=Integer.parseInt(uid1);
-            String name= request.getParameter("emp_name");
-            String customerId= request.getParameter("customerId");
-            String remarks= request.getParameter("remarks");
-            jsonObject=batchService.updateBatch(mobileNo,status,batchno,uid,name,customerId,remarks,importby);
-        }catch (Exception e){
-            e.printStackTrace();
-            logger.error("",e);
+            return json;
         }
 
-        return  jsonObject;
-    }
+        @RequestMapping(value = "/createBatch", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject createBatch (HttpServletRequest request, HttpServletResponse response){
+            String inWordFrom = request.getParameter("inWordFrom");
+            String inWordTo = request.getParameter("inWordTo");
+            String importby = null;
+            int cirCode = 0;
+            String role = null;
+            JSONObject jsonObject = null;
+            try {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    cirCode = (Integer) session.getAttribute("cirCode");
+                    role = (String) session.getAttribute("role");
 
+                }
 
-    @RequestMapping(value = "/searchIndexing",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public  JSONObject searchIndexing(HttpServletRequest request,HttpServletResponse response){
-        String importby=null;
-        int cirCode=0;
-        String role=null;
-        JSONObject  jsonObject=null;
-        int batchno=0;
-        int uid=0;
-        try {
+                int inFrom = Integer.parseInt(inWordFrom);
+                int inTO = Integer.parseInt(inWordTo);
+                int totaldoc = inTO - inFrom + 1;
+                jsonObject = batchService.saveBatch(inFrom, inTO, totaldoc, cirCode, importby);
 
-
-
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                importby = (String) session.getAttribute("name");
-                cirCode = (Integer) session.getAttribute("cirCode");
-                role = (String) session.getAttribute("role");
-
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("", e);
             }
-            //    var data = '&mobileno=' + $scope.mobileno +'&status=N' + '&batchno=' + $scope.batchno +'&uid=' + $scope.uid+'&emp_name=' + $scope.emp_name+'&customerId=' + $scope.customerId+'&remarks=' + $scope.user_comment;
-            String mobileNo= request.getParameter("cust_number");
-            if(mobileNo.equalsIgnoreCase("undefined")){
-                mobileNo="";
-            }
-            String batchno1= request.getParameter("batchSearch");
-            if(!batchno1.equalsIgnoreCase("undefined") &&!batchno1.equalsIgnoreCase("")&&!batchno1.isEmpty()){
-                 batchno=Integer.parseInt(batchno1);
-            }
-            String uid1= request.getParameter("uidnoSearch");
-            System.out.println(uid1.isEmpty());
-            if(!uid1.equalsIgnoreCase("undefined")&&!uid1.equalsIgnoreCase("")&&!uid1.isEmpty()){
-                uid=Integer.parseInt(uid1);
-            }
-       //     jsonObject=batchService.updateBatch(mobileNo,status,batchno,uid,name,customerId,remarks,importby);
 
-            //we have
-            jsonObject=batchService.searchindexng(mobileNo,batchno,uid,cirCode);
-        }catch (Exception e){
-            e.printStackTrace();
-            logger.error("",e);
+            return jsonObject;
         }
 
-        return  jsonObject;
-    }
+
+        @RequestMapping(value = "/indexCustomerValidation", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject indexCustomerValidation (HttpServletRequest request, HttpServletResponse response){
+            String mobileno = request.getParameter("mobileno");
+            String importby = null;
+            int cirCode = 0;
+            String role = null;
+            JSONObject jsonObject = null;
+            try {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    cirCode = (Integer) session.getAttribute("cirCode");
+                    role = (String) session.getAttribute("role");
+
+                }
+                jsonObject = batchService.getuserDetails(mobileno);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("", e);
+            }
+
+            return jsonObject;
+        }
 
 
-    @RequestMapping(value = "/testTiff",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public  String TestTiff(HttpServletRequest request,HttpServletResponse response){
-        File file=null;
-        FileOutputStream fos = null;
-        FileInputStream fis = null;
-        Document document = new Document();
-        String localPath="D:/PaytmProject/PehchaanSVN/attchment/tiffFile/";
+        @RequestMapping(value = "/getBatchDetails", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject getBatchDetails (HttpServletRequest request, HttpServletResponse response){
+            String importby = null;
+            int cirCode = 0;
+            String role = null;
+            JSONObject jsonObject = null;
+            try {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    cirCode = (Integer) session.getAttribute("cirCode");
+                    role = (String) session.getAttribute("role");
 
-   try {
-    String[] IMAGES = {""};
-    file = new File(localPath);
+                }
+                jsonObject = batchService.getBatchDetails(cirCode);
 
-    IMAGES = file.list();
+                jsonObject.put("status", "done");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("", e);
+            }
+
+            return jsonObject;
+        }
 
 
-    String output = "D:/PaytmProject/PehchaanSVN/attchment/tiffFile.pdf";
-    fos = new FileOutputStream(output);
-    PdfWriter writer = PdfWriter.getInstance(document, fos);
-    TiffWriter write=new TiffWriter();
+        @RequestMapping(value = "/updateindexing", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject updateindexing (HttpServletRequest request, HttpServletResponse response){
+            String importby = null;
+            int cirCode = 0;
+            String role = null;
+            JSONObject jsonObject = null;
+            try {
 
-    write.writeFile(fos);
+
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    cirCode = (Integer) session.getAttribute("cirCode");
+                    role = (String) session.getAttribute("role");
+
+                }
+                //    var data = '&mobileno=' + $scope.mobileno +'&status=N' + '&batchno=' + $scope.batchno +'&uid=' + $scope.uid+'&emp_name=' + $scope.emp_name+'&customerId=' + $scope.customerId+'&remarks=' + $scope.user_comment;
+                String mobileNo = request.getParameter("mobileno");
+                String status = request.getParameter("status");
+                String batchno1 = request.getParameter("batchno");
+                int batchno = Integer.parseInt(batchno1);
+                String uid1 = request.getParameter("uid");
+                int uid = Integer.parseInt(uid1);
+                String name = request.getParameter("emp_name");
+                String customerId = request.getParameter("customerId");
+                String remarks = request.getParameter("remarks");
+                jsonObject = batchService.updateBatch(mobileNo, status, batchno, uid, name, customerId, remarks, importby);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("", e);
+            }
+
+            return jsonObject;
+        }
+
+
+        @RequestMapping(value = "/searchIndexing", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public JSONObject searchIndexing (HttpServletRequest request, HttpServletResponse response){
+            String importby = null;
+            int cirCode = 0;
+            String role = null;
+            JSONObject jsonObject = null;
+            int batchno = 0;
+            int uid = 0;
+            try {
+
+
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    importby = (String) session.getAttribute("name");
+                    cirCode = (Integer) session.getAttribute("cirCode");
+                    role = (String) session.getAttribute("role");
+
+                }
+                //    var data = '&mobileno=' + $scope.mobileno +'&status=N' + '&batchno=' + $scope.batchno +'&uid=' + $scope.uid+'&emp_name=' + $scope.emp_name+'&customerId=' + $scope.customerId+'&remarks=' + $scope.user_comment;
+                String mobileNo = request.getParameter("cust_number");
+                if (mobileNo.equalsIgnoreCase("undefined")) {
+                    mobileNo = "";
+                }
+                String batchno1 = request.getParameter("batchSearch");
+                if (!batchno1.equalsIgnoreCase("undefined") && !batchno1.equalsIgnoreCase("") && !batchno1.isEmpty()) {
+                    batchno = Integer.parseInt(batchno1);
+                }
+                String uid1 = request.getParameter("uidnoSearch");
+                System.out.println(uid1.isEmpty());
+                if (!uid1.equalsIgnoreCase("undefined") && !uid1.equalsIgnoreCase("") && !uid1.isEmpty()) {
+                    uid = Integer.parseInt(uid1);
+                }
+                //     jsonObject=batchService.updateBatch(mobileNo,status,batchno,uid,name,customerId,remarks,importby);
+
+                //we have
+                jsonObject = batchService.searchindexng(mobileNo, batchno, uid, cirCode);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("", e);
+            }
+
+            return jsonObject;
+        }
+
+
+        @RequestMapping(value = "/testTiff", method = {RequestMethod.GET, RequestMethod.POST})
+        @ResponseBody
+        public String TestTiff (HttpServletRequest request, HttpServletResponse response){
+            File file = null;
+            FileOutputStream fos = null;
+            FileInputStream fis = null;
+            Document document = new Document();
+            String localPath = "D:/PaytmProject/PehchaanSVN/attchment/tiffFile/";
+
+            try {
+                String[] IMAGES = {""};
+                file = new File(localPath);
+
+                IMAGES = file.list();
+
+
+                String output = "D:/PaytmProject/PehchaanSVN/attchment/tiffFile.pdf";
+                fos = new FileOutputStream(output);
+                PdfWriter writer = PdfWriter.getInstance(document, fos);
+                TiffWriter write = new TiffWriter();
+
+                write.writeFile(fos);
    /*  writer.open();
     document.open();
     for (String image : IMAGES) {
@@ -2193,14 +2160,13 @@ class HomeController {
 
     }
     document.close();*/
-    logger.info("pdf genrated>>>>>>>  ");
-}catch (Exception e){
+                logger.info("pdf genrated>>>>>>>  ");
+            } catch (Exception e) {
 
-}
+            }
 
-        return "";
+            return "";
+        }
+
+
     }
-
-
-
-}

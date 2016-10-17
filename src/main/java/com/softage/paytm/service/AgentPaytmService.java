@@ -18,8 +18,9 @@ public interface AgentPaytmService {
     public PaytmagententryEntity findByPrimaryKey(String agentCode);
     public PaytmagententryEntity findByPincode(String pincode);
     public String saveAgentPinMaster1(PaytmagententryEntity paytmagententryEntity);
-    public String saveAgentLocation(String agentCode,String CustomerNumber,String location);
-    public String saveBulkAgent(List<Map<String,String>> agentList);
+    public String saveAgentLocation(String agentCode,String CustomerNumber,String location,double lati,double longi);
+    public String saveBulkAgent(List<Map<String,String>> agentList,int circleCode);
+    public List<String> getAgentPinMastList(String pincode);
 
 
 }

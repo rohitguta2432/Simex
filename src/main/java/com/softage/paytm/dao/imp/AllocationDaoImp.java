@@ -3,6 +3,7 @@ package com.softage.paytm.dao.imp;
 import com.softage.paytm.dao.AllocationDao;
 import com.softage.paytm.models.AllocationMastEntity;
 import com.softage.paytm.models.PaytmMastEntity;
+import org.apache.commons.net.ntp.TimeStamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -107,6 +109,63 @@ public class AllocationDaoImp implements AllocationDao {
             }
         }
         return  allocationMastEntity;
+    }
+
+    @Override
+    public AllocationMastEntity findByAllocationTime(String agentCode, Timestamp dateTime) {
+        EntityManager entityManager = null;
+        AllocationMastEntity allocationMastEntity=null;
+        EntityTransaction entityTransaction=null;
+        Query query=null;
+        try
+        {
+            entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
+            String strQuery = " select al from AllocationMastEntity al where al.allocationDatetime=:dateTime and al.agentCode=:agentCode";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("dateTime",dateTime);
+            query.setParameter("agentCode",agentCode);
+            query.setMaxResults(1);
+            allocationMastEntity = (AllocationMastEntity)query.getSingleResult();
+            entityTransaction.commit();
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  allocationMastEntity;
+    }
+
+    @Override
+    public String findByAllocationTime(String agentCode, String dateTime) {
+        EntityManager entityManager=null;
+        String message=null;
+        EntityTransaction entityTransaction=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
+            Query query=entityManager.createNativeQuery("{call usp_available_agent(?,?)}");
+            query.setParameter(1,agentCode);
+            query.setParameter(2,dateTime);
+            message=(String)query.getSingleResult();
+            entityTransaction.commit();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (entityManager!=null && entityManager.isOpen()){
+                entityManager.close();
+            }
+        }
+        return message;
     }
 
     @Override

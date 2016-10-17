@@ -16,6 +16,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,9 +120,9 @@ public class PostCallingServiceImp implements PostCallingService {
                 if ("NO AGENT AVAILABLE".equalsIgnoreCase(result)) {
                     result1 = "NoAgent";
                 }
-                if("err".equalsIgnoreCase(result)){
-                    result="Record not Submited try again";
-                    result1="error";
+                if ("err".equalsIgnoreCase(result)) {
+                    result = "Record not Submited try again";
+                    result1 = "error";
                     tcStatus = "U";
                 }
             }
@@ -201,45 +202,80 @@ public class PostCallingServiceImp implements PostCallingService {
         return postCallingDao.remarkList();
     }
 
+    @Override
+    public JSONObject getAvailableslot(String date, List<String> agents, String time,String keydate) {
+
+        String result = "Booked";
+        boolean flag = false;
+        JSONObject returnObj=new JSONObject();
+        for (String agent : agents) {
+            try {
+
+                String dateTime = date +" "+ time+":00:00";
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date convertedDate = dateFormat.parse(dateTime);
+                Timestamp datetime = new Timestamp(convertedDate.getTime());
+                String  result1= allocationDao.findByAllocationTime(agent,dateTime);
+                if(result1.equalsIgnoreCase("Navl")){
+                    flag = true;
+                }
+
+               /* AllocationMastEntity allocationMastEntity = allocationDao.findByAllocationTime(agent, datetime);
+                if (allocationMastEntity == null) {
+                    flag = true;
+                }*/
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+        if (flag) {
+           result="Available";
+        }
+        returnObj.put(keydate,result);
+
+
+        return returnObj;
+    }
+
     private String sendSms(String mobileno, String text) {
         String result = null;
         SmsSendlogEntity smsSendlogEntity = null;
         BufferedReader in = null;
         HttpURLConnection con = null;
-     //     String url="";
+        //     String url="";
         //  text="Hell Hai";
         //  String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+918588875378&agent_number=+918882905998";
         // String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
         //String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
-     //   String url = "http://www.mysmsapp.in/api/push";
-        String url="http://www.mysmsapp.in/api/push.json";
-        try (CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build())
-        {
-        try (CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(RequestBuilder.post(url)
-                .addParameter(new BasicNameValuePair("apikey", "56274f9a48b66"))
-                .addParameter(new BasicNameValuePair("sender", "SPAYTM"))
-                .addParameter(new BasicNameValuePair("mobileno", mobileno))
-                .addParameter(new BasicNameValuePair("text", text)).build())) {
-            InputStream is = closeableHttpResponse.getEntity().getContent();
-            in = new BufferedReader(new InputStreamReader(is));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
+        //   String url = "http://www.mysmsapp.in/api/push";
+        String url = "http://www.mysmsapp.in/api/push.json";
+        try (CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build()) {
+            try (CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(RequestBuilder.post(url)
+                    .addParameter(new BasicNameValuePair("apikey", "56274f9a48b66"))
+                    .addParameter(new BasicNameValuePair("sender", "SPAYTM"))
+                    .addParameter(new BasicNameValuePair("mobileno", mobileno))
+                    .addParameter(new BasicNameValuePair("text", text)).build())) {
+                InputStream is = closeableHttpResponse.getEntity().getContent();
+                in = new BufferedReader(new InputStreamReader(is));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
 
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+
+                }
+                result = response.toString();
+            } catch (IOException io) {
+                io.printStackTrace();
+                result = "err";
 
             }
-            result = response.toString();
-        } catch (IOException io) {
-            io.printStackTrace();
-            result="err";
-
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = "err";
         }
-    }
-            catch (Exception e){
-                e.printStackTrace();
-                result="err";
-            }
          /*  URL obj = new URL(url);
             con = (HttpURLConnection) obj.openConnection();
             con.setReadTimeout(15 * 1000);
@@ -352,7 +388,7 @@ public class PostCallingServiceImp implements PostCallingService {
         String loginId = null;
         String customerNo = "";
         long appointmentId = 0;
-        PaytmMastEntity paytmMastEntity=null;
+        PaytmMastEntity paytmMastEntity = null;
 
         AppointmentMastEntity appointmentMastEntity = null;
 
@@ -394,16 +430,22 @@ public class PostCallingServiceImp implements PostCallingService {
             java.sql.Date loopdate = new java.sql.Date(calendar.getTimeInMillis());
 
 
-                if ("0".equals(agentCode)) {
-                    try {
-                        agentCode = postCallingDao.getAgentCode(pinCode, date, date1, 0, agentCode);
-                        confirmationAllowed = "Y";
-                        finalconfirmation = "W";
-                    }catch (Exception e){
-                        agentCode=null;
-                        e.printStackTrace();
-                    }
+
+
+            if ("0".equals(agentCode)) {
+                try {
+
+                    String allocationDate1 = date + " " + time;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date convertedDate = dateFormat.parse(allocationDate1);
+                    agentCode = postCallingDao.getAgentCode(pinCode, date, allocationDate1, 0, agentCode);
+                    confirmationAllowed = "Y";
+                    finalconfirmation = "W";
+                } catch (Exception e) {
+                    agentCode = null;
+                    e.printStackTrace();
                 }
+            }
 
 
             if (agentCode != null) {
@@ -425,8 +467,8 @@ public class PostCallingServiceImp implements PostCallingService {
 
                     if (allocationMastEntity1 != null) {
                         jobNumber = allocationMastEntity1.getId();
-                         String phoneNumber=allocationMastEntity1.getCustomerPhone();
-                         paytmMastEntity = paytmMasterDao.getPaytmMaster(phoneNumber);
+                        String phoneNumber = allocationMastEntity1.getCustomerPhone();
+                        paytmMastEntity = paytmMasterDao.getPaytmMaster(phoneNumber);
 
                     }
 
@@ -435,7 +477,7 @@ public class PostCallingServiceImp implements PostCallingService {
                             + " " + time + "with " + name + " Address-" +
                             "" + address + " " + pinCode + "Contact no-" +
                             "" + customerNo + " Please See Leads in App";
-                    String custext = "Dear Customer  Your CustomerId-" + paytmMastEntity.getCustomerId()+ "" +
+                    String custext = "Dear Customer  Your CustomerId-" + paytmMastEntity.getCustomerId() + "" +
                             ",   Agent visit dateTime " + date
                             + " " + time + " Please Available with Document";
 
@@ -446,13 +488,13 @@ public class PostCallingServiceImp implements PostCallingService {
 
                     if (loginId != null) {
                         String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
-                        String res = saveSmsSendLog(agentMobileNumber, agentCode, text,"2","2");
-                     //   String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
-                        String res3 =  saveSmsSendLog("8588998890",paytmMastEntity.getCustomerId(),custext,"1","4");
+                        String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
+                        //   String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                        String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
                     } else {
-                        String res = saveSmsSendLog(agentMobileNumber, agentCode, text,"2","2");
-                      //  String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
-                        String res3 =  saveSmsSendLog("8588998890",paytmMastEntity.getCustomerId(),custext,"1","4");
+                        String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
+                        //  String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                        String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
                     }
 
                     result = "JOB ALLOCATED";
@@ -496,7 +538,7 @@ public class PostCallingServiceImp implements PostCallingService {
             allocationMastEntity.setRemarkMastByRemarksCode(remarkMastEntity);
 
             result = allocationDao.saveAllocation(allocationMastEntity);
-            if(result=="err"){
+            if (result == "err") {
                 for (int i = 1; i <= 5; i++) {
                     result = allocationDao.saveAllocation(allocationMastEntity);
                     if ("done".equals(result)) {
@@ -512,12 +554,12 @@ public class PostCallingServiceImp implements PostCallingService {
 
     }
 
-    public String saveSmsSendLog(String agentMobileNumber, String agentCode, String text,String reciveCode1,String processCode1) {
+    public String saveSmsSendLog(String agentMobileNumber, String agentCode, String text, String reciveCode1, String processCode1) {
 
         String result = null;
         try {
-               int reciveCode=Integer.parseInt(reciveCode1);
-               int processCode=Integer.parseInt(processCode1);
+            int reciveCode = Integer.parseInt(reciveCode1);
+            int processCode = Integer.parseInt(processCode1);
             ReceiverMastEntity receiverMastEntity = postCallingDao.getRecivedByCode(reciveCode);
             ProcessMastEntity processMastEntity = postCallingDao.getProcessByCode(processCode);
             SmsSendlogEntity smsSendlogEntity = new SmsSendlogEntity();
@@ -539,7 +581,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
     public String saveTblNotificationLogEntity(String text, String agentCode, PaytmdeviceidinfoEntity paytmdeviceidinfoEntity) {
         String result = null;
-        String notificationResult=null;
+        String notificationResult = null;
         try {
             TblNotificationLogEntity tblNotificationLogEntity = new TblNotificationLogEntity();
             tblNotificationLogEntity.setNotificationType("Leads");
@@ -550,7 +592,7 @@ public class PostCallingServiceImp implements PostCallingService {
             result = postCallingDao.saveTabNotification(tblNotificationLogEntity);
 
             if ("done".equals(result)) {
-                notificationResult=sendNotification("Leads", text, paytmdeviceidinfoEntity.getDeviceId());
+                notificationResult = sendNotification("Leads", text, paytmdeviceidinfoEntity.getDeviceId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -573,16 +615,16 @@ public class PostCallingServiceImp implements PostCallingService {
                     .addData(messageKey, notificationText)
                     .addData("title", "Leads")
                     .addData("time", new Date().toString()).build();
-            logger.info("device Id >>>   "+deviceId);
+            logger.info("device Id >>>   " + deviceId);
             Result result1 = sender.send(message, deviceId, 1);
             result = result1.toString();
-            logger.info("Notification send successfully to the Agent >>>  "+result);
+            logger.info("Notification send successfully to the Agent >>>  " + result);
             System.out.println(result);
         } catch (Exception e) {
-            logger.error("Notification not send to Agent>>>  ",e);
+            logger.error("Notification not send to Agent>>>  ", e);
             e.printStackTrace();
         }
-        return  result;
+        return result;
     }
 
    /*     String result = null;

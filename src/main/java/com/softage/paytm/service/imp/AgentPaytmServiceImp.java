@@ -1,6 +1,7 @@
 package com.softage.paytm.service.imp;
 
 import com.softage.paytm.dao.AgentPaytmDao;
+import com.softage.paytm.dao.CircleMastDao;
 import com.softage.paytm.dao.PostCallingDao;
 import com.softage.paytm.dao.UserDao;
 import com.softage.paytm.models.*;
@@ -28,6 +29,9 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private CircleMastDao circleMastDao;
+
     @Override
     public PaytmagententryEntity findByPrimaryKey(String agentCode) {
         return agentPaytmDao.findByPrimaryKey(agentCode);
@@ -45,13 +49,57 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     }
 
     @Override
-    public String saveAgentLocation(String agentCode, String CustomerNumber, String location) {
-        return agentPaytmDao.saveAgentLocation(agentCode,CustomerNumber,location);
+    public String saveAgentLocation(String agentCode, String CustomerNumber, String location,double lati,double longi) {
+        return agentPaytmDao.saveAgentLocation(agentCode,CustomerNumber,location,lati,longi);
     }
 
     @Override
-    public String saveBulkAgent(List<Map<String, String>> agentList) {
+    public String saveBulkAgent(List<Map<String, String>> agentList,int circlecode) {
+        for (Map<String, String> map : agentList) {
+
+            try {
+
+                String agentName = map.get("agentName");
+                String agentCode = map.get("agentCode");
+                String mobileNo = map.get("mobileNo");
+                String circle = map.get("circle");
+                String pincode = map.get("pincode");
+                String spokeCode = map.get("spoke");
+                String avalTime = map.get("avialableSlot");
+                String importBy = map.get("importBy");
+                CircleMastEntity circleMastEntity = circleMastDao.findByPrimaryKey(circle);
+                if(circleMastEntity==null){
+                    circleMastEntity = circleMastDao.findByPrimaryKey(circlecode);
+                }
+
+                PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
+                paytmagententryEntity.setAfullname(agentName);
+                paytmagententryEntity.setAcode(agentCode);
+                paytmagententryEntity.setEmpcode(agentCode);
+                paytmagententryEntity.setAphone(mobileNo);
+                paytmagententryEntity.setAspokecode(spokeCode);
+                paytmagententryEntity.setAavailslot(avalTime);
+                paytmagententryEntity.setApincode(pincode);
+                paytmagententryEntity.setMulitplePin("Y");
+                paytmagententryEntity.setAemailId("");
+                paytmagententryEntity.setImportby(importBy);
+                paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
+                int pincode1 = Integer.parseInt(pincode);
+
+                String result = saveAgent(paytmagententryEntity, circleMastEntity);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
         return null;
+    }
+
+    @Override
+    public List<String> getAgentPinMastList(String pincode) {
+        return agentPaytmDao.getAgentPinMastList(pincode);
     }
 
     @Override
@@ -68,10 +116,9 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
                 }
             }
         }
-
+        String result = savePinmaster(paytmagententryEntity);
         if ("done".equalsIgnoreCase(msg)) {
-            String result = savePinmaster(paytmagententryEntity);
-            emplogintableEntity=userDao.getUserByEmpNumber(paytmagententryEntity.getAphone());
+           emplogintableEntity=userDao.getUserByEmpNumber(paytmagententryEntity.getAphone());
             if ("done".equalsIgnoreCase(result) && emplogintableEntity==null) {
                 String msg1 = saveUesr(paytmagententryEntity,circleMastEntity);
             }
@@ -179,7 +226,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
             smsSendlogEntity.setImportDate(new Timestamp(new Date().getTime()));
             smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
             smsSendlogEntity.setReceiverMastByReceiverCode(receiverMastEntity);
-            postCallingDao.saveSmsSendEntity(smsSendlogEntity);
+         //   postCallingDao.saveSmsSendEntity(smsSendlogEntity);
 
         }
 
