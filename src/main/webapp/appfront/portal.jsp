@@ -106,13 +106,13 @@
     response.setDateHeader("Expires", -1);
 
     String rolename="";
-  String name=(String)session.getAttribute("name");
+    String name=(String)session.getAttribute("name");
     if(name==null) {
 
         response.sendRedirect("/paytm/#/auth");
     }
 
-  String role=(String)session.getAttribute("role");
+    String role=(String)session.getAttribute("role");
 
 
     if ("ADM".equalsIgnoreCase(role)){

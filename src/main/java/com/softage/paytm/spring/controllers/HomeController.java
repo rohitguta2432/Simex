@@ -754,21 +754,22 @@ class HomeController {
             }
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
             Calendar date = Calendar.getInstance();
+            Calendar date1 = Calendar.getInstance();
             String dateList1[] = new String[7];
             String dateList2[] = new String[3];
             List<String> dateList = new ArrayList<String>();
             List<String> dateListReject = new ArrayList<String>();
-      /*      for (int i = 0; i < 7; i++) {
+          for (int i = 0; i < 7; i++) {
 
-                dateList1[i] = format.format(date.getTime());
-                date.add(Calendar.DATE, 1);
+                dateList1[i] = format.format(date1.getTime());
+                date1.add(Calendar.DATE, 1);
                 dateList.add(dateList1[i]);
             }
-*/
+
             for (int i = 0; i < 3; i++) {
                 date.add(Calendar.DATE, 1);
-                dateList1[i] = format.format(date.getTime());
-                dateListReject.add(dateList1[i]);
+                dateList2[i] = format.format(date.getTime());
+                dateListReject.add(dateList2[i]);
             }
             jsonObject.put("teleData", teleJson);
             jsonObject.put("stateList", stateList);
@@ -961,10 +962,12 @@ class HomeController {
 
     @RequestMapping(value = "/customerCalling", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public String Calling(HttpServletRequest request) {
+    public JSONObject Calling(HttpServletRequest request) {
 
+        JSONObject returnObj=new JSONObject();
         String userName = "system";
         String agentNo = "";
+        String returnString=null;
         HttpSession session = request.getSession(false);
         logger.info("calling to customer>>>>> wait");
         if (session != null) {
@@ -976,7 +979,13 @@ class HomeController {
 
         String result = customerCalling(number, agentNo);
 
-        return "success";
+        if(result.equalsIgnoreCase("done")){
+            returnString="connected to Customer...";
+        }else{
+            returnString="Unable to connect Customer due to Network Connectivity";
+        }
+        returnObj.put("msg",returnString);
+        return returnObj;
     }
 
 
@@ -1443,6 +1452,7 @@ class HomeController {
 
     private String customerCalling(String mobileNo, String agentNumber) {
         String msg = null;
+        String result ="done";
         BufferedReader in = null;
         String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91" + mobileNo + "&agent_number=+91" + agentNumber;
         try {
@@ -1466,6 +1476,7 @@ class HomeController {
             //print result
             msg = response.toString();
         } catch (Exception e) {
+            result="error";
             e.printStackTrace();
         } finally {
             try {
@@ -1475,7 +1486,7 @@ class HomeController {
                 ;
             }
         }
-        return msg;
+        return result;
     }
 
     @RequestMapping(value = "/getCirles", method = {RequestMethod.GET, RequestMethod.POST})

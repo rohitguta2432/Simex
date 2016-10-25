@@ -46,7 +46,7 @@ public class ReportDaoImp implements ReportDao {
                     String latitude=(String)objects[20];
                     String longitude=(String)objects[21];
                     String location=(String)objects[19];
-                    if(location.equalsIgnoreCase("")){
+                    if(location.equalsIgnoreCase("Location Not available")){
                         location="LocationNotFound";
                     location=getlocation(latitude,longitude);
                     }
@@ -71,6 +71,8 @@ public class ReportDaoImp implements ReportDao {
                     Already picked By Other Person
                     User Out Of Station
                     Ok For Docs Collection   */
+
+
                     if (callStatus.equalsIgnoreCase("Not Interested") || callStatus.equalsIgnoreCase("Wrong Number") || callStatus.equalsIgnoreCase("Already picked By Other Person")) {
                         status = "Close";
                     } else if (attempts == 9 && callStatus.equalsIgnoreCase("Ok For Docs Collection")) {
@@ -83,6 +85,8 @@ public class ReportDaoImp implements ReportDao {
                     }
                     else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && callStatus1.equalsIgnoreCase("NA")) {
                         status = "Agent Not Found";
+                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && location.equalsIgnoreCase("")) {
+                        status = "KYC Pending";
                     }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") ) {
                         status = "Done";
                     }

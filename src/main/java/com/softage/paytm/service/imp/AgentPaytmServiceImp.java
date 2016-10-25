@@ -226,7 +226,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
             smsSendlogEntity.setImportDate(new Timestamp(new Date().getTime()));
             smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
             smsSendlogEntity.setReceiverMastByReceiverCode(receiverMastEntity);
-         //   postCallingDao.saveSmsSendEntity(smsSendlogEntity);
+            postCallingDao.saveSmsSendEntity(smsSendlogEntity);
 
         }
 

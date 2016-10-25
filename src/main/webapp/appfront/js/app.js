@@ -1,9 +1,9 @@
 var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap']);
  //  var domain='http://localhost:8080/paytm';
-var domain='http://172.25.38.13:8080/paytm';
+var domain='/paytm';
 //var domain='http://172.43.44.203:8080/paytm';
 // var domain='http://172.25.38.131:8080/paytm';
-/*var domain ='http://182.71.212.110:8080/paytm';*/
+//var domain ='http://182.71.212.110:8080/paytm';
 //var domain ='http://182.71.212.110:8080/paytm';
 // var domain ='http://172.16.16.254:8080/paytm';
 //var domain ='http://42.104.108.117:8080/paytm';
@@ -183,7 +183,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
             ev.preventDefault();
         }
         else if(firstphone == 0 || firstphone==1 ||firstphone==2 || firstphone == 3 || firstphone==4 || firstphone == 5 || firstphone==6){
-          //   alert('Enter the Phone Number');
+             alert('Enter the Valid Phone Number');
             ev.preventDefault();
         }
        /* else if($scope.circle_office.length == 0 || $scope.circle_office == undefined){
@@ -214,7 +214,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
 
             console.log(data);
-            $http.get(domain+'/agentRegistrationremove?' + data)
+            $http.get(domain+'/agentRegistration?' + data)
                 /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
                 .success(function (data, status, headers, config) {
                     $scope.message = data;
@@ -320,6 +320,9 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
 
     $scope.submit = function(ev) {
 
+        var phone2=  $scope.phone;
+        var firstphone=phone2.substring(0,1);
+
         if($scope.emp_name.length == 0 || $scope.emp_name == undefined){
             //alert('Agent Name is not valid');
             ev.preventDefault();
@@ -338,6 +341,9 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
         }
         else if($scope.emp_Type.length == 0 || $scope.emp_Type == undefined){
             //   alert('Enter the Phone Number');
+            ev.preventDefault();
+        } else if(firstphone == 0 || firstphone==1 ||firstphone==2 || firstphone == 3 || firstphone==4 || firstphone == 5 || firstphone==6){
+            alert('Enter the Valid Phone Number');
             ev.preventDefault();
         }
 
@@ -1533,12 +1539,13 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
             .success(function(data, status, headers, config) {
                 // alert(data);
-                $scope.message = data;
-                console.log($scope.mob.mobileNo);
+                $scope.message = data.msg;
+                alert($scope.message);
                 //$scope.getscreen();
                 // $location.path('/draft');
             })
             .error(function(data, status, headers, config) {
+               alert("Unable to Connect Customer due to Network Connectivity");
             });
 
 
@@ -1910,8 +1917,6 @@ routerApp.controller('uploadAgent', ['$scope', '$http', 'FileProductUploadServic
     var fac = {};
 
     fac.UploadFile = function (file) {
-
-        alert("Agent Uplaod Data");
 
         var formData = new FormData();
         formData.append("file", file);
