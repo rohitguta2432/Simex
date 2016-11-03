@@ -108,6 +108,34 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
     }
 
     @Override
+    public AgentpinmasterEntity getByPinandAcode(String pincode, String agentcode) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<CircleMastEntity> list=new ArrayList<>();
+        AgentpinmasterEntity agentpinmasterEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select paytmAgent from AgentpinmasterEntity paytmAgent where paytmAgent.apmAcode=:agentCode and paytmAgent.apmAPincode=:pincode";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("agentCode",agentcode);
+            query.setParameter("pincode",pincode);
+            query.setMaxResults(1);
+            agentpinmasterEntity= (AgentpinmasterEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return agentpinmasterEntity;
+
+    }
+
+    @Override
     public String saveEmployee(EmplogintableEntity emplogintableEntity) {
         EntityManager entityManager = null;
         EntityTransaction transaction = null;

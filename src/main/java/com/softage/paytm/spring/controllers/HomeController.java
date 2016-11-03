@@ -862,14 +862,14 @@ class HomeController {
             if (paytmagententryEntity1 != null) {
                 String result = agentPaytmService.saveAgentPinMaster1(paytmagententryEntity);
                 if (result.equals("done")) {
-                    msg = "Agent Insert with Multiple Pin";
+                    msg = "Agent Succesfully Registered";
                     jsonObject.put("msg", msg);
                     jsonObject.put("status", "success");
 
                 } else {
-                    msg = "Agent not Registered ";
+                    msg = "Agent Already Registred with Same Pincode";
                     jsonObject.put("msg", msg);
-                    jsonObject.put("status", "error");
+                    jsonObject.put("status", "success");
                 }
                 return jsonObject;
             }
@@ -1045,6 +1045,8 @@ class HomeController {
                 row = sheet.getRow(i);
                 System.out.println("get row start");
                 if (row != null && row.getCell(0) != null) {
+                    String pincode=null;
+                    String mobileNumber=null;
                     HashMap<String, String> map = new HashMap<String, String>();
                     HashMap<String, String> map1 = new HashMap<String, String>();
                     System.out.println(i);
@@ -1052,7 +1054,13 @@ class HomeController {
                     //    String appointmantDate = row.getCell(1).getStringCellValue().trim();
                     //  String createdDate = row.getCell(2).getStringCellValue().trim();
                     String name = row.getCell(3).getStringCellValue().trim();
-                    String mobileNumber = row.getCell(4).getStringCellValue().trim();
+                  //  String mobileNumber = row.getCell(4).getStringCellValue().trim();
+                    if(row.getCell(4).getCellType()==Cell.CELL_TYPE_STRING){
+                        mobileNumber = row.getCell(4).getStringCellValue().trim();
+
+                    }else {
+                        mobileNumber = NumberToTextConverter.toText(row.getCell(4).getNumericCellValue()).trim();
+                    }
 
                     String address = row.getCell(5).getStringCellValue().trim();
 
@@ -1060,7 +1068,16 @@ class HomeController {
 
                     String leadSubStage = row.getCell(7).getStringCellValue().trim();
 
-                    String pincode = row.getCell(8).getStringCellValue().trim();
+                  //  String pincode = row.getCell(8).getStringCellValue().trim();
+
+
+
+                   if(row.getCell(8).getCellType()==Cell.CELL_TYPE_STRING){
+                         pincode = row.getCell(8).getStringCellValue().trim();
+
+                    }else {
+                        pincode = NumberToTextConverter.toText(row.getCell(8).getNumericCellValue()).trim();
+                    }
 
                     String city = row.getCell(9).getStringCellValue().trim();
 
@@ -1111,7 +1128,7 @@ class HomeController {
             jsonObject.put("rejectedRecord", json1);
 
             System.out.println("list   " + list);
-            rejectCount = (count - 1) - successCount;
+            rejectCount = count - successCount;
 
             jsonObject.put("status", "success");
 
@@ -1120,7 +1137,7 @@ class HomeController {
                 result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
             }
         } catch (Exception e) {
-            result = "File Not Uploaded";
+            result = "Pincode and Mobile Nubmber Should be Text Format";
             e.printStackTrace();
 
         } finally {
@@ -1180,6 +1197,9 @@ class HomeController {
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
                 JSONObject json = new JSONObject();
                 System.out.println("row start");
+                String mobileNo=null;
+                String pincode=null;
+
                 row = sheet.getRow(i);
                 System.out.println("get row start");
                 if (row != null && row.getCell(0) != null) {
@@ -1188,8 +1208,18 @@ class HomeController {
                     System.out.println(i);
                     String agentName = row.getCell(0).getStringCellValue().trim();
                     String agentCode = row.getCell(1).getStringCellValue().trim();
-                    String mobileNo = NumberToTextConverter.toText(row.getCell(2).getNumericCellValue());
-                    String pincode = NumberToTextConverter.toText(row.getCell(3).getNumericCellValue());
+                    if(row.getCell(2).getCellType()==Cell.CELL_TYPE_STRING){
+                        mobileNo=row.getCell(2).getStringCellValue().trim();
+
+                    }else{
+                        mobileNo = NumberToTextConverter.toText(row.getCell(2).getNumericCellValue());
+                    }
+                    if(row.getCell(3).getCellType()==Cell.CELL_TYPE_STRING){
+                        pincode=row.getCell(3).getStringCellValue().trim();
+
+                    }else{
+                        pincode = NumberToTextConverter.toText(row.getCell(3).getNumericCellValue());
+                    }
                     String circle = row.getCell(4).getStringCellValue().trim();
                     String spoke = row.getCell(5).getStringCellValue().trim();
                     String avialableSlot = row.getCell(6).getStringCellValue().trim();
@@ -1530,7 +1560,15 @@ class HomeController {
             String pincode = request.getParameter("pincode");
 
 
+
             List<String> agentList = agentPaytmService.getAgentPinMastList(pincode);
+
+            System.out.println(" List Size "+agentList.size());
+
+
+            Set<String> agentListUnique=  new HashSet<String>(agentList);
+            System.out.println(" SetSize Size "+agentListUnique.size());
+
 
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
             Calendar date = Calendar.getInstance();
@@ -1567,7 +1605,7 @@ class HomeController {
                     for (String date1 : dateListReject) {
                         System.out.println(" date   " + date1);
                         String date2 = date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
-                        JSONObject jsonObject1 = postCallingService.getAvailableslot(date2, agentList, time,date1);
+                        JSONObject jsonObject1 = postCallingService.getAvailableslot(date2, agentListUnique, time,date1);
                         jsonArray.add(jsonObject1);
 
                     }
@@ -1614,6 +1652,7 @@ class HomeController {
 
 
             List<String> agentList = agentPaytmService.getAgentPinMastList(pincode);
+            Set<String> agentListUnique=  new HashSet<String>(agentList);
 
 
             for (Integer i = 9; i <= 18; i=i+timediff)
@@ -1624,7 +1663,7 @@ class HomeController {
 
 
                     System.out.println(" date   " + date1);
-                    JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentList, time,date1);
+                    JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time,date1);
                     String result = (String)jsonObject1.get(date1);
                     if(result.equalsIgnoreCase("Available")){
                         timeList.add(time+":00");

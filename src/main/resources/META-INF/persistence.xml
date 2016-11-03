@@ -48,8 +48,8 @@
            <!--  <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.148:3306/pehchaandev"/>-->
             <!--<property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.185:3306/pehchaandev"/>-->
            <!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/pehchaandev"/>-->
-            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/pahchaanlive"/>
-            <!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/pahchaanqa"/>-->
+         <!--   <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/pahchaanlive"/>-->
+           <property name="hibernate.connection.url" value="jdbc:mysql://172.43.44.203:3306/pahchaandev"/>
            <!--<property name="hibernate.connection.url" value="jdbc:mysql://172.16.16.29:3306/pehchaanqa"/>-->
 	    	<!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmqa"/>-->
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>

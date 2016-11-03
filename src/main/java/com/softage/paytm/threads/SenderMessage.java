@@ -17,7 +17,10 @@ public PostCallingService postCallingService;
 
     public void demoService(){
         try {
-           postCallingService.sendsmsService();
+       //    postCallingService.sendsmsService();
+
+          System.out.println("SMS not Send because sms send code commented....... ");
+
         }catch (Exception e){
             e.printStackTrace();
         }

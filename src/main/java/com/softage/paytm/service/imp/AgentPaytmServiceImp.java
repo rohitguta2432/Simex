@@ -116,7 +116,14 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
                 }
             }
         }
-        String result = savePinmaster(paytmagententryEntity);
+
+
+
+        AgentpinmasterEntity agentpinmasterEntity=agentPaytmDao.getByPinandAcode(paytmagententryEntity.getApincode(),paytmagententryEntity.getAcode());
+        String result=null;
+        if(agentpinmasterEntity==null){
+            result = savePinmaster(paytmagententryEntity);
+        }
         if ("done".equalsIgnoreCase(msg)) {
            emplogintableEntity=userDao.getUserByEmpNumber(paytmagententryEntity.getAphone());
             if ("done".equalsIgnoreCase(result) && emplogintableEntity==null) {
@@ -172,17 +179,23 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         agentpinmasterEntity.setApmAPincode(paytmagententryEntity.getApincode());
         agentpinmasterEntity.setApmImportDate(paytmagententryEntity.getImportdate());
         agentpinmasterEntity.setPaytmagententryByApmAcode(paytmagententryEntity);
-
-        String result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
-        if ("err".equalsIgnoreCase(result)) {
-            for (int i = 0; i <=7; i++) {
-                result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
-                if ("done".equalsIgnoreCase(result)) {
-                    break;
+        String result="";
+         AgentpinmasterEntity agentpinmasterEntity1 =agentPaytmDao.getByPinandAcode(paytmagententryEntity.getApincode(),paytmagententryEntity.getAcode());
+        if(agentpinmasterEntity1==null){
+             result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
+            if ("err".equalsIgnoreCase(result)) {
+                for (int i = 0; i <=7; i++) {
+                    result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
+                    if ("done".equalsIgnoreCase(result)) {
+                        break;
+                    }
                 }
-            }
 
+            }
         }
+
+
+
 
         return result;
     }

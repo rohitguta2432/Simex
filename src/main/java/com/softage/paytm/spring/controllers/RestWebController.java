@@ -196,8 +196,10 @@ public class RestWebController {
         for (int i = 1; i <= 5; i++) {
 
             result = leadsService.updateLeadStatus(agentCode, jobid, response);
+            if (result.equalsIgnoreCase("1")) {
+                break;
+            }
         }
-
 
         return result;
     }

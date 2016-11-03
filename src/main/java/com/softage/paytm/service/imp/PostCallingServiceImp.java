@@ -35,10 +35,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by SS0085 on 31-12-2015.
@@ -203,7 +200,7 @@ public class PostCallingServiceImp implements PostCallingService {
     }
 
     @Override
-    public JSONObject getAvailableslot(String date, List<String> agents, String time,String keydate) {
+    public JSONObject getAvailableslot(String date, Set<String> agents, String time,String keydate) {
 
         String result = "Booked";
         boolean flag = false;

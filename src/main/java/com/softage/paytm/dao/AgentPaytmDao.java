@@ -13,6 +13,7 @@ public interface AgentPaytmDao {
     public String saveAgent(PaytmagententryEntity paytmagententryEntity);
     public String saveAgentPinMaster(AgentpinmasterEntity agentpinmasterEntity);
     public List<String> getAgentPinMastList(String pincode);
+    public AgentpinmasterEntity getByPinandAcode(String pincode,String agentcode);
     public String saveEmployee(EmplogintableEntity emplogintableEntity);
     public PaytmagententryEntity findByPrimaryKey(String agentCode);
     public PaytmagententryEntity findByPincode(String pincode);

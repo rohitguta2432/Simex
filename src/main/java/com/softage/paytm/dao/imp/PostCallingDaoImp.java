@@ -253,16 +253,6 @@ public class PostCallingDaoImp implements PostCallingDao {
             query.setParameter(3, visitDateTime);
             agentCode1 = (String)query.getSingleResult();
             entityTransaction.commit();
-       /*     for (Object[] objects : resultList) {
-                if (objects.length > 0) {
-
-                    JSONObject json = new JSONObject();
-                    json.put("agent",objects[0]);
-                    json.put("count",objects[1]);
-                    agentCode1=objects[0].toString();
-
-                }
-            }*/
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

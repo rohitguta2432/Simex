@@ -10,7 +10,8 @@
 		</layout>
 	</appender>
 	<appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="D:/paytmlog/paytmlogger.log"/>
+		<!--<param name="File" value="D:/paytmlog/paytmlogger.log"/>-->
+		<param name="File" value="${jboss.server.log.dir}/pahchhan.log"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n" />
 		</layout>
@@ -21,7 +22,7 @@
 		<level value="info" />
 	</logger>
 	
-	<!-- 3rdparty Loggers -->
+	<!-- 3rd party Loggers -->
 	<logger name="org.springframework.core">
 		<level value="info" />
 	</logger>

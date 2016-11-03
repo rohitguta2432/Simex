@@ -151,13 +151,13 @@ public class AllocationDaoImp implements AllocationDao {
         EntityTransaction entityTransaction=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            entityTransaction=entityManager.getTransaction();
-            entityTransaction.begin();
+       //     entityTransaction=entityManager.getTransaction();
+        //    entityTransaction.begin();
             Query query=entityManager.createNativeQuery("{call usp_available_agent(?,?)}");
             query.setParameter(1,agentCode);
             query.setParameter(2,dateTime);
             message=(String)query.getSingleResult();
-            entityTransaction.commit();
+   //         entityTransaction.commit();
         }catch (Exception e){
             e.printStackTrace();
         }finally {

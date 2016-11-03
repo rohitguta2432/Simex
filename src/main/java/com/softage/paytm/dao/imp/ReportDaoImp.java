@@ -45,6 +45,7 @@ public class ReportDaoImp implements ReportDao {
 
                     String latitude=(String)objects[20];
                     String longitude=(String)objects[21];
+                    String kycStatus=(String)objects[22];
                     String location=(String)objects[19];
                     if(location.equalsIgnoreCase("Location Not available")){
                         location="LocationNotFound";
@@ -85,10 +86,12 @@ public class ReportDaoImp implements ReportDao {
                     }
                     else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && callStatus1.equalsIgnoreCase("NA")) {
                         status = "Agent Not Found";
-                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && location.equalsIgnoreCase("")) {
+                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("W")) {
                         status = "KYC Pending";
-                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") ) {
-                        status = "Done";
+                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("N")) {
+                        status = "KYC Rejected";
+                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("Y") ) {
+                        status = "KYC Done";
                     }
 
 

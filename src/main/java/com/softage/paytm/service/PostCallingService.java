@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by SS0085 on 31-12-2015.
@@ -20,7 +21,7 @@ public interface PostCallingService {
     public String save(ReOpenTaleCallMaster openTaleCallMaster);
     public RemarkMastEntity getByPrimaryCode(String key);
     public List<RemarkMastEntity> remarkList();
-    public JSONObject getAvailableslot(String date,List<String> agents,String time,String datekey);
+    public JSONObject getAvailableslot(String date,Set<String> agents,String time,String datekey);
 
 
 
