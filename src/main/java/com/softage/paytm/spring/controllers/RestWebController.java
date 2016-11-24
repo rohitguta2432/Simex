@@ -140,7 +140,7 @@ public class RestWebController {
         JSONArray array = new JSONArray();
         JSONObject leadsObject=new JSONObject();
         String cuurentDate=null;
-        List<JSONObject> arrayList=new ArrayList<>();
+        List<JSONObject> arrayList=new ArrayList();
         try {
             String agentCode = request.getParameter("AgentCode");
             String leaddate = request.getParameter("leaddate");
@@ -165,7 +165,7 @@ public class RestWebController {
         JSONArray array = new JSONArray();
         JSONObject leadsObject=new JSONObject();
         String cuurentDate=null;
-        List<JSONObject> arrayList=new ArrayList<>();
+        List<JSONObject> arrayList=new ArrayList();
         try {
             String agentCode = request.getParameter("AgentCode");
             String leaddate = request.getParameter("leaddate");

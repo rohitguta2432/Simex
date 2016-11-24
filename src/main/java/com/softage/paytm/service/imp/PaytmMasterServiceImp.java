@@ -306,6 +306,8 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 circleCode = "7";
             } else if (state.equalsIgnoreCase("MADHYA PRADESH") || state.equalsIgnoreCase("CHATTISGARH") || (pin1 >= 45 && pin1 <= 49)) {
                 circleCode = "8";
+            } else if (state.equalsIgnoreCase("ODISHA") || (pin1 >= 75 && pin1 <= 77)) {
+                circleCode = "18";
             } else if (state.equalsIgnoreCase("ASSAM") || (pin1 >= 78 && pin1 <= 79)) {
                 circleCode = "9";
             } else if (state.equalsIgnoreCase("MAHARASHTRA") || (pin1 >= 40 && pin1 <= 44)) {

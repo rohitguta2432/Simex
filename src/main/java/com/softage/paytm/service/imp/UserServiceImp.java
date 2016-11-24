@@ -49,6 +49,7 @@ public class UserServiceImp implements UserService{
     public String updateAgentStatus(EmplogintableEntity emplogintableEntity) {
         return userDao.updateAgentStatus(emplogintableEntity);
     }
+
 }
 
 

@@ -32,6 +32,7 @@
     <div class="loginbox bg-white" style="margin-bottom:20px;">
         <div class="loginbox-title"><i class="menu-icon fa fa-user"></i>&nbsp;Login</div>
         <label id="show1" ng-show="show1" style="color: red;margin-left: 40px;">Please check username and password</label>
+        <label id="show2" ng-show="show2" style="color: red;margin-left: 40px;">Password Expired Please Reset</label>
         <div class="loginbox-textbox">
             <input type="text" class="form-control" ng-model="user" placeholder="Employee Code"/>
         </div>
@@ -42,7 +43,10 @@
         </div>
         <div class="loginbox-submit">
             <input type="submit" class="btn btn-azure shiny btn-block" value="Login"/>
+            <input ng-show="show2" type="button" class="btn btn-azure shiny btn-block" ng-click="expireOpen()" value="Reset Password"/>
         </div>
+
+
     </div>
 </form>
     <div style="height:0px; clear:both;"></div>

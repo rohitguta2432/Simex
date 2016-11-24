@@ -15,6 +15,7 @@ public interface AgentPaytmDao {
     public List<String> getAgentPinMastList(String pincode);
     public AgentpinmasterEntity getByPinandAcode(String pincode,String agentcode);
     public String saveEmployee(EmplogintableEntity emplogintableEntity);
+    public String updateEmployee(EmplogintableEntity emplogintableEntity);
     public PaytmagententryEntity findByPrimaryKey(String agentCode);
     public PaytmagententryEntity findByPincode(String pincode);
     public String saveAgentLocation(String agentCode,String CustomerNumber,String location,double lati,double longi);

@@ -17,6 +17,7 @@ public class EmplogintableEntity {
     private Integer empStatus;
     private String importBy;
     private Timestamp importDate;
+    private Timestamp expireDate;
     private String roles;
     private Integer cirCode;
     private CircleMastEntity circleMastByCirCode;
@@ -100,6 +101,16 @@ public class EmplogintableEntity {
 
     public void setImportDate(Timestamp importDate) {
         this.importDate = importDate;
+    }
+
+    @Basic
+    @Column(name = "expireDate", nullable = true, insertable = true, updatable = true)
+    public Timestamp getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(Timestamp expireDate) {
+        this.expireDate = expireDate;
     }
 
     @Basic

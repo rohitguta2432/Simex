@@ -12,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,29 +38,34 @@ public class ReportDaoImp implements ReportDao {
             query.setParameter(1, from);
             query.setParameter(2, to);
             List<Object[]> resultList = query.getResultList();
+
+               Iterator<Object[]> itr =resultList.iterator();
+            System.out.println("  resultListSize  "+resultList.size());
             int i = 1;
+
             for (Object[] objects : resultList) {
                 String status = "Open";
                 if (objects.length > 0) {
-                    JSONObject json = new JSONObject();
+                    try {
+                        JSONObject json = new JSONObject();
 
-                    String latitude=(String)objects[20];
-                    String longitude=(String)objects[21];
-                    String kycStatus=(String)objects[22];
-                    String location=(String)objects[19];
-                    if(location.equalsIgnoreCase("Location Not available")){
-                        location="LocationNotFound";
-                    location=getlocation(latitude,longitude);
-                    }
+                        String latitude = (String) objects[20];
+                        String longitude = (String) objects[21];
+                        String kycStatus = (String) objects[22];
+                        String location = (String) objects[19];
+                        if (location.equalsIgnoreCase("Location Not available")) {
+                            location = "LocationNotFound";
+                            location = getlocation(latitude, longitude);
+                        }
 
-                    json.put("CustomerId", objects[0]);
-                    json.put("MobileNumber", objects[1]);
-                    json.put("CallStatus", objects[2]);
-                    String callStatus = (String) objects[2];
-                    json.put("Attempts", objects[3]);
-                    byte attempts = (Byte) objects[3];
-                   String callStatus1=(String)objects[17];
-                    System.out.println("call Status  "+callStatus1);
+                        json.put("CustomerId", objects[0]);
+                        json.put("MobileNumber", objects[1]);
+                        json.put("CallStatus", objects[2]);
+                        String callStatus = (String) objects[2];
+                        json.put("Attempts", objects[3]);
+                        byte attempts = (Byte) objects[3];
+                        String callStatus1 = (String) objects[17];
+                        System.out.println("call Status  " + callStatus1);
 
 
               /*    Docs Incomplete
@@ -74,48 +80,50 @@ public class ReportDaoImp implements ReportDao {
                     Ok For Docs Collection   */
 
 
-                    if (callStatus.equalsIgnoreCase("Not Interested") || callStatus.equalsIgnoreCase("Wrong Number") || callStatus.equalsIgnoreCase("Already picked By Other Person")) {
-                        status = "Close";
-                    } else if (attempts == 9 && callStatus.equalsIgnoreCase("Ok For Docs Collection")) {
-                        status = "Close";
-                        json.put("Attempts", 1);
-                    } else if (attempts == 9) {
-                        status = "Close";
-                    } else if (attempts == 3 && callStatus.equalsIgnoreCase("User Out Of Station")) {
-                        status = "Close";
+                        if (callStatus!=null&& callStatus.equalsIgnoreCase("Not Interested") || callStatus.equalsIgnoreCase("Wrong Number") || callStatus.equalsIgnoreCase("Already picked By Other Person")) {
+                            status = "Close";
+                        } else if (attempts == 9 && callStatus.equalsIgnoreCase("Ok For Docs Collection")) {
+                            status = "Close";
+                            json.put("Attempts", 1);
+                        } else if (attempts == 9) {
+                            status = "Close";
+                        } else if (attempts == 3 && callStatus.equalsIgnoreCase("User Out Of Station")) {
+                            status = "Close";
+                        } else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && callStatus1.equalsIgnoreCase("NA")) {
+                            status = "Agent Not Found";
+                        } else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("W")) {
+                            status = "KYC Pending";
+                        } else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("N")) {
+                            status = "KYC Rejected";
+                        } else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("Y")) {
+                            status = "KYC Done";
+                        }
+
+
+                        json.put("CallDateTime", objects[4].toString());
+                        System.out.println(objects[4].toString());
+                        json.put("TeleCallerName", objects[5]);
+                        json.put("CustomerName", objects[6]);
+                        json.put("AppointmentDate", objects[7]);
+                        json.put("AppointmentTime", objects[8]);
+                        json.put("Address", objects[9]);
+                        json.put("Landmark", objects[10]);
+                        json.put("City", objects[11]);
+                        json.put("State", objects[12]);
+                        json.put("Pincode", objects[13]);
+                        json.put("Agent_Code", objects[14]);
+                        json.put("ScanOn", objects[15]);
+                        System.out.println("ScanOn = " + objects[15] + "ScanBy = " + objects[16]);
+                        json.put("ScanBy", objects[16]);
+                        json.put("importdate", objects[18].toString());
+                        json.put("location", location);
+                        json.put("Status", status);
+                        jsonObject.put("record-" + i, json);
+
+                        System.out.println("latitude  =" + latitude + " longitude  = " + longitude);
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
-                    else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && callStatus1.equalsIgnoreCase("NA")) {
-                        status = "Agent Not Found";
-                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("W")) {
-                        status = "KYC Pending";
-                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("N")) {
-                        status = "KYC Rejected";
-                    }else if (callStatus.equalsIgnoreCase("Ok For Docs Collection") && kycStatus.equalsIgnoreCase("Y") ) {
-                        status = "KYC Done";
-                    }
-
-
-                    json.put("CallDateTime", objects[4].toString());
-                    System.out.println(objects[4].toString());
-                    json.put("TeleCallerName", objects[5]);
-                    json.put("CustomerName", objects[6]);
-                    json.put("AppointmentDate", objects[7]);
-                    json.put("AppointmentTime", objects[8]);
-                    json.put("Address", objects[9]);
-                    json.put("Landmark", objects[10]);
-                    json.put("City", objects[11]);
-                    json.put("State", objects[12]);
-                    json.put("Pincode", objects[13]);
-                    json.put("Agent_Code", objects[14]);
-                    json.put("ScanOn",objects[15]);
-                    System.out.println("ScanOn = "+objects[15] +"ScanBy = "+objects[16]);
-                    json.put("ScanBy",objects[16]);
-                    json.put("importdate",objects[18].toString());
-                    json.put("location",location);
-                    json.put("Status", status);
-                    jsonObject.put("record-" + i, json);
-
-                    System.out.println("latitude  ="+latitude+" longitude  = "+longitude);
                 }
                 i++;
 

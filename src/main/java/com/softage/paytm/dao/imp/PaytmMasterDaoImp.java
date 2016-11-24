@@ -112,7 +112,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             json.put("city",map.get("city"));
             // put here static pincode for testing purpose
             json.put("pincode",map.get("pincode"));
-          //  json.put("pincode","134109");
+            //json.put("pincode","134109");
             json.put("email",map.get("email"));
             json.put("state",map.get("state"));
         }

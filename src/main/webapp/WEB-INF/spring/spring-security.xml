@@ -22,6 +22,20 @@
 
 
       </http>
+
+    <authentication-manager>
+        <authentication-provider>
+            <password-encoder ref="encoder" />
+        </authentication-provider>
+    </authentication-manager>
+
+    <beans:bean id="encoder"
+                class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+        <beans:constructor-arg name="strength" value="5" />
+    </beans:bean>
+
+
+
     <!--    <beans:bean id="daoAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
                <beans:property name="userDetailsService" ref="userDetailsService"></beans:property>
         </beans:bean>

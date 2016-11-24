@@ -164,6 +164,30 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
     }
 
     @Override
+    public String updateEmployee(EmplogintableEntity emplogintableEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg = null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.merge(emplogintableEntity);
+            transaction.commit();
+            msg = "done";
+        } catch (Exception e) {
+            msg = "err";
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return msg;
+    }
+
+    @Override
     public PaytmagententryEntity findByPrimaryKey(String agentCode) {
         EntityManager entityManager=null;
         Query query=null;

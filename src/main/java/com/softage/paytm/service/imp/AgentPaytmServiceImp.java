@@ -7,6 +7,7 @@ import com.softage.paytm.dao.UserDao;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.AgentPaytmService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -103,6 +104,42 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     }
 
     @Override
+    public String updatePassword(EmplogintableEntity emplogintableEntity,String password) {
+        String result = agentPaytmDao.updateEmployee(emplogintableEntity);
+        if ("err".equalsIgnoreCase(result)) {
+            for (int i = 0; i <= 5; i++) {
+                result = agentPaytmDao.updateEmployee(emplogintableEntity);
+                if ("done".equalsIgnoreCase(result)) {
+                    break;
+                }
+            }
+
+        }
+
+        String text = "Dear Employee Your new Password " + password;
+        if ("done".equalsIgnoreCase(result) && password!=null) {
+            ReceiverMastEntity receiverMastEntity = postCallingDao.getRecivedByCode(2);
+            ProcessMastEntity processMastEntity = postCallingDao.getProcessByCode(13);
+            SmsSendlogEntity smsSendlogEntity = new SmsSendlogEntity();
+            smsSendlogEntity.setMobileNumber(emplogintableEntity.getEmpPhone());
+            smsSendlogEntity.setReceiverId(emplogintableEntity.getEmpCode());
+            smsSendlogEntity.setSmsText(text);
+            smsSendlogEntity.setSmsDelivered("N");
+            smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
+            smsSendlogEntity.setImportDate(new Timestamp(new Date().getTime()));
+            smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
+            smsSendlogEntity.setReceiverMastByReceiverCode(receiverMastEntity);
+            postCallingDao.saveSmsSendEntity(smsSendlogEntity);
+
+        }
+
+
+        return result;
+
+
+    }
+
+    @Override
     public String saveAgent(PaytmagententryEntity paytmagententryEntity,CircleMastEntity circleMastEntity) {
         EmplogintableEntity emplogintableEntity=null;
 
@@ -135,7 +172,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     }
 
       @Override
-      public String saveEmployee(EmplogintableEntity emplogintableEntity) {
+      public String saveEmployee(EmplogintableEntity emplogintableEntity,String password) {
 
         String result = agentPaytmDao.saveEmployee(emplogintableEntity);
         if ("err".equalsIgnoreCase(result)) {
@@ -149,7 +186,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         }
 
         String text = "Dear Employee you are Successfully Registered in Softage ,Your Credential   Username "
-                + emplogintableEntity.getEmpCode() + " Password " + emplogintableEntity.getEmpPassword();
+                + emplogintableEntity.getEmpCode() + " Password " + password;
         if ("done".equalsIgnoreCase(result)) {
             ReceiverMastEntity receiverMastEntity = postCallingDao.getRecivedByCode(2);
             ProcessMastEntity processMastEntity = postCallingDao.getProcessByCode(13);
@@ -207,12 +244,25 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         emplogintableEntity.setEmpName(paytmagententryEntity.getAfullname());
         emplogintableEntity.setEmpPhone(paytmagententryEntity.getAphone());
         password = paytmagententryEntity.getAcode().substring(0, 4) + paytmagententryEntity.getAphone().substring(0, 4);
-        emplogintableEntity.setEmpPassword(password);
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        String hashedPassword = passwordEncoder.encode(password);
+
+        Date expireDate = new Date();
+
+        System.out.println("Current Date   " + expireDate);
+        long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+        expireDate.setTime(expireDate.getTime() + expireTime);
+
+
+        emplogintableEntity.setEmpPassword(hashedPassword);
         emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
         emplogintableEntity.setRoleCode("A1");
         emplogintableEntity.setEmpStatus(1);
         emplogintableEntity.setImportBy(paytmagententryEntity.getImportby());
         emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+        emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
 
         String result = agentPaytmDao.saveEmployee(emplogintableEntity);
         if ("err".equalsIgnoreCase(result)) {

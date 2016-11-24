@@ -1,0 +1,53 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="navbar-container">
+            <div class="navbar-header pull-left">
+                <a href="#" class="navbar-brand">
+                    <small>
+                        <img src="../paytm/resources/img/paytm-logo.png" alt="paytm"/>
+                    </small>
+                </a>
+            </div>
+            <div class="navbar-header pull-right">
+                <div class="navbar-account">
+                    <ul class="account-area">
+                        <li><a href="">
+                            <img src="../paytm/resources/img/softage_logo.png" alt="softage"
+                                 style="width:120px; margin-top:2px;"/>
+                        </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="login-container animated fadeInDown">
+
+    <img src="../paytm/resources/img/login_bg.png" alt=""
+         style="position:absolute; top:-111px; left:50px; z-index:9999; width:200px;"/>
+    <form name="myform" ng-controller="AuthCtrl" ng-submit="loginData()" method="get" novalidate>
+        <div class="loginbox bg-white" style="margin-bottom:20px;">
+            <div class="loginbox-title"><i class="menu-icon fa fa-user"></i>&nbsp;Login</div>
+            <label id="show1" ng-show="show1" style="color: red;margin-left: 40px;">Please check username and password</label>
+            <label id="show2" ng-show="show2" style="color: red;margin-left: 40px;">Password Expired Please Reset</label>
+            <div class="loginbox-textbox">
+                <input type="text" class="form-control" ng-model="user" placeholder="Employee Code"/>
+            </div>
+            <div class="loginbox-textbox">
+                <input type="password" class="form-control" ng-model="pass" placeholder="Password"/>
+            </div>
+            <div class="loginbox-forgot">
+            </div>
+            <div class="loginbox-submit">
+                <input type="submit" class="btn btn-azure shiny btn-block" value="Login"/>
+                <input ng-show="show2" type="button" class="btn btn-azure shiny btn-block" ng-click="expireOpen()" value="Reset Password"/>
+            </div>
+
+
+        </div>
+    </form>
+    <div style="height:0px; clear:both;"></div>
+</div>
