@@ -85,11 +85,127 @@ class HomeController {
 
         return "app";
     }
-
-
+/*
+   // simple user login without expire date
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
+        //logger.info("Welcome home! The client locale is {}.", locale);
+        String result = null;
+        JSONObject jsonObject = new JSONObject();
+        String user = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String dbUser = null;
+        EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+
+        String session1 = (String) request.getAttribute(user);
+        if (session1 != null) {
+            HttpSession session = request.getSession();
+            if (session != null) {
+                session.invalidate();
+            }
+        }
+        if (emplogintableEntity != null) {
+
+            if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                dbUser = emplogintableEntity.getEmpCode();
+                HttpSession session = request.getSession();
+                session.setAttribute("name", user);
+                session.setAttribute("role", emplogintableEntity.getRoleCode());
+                session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                result = "success";
+            }
+        } else {
+            result = "error";
+        }
+        jsonObject.put("status", result);
+        jsonObject.put("user", dbUser);
+        return jsonObject;
+    }
+*/
+
+
+
+
+     // this code use for password encryption
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
+        //logger.info("Welcome home! The client locale is {}.", locale);
+
+
+        String result = null;
+        JSONObject jsonObject = new JSONObject();
+        String user = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String dbUser = null;
+
+        try {
+            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String hashedPassword = passwordEncoder.encode(password);
+            String session1 = (String) request.getAttribute(user);
+            if (session1 != null) {
+                HttpSession session = request.getSession();
+                if (session != null) {
+                    session.invalidate();
+                }
+            }
+            if (emplogintableEntity != null) {
+
+                Timestamp expireDate = emplogintableEntity.getExpireDate();
+                Timestamp currentDate = new Timestamp(new Date().getTime());
+                //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
+                if (expireDate == null) {
+
+                    Date currentdate1 = new Date();
+                    long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                    currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                    emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                    emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                    //    emplogintableEntity.setEmpPassword(hashedPassword);
+                    agentPaytmService.updatePassword(emplogintableEntity, null);
+
+                    if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                        dbUser = emplogintableEntity.getEmpCode();
+                        HttpSession session = request.getSession();
+                        session.setAttribute("name", user);
+                        session.setAttribute("role", emplogintableEntity.getRoleCode());
+                        session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                        result = "success";
+                    }
+
+
+                } else if (currentDate.getTime() > expireDate.getTime()) {
+                    result = "expirePassword";
+
+                } else if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                    dbUser = emplogintableEntity.getEmpCode();
+                    HttpSession session = request.getSession();
+                    session.setAttribute("name", user);
+                    session.setAttribute("role", emplogintableEntity.getRoleCode());
+                    session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                    result = "success";
+                }
+            } else {
+                result = "error";
+            }
+        }catch(Exception e){
+            result = "error";
+            logger.error("",e);
+        }
+        jsonObject.put("status", result);
+        jsonObject.put("user", dbUser);
+        return jsonObject;
+    }
+
+   /*
+    // this code use for password encryption
+    @RequestMapping(value = "/login1", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject login1(HttpServletRequest request, HttpServletResponse response) {
         //logger.info("Welcome home! The client locale is {}.", locale);
         String result = null;
         JSONObject jsonObject = new JSONObject();
@@ -111,7 +227,7 @@ class HomeController {
 
             Timestamp expireDate = emplogintableEntity.getExpireDate();
             Timestamp currentDate = new Timestamp(new Date().getTime());
-            //     if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
+            //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
             if (expireDate == null ) {
 
                 Date currentdate1= new Date();
@@ -151,6 +267,7 @@ class HomeController {
         jsonObject.put("user", dbUser);
         return jsonObject;
     }
+*/
 
     @RequestMapping(value = "/resetPassword", method = RequestMethod.GET)
     @ResponseBody
@@ -173,7 +290,7 @@ class HomeController {
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String hashedPassword = passwordEncoder.encode(password);
-            emplogintableEntity.setEmpPassword(hashedPassword);
+            emplogintableEntity.setEmpPassword(password);
             emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 
             emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
@@ -1004,7 +1121,7 @@ class HomeController {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String hashedPassword = passwordEncoder.encode(password);
 
-            emplogintableEntity.setEmpPassword(hashedPassword);
+            emplogintableEntity.setEmpPassword(password);
             emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
             emplogintableEntity.setRoleCode(empType);
             emplogintableEntity.setEmpStatus(1);
@@ -1019,7 +1136,7 @@ class HomeController {
 
             emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 
-            emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+          //  emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
 
             msg = agentPaytmService.saveEmployee(emplogintableEntity, password);
 

@@ -256,7 +256,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         expireDate.setTime(expireDate.getTime() + expireTime);
 
 
-        emplogintableEntity.setEmpPassword(hashedPassword);
+        emplogintableEntity.setEmpPassword(password);
         emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
         emplogintableEntity.setRoleCode("A1");
         emplogintableEntity.setEmpStatus(1);

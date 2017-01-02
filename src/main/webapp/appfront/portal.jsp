@@ -213,7 +213,7 @@
                         Agent Upload </span></a></li>
 
         <li><a ui-sref="uploadScreen"><i class="menu-icon fa fa-upload"></i><span class="menu-text">
-                        Import Paytm Data </span></a></li>
+                        Import Data </span></a></li>
 
         <li><a ui-sref="telecalling"><i class="menu-icon fa fa-phone"></i><span class="menu-text">
                         Telecalling </span></a></li>

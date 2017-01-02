@@ -42,7 +42,7 @@ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 	<!--<beans:bean id="userDetailsService" class="com.softage.paytm.service.imp.UserDetailsServiceImp"></beans:bean>-->
 
 	<task:scheduled-tasks scheduler="myScheduler">
-		<task:scheduled ref="senderMessage" method="demoService" fixed-delay="100000" />
+		<task:scheduled ref="senderMessage" method="demoService" fixed-delay="100000" cron="" />
 	</task:scheduled-tasks>
 
 	<task:scheduler id="myScheduler"></task:scheduler>

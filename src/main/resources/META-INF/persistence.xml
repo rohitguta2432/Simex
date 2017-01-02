@@ -39,8 +39,8 @@
 
             <properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-           <!-- <property name="hibernate.connection.url" value="jdbc:mysql://172.43.44.203:3306/pahchaandev"/>-->
-            <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.10:3306/pahchaanTestLive"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://172.25.37.5:3306/pahchaanlive"/>
+           <!-- <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.10:3306/pahchaanTestLive"/>-->
 	    	<!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmqa"/>-->
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
 			<property name="hibernate.connection.username" value="root"/>

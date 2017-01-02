@@ -103,6 +103,7 @@ public class EmplogintableEntity {
         this.importDate = importDate;
     }
 
+
     @Basic
     @Column(name = "expireDate", nullable = true, insertable = true, updatable = true)
     public Timestamp getExpireDate() {
@@ -112,6 +113,7 @@ public class EmplogintableEntity {
     public void setExpireDate(Timestamp expireDate) {
         this.expireDate = expireDate;
     }
+
 
     @Basic
     @Column(name = "Roles", nullable = true, insertable = true, updatable = true, length = 10)

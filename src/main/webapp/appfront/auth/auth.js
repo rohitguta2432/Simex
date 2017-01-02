@@ -37,7 +37,7 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
 
         $scope.expire= function()
         {
-            alert("Expire calling  "+$scope.pass1 + $scope.pass);
+
             if($scope.pass1==undefined){
                 alert("Password Minimum Length should be 9 ");
                 ev.preventDefault();
