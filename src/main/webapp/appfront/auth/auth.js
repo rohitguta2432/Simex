@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('PaytmAuth.auth', ['ngRoute'])
-//$scope.domain='http://localhost:8080/paytm';
+//$scope.domain='http://localhost:8080/simex';
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/auth', {
-          templateUrl: '/paytm/appfront/auth/login.htm',
+          templateUrl: '/simex/appfront/auth/login.htm',
           controller: 'AuthCtrl'
         });
     }])
@@ -15,14 +15,14 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
         {
             //alert('Login.');
             var daata = 'userName='+$scope.user+'&password='+$scope.pass;
-           /* $http.get('http://172.25.38.49:8080/paytm/login?'+daata).success(function(data, status, headers, config){*/
+           /* $http.get('http://172.25.38.49:8080/simex/login?'+daata).success(function(data, status, headers, config){*/
 
-                $http.get('/paytm/login?'+daata).success(function(data, status, headers, config){
+                $http.get('/simex/login?'+daata).success(function(data, status, headers, config){
                    // alert('daata');
                 $scope.msg=data;
                // console.log(data.status);
                if(data.status == 'success') {
-                   $window.location.href = '/paytm/appfront/portal.jsp';
+                   $window.location.href = '/simex/appfront/portal.jsp';
                } else if(data.status == 'expirePassword'){
                    $scope.show2 = true;
                } else
@@ -48,15 +48,15 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
             }else {
 
                 var daata = 'userName=' + $scope.user + '&password=' + $scope.pass;
-                /* $http.get('http://172.25.38.49:8080/paytm/login?'+daata).success(function(data, status, headers, config){*/
+                /* $http.get('http://172.25.38.49:8080/simex/login?'+daata).success(function(data, status, headers, config){*/
 
-                $http.get('/paytm/resetPassword?' + daata).success(function (data, status, headers, config) {
+                $http.get('/simex/resetPassword?' + daata).success(function (data, status, headers, config) {
                     // alert('daata');
                     $scope.msg = data;
                     // console.log(data.status);
                     if (data.status == 'success') {
                         $scope.show2 = false;
-                        $window.location.href = '/paytm/appfront/app.jsp';
+                        $window.location.href = '/simex/appfront/app.jsp';
                     }
                 }).error(function () {
 
@@ -67,7 +67,7 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
 
         $scope.expireOpen= function()
         {
-            $window.location.href = '/paytm/appfront/auth/expire.jsp?user='+$scope.user;
+            $window.location.href = '/simex/appfront/auth/expire.jsp?user='+$scope.user;
         }
 
     }])

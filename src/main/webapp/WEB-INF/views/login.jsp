@@ -9,12 +9,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
     <!--Basic Styles-->
-    <link href="../paytm/resources/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="../paytm/resources/css/font-awesome.min.css" rel="stylesheet"/>
+    <link href="../simex/resources/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../simex/resources/css/font-awesome.min.css" rel="stylesheet"/>
 
     <!--Beyond styles-->
-    <link href="../paytm/resources/css/beyond.min.css" rel="stylesheet"/>
-    <link href="../paytm/resources/css/animate.min.css" rel="stylesheet"/>
+    <link href="../simex/resources/css/beyond.min.css" rel="stylesheet"/>
+    <link href="../simex/resources/css/animate.min.css" rel="stylesheet"/>
 
 </head>
 
@@ -25,7 +25,7 @@
             <div class="navbar-header pull-left">
                 <a href="#" class="navbar-brand">
                     <small>
-                        <img src="../paytm/resources/img/paytm-logo.png" alt="paytm"/>
+                        <img src="../simex/resources/img/paytm-logo.png" alt="simex"/>
                     </small>
                 </a>
             </div>
@@ -33,7 +33,7 @@
                 <div class="navbar-account">
                     <ul class="account-area">
                         <li><a href="">
-                            <img src="../paytm/resources/img/softage_logo.png" alt="softage"
+                            <img src="../simex/resources/img/softage_logo.png" alt="softage"
                                  style="width:120px; margin-top:2px;"/>
                         </a>
                         </li>
@@ -47,7 +47,7 @@
 
 <div class="login-container animated fadeInDown">
 
-    <img src="../paytm/resources/img/login_bg.png" alt=""
+    <img src="../simex/resources/img/login_bg.png" alt=""
          style="position:absolute; top:-111px; left:50px; z-index:9999; width:200px;"/>
 
     <div class="loginbox bg-white" style="margin-bottom:20px;">
@@ -80,10 +80,10 @@
 
 
 
-<script src="../paytm/resources/js/jquery-2.0.3.min.js"></script>
-<script src="../paytm/resources/js/bootstrap.min.js"></script>
-<script src="../paytm/resources/js/jquery.slimscroll.min.js" />
-<script src="../paytm/resources/js/beyond.js"></script>
+<script src="../simex/resources/js/jquery-2.0.3.min.js"></script>
+<script src="../simex/resources/js/bootstrap.min.js"></script>
+<script src="../simex/resources/js/jquery.slimscroll.min.js" />
+<script src="../simex/resources/js/beyond.js"></script>
 
 
 </body>

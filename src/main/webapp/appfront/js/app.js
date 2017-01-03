@@ -1,6 +1,6 @@
 var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap']);
  //  var domain='http://localhost:8080/paytm';
-var domain='/paytm';
+var domain='/simex';
 //var domain='http://172.43.44.203:8080/paytm';
 // var domain='http://172.25.38.131:8080/paytm';
 //var domain ='http://182.71.212.110:8080/paytm';
@@ -2033,7 +2033,7 @@ routerApp.controller('logout', ['$scope','$http','$window', function($scope, $ht
             $scope.msg = data;
             console.log(data);
             if(data.status == 'success') {
-                $window.location.href = '/paytm/#/auth';
+                $window.location.href = domain+'/#/auth';
             }
         });
     };

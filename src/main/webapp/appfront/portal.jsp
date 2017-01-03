@@ -109,7 +109,7 @@
     String name=(String)session.getAttribute("name");
     if(name==null) {
 
-        response.sendRedirect("/paytm/#/auth");
+        response.sendRedirect("/simex/#/auth");
     }
 
     String role=(String)session.getAttribute("role");
@@ -139,7 +139,7 @@
       <!-- Navbar Barnd -->
       <div class="navbar-header pull-left">
         <a href="#" class="navbar-brand"><small>
-          <img src="assets/img/paytm-logo.png" alt="paytm"  />
+          <img src="assets/img/paytm-logo.png" alt="simex"  />
         </small></a>
       </div>
       <!-- /Navbar Barnd -->
