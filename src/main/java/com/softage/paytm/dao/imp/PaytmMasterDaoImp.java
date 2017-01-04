@@ -1,5 +1,6 @@
 package com.softage.paytm.dao.imp;
 
+import com.itextpdf.text.log.SysoCounter;
 import com.softage.paytm.dao.PaytmMasterDao;
 import com.softage.paytm.models.AllocationMastEntity;
 import com.softage.paytm.models.CallStatusMasterEntity;
@@ -98,14 +99,13 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         JSONObject json=new JSONObject();
         Query query=null;
 
-
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-
-            String strQuery = "select new map (pm.addressStreet1 as address1,pm.addressStreet2 as address2,pm.city as city,pm.pincode as pincode,pm.email as email,pm.state as state) from PaytmMastEntity pm  where pm.customerPhone=:mobileNo";
+            String strQuery = "select new map (pm.addressStreet1 as address1,pm.addressStreet2 as address2,pm.city as city,pm.pincode as pincode,pm.email as email,pm.state as state,pm.simType as simType,alternatePhone as alternatePhone) from PaytmMastEntity pm  where pm.customerKey.customerPhone=:mobileNo";
             query=entityManager.createQuery(strQuery);
             query.setParameter("mobileNo",mobileNo);
+
             HashMap<String,Object> map=(HashMap<String,Object>)query.getSingleResult();
             json.put("address1",map.get("address1").toString().replace("#",""));
             json.put("address2",map.get("address2").toString().replace("#",""));
@@ -115,6 +115,8 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             //json.put("pincode","134109");
             json.put("email",map.get("email"));
             json.put("state",map.get("state"));
+            json.put("simType",map.get("simType"));
+            json.put("alternatePhone",map.get("alternatePhone"));
         }
         catch (Exception e)
         {
@@ -224,7 +226,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = " select pm from PaytmMastEntity pm where pm.customerPhone=:mobileno";
+            String strQuery = " select pm from PaytmMastEntity pm where pm.customerKey.customerPhone=:mobileno";
             query=entityManager.createQuery(strQuery);
             query.setParameter("mobileno",mobileNo);
             paytmMastEntity = (PaytmMastEntity)query.getSingleResult();
@@ -260,7 +262,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = " select pm from PaytmMastEntity pm where pm.customerPhone=:mobileno";
+            String strQuery = " select pm from PaytmMastEntity pm where pm.customerKey.customerPhone=:mobileno";
             query=entityManager.createQuery(strQuery);
             query.setParameter("mobileno",s);
             paytmMastEntity = (PaytmMastEntity)query.getSingleResult();

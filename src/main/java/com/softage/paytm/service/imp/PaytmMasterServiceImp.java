@@ -65,7 +65,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 if(circleMastEntity!=null){
                     paytmMastEntity.setCircleMastByCirCode(circleMastEntity);
                 }
-                paytmMastEntity.setAddressPhone(map.get("AddressPhone"));
+                paytmMastEntity.setAlternatePhone(map.get("AddressPhone"));
                 paytmMastEntity.setVendorName(map.get("VendorName"));
                 paytmMastEntity.setStageId(map.get("StageId"));
                 paytmMastEntity.setSubStageId(map.get("SubStageId"));
@@ -126,7 +126,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 if(circleMastEntity!=null){
                     paytmMastEntity.setCircleMastByCirCode(circleMastEntity);
                 }
-                paytmMastEntity.setAddressPhone("");
+                paytmMastEntity.setAlternatePhone("");
                 paytmMastEntity.setVendorName("Softage");
                 paytmMastEntity.setStageId("");
                 paytmMastEntity.setSubStageId("");

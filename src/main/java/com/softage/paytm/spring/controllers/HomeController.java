@@ -932,7 +932,6 @@ class HomeController {
                     cirCode = emplogintableEntity.getCirCode();
                 }
             }
-
             JSONObject teleJson = paytmMasterService.telecallingScreen(userName, cirCode);
             List<StateMasterEntity> stateList = paytmMasterService.getStateList();
             List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
@@ -964,6 +963,7 @@ class HomeController {
             jsonObject.put("dateList", dateListReject);
             jsonObject.put("dateList1", dateList);
             jsonObject.put("paytmmastjson", json);
+
             logger.info("telecalling screen data fatch sucessfully>>>>>>>>");
         } catch (Exception e) {
             logger.error("", e);
@@ -1169,22 +1169,34 @@ class HomeController {
         String userName = "system";
         String agentNo = "";
         String returnString = null;
+        String number="";
         HttpSession session = request.getSession(false);
         logger.info("calling to customer>>>>> wait");
         if (session != null) {
             userName = (String) session.getAttribute("name");
             agentNo = userService.getUserByEmpcode(userName).getEmpPhone();
         }
+        number = request.getParameter("customer_number");
+        PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMaster(number);
+        String alternatephone=  paytmMastEntity.getAlternatePhone().toString();
+        String alternateresult = customerCalling(alternatephone, agentNo);
 
-        String number = request.getParameter("customer_number");
-
-        String result = customerCalling(number, agentNo);
-
-        if (result.equalsIgnoreCase("done")) {
+        if(alternatephone==null)
+        {
+            String result = customerCalling(number, agentNo);
+        }
+        else
+        {
+            returnString = "connectedto Customer...";
+        }
+        if (alternateresult.equalsIgnoreCase("done")) {
             returnString = "connected to Customer...";
-        } else {
+        }
+
+        else {
             returnString = "Unable to connect Customer due to Network Connectivity";
         }
+
         returnObj.put("msg", returnString);
         return returnObj;
     }

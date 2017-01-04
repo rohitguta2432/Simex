@@ -13,7 +13,7 @@ import java.util.Date;
 public class PaytmMastEntity {
   //  private String customerPhone;
     private String addressId;
-    private String addressPhone;
+    private String alternatePhone;
     private String addressStreet1;
     private String addressStreet2;
     private String city;
@@ -68,13 +68,13 @@ public class PaytmMastEntity {
     }
 
     @Basic
-    @Column(name = "AddressPhone", nullable = true, insertable = true, updatable = true, length = 15)
-    public String getAddressPhone() {
-        return addressPhone;
+    @Column(name = "alternatePhone", nullable = true, insertable = true, updatable = true, length = 15)
+    public String getAlternatePhone() {
+        return alternatePhone;
     }
 
-    public void setAddressPhone(String addressPhone) {
-        this.addressPhone = addressPhone;
+    public void setAlternatePhone(String alternatePhone) {
+        this.alternatePhone = alternatePhone;
     }
 
     @Basic
@@ -285,7 +285,7 @@ public class PaytmMastEntity {
 
         if (refCode != that.refCode) return false;
         if (addressId != null ? !addressId.equals(that.addressId) : that.addressId != null) return false;
-        if (addressPhone != null ? !addressPhone.equals(that.addressPhone) : that.addressPhone != null) return false;
+        if (alternatePhone != null ? !alternatePhone.equals(that.alternatePhone) : that.alternatePhone != null) return false;
         if (addressStreet1 != null ? !addressStreet1.equals(that.addressStreet1) : that.addressStreet1 != null)
             return false;
         if (addressStreet2 != null ? !addressStreet2.equals(that.addressStreet2) : that.addressStreet2 != null)
@@ -315,7 +315,7 @@ public class PaytmMastEntity {
     public int hashCode() {
         int result = 0;
         result = 31 * result + (addressId != null ? addressId.hashCode() : 0);
-        result = 31 * result + (addressPhone != null ? addressPhone.hashCode() : 0);
+        result = 31 * result + (alternatePhone != null ? alternatePhone.hashCode() : 0);
         result = 31 * result + (addressStreet1 != null ? addressStreet1.hashCode() : 0);
         result = 31 * result + (addressStreet2 != null ? addressStreet2.hashCode() : 0);
         result = 31 * result + (city != null ? city.hashCode() : 0);
@@ -371,7 +371,7 @@ public class PaytmMastEntity {
     public String toString() {
         return "PaytmMastEntity{" +
                 ", addressId='" + addressId + '\'' +
-                ", addressPhone='" + addressPhone + '\'' +
+                ", addressPhone='" + alternatePhone + '\'' +
                 ", addressStreet1='" + addressStreet1 + '\'' +
                 ", addressStreet2='" + addressStreet2 + '\'' +
                 ", city='" + city + '\'' +

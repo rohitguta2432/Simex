@@ -1284,7 +1284,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
     $scope.screen = function(ev){
 
-        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
+        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&simType=' + $scope.codes.simType + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
           console.log(data);
         $http.get(domain+'/postCalling?'+ data)
             .success(function(data, status, headers, config) {
@@ -1534,7 +1534,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     $scope.calling = function(){            /////for customer calling
 
         var data = 'customer_number=' + $scope.mob.mobileNo;
-        //alert(data);
+       /*alert(data);*/
         $http.get(domain+'/customerCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
             .success(function(data, status, headers, config) {
