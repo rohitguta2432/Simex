@@ -43,7 +43,8 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 System.out.println(map.get("kycRequestId"));
                 paytmMastEntity.setCustomerId(map.get("CustomerID"));
                 paytmMastEntity.setUsername(map.get("Username"));
-                paytmMastEntity.setCustomerPhone(map.get("CustomerPhone"));
+                //it will be change
+              //  paytmMastEntity.setCustomerPhone(map.get("CustomerPhone"));
                 paytmMastEntity.setEmail(map.get("Email"));
                 paytmMastEntity.setAddressId(map.get("AddressID"));
                 paytmMastEntity.setTimeSlot(map.get("TimeSlot"));
@@ -104,7 +105,8 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 paytmMastEntity.setKycRequestId("");
                 paytmMastEntity.setCustomerId(map.get("customerID"));
                 paytmMastEntity.setUsername(map.get("name"));
-                paytmMastEntity.setCustomerPhone(map.get("mobileNumber"));
+                //it will be change
+               // paytmMastEntity.setCustomerPhone(map.get("mobileNumber"));
                 paytmMastEntity.setEmail("");
                 paytmMastEntity.setAddressId("");
                 paytmMastEntity.setTimeSlot("");

@@ -122,7 +122,7 @@ public class TelecallMastEntity {
         this.telecallLogsByTmCustomerPhone = telecallLogsByTmCustomerPhone;
     }
 
-    private PaytmMastEntity paytmMastByTmCustomerPhone;
+  /*  private PaytmMastEntity paytmMastByTmCustomerPhone;
 
     @OneToOne
     @JoinColumn(name = "TM_CustomerPhone", referencedColumnName = "CustomerPhone", nullable = false)
@@ -132,5 +132,5 @@ public class TelecallMastEntity {
 
     public void setPaytmMastByTmCustomerPhone(PaytmMastEntity paytmMastByTmCustomerPhone) {
         this.paytmMastByTmCustomerPhone = paytmMastByTmCustomerPhone;
-    }
+    }*/
 }

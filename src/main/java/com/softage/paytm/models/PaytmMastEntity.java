@@ -2,6 +2,7 @@ package com.softage.paytm.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by SS0085 on 23-12-2015.
@@ -10,7 +11,7 @@ import java.sql.Timestamp;
 @Table(name = "paytm_mast")
 @Cacheable
 public class PaytmMastEntity {
-    private String customerPhone;
+  //  private String customerPhone;
     private String addressId;
     private String addressPhone;
     private String addressStreet1;
@@ -33,18 +34,28 @@ public class PaytmMastEntity {
     private String username;
     private String vendorName;
     private Integer cirCode;
+    private String simType;
+    private CustomerKey customerKey;
     private CircleMastEntity circleMastByCirCode;
-    private TelecallMastEntity telecallMastByCustomerPhone;
+   /* private TelecallMastEntity telecallMastByCustomerPhone;*/
 
-    @Id
-    @Column(name = "CustomerPhone", nullable = false, insertable = true, updatable = true, length = 10)
+    @EmbeddedId
+    public CustomerKey getCustomerKey() {
+        return customerKey;
+    }
+
+    public void setCustomerKey(CustomerKey customerKey) {
+        this.customerKey = customerKey;
+    }
+
+ /*   @Column(name = "CustomerPhone", nullable = false, insertable = true, updatable = true, length = 10)
     public String getCustomerPhone() {
         return customerPhone;
     }
 
     public void setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
-    }
+    }*/
 
     @Basic
     @Column(name = "AddressID", nullable = true, insertable = true, updatable = true, length = 50)
@@ -145,6 +156,15 @@ public class PaytmMastEntity {
     public void setImportDate(Timestamp importDate) {
         this.importDate = importDate;
     }
+
+    public String getSimType() {
+        return simType;
+    }
+
+    public void setSimType(String simType) {
+        this.simType = simType;
+    }
+
 
     @Basic
     @Column(name = "KycRequestID", nullable = false, insertable = true, updatable = true, length = 10)
@@ -264,8 +284,6 @@ public class PaytmMastEntity {
         PaytmMastEntity that = (PaytmMastEntity) o;
 
         if (refCode != that.refCode) return false;
-        if (customerPhone != null ? !customerPhone.equals(that.customerPhone) : that.customerPhone != null)
-            return false;
         if (addressId != null ? !addressId.equals(that.addressId) : that.addressId != null) return false;
         if (addressPhone != null ? !addressPhone.equals(that.addressPhone) : that.addressPhone != null) return false;
         if (addressStreet1 != null ? !addressStreet1.equals(that.addressStreet1) : that.addressStreet1 != null)
@@ -295,7 +313,7 @@ public class PaytmMastEntity {
 
     @Override
     public int hashCode() {
-        int result = customerPhone != null ? customerPhone.hashCode() : 0;
+        int result = 0;
         result = 31 * result + (addressId != null ? addressId.hashCode() : 0);
         result = 31 * result + (addressPhone != null ? addressPhone.hashCode() : 0);
         result = 31 * result + (addressStreet1 != null ? addressStreet1.hashCode() : 0);
@@ -340,19 +358,18 @@ public class PaytmMastEntity {
         this.circleMastByCirCode = circleMastByCirCode;
     }
 
-    @OneToOne(mappedBy = "paytmMastByTmCustomerPhone")
+/*    @OneToOne(mappedBy = "paytmMastByTmCustomerPhone")
     public TelecallMastEntity getTelecallMastByCustomerPhone() {
         return telecallMastByCustomerPhone;
     }
 
     public void setTelecallMastByCustomerPhone(TelecallMastEntity telecallMastByCustomerPhone) {
         this.telecallMastByCustomerPhone = telecallMastByCustomerPhone;
-    }
+    }*/
 
     @Override
     public String toString() {
         return "PaytmMastEntity{" +
-                "customerPhone='" + customerPhone + '\'' +
                 ", addressId='" + addressId + '\'' +
                 ", addressPhone='" + addressPhone + '\'' +
                 ", addressStreet1='" + addressStreet1 + '\'' +
@@ -376,7 +393,6 @@ public class PaytmMastEntity {
                 ", vendorName='" + vendorName + '\'' +
                 ", cirCode=" + cirCode +
                 ", circleMastByCirCode=" + circleMastByCirCode +
-                ", telecallMastByCustomerPhone=" + telecallMastByCustomerPhone +
                 '}';
     }
 }

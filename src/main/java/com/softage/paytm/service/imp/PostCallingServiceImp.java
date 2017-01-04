@@ -486,12 +486,12 @@ public class PostCallingServiceImp implements PostCallingService {
                     if (loginId != null) {
                         String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
                         String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
-                        String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
-                       // String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
+                //     String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                       String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
                     } else {
                         String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
-                        String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
-                        // String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
+                     //   String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                        String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
                     }
 
                     result = "JOB ALLOCATED";
