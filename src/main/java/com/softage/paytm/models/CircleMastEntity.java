@@ -23,6 +23,7 @@ public class CircleMastEntity {
     private int startUid;
     private Collection<EmplogintableEntity> emplogintablesByCirCode;
     private Collection<PaytmMastEntity> paytmMastsByCirCode;
+    private Collection<TblScan> tblScansByCirCode;
 
     @Id
     @Column(name = "Cir_code", nullable = false, insertable = false, updatable = false)

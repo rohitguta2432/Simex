@@ -34,6 +34,10 @@
         <class>com.softage.paytm.models.TblNotificationLogEntity</class>
         <class>com.softage.paytm.models.PaytmPinMaster</class>
         <class>com.softage.paytm.models.ReOpenTaleCallMaster</class>
+        <class>com.softage.paytm.models.AoAuditEntity</class>
+        <class>com.softage.paytm.models.CircleAuditEntity</class>
+        <class>com.softage.paytm.models.TblScan</class>
+        <class>com.softage.paytm.models.UploadedImagesEntity</class>
 
         <exclude-unlisted-classes />
 

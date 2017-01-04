@@ -44,10 +44,10 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'Telecalling/telecalling.html',
             controller:'telecalling'
 
-        }) .state('QCInterface', {
-            url: '/QCInterface',
-            templateUrl: 'QCInterface/qcInterface.html',
-            controller:'QCInterface'
+        }) .state('CircleAudit', {
+            url: '/CircleAudit',
+            templateUrl: 'CircleAudit/circleaudit.html',
+            controller:'CircleAudit'
 
         }).state('HRRegistration', {
             url: '/HRRegistration',
@@ -924,8 +924,8 @@ routerApp.controller('downloaddocuments',['$scope', '$http','$q','$log','$locati
 
 
 
-
-routerApp.controller('QCInterface',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
+//QCInterface changed to CircleAudit By Arpan
+routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
 
     //$scope.cust_number='';
    // $scope.url='';
