@@ -1170,6 +1170,9 @@ class HomeController {
         String agentNo = "";
         String returnString = null;
         String number="";
+        String result="";
+        String alternatephone="";
+        String alternateresult="";
         HttpSession session = request.getSession(false);
         logger.info("calling to customer>>>>> wait");
         if (session != null) {
@@ -1178,16 +1181,14 @@ class HomeController {
         }
         number = request.getParameter("customer_number");
         PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMaster(number);
-        String alternatephone=  paytmMastEntity.getAlternatePhone().toString();
-        String alternateresult = customerCalling(alternatephone, agentNo);
-
-        if(alternatephone==null)
+         alternatephone=  paytmMastEntity.getAlternatePhone().toString();
+        if(alternatephone!= null && !alternatephone.equals(""))
         {
-            String result = customerCalling(number, agentNo);
+             alternateresult = customerCalling(alternatephone, agentNo);
         }
         else
         {
-            returnString = "connectedto Customer...";
+            result = customerCalling(number, agentNo);
         }
         if (alternateresult.equalsIgnoreCase("done")) {
             returnString = "connected to Customer...";
@@ -1207,6 +1208,7 @@ class HomeController {
         Row row = null;
 
         PaytmMastEntity paytmMastEntity = null;
+
         PaytmPinMaster paytmPinMaster = null;
         JSONObject jsonObject = new JSONObject();
         String result = "File Not Uploaded";
