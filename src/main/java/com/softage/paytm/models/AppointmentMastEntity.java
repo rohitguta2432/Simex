@@ -118,8 +118,9 @@ public class AppointmentMastEntity {
     public void setAllocationMastsByAppointmentId(Collection<AllocationMastEntity> allocationMastsByAppointmentId) {
         this.allocationMastsByAppointmentId = allocationMastsByAppointmentId;
     }
-    @ManyToOne
-    @JoinColumn(name = "CustomerPhone", referencedColumnName = "PCD_CustomerPhone")
+
+    @OneToOne
+    @JoinColumn(name = "cust_uid")
     public PaytmcustomerDataEntity getPaytmcustomerDataByCustomerPhone() {
         return paytmcustomerDataByCustomerPhone;
     }

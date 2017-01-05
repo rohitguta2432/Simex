@@ -262,8 +262,8 @@ public class AllocationMastEntity {
         this.paytmagententryByAgentCode = paytmagententryByAgentCode;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CustomerPhone", referencedColumnName = "PCD_CustomerPhone", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "cust_uid")
     public PaytmcustomerDataEntity getPaytmcustomerDataByCustomerPhone() {
         return paytmcustomerDataByCustomerPhone;
     }

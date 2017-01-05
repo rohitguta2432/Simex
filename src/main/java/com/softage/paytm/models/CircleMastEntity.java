@@ -23,7 +23,7 @@ public class CircleMastEntity {
     private int startUid;
     private Collection<EmplogintableEntity> emplogintablesByCirCode;
     private Collection<PaytmMastEntity> paytmMastsByCirCode;
-    private Collection<TblScan> tblScansByCirCode;
+    private Collection<TblScan> tblScanCollection;
 
     @Id
     @Column(name = "Cir_code", nullable = false, insertable = false, updatable = false)
@@ -155,5 +155,14 @@ public class CircleMastEntity {
 
     public void setPaytmMastsByCirCode(Collection<PaytmMastEntity> paytmMastsByCirCode) {
         this.paytmMastsByCirCode = paytmMastsByCirCode;
+    }
+
+    @OneToMany(mappedBy = "circleMastEntity")
+    public Collection<TblScan> getTblScanCollection() {
+        return tblScanCollection;
+    }
+
+    public void setTblScanCollection(Collection<TblScan> tblScanCollection) {
+        this.tblScanCollection = tblScanCollection;
     }
 }

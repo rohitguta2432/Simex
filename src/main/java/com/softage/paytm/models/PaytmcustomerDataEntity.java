@@ -13,13 +13,13 @@ import java.util.Collection;
 @Table(name = "paytmcustomer_data")
 @Cacheable
 public class PaytmcustomerDataEntity {
+    private Integer cust_uid;
     private String pcdCustomerPhone;
     private String allocationStatus;
     private String pcdAddress;
     private String pcdArea;
     private String pcdCity;
     private String pcdEmailId;
-    private int pcdId;
     private String pcdImportBy;
     private Timestamp pcdImportDate;
     private String pcdImportType;
@@ -30,10 +30,14 @@ public class PaytmcustomerDataEntity {
     private Date pcdVisitDate;
     private Time pcdVisitTIme;
     private String simType;
-    private Collection<AllocationMastEntity> allocationMastsByPcdCustomerPhone;
-    private Collection<AppointmentMastEntity> appointmentMastsByPcdCustomerPhone;
+    private AppointmentMastEntity appointmentMastEntity;
+    private AllocationMastEntity allocationMastEntity;
+    private TblScan tblScan;
+    private AgentLocationEntity agentLocationEntity;
+    private CallTimeDetailsEntity callTimeDetailsEntity;
+    private Collection<TelecallLogEntity> telecallLogEntity;
 
- /*   public void setPcdVisitDate(String pcdVisitDate) {
+    /*   public void setPcdVisitDate(String pcdVisitDate) {
         this.pcdVisitDate = pcdVisitDate;
     }
 
@@ -42,6 +46,17 @@ public class PaytmcustomerDataEntity {
     }*/
 
     @Id
+    @Column(name = "cust_uid",nullable = false,insertable = true,updatable = true)
+    public Integer getCust_uid() {
+        return cust_uid;
+    }
+
+    public void setCust_uid(Integer cust_uid) {
+        this.cust_uid = cust_uid;
+    }
+
+
+
     @Column(name = "PCD_CustomerPhone", nullable = false, insertable = true, updatable = true, length = 10)
     public String getPcdCustomerPhone() {
         return pcdCustomerPhone;
@@ -102,17 +117,7 @@ public class PaytmcustomerDataEntity {
     }
 
     @Basic
-    @Column(name = "PCD_Id", nullable = false, insertable = true, updatable = true)
-    public int getPcdId() {
-        return pcdId;
-    }
-
-    public void setPcdId(int pcdId) {
-        this.pcdId = pcdId;
-    }
-
-    @Basic
-    @Column(name = "sim_type", nullable = false, insertable = true, updatable = true)
+    @Column(name = "sim_type", nullable = false, insertable = true, updatable = true,length = 10)
     public String getSimType() {
         return simType;
     }
@@ -218,7 +223,6 @@ public class PaytmcustomerDataEntity {
 
         PaytmcustomerDataEntity that = (PaytmcustomerDataEntity) o;
 
-        if (pcdId != that.pcdId) return false;
         if (pcdCustomerPhone != null ? !pcdCustomerPhone.equals(that.pcdCustomerPhone) : that.pcdCustomerPhone != null)
             return false;
         if (allocationStatus != null ? !allocationStatus.equals(that.allocationStatus) : that.allocationStatus != null)
@@ -250,7 +254,6 @@ public class PaytmcustomerDataEntity {
         result = 31 * result + (pcdArea != null ? pcdArea.hashCode() : 0);
         result = 31 * result + (pcdCity != null ? pcdCity.hashCode() : 0);
         result = 31 * result + (pcdEmailId != null ? pcdEmailId.hashCode() : 0);
-        result = 31 * result + pcdId;
         result = 31 * result + (pcdImportBy != null ? pcdImportBy.hashCode() : 0);
         result = 31 * result + (pcdImportDate != null ? pcdImportDate.hashCode() : 0);
         result = 31 * result + (pcdImportType != null ? pcdImportType.hashCode() : 0);
@@ -263,23 +266,57 @@ public class PaytmcustomerDataEntity {
         return result;
     }
 
-    @OneToMany(mappedBy = "paytmcustomerDataByCustomerPhone",cascade = CascadeType.ALL)
-    public Collection<AllocationMastEntity> getAllocationMastsByPcdCustomerPhone() {
-        return allocationMastsByPcdCustomerPhone;
+    @OneToOne(mappedBy = "paytmcustomerDataByCustomerPhone")
+    public AppointmentMastEntity getAppointmentMastEntity() {
+        return appointmentMastEntity;
     }
 
-    public void setAllocationMastsByPcdCustomerPhone(Collection<AllocationMastEntity> allocationMastsByPcdCustomerPhone) {
-        this.allocationMastsByPcdCustomerPhone = allocationMastsByPcdCustomerPhone;
+    public void setAppointmentMastEntity(AppointmentMastEntity appointmentMastEntity) {
+        this.appointmentMastEntity = appointmentMastEntity;
     }
 
-
-
-    @OneToMany(mappedBy = "paytmcustomerDataByCustomerPhone")
-    public Collection<AppointmentMastEntity> getAppointmentMastsByPcdCustomerPhone() {
-        return appointmentMastsByPcdCustomerPhone;
+    @OneToOne(mappedBy = "paytmcustomerDataByCustomerPhone")
+    public AllocationMastEntity getAllocationMastEntity() {
+        return allocationMastEntity;
     }
 
-    public void setAppointmentMastsByPcdCustomerPhone(Collection<AppointmentMastEntity> appointmentMastsByPcdCustomerPhone) {
-        this.appointmentMastsByPcdCustomerPhone = appointmentMastsByPcdCustomerPhone;
+    public void setAllocationMastEntity(AllocationMastEntity allocationMastEntity) {
+        this.allocationMastEntity = allocationMastEntity;
+    }
+
+    @OneToOne(mappedBy = "paytmcustomerDataEntity")
+    public TblScan getTblScan() {
+        return tblScan;
+    }
+
+    public void setTblScan(TblScan tblScan) {
+        this.tblScan = tblScan;
+    }
+
+    @OneToOne(mappedBy = "paytmcustomerDataEntity")
+    public AgentLocationEntity getAgentLocationEntity() {
+        return agentLocationEntity;
+    }
+
+    public void setAgentLocationEntity(AgentLocationEntity agentLocationEntity) {
+        this.agentLocationEntity = agentLocationEntity;
+    }
+
+    @OneToOne(mappedBy = "paytmcustomerDataEntity")
+    public CallTimeDetailsEntity getCallTimeDetailsEntity() {
+        return callTimeDetailsEntity;
+    }
+
+    public void setCallTimeDetailsEntity(CallTimeDetailsEntity callTimeDetailsEntity) {
+        this.callTimeDetailsEntity = callTimeDetailsEntity;
+    }
+
+    @OneToMany(mappedBy = "paytmcustomerDataEntity")
+    public Collection<TelecallLogEntity> getTelecallLogEntity() {
+        return telecallLogEntity;
+    }
+
+    public void setTelecallLogEntity(Collection<TelecallLogEntity> telecallLogEntity) {
+        this.telecallLogEntity = telecallLogEntity;
     }
 }

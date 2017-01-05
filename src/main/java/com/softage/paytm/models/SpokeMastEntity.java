@@ -2,6 +2,7 @@ package com.softage.paytm.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  * Created by SS0085 on 23-12-2015.
@@ -25,6 +26,7 @@ public class SpokeMastEntity {
     private String ssoCategory;
     private String ssoEmail;
     private String zone;
+    private Collection<TblScan> tblScanCollection;
 
     @Id
     @Column(name = "Spoke_code", nullable = false, insertable = true, updatable = true, length = 20)
@@ -240,5 +242,14 @@ public class SpokeMastEntity {
 
     public void setSsoCatery(String ssoCatery) {
         this.ssoCatery = ssoCatery;
+    }
+
+    @OneToMany(mappedBy = "spokeMastEntity")
+    public Collection<TblScan> getTblScanCollection() {
+        return tblScanCollection;
+    }
+
+    public void setTblScanCollection(Collection<TblScan> tblScanCollection) {
+        this.tblScanCollection = tblScanCollection;
     }
 }

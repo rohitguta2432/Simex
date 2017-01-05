@@ -10,8 +10,11 @@ import java.util.Date;
 @Entity
 @Table(name = "paytm_mast")
 @Cacheable
+
 public class PaytmMastEntity {
-  //  private String customerPhone;
+    private Integer cust_uid;
+    private String customerPhone;
+    private Date dataDate;
     private String addressId;
     private String alternatePhone;
     private String addressStreet1;
@@ -35,28 +38,40 @@ public class PaytmMastEntity {
     private String vendorName;
     private Integer cirCode;
     private String simType;
-    private CustomerKey customerKey;
     private CircleMastEntity circleMastByCirCode;
-   /* private TelecallMastEntity telecallMastByCustomerPhone;*/
+    private TelecallMastEntity telecallMastByCustomerPhone;
+    private Integer status;
 
-
-    @EmbeddedId
-    public CustomerKey getCustomerKey() {
-        return customerKey;
+    @Id
+    @GeneratedValue
+    @Column(name = "cust_uid",nullable = false,insertable = true,updatable = true,length = 10)
+    public Integer getCust_uid() {
+        return cust_uid;
     }
 
-    public void setCustomerKey(CustomerKey customerKey) {
-        this.customerKey = customerKey;
+    public void setCust_uid(Integer cust_uid) {
+        this.cust_uid = cust_uid;
     }
 
- /*   @Column(name = "CustomerPhone", nullable = false, insertable = true, updatable = true, length = 10)
+   @Basic
+   @Column(name = "CustomerPhone", nullable = false, insertable = true, updatable = true, length = 10)
     public String getCustomerPhone() {
         return customerPhone;
     }
 
     public void setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
-    }*/
+    }
+
+    @Basic
+    @Column(name = "data_date",nullable = false,insertable = true,updatable = true)
+    public Date getDataDate() {
+        return dataDate;
+    }
+
+    public void setDataDate(Date dataDate) {
+        this.dataDate = dataDate;
+    }
 
     @Basic
     @Column(name = "AddressID", nullable = true, insertable = true, updatable = true, length = 50)
@@ -158,6 +173,8 @@ public class PaytmMastEntity {
         this.importDate = importDate;
     }
 
+    @Basic
+    @Column(name = "sim_type",nullable = false,insertable = true,updatable = true,length = 10)
     public String getSimType() {
         return simType;
     }
@@ -349,6 +366,16 @@ public class PaytmMastEntity {
         this.cirCode = cirCode;
     }
 
+    @Basic
+    @Column(name = "status",nullable = false,insertable = true,updatable = true,length = 10)
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @ManyToOne
     @JoinColumn(name = "Cir_code", referencedColumnName = "Cir_code")
     public CircleMastEntity getCircleMastByCirCode() {
@@ -359,14 +386,14 @@ public class PaytmMastEntity {
         this.circleMastByCirCode = circleMastByCirCode;
     }
 
-/*    @OneToOne(mappedBy = "paytmMastByTmCustomerPhone")
+    @OneToOne(mappedBy = "paytmMastByTmCustomerPhone")
     public TelecallMastEntity getTelecallMastByCustomerPhone() {
         return telecallMastByCustomerPhone;
     }
 
     public void setTelecallMastByCustomerPhone(TelecallMastEntity telecallMastByCustomerPhone) {
         this.telecallMastByCustomerPhone = telecallMastByCustomerPhone;
-    }*/
+    }
 
     @Override
     public String toString() {
@@ -396,4 +423,8 @@ public class PaytmMastEntity {
                 ", circleMastByCirCode=" + circleMastByCirCode +
                 '}';
     }
+
+
+
+
 }

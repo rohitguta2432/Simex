@@ -14,6 +14,8 @@ public class TelecallLogEntity {
     private String tcCallBy;
     private String tcCallStatus;
     private Timestamp tcCallTime;
+    private Integer cust_uid;
+    private PaytmcustomerDataEntity paytmcustomerDataEntity;
 
     @Id
     @GeneratedValue
@@ -92,7 +94,7 @@ public class TelecallLogEntity {
         this.tcCustomerphone = tcCustomerphone;
     }
 
-    private TelecallMastEntity telecallMastByTcCustomerphone;
+/*    private TelecallMastEntity telecallMastByTcCustomerphone;
 
     @ManyToOne
     @JoinColumn(name = "TC_Customerphone", referencedColumnName = "TM_CustomerPhone")
@@ -102,5 +104,25 @@ public class TelecallLogEntity {
 
     public void setTelecallMastByTcCustomerphone(TelecallMastEntity telecallMastByTcCustomerphone) {
         this.telecallMastByTcCustomerphone = telecallMastByTcCustomerphone;
+    }*/
+
+    @Basic
+    @Column(name = "cust_uid",nullable = false,insertable = false,updatable = false)
+    public Integer getCust_uid() {
+        return cust_uid;
+    }
+
+    public void setCust_uid(Integer cust_uid) {
+        this.cust_uid = cust_uid;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "cust_uid",referencedColumnName = "cust_uid")
+    public PaytmcustomerDataEntity getPaytmcustomerDataEntity() {
+        return paytmcustomerDataEntity;
+    }
+
+    public void setPaytmcustomerDataEntity(PaytmcustomerDataEntity paytmcustomerDataEntity) {
+        this.paytmcustomerDataEntity = paytmcustomerDataEntity;
     }
 }

@@ -24,6 +24,12 @@ public class TblScan {
     private CircleAuditEntity circleAuditEntity;
     private AoAuditEntity aoAuditEntity;
     private Collection<UploadedImagesEntity> uploadedImagesEntities;
+    private PaytmcustomerDataEntity paytmcustomerDataEntity;
+    private SpokeMastEntity spokeMastEntity;
+    private String spoke_code;
+    private Integer circle_code;
+    private CircleMastEntity circleMastEntity;
+
 
     @Id
     @GeneratedValue
@@ -37,7 +43,7 @@ public class TblScan {
     }
 
     @Basic
-    @Column(name = "customer_number",nullable = false,insertable = true,updatable = true,unique = true)
+    @Column(name = "customer_number",nullable = false,insertable = true,updatable = true)
     public String getCustomerNumber() {
         return customerNumber;
     }
@@ -72,16 +78,6 @@ public class TblScan {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
-    }
-
-    @Basic
-    @Column(name = "spoke_code",nullable = false,insertable = true,updatable = true)
-    public String getSpokeCode() {
-        return spokeCode;
-    }
-
-    public void setSpokeCode(String spokeCode) {
-        this.spokeCode = spokeCode;
     }
 
     @Basic
@@ -150,5 +146,53 @@ public class TblScan {
         this.aoAuditEntity = aoAuditEntity;
     }
 
+    @OneToOne
+    @JoinColumn(name = "cust_uid")
+    public PaytmcustomerDataEntity getPaytmcustomerDataEntity() {
+        return paytmcustomerDataEntity;
+    }
 
+    public void setPaytmcustomerDataEntity(PaytmcustomerDataEntity paytmcustomerDataEntity) {
+        this.paytmcustomerDataEntity = paytmcustomerDataEntity;
+    }
+
+    @Basic
+    @Column(name = "spoke_code",nullable = false,insertable = false,updatable = false)
+    public String getSpoke_code() {
+        return spoke_code;
+    }
+
+    public void setSpoke_code(String spoke_code) {
+        this.spoke_code = spoke_code;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "spoke_code",referencedColumnName = "Spoke_code")
+    public SpokeMastEntity getSpokeMastEntity() {
+        return spokeMastEntity;
+    }
+
+    public void setSpokeMastEntity(SpokeMastEntity spokeMastEntity) {
+        this.spokeMastEntity = spokeMastEntity;
+    }
+
+    @Basic
+    @Column(name = "circle_code",nullable = false,insertable = false,updatable = false)
+    public Integer getCircle_code() {
+        return circle_code;
+    }
+
+    public void setCircle_code(Integer circle_code) {
+        this.circle_code = circle_code;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "circle_code",referencedColumnName = "Cir_code")
+    public CircleMastEntity getCircleMastEntity() {
+        return circleMastEntity;
+    }
+
+    public void setCircleMastEntity(CircleMastEntity circleMastEntity) {
+        this.circleMastEntity = circleMastEntity;
+    }
 }

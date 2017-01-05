@@ -38,12 +38,14 @@
         <class>com.softage.paytm.models.CircleAuditEntity</class>
         <class>com.softage.paytm.models.TblScan</class>
         <class>com.softage.paytm.models.UploadedImagesEntity</class>
+            <class>com.softage.paytm.models.AgentLocationEntity</class>
+            <class>com.softage.paytm.models.CallTimeDetailsEntity</class>
 
         <exclude-unlisted-classes />
 
             <properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-            <property name="hibernate.connection.url" value="jdbc:mysql://172.25.37.10:3306/simexdev"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://172.25.37.10:3306/simexdevbackup"/>
            <!-- <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.10:3306/pahchaanTestLive"/>-->
 	    	<!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmqa"/>-->
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>

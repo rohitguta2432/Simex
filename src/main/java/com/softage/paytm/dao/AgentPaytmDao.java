@@ -10,7 +10,7 @@ import java.util.List;
  * Created by SS0085 on 30-12-2015.
  */
 public interface AgentPaytmDao {
-    public String saveAgent(PaytmagententryEntity paytmagententryEntity);
+    public String         saveAgent(PaytmagententryEntity paytmagententryEntity);
     public String saveAgentPinMaster(AgentpinmasterEntity agentpinmasterEntity);
     public List<String> getAgentPinMastList(String pincode);
     public AgentpinmasterEntity getByPinandAcode(String pincode,String agentcode);

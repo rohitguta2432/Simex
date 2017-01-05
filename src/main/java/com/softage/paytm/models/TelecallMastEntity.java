@@ -11,14 +11,40 @@ import java.util.Collection;
 @Table(name = "telecall_mast")
 @Cacheable
 public class TelecallMastEntity {
+    private Integer id;
     private String tmCustomerPhone;
     private byte tmAttempts;
     private String tmLastAttemptBy;
     private Timestamp tmLastAttemptDateTime;
     private String tmLastCallStatus;
     private String tmTeleCallStatus;
+    private PaytmMastEntity paytmMastByTmCustomerPhone;
+
 
     @Id
+    @GeneratedValue
+    @Column(name = "id",nullable = false,insertable = true,updatable = true)
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+
+    @OneToOne
+    @JoinColumn(name = "cust_uid")
+    public PaytmMastEntity getPaytmMastByTmCustomerPhone() {
+        return paytmMastByTmCustomerPhone;
+    }
+
+    public void setPaytmMastByTmCustomerPhone(PaytmMastEntity paytmMastByTmCustomerPhone) {
+        this.paytmMastByTmCustomerPhone = paytmMastByTmCustomerPhone;
+    }
+
+
+    @Basic
     @Column(name = "TM_CustomerPhone", nullable = false, insertable = false, updatable = false, length = 10)
     public String getTmCustomerPhone() {
         return tmCustomerPhone;
@@ -111,26 +137,7 @@ public class TelecallMastEntity {
         return result;
     }
 
-    private Collection<TelecallLogEntity> telecallLogsByTmCustomerPhone;
 
-    @OneToMany(mappedBy = "telecallMastByTcCustomerphone")
-    public Collection<TelecallLogEntity> getTelecallLogsByTmCustomerPhone() {
-        return telecallLogsByTmCustomerPhone;
-    }
 
-    public void setTelecallLogsByTmCustomerPhone(Collection<TelecallLogEntity> telecallLogsByTmCustomerPhone) {
-        this.telecallLogsByTmCustomerPhone = telecallLogsByTmCustomerPhone;
-    }
 
-  /*  private PaytmMastEntity paytmMastByTmCustomerPhone;
-
-    @OneToOne
-    @JoinColumn(name = "TM_CustomerPhone", referencedColumnName = "CustomerPhone", nullable = false)
-    public PaytmMastEntity getPaytmMastByTmCustomerPhone() {
-        return paytmMastByTmCustomerPhone;
-    }
-
-    public void setPaytmMastByTmCustomerPhone(PaytmMastEntity paytmMastByTmCustomerPhone) {
-        this.paytmMastByTmCustomerPhone = paytmMastByTmCustomerPhone;
-    }*/
 }

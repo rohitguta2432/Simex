@@ -84,7 +84,7 @@ public class PostCallingServiceImp implements PostCallingService {
             telecallLogEntity.setTcCallBy(map.get("importby"));
             telecallLogEntity.setTcCallStatus(map.get("status"));
             telecallLogEntity.setTcCallTime(new Timestamp(new Date().getTime()));
-            telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
+           // telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
             result = postCallingDao.saveTeleCallLog(telecallLogEntity);
             if ("done".equalsIgnoreCase(result)) {
                 result1 = "done";

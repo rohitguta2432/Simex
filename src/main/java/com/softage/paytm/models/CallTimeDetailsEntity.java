@@ -1,0 +1,91 @@
+package com.softage.paytm.models;
+
+import javax.persistence.*;
+import java.util.Date;
+
+/**
+ * Created by SS0090 on 1/5/2017.
+ */
+@Entity
+@Table(name = "tbl_calltimedetails")
+public class CallTimeDetailsEntity {
+
+    private Integer id;
+    private String customer_number;
+    private Date call_datetime;
+    private Integer call_status;
+    private Integer circleCode;
+    private String lastcallBy;
+    private PaytmcustomerDataEntity paytmcustomerDataEntity;
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id",nullable = false,insertable = true,updatable = true)
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @Basic
+    @Column(name = "customer_number",nullable = false,insertable = true,updatable = true)
+    public String getCustomer_number() {
+        return customer_number;
+    }
+
+    public void setCustomer_number(String customer_number) {
+        this.customer_number = customer_number;
+    }
+
+    @Basic
+    @Column(name = "call_datetime",nullable = false,insertable = true,updatable = true)
+    public Date getCall_datetime() {
+        return call_datetime;
+    }
+
+    public void setCall_datetime(Date call_datetime) {
+        this.call_datetime = call_datetime;
+    }
+
+    @Basic
+    @Column(name = "call_status",nullable = false,insertable = true,updatable = true)
+    public Integer getCall_status() {
+        return call_status;
+    }
+
+    public void setCall_status(Integer call_status) {
+        this.call_status = call_status;
+    }
+
+    @Basic
+    @Column(name = "circleCode",nullable = false,insertable = true,updatable = true)
+    public Integer getCircleCode() {
+        return circleCode;
+    }
+
+    public void setCircleCode(Integer circleCode) {
+        this.circleCode = circleCode;
+    }
+
+    @Basic
+    @Column(name = "lastcallBy",nullable = false,insertable = true,updatable = true)
+    public String getLastcallBy() {
+        return lastcallBy;
+    }
+
+    public void setLastcallBy(String lastcallBy) {
+        this.lastcallBy = lastcallBy;
+    }
+
+    @OneToOne
+    @JoinColumn(name = "cust_uid")
+    public PaytmcustomerDataEntity getPaytmcustomerDataEntity() {
+        return paytmcustomerDataEntity;
+    }
+
+    public void setPaytmcustomerDataEntity(PaytmcustomerDataEntity paytmcustomerDataEntity) {
+        this.paytmcustomerDataEntity = paytmcustomerDataEntity;
+    }
+}
