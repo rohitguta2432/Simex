@@ -939,6 +939,7 @@ class HomeController {
                 json = paytmMasterService.getPaytmMastData((String) teleJson.get("mobileNo"));
             }
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat format1=new SimpleDateFormat("dd/MM/yyyy");
             Calendar date = Calendar.getInstance();
             Calendar date1 = Calendar.getInstance();
             String dateList1[] = new String[7];
@@ -946,15 +947,13 @@ class HomeController {
             List<String> dateList = new ArrayList<String>();
             List<String> dateListReject = new ArrayList<String>();
             for (int i = 0; i < 7; i++) {
-
                 dateList1[i] = format.format(date1.getTime());
                 date1.add(Calendar.DATE, 1);
                 dateList.add(dateList1[i]);
             }
-
             for (int i = 0; i < 3; i++) {
                 date.add(Calendar.DATE, 1);
-                dateList2[i] = format.format(date.getTime());
+                dateList2[i] = format1.format(date.getTime());
                 dateListReject.add(dateList2[i]);
             }
             jsonObject.put("teleData", teleJson);
@@ -964,7 +963,7 @@ class HomeController {
             jsonObject.put("dateList1", dateList);
             jsonObject.put("paytmmastjson", json);
 
-            logger.info("telecalling screen data fatch sucessfully>>>>>>>>");
+            logger.info("telecalling screen data fetch sucessfully>>>>>>>>");
         } catch (Exception e) {
             logger.error("", e);
         }
@@ -1197,18 +1196,12 @@ class HomeController {
         else {
             returnString = "Unable to connect Customer due to Network Connectivity";
         }
-
         returnObj.put("msg", returnString);
         return returnObj;
     }
-
-
     public static JSONObject uploadExcel(File path, String importBy, PaytmMasterService paytmMasterService, PaytmPinMasterService pinMasterService) {
-
         Row row = null;
-
         PaytmMastEntity paytmMastEntity = null;
-
         PaytmPinMaster paytmPinMaster = null;
         JSONObject jsonObject = new JSONObject();
         String result = "File Not Uploaded";

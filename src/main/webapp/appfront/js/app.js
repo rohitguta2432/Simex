@@ -1207,8 +1207,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     };
 
     var GetScreen = function() {
-
-            $scope.getscreen().then(function (data) {
+        $scope.getscreen().then(function (data) {
 
                 //alert('getscreen');
                 $scope.statuses = data.statusList;
@@ -1547,8 +1546,6 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
             .error(function(data, status, headers, config) {
                alert("Unable to Connect Customer due to Network Connectivity");
             });
-
-
     };
 
 
@@ -1584,10 +1581,9 @@ routerApp.directive('phone', function() {
 
 
 routerApp.controller('Ctrl',['$scope', '$http','$q','$log', function($scope,$http,$q,$log){
-
     $scope.send = function(){
 
-        alert(jgndfjg);
+        /*alert(jgndfjg);*/
     };
 }]);
 
