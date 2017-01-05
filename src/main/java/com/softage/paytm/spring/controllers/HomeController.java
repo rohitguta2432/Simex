@@ -1960,7 +1960,7 @@ class HomeController {
             String city = request.getParameter("city");
             String state = request.getParameter("state");
             String pinCode = request.getParameter("pincode");
-            String landMark = request.getParameter("landmark");
+            String simType = request.getParameter("simType");
             String visitDate = request.getParameter("visitDate");
             String visitTime1 = request.getParameter("visitTime");
             String status = request.getParameter("status");
@@ -1975,7 +1975,7 @@ class HomeController {
             map.put("city", city);
             map.put("state", state);
             map.put("pinCode", pinCode);
-            map.put("landmark", landMark);
+            map.put("landmark", simType);
             map.put("visitDate", visitDate);
             map.put("visitTime", visitTime[0]);
             map.put("status", status);

@@ -27,6 +27,7 @@ public class AllocationMastEntity {
     private String agentCode;
     private String remarksCode;
     private Long appointmentId;
+    private String spokeCode;
     private PaytmagententryEntity paytmagententryByAgentCode;
     private PaytmcustomerDataEntity paytmcustomerDataByCustomerPhone;
     private RemarkMastEntity remarkMastByRemarksCode;
@@ -62,6 +63,16 @@ public class AllocationMastEntity {
 
     public void setConfirmation(String confirmation) {
         this.confirmation = confirmation;
+    }
+
+    @Basic
+    @Column(name = "spoke_code", nullable = false, insertable = true, updatable = true, length = 20)
+    public String getSpokeCode() {
+        return spokeCode;
+    }
+
+    public void setSpokeCode(String spokeCode) {
+        this.spokeCode = spokeCode;
     }
 
     @Basic

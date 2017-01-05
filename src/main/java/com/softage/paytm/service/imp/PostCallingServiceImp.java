@@ -314,7 +314,7 @@ public class PostCallingServiceImp implements PostCallingService {
             paytmcustomerDataEntity.setPcdImportBy(map.get("importby"));
             paytmcustomerDataEntity.setPcdImportDate(new Timestamp(new Date().getTime()));
             paytmcustomerDataEntity.setPcdImportType(map.get("importType"));
-            paytmcustomerDataEntity.setPcdLandmark(map.get("landmark"));
+            paytmcustomerDataEntity.setSimType(map.get("simType"));
             paytmcustomerDataEntity.setPcdPincode(map.get("pinCode"));
             paytmcustomerDataEntity.setPcdState(map.get("state"));
             Date parsedUtilDate = formater.parse(map.get("visitDate"));

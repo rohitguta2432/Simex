@@ -29,6 +29,7 @@ public class PaytmcustomerDataEntity {
     private String pcdState;
     private Date pcdVisitDate;
     private Time pcdVisitTIme;
+    private String simType;
     private Collection<AllocationMastEntity> allocationMastsByPcdCustomerPhone;
     private Collection<AppointmentMastEntity> appointmentMastsByPcdCustomerPhone;
 
@@ -108,6 +109,16 @@ public class PaytmcustomerDataEntity {
 
     public void setPcdId(int pcdId) {
         this.pcdId = pcdId;
+    }
+
+    @Basic
+    @Column(name = "sim_type", nullable = false, insertable = true, updatable = true)
+    public String getSimType() {
+        return simType;
+    }
+
+    public void setSimType(String simType) {
+        this.simType = simType;
     }
 
     @Basic

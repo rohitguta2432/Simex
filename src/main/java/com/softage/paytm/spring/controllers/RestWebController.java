@@ -105,7 +105,7 @@ public class RestWebController {
     }*/
 
 
-    @RequestMapping(value = "/UpdateDeviceInfo", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/UpdateDeviceInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces =MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String UpdateDeviceInfo(HttpServletRequest request, HttpServletResponse response) {
         String msg = "0";
         PaytmdeviceidinfoEntity paytmdeviceidinfoEntity1 = null;
@@ -134,7 +134,7 @@ public class RestWebController {
 
     }
 
-    @RequestMapping(value = "/AgentLeads", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/AgentLeads", method = {RequestMethod.GET, RequestMethod.POST},produces ="application/json; charset=utf-8")
     public JSONObject agentLeads(HttpServletRequest request) {
         int timedeff=1;
         JSONArray array = new JSONArray();
@@ -159,7 +159,7 @@ public class RestWebController {
     }
 
 
-    @RequestMapping(value = "/agentNewLeads", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/agentNewLeads", method = {RequestMethod.GET, RequestMethod.POST} ,produces ="application/json; charset=utf-8")
     public JSONArray agentNewLeads(HttpServletRequest request) {
         int timedeff=1;
         JSONArray array = new JSONArray();

@@ -50,6 +50,8 @@ public class LeadsDaoImp implements LeadsDao {
                     json.put("PinCode", s[5]);
                     json.put("AppointmentDate", s[6]);
                     json.put("AppointmentTime", s[7]);
+                    json.put("simType", s[8]);
+                    json.put("spoke", s[9]);
 
                 }
                 arrList.add(json);

@@ -39,6 +39,7 @@ public class PaytmMastEntity {
     private CircleMastEntity circleMastByCirCode;
    /* private TelecallMastEntity telecallMastByCustomerPhone;*/
 
+
     @EmbeddedId
     public CustomerKey getCustomerKey() {
         return customerKey;
