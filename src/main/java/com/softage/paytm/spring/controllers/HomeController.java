@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -914,8 +915,6 @@ class HomeController {
         }
         return jsonObject;
     }
-
-
     @RequestMapping(value = "/telecallingScreen", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public JSONObject telecallingScreen(HttpServletRequest request) {
@@ -935,11 +934,11 @@ class HomeController {
             JSONObject teleJson = paytmMasterService.telecallingScreen(userName, cirCode);
             List<StateMasterEntity> stateList = paytmMasterService.getStateList();
             List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
-            if (teleJson.get("mobileNo").toString() != null && !teleJson.get("mobileNo").toString().equals("")) {
+            if (teleJson.get("cust_uid") != null && !teleJson.get("cust_uid").equals("")) {
+                json = paytmMasterService.getPaytmMastData((String) teleJson.get("cust_uid"));
                 json = paytmMasterService.getPaytmMastData((String) teleJson.get("mobileNo"));
             }
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat format1=new SimpleDateFormat("dd/MM/yyyy");
             Calendar date = Calendar.getInstance();
             Calendar date1 = Calendar.getInstance();
             String dateList1[] = new String[7];
@@ -952,8 +951,8 @@ class HomeController {
                 dateList.add(dateList1[i]);
             }
             for (int i = 0; i < 3; i++) {
+                dateList2[i] = format.format(date.getTime());
                 date.add(Calendar.DATE, 1);
-                dateList2[i] = format1.format(date.getTime());
                 dateListReject.add(dateList2[i]);
             }
             jsonObject.put("teleData", teleJson);
@@ -1860,21 +1859,37 @@ class HomeController {
             List<String> agentList = agentPaytmService.getAgentPinMastList(pincode);
             Set<String> agentListUnique = new HashSet<String>(agentList);
 
+            Date date = new Date();
+            String strDateFormat = "hh:mm:ss a";
+            DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+            String formattedDate= dateFormat.format(date);
+            System.out.println("Current time of the day using Date - 12 hour format: " + formattedDate);
+           String currenttime=formattedDate.substring(10,10);
+              System.out.print(" updated time "+currenttime);
 
-            for (Integer i = 9; i <= 18; i = i + timediff) {
 
+           /* for (Integer i = 2; i <= 18; i = i + timediff) {
                 String time = i.toString();
                 JSONArray jsonArray = new JSONArray();
-
-
                 System.out.println(" date   " + date1);
+                System.out.println(" Timecurrent   " + time);
+                JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time, date1);
+                String result = (String) jsonObject1.get(date1);
+                if (result.equalsIgnoreCase("Available")) {
+                    timeList.add(time + ":00");
+                }
+            }*/
+            for (Integer i = 9; i <= 18; i = i + timediff) {
+                String time = i.toString();
+                JSONArray jsonArray = new JSONArray();
+                System.out.println(" date   " + date1);
+                System.out.println(" Timecurrent   " + time);
                 JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time, date1);
                 String result = (String) jsonObject1.get(date1);
                 if (result.equalsIgnoreCase("Available")) {
                     timeList.add(time + ":00");
                 }
             }
-
             finalJson.put("timeList", timeList);
 
 

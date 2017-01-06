@@ -23,5 +23,6 @@ public interface PaytmMasterService {
     public List<StateMasterEntity> getStateList();
     public List<CallStatusMasterEntity> getStatusList();
     public void uploadRejectedData(List<Map<String, String>> list,File filename);
+    public PaytmMastEntity getPaytmMastData(int cust_uid);
 
 }

@@ -207,7 +207,6 @@ public class PostCallingServiceImp implements PostCallingService {
         JSONObject returnObj=new JSONObject();
         for (String agent : agents) {
             try {
-
                 String dateTime = date +" "+ time+":00:00";
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date convertedDate = dateFormat.parse(dateTime);

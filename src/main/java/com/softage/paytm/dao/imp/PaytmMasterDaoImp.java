@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.*;
@@ -88,7 +89,31 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         return  result;
     }
 
-
+    @Override
+    public PaytmMastEntity getPaytmMasterData(int cust_uid) {
+        EntityManager entityManager = null;
+        PaytmMastEntity paytmMasterData=null;
+        Query query=null;
+        try
+        {
+            entityManager = entityManagerFactory.createEntityManager();
+           /* String strQuery = " select cust from PaytmMastEntity cust where cust.cust_uid=:cust_uid";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("cust_uid",cust_uid);*/
+            paytmMasterData = (PaytmMastEntity)query.getSingleResult();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  paytmMasterData;
+    }
 
 
     @Override
@@ -98,7 +123,6 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         PaytmMastEntity paytmMastEntity=null;
         JSONObject json=new JSONObject();
         Query query=null;
-
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
@@ -279,7 +303,6 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         }
         return  paytmMastEntity;
     }
-
     @Override
     public boolean exists(String s) {
         return false;

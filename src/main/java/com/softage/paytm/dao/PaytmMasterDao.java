@@ -20,5 +20,6 @@ public interface PaytmMasterDao extends CrudRepository<PaytmMastEntity,String> {
     public List<CallStatusMasterEntity> getStatusList();
     public PaytmMastEntity getPaytmMaster(String mobileNo);
     public String savePaytmMaster(PaytmMastEntity paytmMastEntity);
+    public PaytmMastEntity getPaytmMasterData(int cust_uid);
 
 }

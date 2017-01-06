@@ -90,9 +90,6 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
 
     @Override
     public String savePaytmMasterExcel(List<Map<String, String>> paytmList) {
-
-
-
         List<PaytmMastEntity> custList=new ArrayList<PaytmMastEntity>();
         PaytmMastEntity paytmMastEntity=null;
         String circleCode=null;
@@ -160,12 +157,14 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
         return  jsonObject;
 
     }
-
     @Override
     public PaytmMastEntity getPaytmMaster(String mobileNo) {
         return paytmMasterDao.findOne(mobileNo);
     }
-
+    @Override
+    public PaytmMastEntity getPaytmMastData(int cust_uid){
+        return paytmMasterDao.getPaytmMasterData(cust_uid);
+    }
     @Override
     public JSONObject telecallingScreen(String userName,int cirCode) {
         JSONObject json=null;
@@ -175,16 +174,13 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 break;
             }
         }
-
         return json;
     }
-
     @Override
     public List<StateMasterEntity> getStateList() {
        List<StateMasterEntity> listState=paytmMasterDao.getStatemaster();
         return listState;
     }
-
     @Override
     public List<CallStatusMasterEntity> getStatusList() {
 
