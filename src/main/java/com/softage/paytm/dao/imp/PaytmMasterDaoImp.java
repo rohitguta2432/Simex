@@ -100,7 +100,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-          String strQuery = " select cust from PaytmMastEntity cust where cust.cust_uid=:cust_uid";
+            String strQuery = " select cust from PaytmMastEntity cust where cust.cust_uid=:cust_uid";
             query=entityManager.createQuery(strQuery);
             query.setParameter("cust_uid",cust_uid);
             paytmMasterData = (PaytmMastEntity)query.getSingleResult();
@@ -173,7 +173,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             json.put("email",map.get("email"));
             json.put("state",map.get("state"));
             json.put("simType",map.get("simType"));
-            json.put("cust_uid",map.get("cust_uid"));
+            json.put("cust_uid",cust_uid);
             json.put("alternatePhone1",map.get("alternatePhone1"));
             json.put("alternatePhone2",map.get("alternatePhone2"));
             json.put("coStatus",map.get("coStatus"));

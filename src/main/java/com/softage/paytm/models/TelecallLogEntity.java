@@ -15,7 +15,7 @@ public class TelecallLogEntity {
     private String tcCallStatus;
     private Timestamp tcCallTime;
     private Integer cust_uid;
-    private PaytmcustomerDataEntity paytmcustomerDataEntity;
+    private PaytmMastEntity paytmMastEntity;
 
     @Id
     @GeneratedValue
@@ -118,11 +118,11 @@ public class TelecallLogEntity {
 
     @ManyToOne
     @JoinColumn(name = "cust_uid",referencedColumnName = "cust_uid")
-    public PaytmcustomerDataEntity getPaytmcustomerDataEntity() {
-        return paytmcustomerDataEntity;
+    public PaytmMastEntity getPaytmMastEntity() {
+        return paytmMastEntity;
     }
 
-    public void setPaytmcustomerDataEntity(PaytmcustomerDataEntity paytmcustomerDataEntity) {
-        this.paytmcustomerDataEntity = paytmcustomerDataEntity;
+    public void setPaytmMastEntity(PaytmMastEntity paytmMastEntity) {
+        this.paytmMastEntity = paytmMastEntity;
     }
 }

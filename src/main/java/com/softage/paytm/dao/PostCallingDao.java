@@ -16,12 +16,14 @@ public interface PostCallingDao {
     public String saveAppointment(AppointmentMastEntity appointmentMastEntity);
     public String updateTeleCall(TelecallMastEntity telecallMastEntity);
     public TelecallMastEntity getByPrimaryKey(String phoneNumber);
+    public TelecallMastEntity getByReferenceId(int id);
     public long checkAppointmentId(long appointmentid);
     public Map<String,Object> getData(long appointmentid,String mobileNo);
     public String getAgentCode(String pinCode,Date date,String date1,int maxAllocation,String agentCode);
     public String saveSmsSendEntity(SmsSendlogEntity smsSendlogEntity);
     public String saveTabNotification(TblNotificationLogEntity tblNotificationLogEntity);
     public AppointmentMastEntity getByCustomerNuber(String customerNumber);
+    public AppointmentMastEntity getByCustId(int custId);
     public AppointmentMastEntity getByAppointmentId(long appointmentId);
     public RemarkMastEntity getByPrimaryCode(String key);
     public List<RemarkMastEntity> remarkList();

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -162,6 +163,37 @@ public class PostCallingDaoImp implements PostCallingDao {
     }
 
     @Override
+    public TelecallMastEntity getByReferenceId(int custId) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<CircleMastEntity> list=new ArrayList<>();
+        TelecallMastEntity telecallMastEntity=null;
+        EntityTransaction entityTransaction=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
+            String strQuery = "select telemast from TelecallMastEntity telemast where telemast.paytmMastByTmCustomerPhone.cust_uid=:custId";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("custId",custId);
+            telecallMastEntity= (TelecallMastEntity)query.getSingleResult();
+            entityTransaction.commit();
+            //  telecallMastEntity=entityManager.find(CircleMastEntity.class,1);
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return telecallMastEntity;
+
+}
+
+    @Override
     public long checkAppointmentId(long appointmentid) {
 
         EntityManager entityManager=null;
@@ -233,6 +265,7 @@ public class PostCallingDaoImp implements PostCallingDao {
     }
 
     @Override
+
     public String getAgentCode(String pinCode, Date date, String visitDateTime, int maxAllocation, String agentCode) {
 
 
@@ -379,6 +412,36 @@ public class PostCallingDaoImp implements PostCallingDao {
             String strQuery = "select am from AppointmentMastEntity am where am.customerPhone=:phoneNumber";
             query=entityManager.createQuery(strQuery);
             query.setParameter("phoneNumber",customerNumber);
+            appointmentMastEntity= (AppointmentMastEntity)query.getSingleResult();
+            entityTransaction.commit();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return appointmentMastEntity;
+    }
+
+    @Override
+    public AppointmentMastEntity getByCustId(int custId) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<CircleMastEntity> list=new ArrayList<>();
+        AppointmentMastEntity appointmentMastEntity=null;
+        EntityTransaction entityTransaction=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
+            String strQuery = "select am from AppointmentMastEntity am where am.paytmcustomerDataByCustomerPhone.cust_uid=:custId";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("custId",custId);
             appointmentMastEntity= (AppointmentMastEntity)query.getSingleResult();
             entityTransaction.commit();
 

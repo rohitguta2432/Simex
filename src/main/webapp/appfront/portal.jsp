@@ -1,4 +1,4 @@
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <head>
@@ -10,6 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <sec:csrfMetaTags/>
   <!--Basic Styles-->
   <link href="libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" />

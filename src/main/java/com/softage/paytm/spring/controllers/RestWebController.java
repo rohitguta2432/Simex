@@ -134,7 +134,7 @@ public class RestWebController {
 
     }
 
-    @RequestMapping(value = "/AgentLeads", method = {RequestMethod.GET, RequestMethod.POST},produces ="application/json; charset=utf-8")
+    @RequestMapping(value = "/AgentLeads", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONObject agentLeads(HttpServletRequest request) {
         int timedeff=1;
         JSONArray array = new JSONArray();

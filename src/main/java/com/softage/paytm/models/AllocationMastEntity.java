@@ -213,7 +213,7 @@ public class AllocationMastEntity {
     }
 
     @Basic
-    @Column(name = "CustomerPhone", nullable = false, insertable = false, updatable = false, length = 10)
+    @Column(name = "CustomerPhone", nullable = true, insertable = true, updatable = false, length = 10)
     public String getCustomerPhone() {
         return customerPhone;
     }

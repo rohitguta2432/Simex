@@ -30,12 +30,13 @@ public class PaytmcustomerDataEntity {
     private Date pcdVisitDate;
     private Time pcdVisitTIme;
     private String simType;
+    private String coStatus;
     private AppointmentMastEntity appointmentMastEntity;
     private AllocationMastEntity allocationMastEntity;
     private TblScan tblScan;
     private AgentLocationEntity agentLocationEntity;
     private CallTimeDetailsEntity callTimeDetailsEntity;
-    private Collection<TelecallLogEntity> telecallLogEntity;
+
 
     /*   public void setPcdVisitDate(String pcdVisitDate) {
         this.pcdVisitDate = pcdVisitDate;
@@ -124,6 +125,16 @@ public class PaytmcustomerDataEntity {
 
     public void setSimType(String simType) {
         this.simType = simType;
+    }
+
+    @Basic
+    @Column(name = "co_status", nullable = false, insertable = true, updatable = true,length = 3)
+    public String getCoStatus() {
+        return coStatus;
+    }
+
+    public void setCoStatus(String coStatus) {
+        this.coStatus = coStatus;
     }
 
     @Basic
@@ -311,12 +322,5 @@ public class PaytmcustomerDataEntity {
         this.callTimeDetailsEntity = callTimeDetailsEntity;
     }
 
-    @OneToMany(mappedBy = "paytmcustomerDataEntity")
-    public Collection<TelecallLogEntity> getTelecallLogEntity() {
-        return telecallLogEntity;
-    }
 
-    public void setTelecallLogEntity(Collection<TelecallLogEntity> telecallLogEntity) {
-        this.telecallLogEntity = telecallLogEntity;
-    }
 }

@@ -930,38 +930,43 @@ class HomeController {
                     cirCode = emplogintableEntity.getCirCode();
                 }
             }
-            JSONObject teleJson = paytmMasterService.telecallingScreen(userName, cirCode);
-            List<StateMasterEntity> stateList = paytmMasterService.getStateList();
-            List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
-            if (teleJson.get("cust_uid") != null && !teleJson.get("cust_uid").equals("")) {
-                String custid=(String)teleJson.get("cust_uid");
-         int cust_uid=Integer.parseInt(custid);
-                json = paytmMasterService.getPaytmMastData(cust_uid);
+            if(userName!=null) {
+                JSONObject teleJson = paytmMasterService.telecallingScreen(userName, cirCode);
+                List<StateMasterEntity> stateList = paytmMasterService.getStateList();
+                List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
+                if (teleJson.get("cust_uid") != null && !teleJson.get("cust_uid").equals("")) {
+                    String custid = (String) teleJson.get("cust_uid");
+                    int cust_uid = Integer.parseInt(custid);
+                    json = paytmMasterService.getPaytmMastData(cust_uid);
                 /*json = paytmMasterService.getPaytmMastData((String) teleJson.get("mobileNo"));*/
+                }
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                Calendar date = Calendar.getInstance();
+                Calendar date1 = Calendar.getInstance();
+                String dateList1[] = new String[7];
+                String dateList2[] = new String[3];
+                List<String> dateList = new ArrayList<String>();
+                List<String> dateListReject = new ArrayList<String>();
+                for (int i = 0; i < 7; i++) {
+                    dateList1[i] = format.format(date1.getTime());
+                    date1.add(Calendar.DATE, 1);
+                    dateList.add(dateList1[i]);
+                }
+                for (int i = 0; i < 3; i++) {
+                    dateList2[i] = format.format(date.getTime());
+                    date.add(Calendar.DATE, 1);
+                    dateListReject.add(dateList2[i]);
+                }
+
+                jsonObject.put("teleData", teleJson);
+                jsonObject.put("stateList", stateList);
+                jsonObject.put("statusList", statusList);
+                jsonObject.put("dateList", dateListReject);
+                jsonObject.put("dateList1", dateList);
+                jsonObject.put("paytmmastjson", json);
+            }else {
+                jsonObject.put("authentication","failed");
             }
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-            Calendar date = Calendar.getInstance();
-            Calendar date1 = Calendar.getInstance();
-            String dateList1[] = new String[7];
-            String dateList2[] = new String[3];
-            List<String> dateList = new ArrayList<String>();
-            List<String> dateListReject = new ArrayList<String>();
-            for (int i = 0; i < 7; i++) {
-                dateList1[i] = format.format(date1.getTime());
-                date1.add(Calendar.DATE, 1);
-                dateList.add(dateList1[i]);
-            }
-            for (int i = 0; i < 3; i++) {
-                dateList2[i] = format.format(date.getTime());
-                date.add(Calendar.DATE, 1);
-                dateListReject.add(dateList2[i]);
-            }
-            jsonObject.put("teleData", teleJson);
-            jsonObject.put("stateList", stateList);
-            jsonObject.put("statusList", statusList);
-            jsonObject.put("dateList", dateListReject);
-            jsonObject.put("dateList1", dateList);
-            jsonObject.put("paytmmastjson", json);
 
             logger.info("telecalling screen data fetch sucessfully>>>>>>>>");
         } catch (Exception e) {
@@ -989,6 +994,8 @@ class HomeController {
                     circleMastEntity = circleService.findByPrimaryKey(circleCode);
                 }
             }
+
+
 
             String agentName = request.getParameter("agent_name");
             String agentCode = request.getParameter("agent_code");
@@ -1071,6 +1078,7 @@ class HomeController {
                 jsonObject.put("msg", msg);
                 jsonObject.put("status", "error");
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -2045,6 +2053,7 @@ else {
             String[] visitTime = visitTime1.split(":");
             System.out.println(visitTime[0]);
             map.put("number", number);
+            map.put("custId",custid);
             map.put("name", name);
             map.put("address", address);
             map.put("area", area);
@@ -2052,7 +2061,8 @@ else {
             map.put("city", city);
             map.put("state", state);
             map.put("pinCode", pinCode);
-            map.put("landmark", simType);
+            map.put("simType", simType);
+            map.put("co_status",coStatus);
             map.put("visitDate", visitDate);
             map.put("visitTime", visitTime[0]);
             map.put("status", status);
@@ -2163,6 +2173,7 @@ else {
             map.put("status", status);
             map.put("importby", importby);
             map.put("importType", importType);
+            map.put("custId",cust_uid);
             result = postCallingService.saveCallingData(map);
             if ("done".equalsIgnoreCase(result)) {
                 result = "success";

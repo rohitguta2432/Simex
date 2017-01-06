@@ -1,4 +1,3 @@
-/*
 package com.softage.paytm.service.imp;
 
 import com.softage.paytm.dao.UserDao;
@@ -15,10 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 
-*/
-/**
- * Created by SS0085 on 10-01-2016.
- *//*
+
 
 
 
@@ -35,10 +31,10 @@ import java.util.Collection;
             if (user != null) {
                 try {
                     String password = user.getEmpPassword();
-                    boolean enabeled = user.getEmpStatus();
-                    boolean accountNonExpired = user.getEmpStatus();
-                    boolean credetialnonExpired = user.getEmpStatus();
-                    boolean accountNoLocked = user.getEmpStatus();
+                    boolean enabeled = user.getEmpStatus()==1?true:false;
+                    boolean accountNonExpired = user.getEmpStatus()==1?true:false;
+                    boolean credetialnonExpired = user.getEmpStatus()==1?true:false;
+                    boolean accountNoLocked = user.getEmpStatus()==1?true:false;
 
                     Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
                     authorities.add(new GrantedAuthority() {
@@ -62,4 +58,3 @@ import java.util.Collection;
 
 
 }
-*/

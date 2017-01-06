@@ -69,11 +69,14 @@ public class PostCallingServiceImp implements PostCallingService {
         java.sql.Date visitDate = null;
         String result1 = null;
         DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
+        PaytmMastEntity paytmMastEntity=null;
         try {
-            TelecallMastEntity telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
+            int custId=Integer.parseInt(map.get("custId"));
+            paytmMastEntity=  paytmMasterDao.getPaytmMasterData(custId);
+            TelecallMastEntity telecallMastEntity = postCallingDao.getByReferenceId(custId);
             if (telecallMastEntity == null) {
                 for (int i = 1; i <= 5; i++) {
-                    telecallMastEntity = postCallingDao.getByPrimaryKey(map.get("number"));
+                    telecallMastEntity = postCallingDao.getByReferenceId(custId);
                     if (telecallMastEntity != null) {
                         break;
                     }
@@ -84,7 +87,7 @@ public class PostCallingServiceImp implements PostCallingService {
             telecallLogEntity.setTcCallBy(map.get("importby"));
             telecallLogEntity.setTcCallStatus(map.get("status"));
             telecallLogEntity.setTcCallTime(new Timestamp(new Date().getTime()));
-           // telecallLogEntity.setTelecallMastByTcCustomerphone(telecallMastEntity);
+            telecallLogEntity.setPaytmMastEntity(paytmMastEntity);
             result = postCallingDao.saveTeleCallLog(telecallLogEntity);
             if ("done".equalsIgnoreCase(result)) {
                 result1 = "done";
@@ -302,7 +305,9 @@ public class PostCallingServiceImp implements PostCallingService {
         String result = null;
         DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
         try {
+            int custId=Integer.parseInt(map.get("custId"));
             PaytmcustomerDataEntity paytmcustomerDataEntity = new PaytmcustomerDataEntity();
+            paytmcustomerDataEntity.setCust_uid(custId);
             paytmcustomerDataEntity.setPcdCustomerPhone(map.get("number"));
             paytmcustomerDataEntity.setPcdName(map.get("name"));
             paytmcustomerDataEntity.setAllocationStatus(map.get("status"));
@@ -314,6 +319,7 @@ public class PostCallingServiceImp implements PostCallingService {
             paytmcustomerDataEntity.setPcdImportDate(new Timestamp(new Date().getTime()));
             paytmcustomerDataEntity.setPcdImportType(map.get("importType"));
             paytmcustomerDataEntity.setSimType(map.get("simType"));
+            paytmcustomerDataEntity.setCoStatus(map.get("co_status"));
             paytmcustomerDataEntity.setPcdPincode(map.get("pinCode"));
             paytmcustomerDataEntity.setPcdState(map.get("state"));
             Date parsedUtilDate = formater.parse(map.get("visitDate"));
@@ -381,6 +387,7 @@ public class PostCallingServiceImp implements PostCallingService {
         String finalconfirmation = "";
 
         int maxAllocation = 15;
+        int custid=0;
         String loginId = null;
         String customerNo = "";
         long appointmentId = 0;
@@ -390,12 +397,12 @@ public class PostCallingServiceImp implements PostCallingService {
 
 
         if (paytmcustomerDataEntity != null) {
-            customerNo = paytmcustomerDataEntity.getPcdCustomerPhone();
+            custid = paytmcustomerDataEntity.getCust_uid();
 
-            appointmentMastEntity = postCallingDao.getByCustomerNuber(customerNo);
+            appointmentMastEntity = postCallingDao.getByCustId(custid);
             if (appointmentMastEntity == null) {
                 for (int i = 1; i <= 5; i++) {
-                    appointmentMastEntity = postCallingDao.getByCustomerNuber(customerNo);
+                    appointmentMastEntity = postCallingDao.getByCustId(custid);
                     if (appointmentMastEntity != null) {
                         break;
                     }
@@ -425,12 +432,8 @@ public class PostCallingServiceImp implements PostCallingService {
             calendar.add(Calendar.DAY_OF_WEEK, 3);
             java.sql.Date loopdate = new java.sql.Date(calendar.getTimeInMillis());
 
-
-
-
             if ("0".equals(agentCode)) {
                 try {
-
                     String allocationDate1 = date + " " + time;
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date convertedDate = dateFormat.parse(allocationDate1);
@@ -473,9 +476,9 @@ public class PostCallingServiceImp implements PostCallingService {
                             + " " + time + "with " + name + " Address-" +
                             "" + address + " " + pinCode + "Contact no-" +
                             "" + customerNo + " Please See Leads in App";
-                    String custext = "Dear Customer  Your CustomerId-" + paytmMastEntity.getCustomerId() + "" +
+                    String custext = "Dear Customer  Your CustomerId-" + paytmMastEntity.getCust_uid() + "" +
                             ",   Agent visit dateTime " + date
-                            + " " + time + " Please Available with Document";
+                            + " " + time + " Please Available with ...... ";
 
                     PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
                     if (paytmdeviceidinfoEntity != null) {
@@ -521,6 +524,7 @@ public class PostCallingServiceImp implements PostCallingService {
             allocationMastEntity.setAppointmentMastByAppointmentId(appointmentMastEntity);
             allocationMastEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
             allocationMastEntity.setPaytmcustomerDataByCustomerPhone(paytmcustomerDataEntity);
+            allocationMastEntity.setCustomerPhone(paytmcustomerDataEntity.getPcdCustomerPhone());
             allocationMastEntity.setAllocationDatetime(new Timestamp(convertedDate.getTime()));
             allocationMastEntity.setVisitDateTime(new Timestamp(convertedDate.getTime()));
             allocationMastEntity.setImportBy(paytmcustomerDataEntity.getPcdImportBy());
@@ -528,10 +532,13 @@ public class PostCallingServiceImp implements PostCallingService {
             allocationMastEntity.setConfirmationDatetime(new Timestamp(convertedDate.getTime()));
             allocationMastEntity.setConfirmation(confirmationAllowed);
             allocationMastEntity.setFinalConfirmation(finalconfirmation);
+
             allocationMastEntity.setSmsSendDatetime(new Timestamp(convertedDate.getTime()));
             allocationMastEntity.setKycCollected("P");
             allocationMastEntity.setConfirmation("W");
             allocationMastEntity.setRemarkMastByRemarksCode(remarkMastEntity);
+            //we have to make it dyanamic now use static
+            allocationMastEntity.setSpokeCode("DELCIR001");
 
             result = allocationDao.saveAllocation(allocationMastEntity);
             if (result == "err") {

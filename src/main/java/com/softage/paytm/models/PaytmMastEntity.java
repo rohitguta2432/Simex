@@ -2,6 +2,7 @@ package com.softage.paytm.models;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -46,6 +47,7 @@ public class PaytmMastEntity {
     private String simPlanDesc;
     private String lotNo;
     private String remarks;
+    private Collection<TelecallLogEntity> telecallLogEntity;
 
 
     @Id
@@ -420,6 +422,16 @@ public class PaytmMastEntity {
 
     public void setTelecallMastByCustomerPhone(TelecallMastEntity telecallMastByCustomerPhone) {
         this.telecallMastByCustomerPhone = telecallMastByCustomerPhone;
+    }
+
+
+    @OneToMany(mappedBy = "paytmMastEntity")
+    public Collection<TelecallLogEntity> getTelecallLogEntity() {
+        return telecallLogEntity;
+    }
+
+    public void setTelecallLogEntity(Collection<TelecallLogEntity> telecallLogEntity) {
+        this.telecallLogEntity = telecallLogEntity;
     }
 
     @Override
