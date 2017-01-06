@@ -258,7 +258,7 @@ public class RestWebController {
             if (phoneNumber != null) {
                 paytmMastEntity = paytmMasterService.getPaytmMaster(phoneNumber);
                 if (paytmMastEntity != null) {
-                    address = paytmMastEntity.getAddressStreet1();
+                    //address = paytmMastEntity.getAddressStreet1();
                     city = paytmMastEntity.getCity();
                     state = paytmMastEntity.getState();
                     pincode = paytmMastEntity.getPincode();

@@ -1179,7 +1179,7 @@ class HomeController {
         }
         number = request.getParameter("customer_number");
         PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMaster(number);
-         alternatephone=  paytmMastEntity.getAlternatePhone().toString();
+         alternatephone=  paytmMastEntity.getAlternatePhone1().toString();
         if(alternatephone!= null && !alternatephone.equals(""))
         {
              alternateresult = customerCalling(alternatephone, agentNo);
@@ -1254,39 +1254,73 @@ class HomeController {
                 if (row != null && row.getCell(0) != null) {
                     String pincode = null;
                     String mobileNumber = null;
+                    String customerId=null;
+                    String co_id=null;
+                    String alternateNumber1=null;
+                    String alternateNumber2=null;
                     HashMap<String, String> map = new HashMap<String, String>();
                     HashMap<String, String> map1 = new HashMap<String, String>();
                     System.out.println(i);
-                    String customerId = row.getCell(0).getStringCellValue().trim();
+                    if(row.getCell(0).getCellType() == Cell.CELL_TYPE_STRING){
+                        customerId = row.getCell(0).getStringCellValue().trim();
+                    }else{
+                        customerId=NumberToTextConverter.toText(row.getCell(0).getNumericCellValue()).trim();
+                    }
+                    if(row.getCell(1).getCellType() == Cell.CELL_TYPE_STRING){
+                        co_id=row.getCell(1).getStringCellValue().trim();
+                    }else{
+                        co_id=NumberToTextConverter.toText(row.getCell(1).getNumericCellValue()).trim();
+                    }
+                    String co_status=row.getCell(2).getStringCellValue().trim();
+                    String ch_reason_desc=row.getCell(3).getStringCellValue().trim();
+                    String sim_type=row.getCell(5).getStringCellValue().trim();
+
                     //    String appointmantDate = row.getCell(1).getStringCellValue().trim();
                     //  String createdDate = row.getCell(2).getStringCellValue().trim();
-                    String name = row.getCell(3).getStringCellValue().trim();
+
                     //  String mobileNumber = row.getCell(4).getStringCellValue().trim();
-                    if (row.getCell(4).getCellType() == Cell.CELL_TYPE_STRING) {
-                        mobileNumber = row.getCell(4).getStringCellValue().trim();
+                    if (row.getCell(6).getCellType() == Cell.CELL_TYPE_STRING) {
+                        mobileNumber = row.getCell(6).getStringCellValue().trim();
 
                     } else {
-                        mobileNumber = NumberToTextConverter.toText(row.getCell(4).getNumericCellValue()).trim();
+                        mobileNumber = NumberToTextConverter.toText(row.getCell(6).getNumericCellValue()).trim();
                     }
+                    String sim_plan_desc=row.getCell(7).getStringCellValue().trim();
+                    String name = row.getCell(9).getStringCellValue().trim();
 
-                    String address = row.getCell(5).getStringCellValue().trim();
+                    String address = row.getCell(10).getStringCellValue().trim()+" "+row.getCell(11).getStringCellValue().trim()+" "+row.getCell(12).getStringCellValue().trim();
+                    String city = row.getCell(13).getStringCellValue().trim();
 
-                    String leadStage = row.getCell(6).getStringCellValue().trim();
+                    //String leadStage = row.getCell(6).getStringCellValue().trim();
 
-                    String leadSubStage = row.getCell(7).getStringCellValue().trim();
+                    //String leadSubStage = row.getCell(7).getStringCellValue().trim();
 
                     //  String pincode = row.getCell(8).getStringCellValue().trim();
 
 
-                    if (row.getCell(8).getCellType() == Cell.CELL_TYPE_STRING) {
-                        pincode = row.getCell(8).getStringCellValue().trim();
+                    if (row.getCell(14).getCellType() == Cell.CELL_TYPE_STRING) {
+                        pincode = row.getCell(14).getStringCellValue().trim();
 
                     } else {
-                        pincode = NumberToTextConverter.toText(row.getCell(8).getNumericCellValue()).trim();
+                        pincode = NumberToTextConverter.toText(row.getCell(14).getNumericCellValue()).trim();
                     }
 
-                    String city = row.getCell(9).getStringCellValue().trim();
 
+                    String alternateNumber=row.getCell(15).getStringCellValue().trim();
+                    String altNum=alternateNumber.replace("'","");
+                    String altNumbers=altNum.replace("-","");
+                    String[] alternateNumbers=altNumbers.split("\\s+");
+                    List<String> finalAltNumList=new ArrayList<String>();
+                    for(String num : alternateNumbers){
+                        if (num.length()==10 && StringUtils.isNumeric(num)){
+                            finalAltNumList.add(num);
+                        }
+                    }
+                    alternateNumber1=finalAltNumList.get(0);
+                    alternateNumber2=finalAltNumList.get(1);
+                    String remarks=row.getCell(16).getStringCellValue().trim();
+                    String request_date=row.getCell(17).getStringCellValue().trim();
+                    String lot_no=row.getCell(18).getStringCellValue().trim();
 
                     if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
                         paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
@@ -1305,6 +1339,16 @@ class HomeController {
                         map.put("pincode", pincode);
                         map.put("city", city);
                         map.put("importBy", importBy);
+                        map.put("co_id",co_id);
+                        map.put("co_status",co_status);
+                        map.put("ch_reason_desc",ch_reason_desc);
+                        map.put("sim_type",sim_type);
+                        map.put("sim_plan_desc",sim_plan_desc);
+                        map.put("alternateNumber1",alternateNumber1);
+                        map.put("alternateNumber2",alternateNumber2);
+                        map.put("remarks",remarks);
+                        map.put("request_date",request_date);
+                        map.put("lot_no",lot_no);
                         list.add(map);
                         successCount++;
 

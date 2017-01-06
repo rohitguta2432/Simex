@@ -39,18 +39,19 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
             int i=1;
             for (Map<String, String> map : paytmList) {
                 paytmMastEntity = new PaytmMastEntity();
-                paytmMastEntity.setKycRequestId(map.get("kycRequestId"));
+                //paytmMastEntity.setKycRequestId(map.get("kycRequestId"));
+
                 System.out.println(map.get("kycRequestId"));
                 paytmMastEntity.setCustomerId(map.get("CustomerID"));
                 paytmMastEntity.setUsername(map.get("Username"));
                 //it will be change
               //  paytmMastEntity.setCustomerPhone(map.get("CustomerPhone"));
                 paytmMastEntity.setEmail(map.get("Email"));
-                paytmMastEntity.setAddressId(map.get("AddressID"));
-                paytmMastEntity.setTimeSlot(map.get("TimeSlot"));
+                //paytmMastEntity.setAddressId(map.get("AddressID"));
+               // paytmMastEntity.setTimeSlot(map.get("TimeSlot"));
               //  paytmMastEntity.setPriority(map.get("Priority"));
-                paytmMastEntity.setAddressStreet1(map.get("AddressStreet1"));
-                paytmMastEntity.setAddressStreet2(map.get("AddressStreet2"));
+              //  paytmMastEntity.setAddressStreet1(map.get("AddressStreet1"));
+              //  paytmMastEntity.setAddressStreet2(map.get("AddressStreet2"));
                 paytmMastEntity.setCity(map.get("City"));
                 paytmMastEntity.setState(map.get("State"));
                 paytmMastEntity.setPincode(map.get("Pincode"));
@@ -65,16 +66,16 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 if(circleMastEntity!=null){
                     paytmMastEntity.setCircleMastByCirCode(circleMastEntity);
                 }
-                paytmMastEntity.setAlternatePhone(map.get("AddressPhone"));
+               // paytmMastEntity.setAlternatePhone(map.get("AddressPhone"));
                 paytmMastEntity.setVendorName(map.get("VendorName"));
-                paytmMastEntity.setStageId(map.get("StageId"));
-                paytmMastEntity.setSubStageId(map.get("SubStageId"));
+              //  paytmMastEntity.setStageId(map.get("StageId"));
+               // paytmMastEntity.setSubStageId(map.get("SubStageId"));
                 paytmMastEntity.setCreatedTimestamp(map.get("CreatedTimestamp"));
                 paytmMastEntity.setImportDate(new Timestamp(new Date().getTime()));
                 Random randomGenerator = new Random();
                 int randomInt = randomGenerator.nextInt(10000);
-                paytmMastEntity.setOtp(new Integer(randomInt).toString());
-                paytmMastEntity.setRefCode(randomInt);
+               // paytmMastEntity.setOtp(new Integer(randomInt).toString());
+              //  paytmMastEntity.setRefCode(randomInt);
                 paytmMastEntity.setImportBy(map.get("importBy"));
                 custList.add(paytmMastEntity);
                 i++;
@@ -99,19 +100,32 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
             int i=1;
             for (Map<String, String> map : paytmList) {
                 paytmMastEntity = new PaytmMastEntity();
-                paytmMastEntity.setKycRequestId("");
+               // paytmMastEntity.setKycRequestId("");
                 paytmMastEntity.setCustomerId(map.get("customerID"));
                 paytmMastEntity.setUsername(map.get("name"));
-                //it will be change
-               // paytmMastEntity.setCustomerPhone(map.get("mobileNumber"));
-                paytmMastEntity.setEmail("");
-                paytmMastEntity.setAddressId("");
-                paytmMastEntity.setTimeSlot("");
-                //  paytmMastEntity.setPriority(map.get("Priority"));
-                paytmMastEntity.setAddressStreet1(map.get("address"));
-                paytmMastEntity.setAddressStreet2("");
+                paytmMastEntity.setCustomerPhone(map.get("mobileNumber"));
+                paytmMastEntity.setAddress(map.get("address"));
                 paytmMastEntity.setCity(map.get("city"));
-                paytmMastEntity.setState("");
+                paytmMastEntity.setAlternatePhone1(map.get("alternateNumber1"));
+                paytmMastEntity.setAlternatePhone2(map.get("alternateNumber2"));
+                paytmMastEntity.setChReasonDesc(map.get("ch_reason_desc"));
+                paytmMastEntity.setSimType(map.get("sim_type"));
+                paytmMastEntity.setSimPlanDesc(map.get("sim_plan_desc"));
+                paytmMastEntity.setLotNo(map.get("lot_no"));
+                paytmMastEntity.setRemarks(map.get("remarks"));
+                paytmMastEntity.setCoID(map.get("co_id"));
+                paytmMastEntity.setCoStatus(map.get("co_status"));
+                //it will be change
+                Date req_date=new Date(map.get("request_date"));
+                paytmMastEntity.setRequestDate(req_date);
+                //paytmMastEntity.setEmail("");
+               //paytmMastEntity.setAddressId(map.get(""));
+              //  paytmMastEntity.setTimeSlot("");
+                //  paytmMastEntity.setPriority(map.get("Priority"));
+               // paytmMastEntity.setAddressStreet1(map.get("address"));
+               // paytmMastEntity.setAddressStreet2("");
+
+                //paytmMastEntity.setState("");
                 paytmMastEntity.setPincode(map.get("pincode"));
                 String pincode=map.get("pincode");
                 String pincode1=pincode.substring(0,2);
@@ -123,16 +137,16 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 if(circleMastEntity!=null){
                     paytmMastEntity.setCircleMastByCirCode(circleMastEntity);
                 }
-                paytmMastEntity.setAlternatePhone("");
-                paytmMastEntity.setVendorName("Softage");
-                paytmMastEntity.setStageId("");
-                paytmMastEntity.setSubStageId("");
+               // paytmMastEntity.setAlternatePhone("");
+                paytmMastEntity.setVendorName("Vodafone");
+                //paytmMastEntity.setStageId("");
+                //paytmMastEntity.setSubStageId("");
                 paytmMastEntity.setCreatedTimestamp("");
                 paytmMastEntity.setImportDate(new Timestamp(new Date().getTime()));
                 Random randomGenerator = new Random();
                 int randomInt = randomGenerator.nextInt(10000);
-                paytmMastEntity.setOtp(new Integer(randomInt).toString());
-                paytmMastEntity.setRefCode(randomInt);
+                //paytmMastEntity.setOtp(new Integer(randomInt).toString());
+                //paytmMastEntity.setRefCode(randomInt);
                 paytmMastEntity.setImportBy(map.get("importBy"));
                 custList.add(paytmMastEntity);
                 i++;

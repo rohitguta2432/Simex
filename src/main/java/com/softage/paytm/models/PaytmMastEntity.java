@@ -14,33 +14,39 @@ import java.util.Date;
 public class PaytmMastEntity {
     private Integer cust_uid;
     private String customerPhone;
-    private Date dataDate;
-    private String addressId;
-    private String alternatePhone;
-    private String addressStreet1;
-    private String addressStreet2;
+    private Date requestDate;
+    private String address;
+    private String alternatePhone1;
+    private String alternatePhone2;
+    //private String addressStreet1;
+    //private String addressStreet2;
     private String city;
     private String createdTimestamp;
     private String customerId;
     private String email;
     private String importBy;
     private Timestamp importDate;
-    private String kycRequestId;
-    private String otp;
+    private String coID;
+   // private String otp;
     private String pincode;
-    private String priority;
-    private long refCode;
-    private String stageId;
+    //private String priority;
+    //private long refCode;
+    //private String stageId;
     private String state;
-    private String subStageId;
-    private String timeSlot;
+    //private String subStageId;
+    //private String timeSlot;
     private String username;
     private String vendorName;
     private Integer cirCode;
     private String simType;
     private CircleMastEntity circleMastByCirCode;
     private TelecallMastEntity telecallMastByCustomerPhone;
-    private Integer status;
+    private String coStatus;
+    private String chReasonDesc;
+    private String simPlanDesc;
+    private String lotNo;
+    private String remarks;
+
 
     @Id
     @GeneratedValue
@@ -64,55 +70,68 @@ public class PaytmMastEntity {
     }
 
     @Basic
-    @Column(name = "data_date",nullable = false,insertable = true,updatable = true)
-    public Date getDataDate() {
-        return dataDate;
+    @Column(name = "request_date",nullable = false,insertable = true,updatable = true)
+    public Date getRequestDate() {
+        return requestDate;
     }
 
-    public void setDataDate(Date dataDate) {
-        this.dataDate = dataDate;
+    public void setRequestDate(Date requestDate) {
+        this.requestDate = requestDate;
+    }
+
+
+
+    @Basic
+    @Column(name = "Address", nullable = true, insertable = true, updatable = true, length = 50)
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    @Basic
+    @Column(name = "alternatePhone1", nullable = true, insertable = true, updatable = true, length = 15)
+    public String getAlternatePhone1() {
+        return alternatePhone1;
+    }
+
+    public void setAlternatePhone1(String alternatePhone1) {
+        this.alternatePhone1 = alternatePhone1;
     }
 
     @Basic
-    @Column(name = "AddressID", nullable = true, insertable = true, updatable = true, length = 50)
-    public String getAddressId() {
-        return addressId;
+    @Column(name = "alternatePhone2", nullable = true, insertable = true, updatable = true, length = 15)
+    public String getAlternatePhone2() {
+        return alternatePhone2;
     }
 
-    public void setAddressId(String addressId) {
-        this.addressId = addressId;
+    public void setAlternatePhone2(String alternatePhone2) {
+        this.alternatePhone2 = alternatePhone2;
     }
 
-    @Basic
-    @Column(name = "alternatePhone", nullable = true, insertable = true, updatable = true, length = 15)
-    public String getAlternatePhone() {
-        return alternatePhone;
-    }
+    /*   @Basic
+        @Column(name = "AddressStreet1", nullable = true, insertable = true, updatable = true, length = 250)
+        public String getAddressStreet1() {
+            return addressStreet1;
+        }
 
-    public void setAlternatePhone(String alternatePhone) {
-        this.alternatePhone = alternatePhone;
-    }
+        public void setAddressStreet1(String addressStreet1) {
+            this.addressStreet1 = addressStreet1;
+        }
 
-    @Basic
-    @Column(name = "AddressStreet1", nullable = true, insertable = true, updatable = true, length = 250)
-    public String getAddressStreet1() {
-        return addressStreet1;
-    }
+        @Basic
+        @Column(name = "AddressStreet2", nullable = true, insertable = true, updatable = true, length = 250)
+        public String getAddressStreet2() {
+            return addressStreet2;
+        }
 
-    public void setAddressStreet1(String addressStreet1) {
-        this.addressStreet1 = addressStreet1;
-    }
-
-    @Basic
-    @Column(name = "AddressStreet2", nullable = true, insertable = true, updatable = true, length = 250)
-    public String getAddressStreet2() {
-        return addressStreet2;
-    }
-
-    public void setAddressStreet2(String addressStreet2) {
-        this.addressStreet2 = addressStreet2;
-    }
-
+        public void setAddressStreet2(String addressStreet2) {
+            this.addressStreet2 = addressStreet2;
+        }
+    */
     @Basic
     @Column(name = "City", nullable = false, insertable = true, updatable = true, length = 100)
     public String getCity() {
@@ -183,18 +202,22 @@ public class PaytmMastEntity {
         this.simType = simType;
     }
 
-
     @Basic
-    @Column(name = "KycRequestID", nullable = false, insertable = true, updatable = true, length = 10)
-    public String getKycRequestId() {
-        return kycRequestId;
+    @Column(name = "co_id", nullable = false, insertable = true, updatable = true, length = 10)
+    public String getCoID() {
+        return coID;
     }
 
-    public void setKycRequestId(String kycRequestId) {
-        this.kycRequestId = kycRequestId;
+    public void setCoID(String coID) {
+        this.coID = coID;
     }
 
-    @Basic
+
+
+
+
+
+  /*  @Basic
     @Column(name = "otp", nullable = false, insertable = true, updatable = true, length = 5)
     public String getOtp() {
         return otp;
@@ -202,7 +225,7 @@ public class PaytmMastEntity {
 
     public void setOtp(String otp) {
         this.otp = otp;
-    }
+    }*/
 
     @Basic
     @Column(name = "Pincode", nullable = false, insertable = true, updatable = true, length = 6)
@@ -214,7 +237,7 @@ public class PaytmMastEntity {
         this.pincode = pincode;
     }
 
-    @Basic
+/*    @Basic
     @Column(name = "Priority", nullable = true, insertable = true, updatable = true, length = 30)
     public String getPriority() {
         return priority;
@@ -242,7 +265,7 @@ public class PaytmMastEntity {
 
     public void setStageId(String stageId) {
         this.stageId = stageId;
-    }
+    }*/
 
     @Basic
     @Column(name = "State", nullable = false, insertable = true, updatable = true, length = 30)
@@ -254,7 +277,7 @@ public class PaytmMastEntity {
         this.state = state;
     }
 
-    @Basic
+ /*   @Basic
     @Column(name = "SubStageId", nullable = true, insertable = true, updatable = true, length = 2)
     public String getSubStageId() {
         return subStageId;
@@ -272,7 +295,7 @@ public class PaytmMastEntity {
 
     public void setTimeSlot(String timeSlot) {
         this.timeSlot = timeSlot;
-    }
+    }*/
 
     @Basic
     @Column(name = "Username", nullable = false, insertable = true, updatable = true, length = 100)
@@ -301,13 +324,14 @@ public class PaytmMastEntity {
 
         PaytmMastEntity that = (PaytmMastEntity) o;
 
-        if (refCode != that.refCode) return false;
-        if (addressId != null ? !addressId.equals(that.addressId) : that.addressId != null) return false;
-        if (alternatePhone != null ? !alternatePhone.equals(that.alternatePhone) : that.alternatePhone != null) return false;
-        if (addressStreet1 != null ? !addressStreet1.equals(that.addressStreet1) : that.addressStreet1 != null)
+        //if (refCode != that.refCode) return false;
+        if (address != null ? !address.equals(that.address) : that.address != null) return false;
+        if (alternatePhone1 != null ? !alternatePhone1.equals(that.alternatePhone1) : that.alternatePhone1 != null) return false;
+        if (alternatePhone2 != null ? !alternatePhone2.equals(that.alternatePhone2) : that.alternatePhone2 != null) return false;
+/*        if (addressStreet1 != null ? !addressStreet1.equals(that.addressStreet1) : that.addressStreet1 != null)
             return false;
         if (addressStreet2 != null ? !addressStreet2.equals(that.addressStreet2) : that.addressStreet2 != null)
-            return false;
+            return false;*/
         if (city != null ? !city.equals(that.city) : that.city != null) return false;
         if (createdTimestamp != null ? !createdTimestamp.equals(that.createdTimestamp) : that.createdTimestamp != null)
             return false;
@@ -315,14 +339,14 @@ public class PaytmMastEntity {
         if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (importBy != null ? !importBy.equals(that.importBy) : that.importBy != null) return false;
         if (importDate != null ? !importDate.equals(that.importDate) : that.importDate != null) return false;
-        if (kycRequestId != null ? !kycRequestId.equals(that.kycRequestId) : that.kycRequestId != null) return false;
-        if (otp != null ? !otp.equals(that.otp) : that.otp != null) return false;
+        //if (kycRequestId != null ? !kycRequestId.equals(that.kycRequestId) : that.kycRequestId != null) return false;
+        //if (otp != null ? !otp.equals(that.otp) : that.otp != null) return false;
         if (pincode != null ? !pincode.equals(that.pincode) : that.pincode != null) return false;
-        if (priority != null ? !priority.equals(that.priority) : that.priority != null) return false;
-        if (stageId != null ? !stageId.equals(that.stageId) : that.stageId != null) return false;
+       // if (priority != null ? !priority.equals(that.priority) : that.priority != null) return false;
+       // if (stageId != null ? !stageId.equals(that.stageId) : that.stageId != null) return false;
         if (state != null ? !state.equals(that.state) : that.state != null) return false;
-        if (subStageId != null ? !subStageId.equals(that.subStageId) : that.subStageId != null) return false;
-        if (timeSlot != null ? !timeSlot.equals(that.timeSlot) : that.timeSlot != null) return false;
+       // if (subStageId != null ? !subStageId.equals(that.subStageId) : that.subStageId != null) return false;
+      //  if (timeSlot != null ? !timeSlot.equals(that.timeSlot) : that.timeSlot != null) return false;
         if (username != null ? !username.equals(that.username) : that.username != null) return false;
         if (vendorName != null ? !vendorName.equals(that.vendorName) : that.vendorName != null) return false;
 
@@ -332,25 +356,26 @@ public class PaytmMastEntity {
     @Override
     public int hashCode() {
         int result = 0;
-        result = 31 * result + (addressId != null ? addressId.hashCode() : 0);
-        result = 31 * result + (alternatePhone != null ? alternatePhone.hashCode() : 0);
-        result = 31 * result + (addressStreet1 != null ? addressStreet1.hashCode() : 0);
-        result = 31 * result + (addressStreet2 != null ? addressStreet2.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (alternatePhone1 != null ? alternatePhone1.hashCode() : 0);
+        result = 31 * result + (alternatePhone2 != null ? alternatePhone2.hashCode() : 0);
+ //       result = 31 * result + (addressStreet1 != null ? addressStreet1.hashCode() : 0);
+  //      result = 31 * result + (addressStreet2 != null ? addressStreet2.hashCode() : 0);
         result = 31 * result + (city != null ? city.hashCode() : 0);
         result = 31 * result + (createdTimestamp != null ? createdTimestamp.hashCode() : 0);
         result = 31 * result + (customerId != null ? customerId.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (importBy != null ? importBy.hashCode() : 0);
         result = 31 * result + (importDate != null ? importDate.hashCode() : 0);
-        result = 31 * result + (kycRequestId != null ? kycRequestId.hashCode() : 0);
-        result = 31 * result + (otp != null ? otp.hashCode() : 0);
+       // result = 31 * result + (kycRequestId != null ? kycRequestId.hashCode() : 0);
+        //result = 31 * result + (otp != null ? otp.hashCode() : 0);
         result = 31 * result + (pincode != null ? pincode.hashCode() : 0);
-        result = 31 * result + (priority != null ? priority.hashCode() : 0);
-        result = 31 * result + (int) (refCode ^ (refCode >>> 32));
-        result = 31 * result + (stageId != null ? stageId.hashCode() : 0);
+       // result = 31 * result + (priority != null ? priority.hashCode() : 0);
+       // result = 31 * result + (int) (refCode ^ (refCode >>> 32));
+      //  result = 31 * result + (stageId != null ? stageId.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (subStageId != null ? subStageId.hashCode() : 0);
-        result = 31 * result + (timeSlot != null ? timeSlot.hashCode() : 0);
+      //  result = 31 * result + (subStageId != null ? subStageId.hashCode() : 0);
+      //  result = 31 * result + (timeSlot != null ? timeSlot.hashCode() : 0);
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (vendorName != null ? vendorName.hashCode() : 0);
         return result;
@@ -367,14 +392,16 @@ public class PaytmMastEntity {
     }
 
     @Basic
-    @Column(name = "status",nullable = false,insertable = true,updatable = true,length = 10)
-    public Integer getStatus() {
-        return status;
+    @Column(name = "co_status",nullable = false,insertable = true,updatable = true,length = 10)
+    public String getCoStatus() {
+        return coStatus;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setCoStatus(String coStatus) {
+        this.coStatus = coStatus;
     }
+
+
 
     @ManyToOne
     @JoinColumn(name = "Cir_code", referencedColumnName = "Cir_code")
@@ -398,25 +425,26 @@ public class PaytmMastEntity {
     @Override
     public String toString() {
         return "PaytmMastEntity{" +
-                ", addressId='" + addressId + '\'' +
-                ", addressPhone='" + alternatePhone + '\'' +
-                ", addressStreet1='" + addressStreet1 + '\'' +
-                ", addressStreet2='" + addressStreet2 + '\'' +
+                ", addressId='" + address + '\'' +
+                ", addressPhone1='" + alternatePhone1 + '\'' +
+                ", addressPhone2='" + alternatePhone1 + '\'' +
+     //           ", addressStreet1='" + addressStreet1 + '\'' +
+      //          ", addressStreet2='" + addressStreet2 + '\'' +
                 ", city='" + city + '\'' +
                 ", createdTimestamp='" + createdTimestamp + '\'' +
                 ", customerId='" + customerId + '\'' +
                 ", email='" + email + '\'' +
                 ", importBy='" + importBy + '\'' +
                 ", importDate=" + importDate +
-                ", kycRequestId='" + kycRequestId + '\'' +
-                ", otp='" + otp + '\'' +
+               // ", kycRequestId='" + kycRequestId + '\'' +
+                //", otp='" + otp + '\'' +
                 ", pincode='" + pincode + '\'' +
-                ", priority='" + priority + '\'' +
-                ", refCode=" + refCode +
-                ", stageId='" + stageId + '\'' +
+              //  ", priority='" + priority + '\'' +
+              //  ", refCode=" + refCode +
+              //  ", stageId='" + stageId + '\'' +
                 ", state='" + state + '\'' +
-                ", subStageId='" + subStageId + '\'' +
-                ", timeSlot='" + timeSlot + '\'' +
+              //  ", subStageId='" + subStageId + '\'' +
+              //  ", timeSlot='" + timeSlot + '\'' +
                 ", username='" + username + '\'' +
                 ", vendorName='" + vendorName + '\'' +
                 ", cirCode=" + cirCode +
@@ -424,7 +452,43 @@ public class PaytmMastEntity {
                 '}';
     }
 
+    @Basic
+    @Column(name = "ch_reason_desc",nullable = false,insertable = true,updatable = true)
+    public String getChReasonDesc() {
+        return chReasonDesc;
+    }
 
 
+    public void setChReasonDesc(String chReasonDesc) {
+        this.chReasonDesc = chReasonDesc;
+    }
+    @Basic
+    @Column(name = "sim_plan_desc",nullable = false,insertable = true,updatable = true)
+    public String getSimPlanDesc() {
+        return simPlanDesc;
+    }
 
+    public void setSimPlanDesc(String simPlanDesc) {
+        this.simPlanDesc = simPlanDesc;
+    }
+
+    @Basic
+    @Column(name = "lot_no",nullable = false,insertable = true,updatable = true)
+    public String getLotNo() {
+        return lotNo;
+    }
+
+    public void setLotNo(String lotNo) {
+        this.lotNo = lotNo;
+    }
+
+    @Basic
+    @Column(name = "remarks",nullable = false,insertable = true,updatable = true)
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 }
