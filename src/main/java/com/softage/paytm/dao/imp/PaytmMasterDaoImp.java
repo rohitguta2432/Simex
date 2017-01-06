@@ -26,6 +26,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     private EntityManagerFactory entityManagerFactory;
 
     @Override
+    @Transactional
     public String savePaytmMaster(List<PaytmMastEntity> paytmMastEntity) {
 
         EntityManager entityManager=null;
@@ -59,6 +60,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    @Transactional
     public String savePaytmMaster(PaytmMastEntity paytmMastEntity) {
 
         EntityManager entityManager=null;
@@ -90,6 +92,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    @Transactional
     public PaytmMastEntity getPaytmMasterData(int cust_uid) {
         EntityManager entityManager = null;
         PaytmMastEntity paytmMasterData=null;
@@ -97,9 +100,9 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-           /* String strQuery = " select cust from PaytmMastEntity cust where cust.cust_uid=:cust_uid";
+          String strQuery = " select cust from PaytmMastEntity cust where cust.cust_uid=:cust_uid";
             query=entityManager.createQuery(strQuery);
-            query.setParameter("cust_uid",cust_uid);*/
+            query.setParameter("cust_uid",cust_uid);
             paytmMasterData = (PaytmMastEntity)query.getSingleResult();
         }
         catch (Exception e)
@@ -117,6 +120,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
 
 
     @Override
+    @Transactional
     public JSONObject getPaytmMastData(String mobileNo) {
         EntityManager entityManager = null;
         List<PaytmMastEntity> list = null;
@@ -156,6 +160,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    @Transactional
     public JSONObject telecallingScreen(String username,int cirCode) {
         EntityManager entityManager = null;
         List list = new ArrayList<>();
@@ -167,7 +172,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             transaction=  entityManager.getTransaction();
     //        transaction.begin();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
-            Query query1= entityManager.createNativeQuery("{call sp_GetTeleDataFinal1(?)}");
+            Query query1= entityManager.createNativeQuery("{sp_GetTeleDataByCustId(?)}");
             query1.setParameter(1,username);
          //   query1.setMaxResults(1);
             Object[] s = (Object[])query1.getSingleResult();
@@ -191,6 +196,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    @Transactional
     public List<StateMasterEntity> getStatemaster() {
         EntityManager entityManager = null;
         List<StateMasterEntity> listState = null;
@@ -217,6 +223,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    @Transactional
     public List<CallStatusMasterEntity> getStatusList() {
         List<CallStatusMasterEntity> listStatus = null;
         EntityManager entityManager = null;
@@ -243,6 +250,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    @Transactional
     public PaytmMastEntity getPaytmMaster(String mobileNo) {
         EntityManager entityManager = null;
         PaytmMastEntity paytmMastEntity=null;
@@ -279,6 +287,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    @Transactional
     public PaytmMastEntity findOne(String s) {
         EntityManager entityManager = null;
         PaytmMastEntity paytmMastEntity=null;

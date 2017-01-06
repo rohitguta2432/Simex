@@ -1907,23 +1907,9 @@ class HomeController {
             String strDateFormat = "hh:mm:ss a";
             DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
             String formattedDate= dateFormat.format(date);
-            System.out.println("Current time of the day using Date - 12 hour format: " + formattedDate);
-           String currenttime=formattedDate.substring(10,10);
-              System.out.print(" updated time "+currenttime);
-
-
-           /* for (Integer i = 2; i <= 18; i = i + timediff) {
-                String time = i.toString();
-                JSONArray jsonArray = new JSONArray();
-                System.out.println(" date   " + date1);
-                System.out.println(" Timecurrent   " + time);
-                JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time, date1);
-                String result = (String) jsonObject1.get(date1);
-                if (result.equalsIgnoreCase("Available")) {
-                    timeList.add(time + ":00");
-                }
-            }*/
-            for (Integer i = 9; i <= 18; i = i + timediff) {
+            String currenttime=formattedDate.substring(1,2);
+            Integer todaytime=Integer.valueOf(currenttime);
+            for (Integer i =todaytime+ 2; i <= 18; i = i + timediff) {
                 String time = i.toString();
                 JSONArray jsonArray = new JSONArray();
                 System.out.println(" date   " + date1);
@@ -1934,6 +1920,17 @@ class HomeController {
                     timeList.add(time + ":00");
                 }
             }
+            /*for (Integer i = 9; i <= 18; i = i + timediff) {
+                String time = i.toString();
+                JSONArray jsonArray = new JSONArray();
+                System.out.println(" date   " + date1);
+                System.out.println(" Timecurrent   " + time);
+                JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time, date1);
+                String result = (String) jsonObject1.get(date1);
+                if (result.equalsIgnoreCase("Available")) {
+                    timeList.add(time + ":00");
+                }
+            }*/
             finalJson.put("timeList", timeList);
 
 

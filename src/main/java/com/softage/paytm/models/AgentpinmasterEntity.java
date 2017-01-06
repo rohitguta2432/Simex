@@ -73,7 +73,7 @@ public class AgentpinmasterEntity {
     }
 
     @Basic
-    @Column(name = "APM_Acode", nullable = false, insertable = false, updatable = false, length = 10)
+    @Column(name = "APM_Acode", nullable = false, insertable = false, updatable = false, length = 20)
     public String getApmAcode() {
         return apmAcode;
     }
