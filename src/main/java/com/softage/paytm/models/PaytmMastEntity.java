@@ -82,7 +82,7 @@ public class PaytmMastEntity {
 
 
     @Basic
-    @Column(name = "Address", nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Address", nullable = true, insertable = true, updatable = true, length = 500)
     public String getAddress() {
         return address;
     }
@@ -163,7 +163,7 @@ public class PaytmMastEntity {
     }
 
     @Basic
-    @Column(name = "Email", nullable = false, insertable = true, updatable = true, length = 100)
+    @Column(name = "Email", insertable = true, updatable = true, length = 100)
     public String getEmail() {
         return email;
     }
@@ -268,7 +268,7 @@ public class PaytmMastEntity {
     }*/
 
     @Basic
-    @Column(name = "State", nullable = false, insertable = true, updatable = true, length = 30)
+    @Column(name = "State", insertable = true, updatable = true, length = 30)
     public String getState() {
         return state;
     }

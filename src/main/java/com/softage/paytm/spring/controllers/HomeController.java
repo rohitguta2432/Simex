@@ -1239,22 +1239,26 @@ e.printStackTrace();
             for (int i = 0; i < 1; i++) {
 
                 row = sheet.getRow(i);
-                String customerNumber = row.getCell(0).getStringCellValue().trim();
-                String appointmantDate = row.getCell(1).getStringCellValue().trim();
-                String createdDate = row.getCell(2).getStringCellValue().trim();
-                String name = row.getCell(3).getStringCellValue().trim();
-                String mobileNumber = row.getCell(4).getStringCellValue().trim();
-
-                String address = row.getCell(5).getStringCellValue().trim();
-
-                String leadStage = row.getCell(6).getStringCellValue().trim();
-
-                String leadSubStage = row.getCell(7).getStringCellValue().trim();
-
-                String pincode = row.getCell(8).getStringCellValue().trim();
-
-                String city = row.getCell(9).getStringCellValue().trim();
-
+                String customerID = row.getCell(0).getStringCellValue().trim();
+                String co_id= row.getCell(1).getStringCellValue().trim();
+                String co_status = row.getCell(2).getStringCellValue().trim();
+                String ch_reason_desc = row.getCell(3).getStringCellValue().trim();
+                String sim_no=row.getCell(4).getStringCellValue().trim();
+                String sim=row.getCell(5).getStringCellValue().trim();
+                String cellno=row.getCell(6).getStringCellValue().trim();
+                String sim_plan_desc=row.getCell(7).getStringCellValue().trim();
+                String dear=row.getCell(8).getStringCellValue().trim();
+                String name=row.getCell(9).getStringCellValue().trim();
+                String address1=row.getCell(10).getStringCellValue().trim();
+                String address2=row.getCell(11).getStringCellValue().trim();
+                String address3=row.getCell(12).getStringCellValue().trim();
+                String addressType=row.getCell(13).getStringCellValue().trim();
+                String city=row.getCell(14).getStringCellValue().trim();
+                String zip=row.getCell(15).getStringCellValue().trim();
+                String contact=row.getCell(16).getStringCellValue().trim();
+                String remarks=row.getCell(17).getStringCellValue().trim();
+                String requestDate=row.getCell(18).getStringCellValue().trim();
+                String lot_no=row.getCell(19).getStringCellValue().trim();
                 //     String circle = row.getCell(10).getStringCellValue().trim();
 
 
@@ -1272,6 +1276,7 @@ e.printStackTrace();
                     String co_id=null;
                     String alternateNumber1=null;
                     String alternateNumber2=null;
+                    String request_date=null;
                     HashMap<String, String> map = new HashMap<String, String>();
                     HashMap<String, String> map1 = new HashMap<String, String>();
                     System.out.println(i);
@@ -1303,7 +1308,7 @@ e.printStackTrace();
                     String name = row.getCell(9).getStringCellValue().trim();
 
                     String address = row.getCell(10).getStringCellValue().trim()+" "+row.getCell(11).getStringCellValue().trim()+" "+row.getCell(12).getStringCellValue().trim();
-                    String city = row.getCell(13).getStringCellValue().trim();
+                    String city = row.getCell(14).getStringCellValue().trim();
 
                     //String leadStage = row.getCell(6).getStringCellValue().trim();
 
@@ -1312,17 +1317,17 @@ e.printStackTrace();
                     //  String pincode = row.getCell(8).getStringCellValue().trim();
 
 
-                    if (row.getCell(14).getCellType() == Cell.CELL_TYPE_STRING) {
-                        pincode = row.getCell(14).getStringCellValue().trim();
+                    if (row.getCell(15).getCellType() == Cell.CELL_TYPE_STRING) {
+                        pincode = row.getCell(15).getStringCellValue().trim();
 
                     } else {
-                        pincode = NumberToTextConverter.toText(row.getCell(14).getNumericCellValue()).trim();
+                        pincode = NumberToTextConverter.toText(row.getCell(15).getNumericCellValue()).trim();
                     }
 
 
-                    String alternateNumber=row.getCell(15).getStringCellValue().trim();
+                    String alternateNumber=row.getCell(16).getStringCellValue().trim();
                     String altNum=alternateNumber.replace("'","");
-                    String altNumbers=altNum.replace("-","");
+                    String altNumbers=altNum.replace("-"," ");
                     String[] alternateNumbers=altNumbers.split("\\s+");
                     List<String> finalAltNumList=new ArrayList<String>();
                     for(String num : alternateNumbers){
@@ -1330,15 +1335,27 @@ e.printStackTrace();
                             finalAltNumList.add(num);
                         }
                     }
-                    alternateNumber1=finalAltNumList.get(0);
-                    alternateNumber2=finalAltNumList.get(1);
-                    String remarks=row.getCell(16).getStringCellValue().trim();
-                    String request_date=row.getCell(17).getStringCellValue().trim();
-                    String lot_no=row.getCell(18).getStringCellValue().trim();
+
+                    if(alternateNumber1==alternateNumber2){
+                        alternateNumber1=finalAltNumList.get(0);
+                    }else {
+                        alternateNumber1=finalAltNumList.get(0);
+                        alternateNumber2=finalAltNumList.get(1);
+                    }
+                    String remarks=row.getCell(17).getStringCellValue().trim();
+                    Date reqDate=row.getCell(18).getDateCellValue();
+                    if(row.getCell(18).getCellType() == Cell.CELL_TYPE_STRING){
+                        request_date=row.getCell(18).getStringCellValue().trim();
+                    }else if (row.getCell(18).getCellType()==Cell.CELL_TYPE_NUMERIC){
+                        //request_date=NumberToTextConverter.toText(row.getCell(18).getNumericCellValue()).trim();
+                        DateFormat df=new SimpleDateFormat("yyyy/MM/dd");
+                        request_date=df.format(reqDate).trim();
+                    }
+                    String lot_no=row.getCell(19).getStringCellValue().trim();
 
                     if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
-                        paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
-
+                       // paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
+                        paytmMastEntity=paytmMasterService.getPaytmMasterByDate(mobileNumber,reqDate);
                     }
                     if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
                         int pincode1 = Integer.parseInt(pincode);

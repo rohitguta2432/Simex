@@ -6,6 +6,7 @@ import com.softage.paytm.models.StateMasterEntity;
 import org.json.simple.JSONObject;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,5 +22,6 @@ public interface PaytmMasterDao extends CrudRepository<PaytmMastEntity,String> {
     public PaytmMastEntity getPaytmMaster(String mobileNo);
     public String savePaytmMaster(PaytmMastEntity paytmMastEntity);
     public PaytmMastEntity getPaytmMasterData(int cust_uid);
+    public PaytmMastEntity getPaytmMastEntityByDate(String mobile,Date date);
 
 }

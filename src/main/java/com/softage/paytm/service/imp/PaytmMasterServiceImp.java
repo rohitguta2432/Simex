@@ -179,6 +179,12 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     public PaytmMastEntity getPaytmMastDatas(int cust_uid){
         return paytmMasterDao.getPaytmMasterData(cust_uid);
     }
+
+    @Override
+    public PaytmMastEntity getPaytmMasterByDate(String mobileNo, Date date) {
+        return paytmMasterDao.getPaytmMastEntityByDate(mobileNo,date);
+    }
+
     @Override
     public JSONObject telecallingScreen(String userName,int cirCode) {
         JSONObject json=null;
@@ -347,4 +353,6 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
 
       return  circode;
     }
+
+
 }

@@ -118,6 +118,32 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         return  paytmMasterData;
     }
 
+    @Override
+    public PaytmMastEntity getPaytmMastEntityByDate(String mobile, Date date) {
+        EntityManager entityManager=null;
+        EntityTransaction transaction=null;
+        Query query=null;
+        PaytmMastEntity paytmMastEntity=null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            String hql = "select paytmMast from PaytmMastEntity paytmMast where paytmMast.customerPhone=:phone and paytmMast.requestDate=:req_date";
+            query = entityManager.createQuery(hql);
+            query.setParameter("phone", mobile);
+            query.setParameter("req_date", date);
+            paytmMastEntity = (PaytmMastEntity) query.getSingleResult();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return paytmMastEntity;
+    }
+
 
     @Override
     @Transactional
