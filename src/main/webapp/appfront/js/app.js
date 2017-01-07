@@ -1232,9 +1232,9 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
 
         $scope.ab=true;
-        var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.mob.mobileNo;
+        var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.codes.customerPhone+ '&customerID='+$scope.codes.cust_uid +'&coStatus='+$scope.codes.coStatus;
 
-
+     alert($scope.codes.cust_uid)
        if($scope.status.csmCode == '2-CB')
         {
             var modalInstance = $modal.open({
@@ -1282,8 +1282,8 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
 
     $scope.screen = function(ev){
-
-        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&simType=' + $scope.codes.simType + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
+     alert("hii"+$scope.codes.cust_uid);
+        var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&simType=' + $scope.codes.simType + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode +'&customerID='+$scope.codes.cust_uid + '&coStatus='+$scope.codes.coStatus;
           console.log(data);
         $http.get(domain+'/postCalling?'+ data)
             .success(function(data, status, headers, config) {
@@ -1339,9 +1339,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
             alert("Please enter Time");
             ev.preventDefault();
         }else {
-
-
-            var data = 'status=2-CB' + '&mobileNo=' + $scope.mob.mobileNo + '&visit_date=' + $scope.visit_date + '&visit_time=' + $scope.visit_time;
+            var data = 'status=2-CB' + '&mobileNo=' + $scope.codes.customerPhone + '&visit_date=' + $scope.visit_date + '&visit_time=' + $scope.visit_time + 'customerID='+$scope.codes.cust_uid+'coStatus='+$scope.codes.coStatus;
 
 
             $http.get(domain + '/postCallingStatus?' + data)
@@ -1367,7 +1365,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     $scope.getAvlAgentChart=function(){
 
 
-            var data = 'pincode='+$scope.codes.pincode;
+            var data = 'pincode='+$scope.codes.pincode + 'customerID='+$scope.codes.cust_uid+'coStatus='+$scope.codes.coStatus;
 
               //    alert("pincode "+$scope.codes.pincode);
             $http.get(domain + '/getAvailableSlot?' + data)
@@ -1390,7 +1388,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     $scope.selectDateTime=function(time,vstdate,status){
 
      //   alert(" key "+ key +" value "+value );
-        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' +vstdate + '&visitTime=' + time+':00' + '&status=' +status ;
+        var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' +vstdate + '&visitTime=' + time+':00' + '&status=' +status + 'customerID='+$scope.codes.cust_uid+'coStatus='+$scope.codes.coStatus;
         console.log(data);
         $http.get(domain+'/postCalling?'+ data)
             .success(function(data, status, headers, config) {
@@ -1532,7 +1530,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
     $scope.calling = function(){            /////for customer calling
 
-        var data = 'customer_number=' + $scope.mob.mobileNo;
+        var data = 'customer_number=' + $scope.codes.customerPhone + 'customerID='+$scope.codes.cust_uid;
        /*alert(data);*/
         $http.get(domain+'/customerCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/

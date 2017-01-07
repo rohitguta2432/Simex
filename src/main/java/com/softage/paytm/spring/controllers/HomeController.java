@@ -17,6 +17,7 @@ import com.itextpdf.text.pdf.codec.TiffImage;
 import com.itextpdf.text.pdf.codec.TiffWriter;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
+import jdk.internal.org.objectweb.asm.tree.TryCatchBlockNode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -935,8 +936,10 @@ class HomeController {
             List<StateMasterEntity> stateList = paytmMasterService.getStateList();
             List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
             if (teleJson.get("cust_uid") != null && !teleJson.get("cust_uid").equals("")) {
-                json = paytmMasterService.getPaytmMastData((String) teleJson.get("cust_uid"));
-                json = paytmMasterService.getPaytmMastData((String) teleJson.get("mobileNo"));
+                String custid=(String)teleJson.get("cust_uid");
+         int cust_uid=Integer.parseInt(custid);
+                json = paytmMasterService.getPaytmMastData(cust_uid);
+                /*json = paytmMasterService.getPaytmMastData((String) teleJson.get("mobileNo"));*/
             }
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
             Calendar date = Calendar.getInstance();
@@ -1169,33 +1172,44 @@ class HomeController {
         String returnString = null;
         String number="";
         String result="";
-        String alternatephone="";
-        String alternateresult="";
+        String alternatephone1="";
+        String alternatephone2="";
+        String alternateresult1="";
+        String alternateresult2="";
         HttpSession session = request.getSession(false);
         logger.info("calling to customer>>>>> wait");
         if (session != null) {
             userName = (String) session.getAttribute("name");
             agentNo = userService.getUserByEmpcode(userName).getEmpPhone();
         }
-        number = request.getParameter("customer_number");
-        PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMaster(number);
-         alternatephone=  paytmMastEntity.getAlternatePhone1().toString();
-        if(alternatephone!= null && !alternatephone.equals(""))
-        {
-             alternateresult = customerCalling(alternatephone, agentNo);
-        }
-        else
-        {
-            result = customerCalling(number, agentNo);
-        }
-        if (alternateresult.equalsIgnoreCase("done")) {
-            returnString = "connected to Customer...";
-        }
+        try {
+            number = request.getParameter("customer_number");
+            PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMaster(number);
+            alternatephone1 = paytmMastEntity.getAlternatePhone1().toString();
+            alternatephone2 = paytmMastEntity.getAlternatePhone2().toString();
+            if (alternatephone1 != null && !alternatephone1.equals("")) {
+                alternateresult1 = customerCalling(alternatephone1, agentNo);
+            } else {
 
-        else {
-            returnString = "Unable to connect Customer due to Network Connectivity";
+                alternateresult2 = customerCalling(alternatephone2, agentNo);
+            }
+            if (alternatephone2 != null && !alternatephone2.equals("")) {
+                alternateresult1 = customerCalling(alternatephone2, agentNo);
+            } else {
+                result = customerCalling(number, agentNo);
+
+            }
+            if (alternateresult1.equalsIgnoreCase("done")) {
+                returnString = "connected to Customer...";
+            } else {
+                returnString = "Unable to connect Customer due to Network Connectivity";
+            }
+            returnObj.put("msg", returnString);
         }
-        returnObj.put("msg", returnString);
+        catch (Exception e)
+        {
+e.printStackTrace();
+        }
         return returnObj;
     }
     public static JSONObject uploadExcel(File path, String importBy, PaytmMasterService paytmMasterService, PaytmPinMasterService pinMasterService) {
@@ -1739,6 +1753,8 @@ class HomeController {
         String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91" + mobileNo + "&agent_number=+91" + agentNumber;
         try {
             URL obj = new URL(url);
+
+
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("GET");
 
@@ -1807,19 +1823,11 @@ class HomeController {
         int timediff = 1;
         List<String> dateArray = new ArrayList<String>();
         try {
-
-
             String pincode = request.getParameter("pincode");
-
-
             List<String> agentList = agentPaytmService.getAgentPinMastList(pincode);
-
             System.out.println(" List Size " + agentList.size());
-
-
             Set<String> agentListUnique = new HashSet<String>(agentList);
             System.out.println(" SetSize Size " + agentListUnique.size());
-
 
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
             Calendar date = Calendar.getInstance();
@@ -1888,49 +1896,56 @@ class HomeController {
         int circleCode = 4;
         int pincode1 = 0;
         int timediff = 1;
+        String   date1="";
         JSONObject jsonObject = new JSONObject();
         JSONObject finalJson = new JSONObject();
 
         List<String> timeList = new ArrayList<String>();
         try {
-
-
             String pincode = request.getParameter("pincode");
-            String date1 = request.getParameter("date");
-            date1 = date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
-
+            String datefetch = request.getParameter("date");
+             date1 = datefetch.substring(6, 10) + "-" + datefetch.substring(3, 5) + "-" + datefetch.substring(0, 2);
 
             List<String> agentList = agentPaytmService.getAgentPinMastList(pincode);
             Set<String> agentListUnique = new HashSet<String>(agentList);
 
-            Date date = new Date();
-            String strDateFormat = "hh:mm:ss a";
-            DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
-            String formattedDate= dateFormat.format(date);
-            String currenttime=formattedDate.substring(1,2);
-            Integer todaytime=Integer.valueOf(currenttime);
-            for (Integer i =todaytime+ 2; i <= 18; i = i + timediff) {
-                String time = i.toString();
-                JSONArray jsonArray = new JSONArray();
-                System.out.println(" date   " + date1);
-                System.out.println(" Timecurrent   " + time);
-                JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time, date1);
-                String result = (String) jsonObject1.get(date1);
-                if (result.equalsIgnoreCase("Available")) {
-                    timeList.add(time + ":00");
-                }
-            }
-            /*for (Integer i = 9; i <= 18; i = i + timediff) {
-                String time = i.toString();
-                JSONArray jsonArray = new JSONArray();
-                System.out.println(" date   " + date1);
-                System.out.println(" Timecurrent   " + time);
-                JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time, date1);
-                String result = (String) jsonObject1.get(date1);
-                if (result.equalsIgnoreCase("Available")) {
-                    timeList.add(time + ":00");
-                }
-            }*/
+
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            Calendar todat=Calendar.getInstance();
+            String todaytime=format.format(todat.getTime());
+
+if(todaytime.equals(datefetch)) {
+    Date date = new Date();
+    String strDateFormat = "hh:mm:ss a";
+    DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+    String formattedDate = dateFormat.format(date);
+    String currenttime = formattedDate.substring(0, 2);
+    Integer todaytime1 = Integer.valueOf(currenttime);
+    for (Integer i = todaytime1 + 2; i <= 18; i = i + timediff) {
+        String time = i.toString();
+        JSONArray jsonArray = new JSONArray();
+        System.out.println(" date   " + date1);
+        System.out.println(" Timecurrent   " + time);
+        JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time, date1);
+        String result = (String) jsonObject1.get(date1);
+        if (result.equalsIgnoreCase("Available")) {
+            timeList.add(time + ":00");
+        }
+    }
+}
+            else {
+    for (Integer i = 9; i <= 18; i = i + timediff) {
+        String time = i.toString();
+        JSONArray jsonArray = new JSONArray();
+        System.out.println(" date   " + date1);
+        System.out.println(" Timecurrent   " + time);
+        JSONObject jsonObject1 = postCallingService.getAvailableslot(date1, agentListUnique, time, date1);
+        String result = (String) jsonObject1.get(date1);
+        if (result.equalsIgnoreCase("Available")) {
+            timeList.add(time + ":00");
+        }
+    }
+}
             finalJson.put("timeList", timeList);
 
 
@@ -2001,10 +2016,13 @@ class HomeController {
                 importby = (String) session.getAttribute("name");
                 importType = (String) session.getAttribute("role");
             }
-            String number = request.getParameter("mobileNo");
             String name = request.getParameter("name");
             String address = request.getParameter("address");
-            String area = request.getParameter("area");
+            String custid=request.getParameter("customerID");
+            int customerid= Integer.parseInt(custid);
+            String coStatus=request.getParameter("coStatus");
+            String number = request.getParameter("mobileNo");
+            String area = request.getParameter("remarks");
             String emailId = request.getParameter("emailId");
             String city = request.getParameter("city");
             String state = request.getParameter("state");
@@ -2122,6 +2140,7 @@ class HomeController {
             String status = request.getParameter("status");
             String callingDate = request.getParameter("visit_date");
             String callingTime = request.getParameter("visit_time");
+            String cust_uid=request.getParameter("customerID");
 
             if (status.equals("2-CB")) {
                 String dateTime = callingDate.substring(6, 10) + "-" + callingDate.substring(3, 5) + "-" + callingDate.substring(0, 2) + " " + callingTime + ":00";

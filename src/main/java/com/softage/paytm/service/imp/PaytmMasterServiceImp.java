@@ -58,7 +58,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 String pincode=map.get("Pincode");
                 String state=map.get("State");
                 String pincode1=pincode.substring(0,2);
-                String pincode2=pincode.substring(0,3);
+                String pincode2=pincode.substring(0, 3);
                 int pin1=Integer.parseInt(pincode1);
                 int pin2=Integer.parseInt(pincode2);
                 int circleCodevalue= getCircleCode(pin1,pin2,state);
@@ -166,8 +166,8 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
-    public JSONObject getPaytmMastData(String mobileNo) {
-        JSONObject jsonObject =paytmMasterDao.getPaytmMastData(mobileNo);
+    public JSONObject getPaytmMastData(int cust_uid) {
+        JSONObject jsonObject =paytmMasterDao.getPaytmMastData(cust_uid);
         return  jsonObject;
 
     }
@@ -176,7 +176,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
         return paytmMasterDao.findOne(mobileNo);
     }
     @Override
-    public PaytmMastEntity getPaytmMastData(int cust_uid){
+    public PaytmMastEntity getPaytmMastDatas(int cust_uid){
         return paytmMasterDao.getPaytmMasterData(cust_uid);
     }
     @Override

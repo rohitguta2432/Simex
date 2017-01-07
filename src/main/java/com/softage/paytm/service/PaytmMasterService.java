@@ -17,12 +17,12 @@ public interface PaytmMasterService {
 
     public String savePaytmMaster(List<Map<String,String>> paytmList);
     public String savePaytmMasterExcel(List<Map<String,String>> paytmList);
-    public JSONObject getPaytmMastData(String mobileNo);
+    public JSONObject getPaytmMastData(int cust_uid);
     public PaytmMastEntity getPaytmMaster(String mobileNo);
     public JSONObject telecallingScreen(String userName,int cirCode);
     public List<StateMasterEntity> getStateList();
     public List<CallStatusMasterEntity> getStatusList();
     public void uploadRejectedData(List<Map<String, String>> list,File filename);
-    public PaytmMastEntity getPaytmMastData(int cust_uid);
+    public PaytmMastEntity getPaytmMastDatas(int cust_uid);
 
 }

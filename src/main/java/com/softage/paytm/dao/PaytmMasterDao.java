@@ -14,7 +14,7 @@ import java.util.List;
 public interface PaytmMasterDao extends CrudRepository<PaytmMastEntity,String> {
 
     public String savePaytmMaster(List<PaytmMastEntity> paytmMastEntity);
-    public JSONObject getPaytmMastData(String mobileNo);
+    public JSONObject getPaytmMastData(int cust_uid);
     public  JSONObject telecallingScreen(String userName,int circode);
     public List<StateMasterEntity> getStatemaster();
     public List<CallStatusMasterEntity> getStatusList();
