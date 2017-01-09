@@ -523,8 +523,6 @@ class HomeController {
 
         return jsonObject;
     }
-
-
     @RequestMapping(value = "/uploadAgent", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject uploadAgent(MultipartHttpServletRequest request, HttpServletResponse response) {
@@ -1926,19 +1924,17 @@ e.printStackTrace();
             List<String> agentList = agentPaytmService.getAgentPinMastList(pincode);
             Set<String> agentListUnique = new HashSet<String>(agentList);
 
-
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
             Calendar todat=Calendar.getInstance();
             String todaytime=format.format(todat.getTime());
 
 if(todaytime.equals(datefetch)) {
-    Date date = new Date();
-    String strDateFormat = "hh:mm:ss a";
-    DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
-    String formattedDate = dateFormat.format(date);
-    String currenttime = formattedDate.substring(0, 2);
-    Integer todaytime1 = Integer.valueOf(currenttime);
-    for (Integer i = todaytime1 + 2; i <= 18; i = i + timediff) {
+    Date today = new Date();
+    Calendar cal=Calendar.getInstance();
+    cal.add(Calendar.HOUR, 2);
+    System.out.println("Today Date is "+new Date(cal.getTimeInMillis()).getHours());
+    int currenttime=new Date(cal.getTimeInMillis()).getHours();
+    for (Integer i = currenttime; i <= 18; i = i + timediff) {
         String time = i.toString();
         JSONArray jsonArray = new JSONArray();
         System.out.println(" date   " + date1);
@@ -1950,7 +1946,7 @@ if(todaytime.equals(datefetch)) {
         }
     }
 }
-            else {
+else {
     for (Integer i = 9; i <= 18; i = i + timediff) {
         String time = i.toString();
         JSONArray jsonArray = new JSONArray();
@@ -1990,10 +1986,7 @@ if(todaytime.equals(datefetch)) {
             if (session != null) {
                 circleCode = (Integer) session.getAttribute("cirCode");
             }
-
-
             List<CircleMastEntity> circles = circleService.getCircleList();
-
             for (CircleMastEntity circle : circles) {
                 JSONObject jsonObject1 = new JSONObject();
                 jsonObject1.put("name", circle.getCircleName());
@@ -2131,7 +2124,6 @@ if(todaytime.equals(datefetch)) {
         JSONObject jsonObject = new JSONObject();
         String message = "";
         String importType = "Admin";
-
         int cirCode = 0;
         String role = null;
         try {
@@ -2159,15 +2151,14 @@ if(todaytime.equals(datefetch)) {
             String callingTime = request.getParameter("visit_time");
             String cust_uid=request.getParameter("customerID");
 
+
             if (status.equals("2-CB")) {
                 String dateTime = callingDate.substring(6, 10) + "-" + callingDate.substring(3, 5) + "-" + callingDate.substring(0, 2) + " " + callingTime + ":00";
                 result = callTimeService.insertCallTimeDetails(mobileNo, dateTime, cirCode, importby);
             }
-
-
             System.out.println("callingTime " + callingDate + "callingTime " + callingTime);
 
-
+            map.put("cust_uid",cust_uid);
             map.put("number", mobileNo);
             map.put("status", status);
             map.put("importby", importby);

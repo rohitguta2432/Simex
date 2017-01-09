@@ -1233,9 +1233,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
         $scope.ab=true;
         var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.codes.customerPhone+ '&customerID='+$scope.codes.cust_uid +'&coStatus='+$scope.codes.coStatus;
-
-     alert($scope.codes.cust_uid)
-       if($scope.status.csmCode == '2-CB')
+        if($scope.status.csmCode == '2-CB')
         {
             var modalInstance = $modal.open({
                 templateUrl: 'Telecalling/EnterDateTime.html',
@@ -1450,31 +1448,17 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
                 templateUrl: 'Telecalling/availableAgentChart.html',
                 controller: 'telecalling',
             });
-
-
     }
-
-
     $scope.getTimebyDate=function(){
-
-
         var data = 'pincode='+$scope.codes.pincode+'&date='+$scope.visit_date;
-
         //    alert("pincode "+$scope.codes.pincode);
         $http.get(domain + '/getAvailableSlotByDate?' + data)
             .success(function (data, status, headers, config) {
-
                 $scope.times1 = data.timeList;
             })
             .error(function (data, status, headers, config) {
             });
-
-
     };
-
-
-
-
     $scope.getTime = function(){      /////get visit time according to date
         var myarr = [];
         var varDate = $scope.visit_date;
@@ -1526,10 +1510,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
         }
 
     }
-
-
     $scope.calling = function(){            /////for customer calling
-
         var data = 'customer_number=' + $scope.codes.customerPhone + 'customerID='+$scope.codes.cust_uid;
        /*alert(data);*/
         $http.get(domain+'/customerCalling?'+ data)
@@ -1686,7 +1667,6 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','
 
         $scope.SelectedFileForUpload = file[0];
     };
-
     $scope.SaveFile1 = function (ev) {
 
 

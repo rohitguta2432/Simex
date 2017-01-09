@@ -156,7 +156,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "select new map (pm.coStatus as coStatus, pm.customerPhone as customerPhone, pm.username as username,pm.remarks as remarks,pm.address as address,pm.city as city,pm.pincode as pincode,pm.email as email,pm.state as state,pm.simType as simType,pm.alternatePhone1 as alternatePhone1,pm.alternatePhone2 as alternatePhone2) from PaytmMastEntity pm  where pm.cust_uid=:cust_uid";
+            String strQuery = "select new map (pm.cust_uid as cust_uid,pm.coStatus as coStatus, pm.customerPhone as customerPhone, pm.username as username,pm.remarks as remarks,pm.address as address,pm.city as city,pm.pincode as pincode,pm.email as email,pm.state as state,pm.simType as simType,pm.alternatePhone1 as alternatePhone1,pm.alternatePhone2 as alternatePhone2) from PaytmMastEntity pm  where pm.cust_uid=:cust_uid";
             query=entityManager.createQuery(strQuery);
             query.setParameter("cust_uid",cust_uid);
 
