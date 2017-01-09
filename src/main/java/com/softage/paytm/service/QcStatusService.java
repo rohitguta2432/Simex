@@ -13,7 +13,7 @@ import java.util.List;
 public interface QcStatusService {
     public String saveQcStatus(String mobile_no, String status, String rejected_page, String remarks);
     public String updateQcStatus(String mobile_no, String status, String rejected_page, String remarks);
-    public JSONObject getMobileNumber();
+    public JSONObject getMobileNumber(String spokeCode);
     public JSONObject qcCustomerDetails(String mobileNumber);
     public JSONObject downloadList(String mobileNumber,String todate,String fromdate);
 

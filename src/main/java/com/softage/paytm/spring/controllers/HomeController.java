@@ -2269,9 +2269,10 @@ if(todaytime.equals(datefetch)) {
 
     @RequestMapping(value = "/getCustomer", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public JSONObject getCustomerMobileNumber() {
-
-        return qcStatusService.getMobileNumber();
+    public JSONObject getCustomerMobileNumber(HttpServletRequest request) {
+        HttpSession session=request.getSession();
+        String spokecode=(String)session.getAttribute("spoke_code");
+        return qcStatusService.getMobileNumber(spokecode);
     }
 
 

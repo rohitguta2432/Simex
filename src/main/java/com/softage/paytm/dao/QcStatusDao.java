@@ -12,7 +12,7 @@ import java.util.List;
 public interface QcStatusDao {
     public String qcStatusSave(String mobile_no, String status, String rejected_page, String remarks);
     public String qcStatusUpdate(String mobile_no, String status, String rejected_page, String remarks);
-    public JSONObject qcGetMobileNumber();
+    public JSONObject qcGetMobileNumber(String spokeCode);
     public JSONObject qcGetCustomerDetails(String mobileNum);
     public JSONObject downloadList(String mobileNumber,String todate,String fromdate);
 }

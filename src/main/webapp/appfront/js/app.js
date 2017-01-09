@@ -945,7 +945,7 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
         $http.get(domain+'/getCustomer')
             .success(function (data, status, headers, config) {
                 $scope.cust_number=data.mobile;
-
+                $scope.scan_id=data.scanID;
                 if(data.status == 'error'){
                     // alert('Agent Already Registered');
                     $scope.status = '';

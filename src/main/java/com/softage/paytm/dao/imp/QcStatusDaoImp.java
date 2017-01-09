@@ -80,16 +80,21 @@ public class QcStatusDaoImp implements QcStatusDao {
     }
 
     @Override
-    public JSONObject qcGetMobileNumber() {
+    public JSONObject qcGetMobileNumber(String spokeCode) {
         JSONObject jsonObject=new JSONObject();
         EntityManager entityManager=null;
         String customerNumber="";
         String res="";
+        int scanid=0;
         try {
             entityManager=entityManagerFactory.createEntityManager();
-            Query query=entityManager.createNativeQuery("{call usp_qcGetMobileNumber()}");
-            customerNumber=(String)query.getSingleResult();
+            Query query=entityManager.createNativeQuery("{call usp_qcGetMobileNumber(spokeCode)}");
+            Object[] scanObj=(Object[])query.getSingleResult();
+            //customerNumber=(String)query.getSingleResult();
+            customerNumber=(String)scanObj[0];
+            scanid=(Integer)scanObj[1];
             jsonObject.put("mobile",customerNumber);
+            jsonObject.put("scanID",scanid);
         }catch (Exception e){
             e.printStackTrace();
         }finally {
