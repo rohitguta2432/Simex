@@ -324,6 +324,21 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
     });
 
 
+    $scope.getSpokeByCircle=function(){
+
+        alert(" circle name "+$scope.circlecode.name);
+
+        $http.get(domain+'/getSpokeByCircle?circleCode='+$scope.circlecode.name).success(function(data,status,headers,config){
+
+                    $scope.offices1=data.spokeList;
+
+        }).error(function(data,status,headers,config){
+            alert('Error');
+        })
+
+    }
+
+
 
     $scope.errormessage = '';
 
@@ -351,14 +366,18 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
         else if($scope.emp_Type.length == 0 || $scope.emp_Type == undefined){
             //   alert('Enter the Phone Number');
             ev.preventDefault();
-        } else if(firstphone == 0 || firstphone==1 ||firstphone==2 || firstphone == 3 || firstphone==4 || firstphone == 5 || firstphone==6){
+        }
+        else if(($scope.emp_Type== 'CAQC' || $scope.emp_Type == 'AOQC') && $scope.spoke_code==undefined ){
+              alert('Enter the Spoke Code');
+            ev.preventDefault();
+        }else if(firstphone == 0 || firstphone==1 ||firstphone==2 || firstphone == 3 || firstphone==4 || firstphone == 5 || firstphone==6){
             alert('Enter the Valid Phone Number');
             ev.preventDefault();
         }
 
         else {
 
-            var data = 'name=' + $scope.emp_name + '&empcode=' + $scope.emp_code  + '&phone=' + $scope.phone + '&circle_office=' + $scope.circlecode.code + '&empType=' + $scope.emp_Type ;
+            var data = 'name=' + $scope.emp_name + '&empcode=' + $scope.emp_code  + '&phone=' + $scope.phone + '&circle_office=' + $scope.circlecode.code + '&empType=' + $scope.emp_Type +'&spoke_code='+$scope.spoke_code;
 
 
             console.log(data);
@@ -416,6 +435,9 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
 
         };
     }
+
+
+
 
     function ClearForm() {
         //$scope.FileDescription = '';
@@ -1381,41 +1403,7 @@ $scope.cust_number='';
 
 
 
-routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal' ,function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal){
-
-    /* $scope.message = {
-
-     text: 'hello world!',
-     time: new Date()
-     };*/
-
-  /*  var that = this;
-
-
- this.picker3 = {
-        date: new Date()
-    };
-
-
-    this.openCalendar = function(e, picker) {
-       that[picker].open = true;
-
-    };
-*/
-
-
-
-/*
-    var myInit = function () {
-     alert('Hello Angularjs Function ');
-    };
-    angular.element(document).ready(myInit);*/
-
-
-
-
-
-
+routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal' ,function($rootScope,$scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal){
 
     $scope.states= [];
     $scope.times = [];
@@ -1425,6 +1413,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
     $scope.statuses = [{csmCode: 1, status:"Delhi"}];
     $scope.statuscode;
     $scope.status1;
+    $scope.callStatus="1";
     /* Function for get Telecalling Screen */
     $scope.getscreen = function(){
         var dfr = $q.defer();
@@ -1453,16 +1442,20 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
             }, function (reason) {
             });
     }
-    GetScreen();
+ //
     $scope.ab=false;
 
     $scope.callgetscreen = function(){
         location.reload();
     }
 
+    $scope.callingScreen=function(){
+        GetScreen();
+
+    }
+
 
     $scope.changestatus = function(){
-
 
         $scope.ab=true;
         var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.codes.customerPhone+ '&customerID='+$scope.codes.cust_uid +'&coStatus='+$scope.codes.coStatus;
@@ -1475,11 +1468,30 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
         } else if($scope.status.csmCode == 'CON')
         {
-            //$scope.ab=true;
-            //alert(data);
-            // $scope.screen();
-            //$scope.disabled= true;
-            // location.reload();
+
+
+        } else if(($scope.status.csmCode == '6-SW' || $scope.status.csmCode == '7-WN' || $scope.status.csmCode == '8-AD') && ($scope.callStatus == '1') && ($scope.codes.alternatePhone2 != "")){
+
+            alert(" We are connecting you another number of the Customer ");
+
+            var data2 = 'customer_number=' + $scope.codes.alternatePhone2 + '&customerID='+$scope.codes.cust_uid;
+            /*alert(data);*/
+            $scope.callStatus = '2';
+            $http.get(domain+'/customerCalling?'+ data2)
+                /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
+                .success(function(data, status, headers, config) {
+                    $scope.message = data.msg;
+
+                })
+                .error(function(data, status, headers, config) {
+
+                    alert("Unable to Connect Customer due to Network Connectivity");
+                });
+          //  location.reload();
+
+            if(angular.isDefined($scope.status)){
+                delete $scope.status;
+            }
         }
 
         else {
@@ -1744,7 +1756,7 @@ routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$
 
     }
     $scope.calling = function(){            /////for customer calling
-        var data = 'customer_number=' + $scope.codes.customerPhone + 'customerID='+$scope.codes.cust_uid;
+        var data = 'customer_number=' + $scope.codes.alternatePhone1 + '&customerID='+$scope.codes.cust_uid;
        /*alert(data);*/
         $http.get(domain+'/customerCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/

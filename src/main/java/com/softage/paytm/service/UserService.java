@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
  */
 public interface UserService {
     public EmplogintableEntity getUserByEmpcode(String empCode);
+    public EmplogintableEntity getUserByToken(String token);
     public JSONObject getEmpFtpDetails(int circleCode);
     public JSONObject getStatus(String mobileno);
     public String updateAgentStatus(EmplogintableEntity emplogintableEntity);

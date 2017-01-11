@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Repository
 public class UserDaoImp implements UserDao {
-    private static final Logger logger = LoggerFactory.getLogger(AgentPaytmDaoImp.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserDaoImp.class);
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
@@ -45,6 +45,31 @@ public class UserDaoImp implements UserDao {
             if (entityManager != null && entityManager.isOpen()) {
                /* entityManager.flush();
                 entityManager.clear();*/
+                entityManager.close();
+            }
+        }
+        return emplogintableEntity;
+
+    }
+
+    @Override
+    public EmplogintableEntity getUserByToken(String token) {
+        EntityManager entityManager = null;
+        Query query = null;
+        EmplogintableEntity emplogintableEntity = null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select emp from EmplogintableEntity emp where emp.token=:token";
+            query = entityManager.createQuery(strQuery);
+            query.setParameter("token", token);
+            query.setMaxResults(1);
+            emplogintableEntity = (EmplogintableEntity) query.getSingleResult();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+
                 entityManager.close();
             }
         }

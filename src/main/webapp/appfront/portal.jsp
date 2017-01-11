@@ -125,6 +125,15 @@
     if ("A1".equalsIgnoreCase(role)){
         rolename="Agent";
     }
+    if ("AOQC".equalsIgnoreCase(role)){
+        rolename="AO_Audit";
+    }
+    if ("CAQC".equalsIgnoreCase(role)){
+        rolename="CircleAudit";
+    }
+    if ("DULD".equalsIgnoreCase(role)){
+        rolename="Data Uploader";
+    }
   if(name==null){
 %>
    <jsp:forward page=""/>
@@ -223,10 +232,10 @@
 
        <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         Reports </span></a></li>
-            <%--      <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-check"></i><span class="menu-text">
-                                 QC Interface </span></a></li>
+            <li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                           Circle Audit </span></a></li>
 
-               <li><a ui-sref="downloaddocuments"><i class="menu-icon fa fa-download"></i><span class="menu-text">
+           <%--    <li><a ui-sref="downloaddocuments"><i class="menu-icon fa fa-download"></i><span class="menu-text">
                                  Download Documents </span></a></li>
                  <li><a ui-sref="createBatch"><i class="menu-icon fa fa-file"></i><span class="menu-text">
                                 Create Batch </span></a></li>
@@ -270,6 +279,8 @@
             </li>--%>
             <li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                            Circle Audit </span></a></li>
+            <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>
             <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
                              Data Entry </span></a></li>--%>
             <%--<li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
@@ -290,6 +301,8 @@
                            AO Audit </span></a></li>
             <li><a ui-sref="FormRecieving"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                            Form Recieving </span></a></li>
+            <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>
             <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
                              Data Entry </span></a></li>--%>
             <%--<li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
@@ -306,7 +319,6 @@
           %>
           <li><a ui-sref="telecalling"><i class="menu-icon fa fa-phone"></i><span class="menu-text">
                         Telecalling </span></a></li>
-          </li>
           <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
                            Data Entry </span></a></li>--%>
           <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
@@ -316,6 +328,21 @@
             }
           %>
 
+            <%
+                if("DULD".equalsIgnoreCase(role))
+                {
+
+            %>
+            <li><a ui-sref="uploadScreen"><i class="menu-icon fa fa-upload"></i><span class="menu-text">
+                        Import Data </span></a></li>
+            <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
+                             Data Entry </span></a></li>--%>
+            <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>
+            <%
+
+                }
+            %>
 
 
 

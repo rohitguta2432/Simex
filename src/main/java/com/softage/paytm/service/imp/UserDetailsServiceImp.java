@@ -2,7 +2,9 @@ package com.softage.paytm.service.imp;
 
 import com.softage.paytm.dao.UserDao;
 import com.softage.paytm.models.EmplogintableEntity;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,18 +17,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 
-
-
-
-    @Service("userDetailsService")
+    @Service
     public class UserDetailsServiceImp implements UserDetailsService {
         @Autowired
         private UserDao userDao;
+        @Autowired
+        private ApplicationContext appCtx;
 
         @Override
         @Transactional(readOnly = true)
         public UserDetails loadUserByUsername(String userCode) throws UsernameNotFoundException {
             User securityuser = null;
+            userDao = appCtx.getBean(UserDao.class);
             EmplogintableEntity user = userDao.getUserByEmpcode(userCode);
             if (user != null) {
                 try {

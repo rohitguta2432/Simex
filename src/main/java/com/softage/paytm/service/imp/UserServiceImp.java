@@ -2,41 +2,41 @@
 package com.softage.paytm.service.imp;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-
-
-
-
-
-      import java.util.ArrayList;
-      import java.util.Collection;
-      import java.util.List;
-
-        import com.softage.paytm.dao.UserDao;
-        import com.softage.paytm.models.EmplogintableEntity;
-        import com.softage.paytm.service.UserService;
-      import org.json.simple.JSONObject;
-      import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.security.core.GrantedAuthority;
-        import org.springframework.security.core.authority.SimpleGrantedAuthority;
-        import org.springframework.security.core.userdetails.User;
-        import org.springframework.security.core.userdetails.UserDetails;
-        import org.springframework.security.core.userdetails.UserDetailsService;
-        import org.springframework.security.core.userdetails.UsernameNotFoundException;
-        import org.springframework.stereotype.Service;
-        import org.springframework.transaction.annotation.Transactional;
-
+import com.softage.paytm.dao.UserDao;
+import com.softage.paytm.models.EmplogintableEntity;
+import com.softage.paytm.service.UserService;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class UserServiceImp implements UserService{
+public class UserServiceImp implements UserService {
     @Autowired
     private UserDao userDao;
+
     @Override
     public EmplogintableEntity getUserByEmpcode(String empCode) {
         return userDao.getUserByEmpcode(empCode);
     }
-    public JSONObject getEmpFtpDetails(int circleCode){
+
+    @Override
+    public EmplogintableEntity getUserByToken(String token) {
+        return userDao.getUserByToken(token);
+    }
+
+    public JSONObject getEmpFtpDetails(int circleCode) {
         return userDao.getEmpFtpDetailsDao(circleCode);
     }
 
@@ -139,26 +139,6 @@ public class UserDetailsServiceImp implements UserDetailsService{
 
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**

@@ -16,10 +16,15 @@ public class EmplogintableEntity {
     private String empPassword;
     private Integer empStatus;
     private String importBy;
+    private String token;
+    private Timestamp lastLoginDate;
+    private Timestamp lockedDate;
+    private  Integer attamptCount;
     private Timestamp importDate;
     private Timestamp expireDate;
     private String roles;
     private Integer cirCode;
+    private String spoke_code;
     private CircleMastEntity circleMastByCirCode;
     private String roleCode;
 
@@ -99,10 +104,49 @@ public class EmplogintableEntity {
         return importDate;
     }
 
+
     public void setImportDate(Timestamp importDate) {
         this.importDate = importDate;
     }
 
+    @Basic
+    @Column(name = "token", nullable = true, insertable = true, updatable = true, length = 50)
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Basic
+    @Column(name = "last_login", nullable = true, insertable = true, updatable = true, length = 30)
+    public Timestamp getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Timestamp lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
+    }
+
+    @Basic
+    @Column(name = "locked_date", nullable = true, insertable = true, updatable = true, length = 30)
+    public Timestamp getLockedDate() {
+        return lockedDate;
+    }
+
+    public void setLockedDate(Timestamp lockedDate) {
+        this.lockedDate = lockedDate;
+    }
+    @Basic
+    @Column(name = "attampt_count", nullable = true, insertable = true, updatable = true, length = 4)
+    public Integer getAttamptCount() {
+        return attamptCount;
+    }
+
+    public void setAttamptCount(Integer attamptCount) {
+        this.attamptCount = attamptCount;
+    }
 
     @Basic
     @Column(name = "expireDate", nullable = true, insertable = true, updatable = true)
@@ -133,6 +177,17 @@ public class EmplogintableEntity {
 
     public void setCirCode(Integer cirCode) {
         this.cirCode = cirCode;
+    }
+
+
+    @Basic
+    @Column(name = "spoke_code", nullable = true, insertable = true, updatable = true, length = 10)
+    public String getSpoke_code() {
+        return spoke_code;
+    }
+
+    public void setSpoke_code(String spoke_code) {
+        this.spoke_code = spoke_code;
     }
 
     @Override

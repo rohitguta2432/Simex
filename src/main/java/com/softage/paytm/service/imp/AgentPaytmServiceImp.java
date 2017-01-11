@@ -260,6 +260,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
         emplogintableEntity.setRoleCode("A1");
         emplogintableEntity.setEmpStatus(1);
+        emplogintableEntity.setSpoke_code(paytmagententryEntity.getAspokecode());
         emplogintableEntity.setImportBy(paytmagententryEntity.getImportby());
         emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
         emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));

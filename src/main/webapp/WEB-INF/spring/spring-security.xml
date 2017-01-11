@@ -12,8 +12,10 @@
               <intercept-url pattern="/home" access="permitAll" />
               <intercept-url pattern="/admin**" access="hasRole('ADMIN')" />
               <intercept-url pattern="/dba**" access="hasRole('ADMIN') and hasRole('DBA')" />
-              <form-login  login-page="/" username-parameter="ssoId"
-                           password-parameter="password" authentication-failure-url="/login?error=1" />
+
+              <form-login  login-page="/" login-processing-url="/j_spring_security_check"
+                           username-parameter="ssoId" password-parameter="password"
+                           authentication-failure-url="/" />
               <csrf disabled="true" />
 
              <!-- <form-login username-parameter='j_username' password-parameter='j_password' login-page='/login' authentication-failure-url="/login?error" default-target-url="/home"
@@ -45,7 +47,9 @@
              </beans:constructor-arg>
 
         </beans:bean>
-        <beans:bean id="userDetailsService" class="com.softage.paytm.service.imp.UserDetailsServiceImp"></beans:bean>
+        <beans:bean
+                id="userDetailsService" class="com.softage.paytm.service.imp.UserDetailsServiceImp">
+        </beans:bean>
         <authentication-manager>
                <authentication-provider user-service-ref="userDetailsService">
                    <password-encoder ref="encoder" />

@@ -27,4 +27,5 @@ public interface QcStatusDao {
     public String savetblscan(TblScan savesimages);
     public String saveTblDocdetails(TblcustDocDetails tblcustDocDetails);
 
+
 }

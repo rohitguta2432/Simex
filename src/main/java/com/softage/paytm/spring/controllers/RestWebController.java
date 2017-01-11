@@ -11,14 +11,15 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 /**
  * Created by SS0085 on 01-02-2016.
@@ -53,13 +54,33 @@ public class RestWebController {
     private QcStatusService qcservices;
 
     @RequestMapping(value = "/getTest", method = {RequestMethod.GET, RequestMethod.POST})
-    public JSONObject test() {
+    public JSONObject test(HttpServletRequest request, HttpServletResponse response) {
         JSONObject jsonObject = new JSONObject();
+        /*Properties properties =System.getProperties();
+        Enumeration<Object> enumeration = properties.keys();
+        for (int i = 0; i < properties.size(); i++) {
+            Object obj = enumeration.nextElement();
+            System.out.println("Key: "+obj+"\tOutPut= "+System.getProperty(obj.toString()));
+        }*/
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken("[B@503d88d8");
+
+
+        String s=request.getServletContext().getRealPath("/");
+
+        System.out.println(request.getServletContext().getRealPath("/"));
+
+        SecureRandom random=new SecureRandom();
+        byte bytes[] = new byte[20];
+        random.nextBytes(bytes);
+        String token = bytes.toString();
+
         JSONArray arr = new JSONArray();
         arr.add("hello");
         arr.add("Anil");
         jsonObject.put("msg", "this is JSON Testing");
         jsonObject.put("identification", arr);
+        jsonObject.put("directoryPath",s);
+        jsonObject.put("token",token);
         return jsonObject;
     }
 
@@ -84,6 +105,157 @@ public class RestWebController {
             return "false";
         }
     }
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
+        //logger.info("Welcome home! The client locale is {}.", locale);
+
+        String result = "invalid";
+        JSONObject jsonObject = new JSONObject();
+        String user = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String dbUser = null;
+        String token=null;
+
+        try {
+            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            //         String hashedPassword = passwordEncoder.encode(password);
+            if (emplogintableEntity != null) {
+
+                Timestamp expireDate = emplogintableEntity.getExpireDate();
+                Integer attamptCount=emplogintableEntity.getAttamptCount();
+                if(attamptCount==null){
+                    attamptCount=0;
+                }
+                Timestamp currentDate = new Timestamp(new Date().getTime());
+                Timestamp lockedDate = emplogintableEntity.getLockedDate();
+
+                if ( attamptCount!=5) {
+
+
+                    //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
+                    if (expireDate == null) {
+
+                        Date currentdate1 = new Date();
+                        long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                        currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                        emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                        //    emplogintableEntity.setEmpPassword(hashedPassword);
+
+
+                        if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                            SecureRandom random = new SecureRandom();
+                            byte bytes[] = new byte[20];
+                            random.nextBytes(bytes);
+                            token = bytes.toString();
+                            dbUser = emplogintableEntity.getEmpCode();
+                            result = "success";
+                            emplogintableEntity.setToken(token);
+                            emplogintableEntity.setAttamptCount(0);
+                            emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                        }
+                        agentPaytmService.updatePassword(emplogintableEntity, null);
+
+                    } else if (currentDate.getTime() > expireDate.getTime()) {
+                        result = "expirePassword";
+
+                    } else if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                        dbUser = emplogintableEntity.getEmpCode();
+                        SecureRandom random = new SecureRandom();
+                        byte bytes[] = new byte[20];
+                        random.nextBytes(bytes);
+                        token = bytes.toString();
+                        emplogintableEntity.setToken(token);
+                        emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                        emplogintableEntity.setAttamptCount(0);
+                        agentPaytmService.updatePassword(emplogintableEntity, null);
+                        result = "success";
+                    } else {
+                        int attamtCount = emplogintableEntity.getAttamptCount();
+                        if (attamtCount == 4) {
+                            Timestamp timestamp = new Timestamp(new Date().getTime());
+                            timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
+                            emplogintableEntity.setLockedDate(timestamp);
+                            emplogintableEntity.setAttamptCount(attamtCount + 1);
+                        } else {
+                            emplogintableEntity.setAttamptCount(attamtCount + 1);
+                        }
+                        agentPaytmService.updatePassword(emplogintableEntity, null);
+                    }
+                } else if ( lockedDate.getTime() > currentDate.getTime()) {
+                    result="locked";
+                } else {
+                    if (expireDate == null) {
+
+                        Date currentdate1 = new Date();
+                        long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                        currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                        emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                        //    emplogintableEntity.setEmpPassword(hashedPassword);
+
+
+                        if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                            SecureRandom random = new SecureRandom();
+                            byte bytes[] = new byte[20];
+                            random.nextBytes(bytes);
+                            token = bytes.toString();
+                            dbUser = emplogintableEntity.getEmpCode();
+                            result = "success";
+                            emplogintableEntity.setToken(token);
+                            emplogintableEntity.setAttamptCount(0);
+                            emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                        }
+                        agentPaytmService.updatePassword(emplogintableEntity, null);
+
+                    } else if (currentDate.getTime() > expireDate.getTime()) {
+                        result = "expirePassword";
+
+                    } else if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                        dbUser = emplogintableEntity.getEmpCode();
+                        SecureRandom random = new SecureRandom();
+                        byte bytes[] = new byte[20];
+                        random.nextBytes(bytes);
+                        token = bytes.toString();
+                        emplogintableEntity.setToken(token);
+                        emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                        emplogintableEntity.setAttamptCount(0);
+                        agentPaytmService.updatePassword(emplogintableEntity, null);
+                        result = "success";
+                    } else {
+                        int attamtCount = emplogintableEntity.getAttamptCount();
+                        if (attamtCount == 5) {
+                            Timestamp timestamp = new Timestamp(new Date().getTime());
+                            timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
+                            emplogintableEntity.setLockedDate(timestamp);
+                        } else {
+                            emplogintableEntity.setAttamptCount(attamtCount + 1);
+                        }
+                        agentPaytmService.updatePassword(emplogintableEntity, null);
+                    }
+                }
+            }else {
+                result = "invalid";
+            }
+        }catch(Exception e){
+            result = "error";
+            logger.error("",e);
+        }
+        if(result.equalsIgnoreCase("success")){
+            jsonObject.put("token", token);
+        }
+        jsonObject.put("status", result);
+        return jsonObject;
+    }
+
+
+
+
 
    /* @RequestMapping(value = "/EmployeeNumber", method = {RequestMethod.GET, RequestMethod.POST})
     public String employeeNumber(@RequestParam(value = "username") String userName) {
@@ -141,19 +313,34 @@ public class RestWebController {
         JSONObject leadsObject = new JSONObject();
         String cuurentDate = null;
         List<JSONObject> arrayList = new ArrayList();
-        try {
-            String agentCode = request.getParameter("AgentCode");
-            String leaddate = request.getParameter("leaddate");
-            arrayList = leadsService.getAgentLeads(agentCode, timedeff, leaddate);
-            array.addAll(arrayList);
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken("[B@503d88d8");
+        if(emplogintableEntity!=null){
+            Timestamp timestamp= emplogintableEntity.getLastLoginDate();
+            long time=(long)timestamp.getTime()+24*60*60*1000;
+            timestamp.setTime(time);
+            Timestamp timestamp1=new Timestamp(new Date().getTime());
 
-        } catch (Exception e) {
-            logger.error("", e);
+            if(timestamp.getTime()>timestamp1.getTime() ) {
+                try {
+                    String agentCode = request.getParameter("AgentCode");
+                    String leaddate = request.getParameter("leaddate");
+                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, leaddate);
+                    array.addAll(arrayList);
+
+                } catch (Exception e) {
+                    logger.error("", e);
+                }
+                leadsObject.put("leads", array);
+                leadsObject.put("timediff", 1);
+                leadsObject.put("starttime", 9);
+                leadsObject.put("endtime", 18);
+            }else {
+                leadsObject.put("authentication","expired");
+            }
+        }else{
+            leadsObject.put("authentication","invalid");
         }
-        leadsObject.put("leads", array);
-        leadsObject.put("timediff", 1);
-        leadsObject.put("starttime", 9);
-        leadsObject.put("endtime", 18);
+
         return leadsObject;
 
     }
@@ -280,9 +467,9 @@ public class RestWebController {
             String custPOICode = request.getParameter("custPOICode"); // not required
             //String custPOINumber = request.getParameter("custPOINumber"); // not required
             String custPOACode = request.getParameter("custPOACode");  // not requied
-           // String custPOANumber = request.getParameter("custPOANumber"); // not reqired
+            // String custPOANumber = request.getParameter("custPOANumber"); // not reqired
             String agentCode = request.getParameter("agentCode");
-           // String gender = request.getParameter("gender");     // not requied
+            // String gender = request.getParameter("gender");     // not requied
             String jobid = request.getParameter("jobid");
             int jobID=Integer.parseInt(jobid);
             String remarksCode = request.getParameter("remarksCode");
@@ -313,6 +500,7 @@ public class RestWebController {
             String photoPC=request.getParameter("PhotoPC");
             int originalphotoPC=Integer.parseInt(photoPC);
            if (!StringUtils.isEmpty(agentCode)) {
+
                 paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
             }
             if (!StringUtils.isEmpty(jobid)) {
@@ -325,15 +513,14 @@ public class RestWebController {
             if (custPOACode != null) {
                 proofMastEntityPOACode = leadsService.findBykey(custPOACode);
             }
-
             ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
 
             DataentryEntity dataentryEntity = new DataentryEntity();
             //  dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
             dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
-          //  dataentryEntity.setRejectionResion("ACC");
+            //  dataentryEntity.setRejectionResion("ACC");
             dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
-             dataentryEntity.setCusPOACode(custPOACode);
+            dataentryEntity.setCusPOACode(custPOACode);
             dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
             dataentryEntity.setCusPoiCode(custPOICode);
             dataentryEntity.setCusAdd(address);
@@ -343,7 +530,7 @@ public class RestWebController {
             dataentryEntity.setCusName(custName);
             dataentryEntity.setCusPincode(pincode);
             //dataentryEntity.setCusPoaNumber(custPOANumber);
-           // dataentryEntity.setCusPoiNumber(custPOINumber);
+            // dataentryEntity.setCusPoiNumber(custPOINumber);
             dataentryEntity.setCusState(state);
             dataentryEntity.setCustomerPhone(phoneNumber);
             dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
@@ -358,7 +545,6 @@ public class RestWebController {
             dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
             dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
             result = dataEntryService.saveDataEntry(dataentryEntity);
-
            if(!result.equals("err")) {
                TblScan scanresult = new TblScan();
                AuditStatusEntity auditStatusEntity = qcservices.getAuditStatusEntity(1);
@@ -714,7 +900,7 @@ public class RestWebController {
     @RequestMapping(value = "/KYCDone", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray kycDone(@RequestParam(value = "AgentCode") String agentCode) {
         JSONArray array = new JSONArray();
-JSONObject result=new JSONObject();
+        JSONObject result=new JSONObject();
         List<JSONObject> listjson = leadsService.kycDone(agentCode);
         array.addAll(listjson);
         return array;

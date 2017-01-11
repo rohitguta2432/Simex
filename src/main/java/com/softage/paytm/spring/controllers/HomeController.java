@@ -183,6 +183,7 @@ class HomeController {
                         session.setAttribute("name", user);
                         session.setAttribute("role", emplogintableEntity.getRoleCode());
                         session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                        session.setAttribute("spoke_code", emplogintableEntity.getSpoke_code());
                         result = "success";
                     }
 
@@ -196,6 +197,7 @@ class HomeController {
                     session.setAttribute("name", user);
                     session.setAttribute("role", emplogintableEntity.getRoleCode());
                     session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                    session.setAttribute("spoke_code", emplogintableEntity.getCirCode());
                     result = "success";
                 }
             } else {
@@ -1150,6 +1152,7 @@ class HomeController {
                 String mobileNo = request.getParameter("phone");
                 String circlecode1 = request.getParameter("circle_office");
                 String empType = request.getParameter("empType");
+                String spokeCode=request.getParameter("spoke_code");
                 String password1 = request.getParameter("password");
 
                 circleCode = Integer.parseInt(circlecode1);
@@ -1171,6 +1174,7 @@ class HomeController {
                 emplogintableEntity.setRoleCode(empType);
                 emplogintableEntity.setEmpStatus(1);
                 emplogintableEntity.setImportBy(userName);
+                emplogintableEntity.setSpoke_code(spokeCode);
                 Date expireDate = new Date();
 
                 System.out.println("Current Date   " + expireDate);
@@ -1639,7 +1643,7 @@ e.printStackTrace();
             if (session != null) {
                 userName = (String) session.getAttribute("name");
                 circleCode = (Integer) session.getAttribute("cirCode");
-                spoke=(String)session.getAttribute("spoke_code");
+
             }
 
             if(circleCode!=0) {
@@ -1936,6 +1940,25 @@ e.printStackTrace();
         return jsonObject;
     }
 
+
+
+    @RequestMapping(value = "/getSpokeByCircle", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getSpokeByCircle(HttpServletRequest request) {
+        int circleCode = 4;
+        JSONObject jsonObject = new JSONObject();
+        try {
+
+              String circode=request.getParameter("circleCode");
+              List<String> spokeList = circleService.getSpokeList(circode);
+              jsonObject.put("spokeList", spokeList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("", e);
+        }
+        return jsonObject;
+    }
 
     @RequestMapping(value = "/getAvailableSlot", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
@@ -2342,21 +2365,6 @@ e.printStackTrace();
     public JSONObject getReports(HttpServletRequest request) {
 
         JSONObject jsonObject = new JSONObject();
-
-	/*	HttpSession session=request.getSession(false);
-        if(session!=null){
-			String name=(String)session.getAttribute("name");
-		}*/
-
-	/*	System.getenv().keySet().forEach(key -> {
-            System.out.println(key);
-			System.out.println(System.getenv().get(key));
-		});*/
-
-        // base directory  JBOSS_BASE_DIR
-
-
-        //JBoss log directory   JBOSS_LOG_DIR
 
         String from = request.getParameter("from");
         String to = request.getParameter("to");

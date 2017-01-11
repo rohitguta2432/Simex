@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
  */
 public interface UserDao {
     public EmplogintableEntity getUserByEmpcode(String empCode);
+    public EmplogintableEntity getUserByToken(String token);
     public EmplogintableEntity getUserByEmpNumber(String empNumber);
     public JSONObject getEmpFtpDetailsDao(int circleCode);
     public JSONObject getStatus(String mobileno);
