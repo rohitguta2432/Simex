@@ -1,147 +1,145 @@
 
-<div class="page-body" style="padding: 2px 5px 24px;">
+<div class="page-body" style="padding: 2px 5px 24px;" ng-controller="CircleAudit" ng-init="auditInit()">
 
     <div class="row">
-
-
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                <div class="widget">
+                    <div class="widget-body" style="overflow:hidden;">
+
+                <!--<iframe width="100%" height="400px" ng-src="D:/1000000001/1000000001_11.jpg"></iframe>-->
+                        <div style="overflow: auto;max-height: 400px;width: 100%" ng-model="image_source">
+                            <!--<img src="../resources/ftpimages/1000000001/1000000001_1.jpg" ng-model="image_source">-->
+                            <img src="{{image_source}}">
+                        </div>
+
+
+
+                        <div style="clear:both; height:10px;"></div>
+
+                        <div class="col-sm-12">
+                            <div class="col-sm-2" style="float: left;">
+
+                                <button ng-click="previous()" class="btn btn-azure shiny">Previous</button>
+                            </div>
+                            <div class="col-sm-2" style="float: right;">
+
+                                <button ng-click="next()" class="btn btn-azure shiny">Next</button>
+                            </div>
+
+                        </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
 
             <div class="widget">
                 <div class="widget-header bordered-bottom bordered-themeprimary">
                     <span class="widget-caption">Circle Audit Interface</span>
-                    <div class="widget-buttons">
-                       <!-- <a href="#" data-toggle="maximize">
-                            <i class="fa fa-expand"></i>
-                        </a>-->
+                   <!-- <div class="widget-buttons">
                         <a href="#" data-toggle="collapse">
                             <i class="fa fa-minus"></i>
                         </a>
                         <a href="#" data-toggle="dispose">
                             <i class="fa fa-times"></i>
                         </a>
-                    </div>
+                    </div>-->
                 </div>
 
                 <div class="widget-body" style="overflow:hidden;">
                     <div id="horizontal-form" >
                         <form class="form-horizontal" name="myForm" role="form"  ng-controller="CircleAudit" novalidate>
 
-                         <!--   Radio Button for Automatic and Custom-->
-
-
-                              <!--  <div class="form-group col-sm-12">
-
-                                    <div class="col-sm-4 col-sm-offset-4">
-
-                                        <div class="col-sm-6">
-
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="radio"  >
-                                                    <span class="text">Custom</span>
-                                                </label>
-                                            </div>
-
-                                        </div>
-
-                                        <div class="col-sm-6">
-
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="radio" >
-                                                    <span class="text">Automatic</span>
-                                                </label>
-                                            </div>
-
-                                        </div>
-
-                                        &lt;!&ndash; <input type="checkbox" ng-checked='true' ng-true-value="true" ng-false-value="false" ng-model="checkboxModel.value1" />&ndash;&gt;
-                                    </div>
-                                </div>-->
-
                             <div style="clear:both; height:5px;"></div>
 
-                                <div  class="form-group col-sm-12">
+                                <div  class="form-group col-sm-12 no-padding">
 
-                                    <label class="col-sm-3 control-label no-padding-center">Customer Number</label>
-                                    <div class="col-sm-7">
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Customer Number</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"   name="cust_number" ng-model="cust_number" ng-readonly="true" />
                                     </div>
+                                    <div style="clear:both; height:5px;"></div>
 
-                                    <label class="col-sm-3 control-label no-padding-center">Sim Number</label>
-                                    <div class="col-sm-7">
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Sim Number</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"   name="sim_number" ng-model="sim_number" ng-readonly="true" />
                                     </div>
 
-                                    <label class="col-sm-3 control-label no-padding-center">Customer Name</label>
-                                    <div class="col-sm-7">
+                                    <div style="clear:both; height:5px;"></div>
+
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Customer Name</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"   name="cust_name" ng-model="cust_name" ng-readonly="true" />
                                     </div>
 
-                                    <label class="col-sm-3 control-label no-padding-center">Customer Address</label>
-                                    <div class="col-sm-7">
+                                    <div style="clear:both; height:5px;"></div>
+
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Customer Address</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"   name="cust_address" ng-model="cust_address" ng-readonly="true" />
                                     </div>
+                                    <div style="clear:both; height:5px;"></div>
 
-                                    <label class="col-sm-3 control-label no-padding-center">Customer Number</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"   name="cust_number" ng-model="cust_number" ng-readonly="true" />
-                                    </div>
-
-
-                                    <label class="col-sm-3 control-label no-padding-center">Customer Number</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control"  ng-minlength="3" ng-maxlength="15"   name="cust_number" ng-model="cust_number" ng-readonly="true" />
-                                    </div>
-
-                                    <label class="col-sm-3 control-label no-padding-center">Name Matched</label>
-                                    <div class="col-sm-9">
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Name Matched</label>
+                                    <div class="col-sm-8">
                                         <select  name="name_matched" ng-model="name_matched"  class="form-control"  required>
                                             <option value="" selected="selected">Select</option>
-                                            <option value="1">Yes</option>
-                                            <option value="2">No</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
                                         </select>
                                     </div>
+                                    <div style="clear:both; height:5px;"></div>
 
-                                    <label class="col-sm-3 control-label no-padding-center">Photo Matched</label>
-                                    <div class="col-sm-9">
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Photo Matched</label>
+                                    <div class="col-sm-8">
                                         <select  name="photo_matched" ng-model="photo_matched"  class="form-control"  required>
                                             <option value="" selected="selected">Select</option>
-                                            <option value="1">Yes</option>
-                                            <option value="2">No</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
                                         </select>
                                     </div>
+                                    <div style="clear:both; height:5px;"></div>
 
-                                    <label class="col-sm-3 control-label no-padding-center">Sign Matched</label>
-                                    <div class="col-sm-9">
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Sign Matched</label>
+                                    <div class="col-sm-8">
                                         <select  name="sign_matched" ng-model="sign_matched"  class="form-control"  required>
                                             <option value="" selected="selected">Select</option>
-                                            <option value="1">Yes</option>
-                                            <option value="2">No</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
                                         </select>
                                     </div>
+                                    <div style="clear:both; height:5px;"></div>
 
-                                    <label class="col-sm-3 control-label no-padding-center">DOB Matched</label>
-                                    <div class="col-sm-9">
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">DOB Matched</label>
+                                    <div class="col-sm-8">
                                         <select  name="dob_matched" ng-model="dob_matched"  class="form-control"  required>
                                             <option value="" selected="selected">Select</option>
-                                            <option value="1">Yes</option>
-                                            <option value="2">No</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
                                         </select>
                                     </div>
+                                    <div style="clear:both; height:5px;"></div>
 
-                                    <label class="col-sm-3 control-label no-padding-center">Other Reason</label>
-                                    <div class="col-sm-9">
-                                        <select  name="other_reason" ng-model="other_reason"  class="form-control"  required>
-                                            <option value="" selected="selected">Select</option>
-                                            <option value="1">Yes</option>
-                                            <option value="2">No</option>
-                                        </select>
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Other Reason</label>
+                                    <div class="col-sm-8">
+                                            <input name="other_reason" class="form-control" ng-model="other_reason" />
                                     </div>
 
-                                    <div class="col-sm-2">
+                                    <div style="clear:both; height:10px;"></div>
 
-                                        <button ng-click="submit($event)" class="btn btn-azure shiny">Submit</button>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-2" style="float: left;">
+
+                                        <button ng-click="submit($event)" class="btn btn-azure shiny">Accept</button>
+                                            </div>
+                                        <div class="col-sm-2" style="float: right;">
+
+                                        <button ng-click="submit($event)" class="btn btn-azure shiny">Reject</button>
+                                            </div>
 
                                     </div>
 
@@ -150,70 +148,71 @@
                             <!--<div style="clear:both; height:5px;"></div>-->
 
 
-                                <div class="form-group col-sm-12">
+                            <!--<div class="form-group col-sm-12">
 
-                                    <div ng-if="abc" ng-controller="QCInterface">
-
-
-                                        <iframe width="100%" height="400px" ng-src="{{trustSrc(resuri.src)}}"></iframe>
+                                <div ng-if="abc" ng-controller="QCInterface">
 
 
-                                        <div style="clear:both; height:5px;"></div>
-
-                                        <div class="form-group col-sm-7">
+                                    <iframe width="100%" height="400px" ng-src="{{trustSrc(resuri.src)}}"></iframe>
 
 
-                                        <label  class="col-sm-3 control-label no-padding-center">Remarks</label>
+                                    <div style="clear:both; height:5px;"></div>
 
-                                            <div class="col-sm-9">
-                                                <!--<input type="textArea" class="form-control"  ng-minlength="3" ng-maxlength="15"  name="user_comment" ng-model="user_comment" placeholder="Comment" />-->
-                                                  <textarea  class="form-control" style="width: 425px; height: 50px;" name="user_comment" ng-model="user_comment" required></textarea>
-                                            </div>
+                                    <div class="form-group col-sm-7">
 
-                                            </div>
 
-                                        <div class="form-group col-sm-5">
-                                            <label class="col-sm-3 control-label no-padding-center">Rejected Pages</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control"   ng-minlength="3" ng-maxlength="15"  name="rejct_pages" ng-model="rejct_pages" placeholder="comma seprated value exp. 1,2,3,4...." />
+                                    <label  class="col-sm-3 control-label no-padding-center">Remarks</label>
 
-                                            </div>
+                                        <div class="col-sm-9">
+
+                                              <textarea  class="form-control" style="width: 425px; height: 50px;" name="user_comment" ng-model="user_comment" required></textarea>
                                         </div>
-                                       <!-- <pdf-download  url="{{trustSrc(resuri.src)}}">download</pdf-download>-->
-                                      <!--  <a url="{{trustSrc(resuri.src)}}" >download</a>-->
-                                        <div style="clear:both; height:5px;"></div>
 
-                                        <div class="form-group">
-                                            <div class="col-sm-4 col-sm-offset-5 ">
+                                        </div>
 
-                                            <button ng-click="qcOK($event)" class="btn btn-azure shiny"  >OK</button>
-                                            <button ng-click="qcReject($event)" class="btn btn-azure shiny"  >Reject</button>
+                                    <div class="form-group col-sm-5">
+                                        <label class="col-sm-3 control-label no-padding-center">Rejected Pages</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control"   ng-minlength="3" ng-maxlength="15"  name="rejct_pages" ng-model="rejct_pages" placeholder="comma seprated value exp. 1,2,3,4...." />
 
-                                                </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="clear:both; height:5px;"></div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-4 col-sm-offset-5 ">
+
+                                        <button ng-click="qcOK($event)" class="btn btn-azure shiny"  >OK</button>
+                                        <button ng-click="qcReject($event)" class="btn btn-azure shiny"  >Reject</button>
 
                                             </div>
 
+                                        </div>
 
-                                    </div>
 
                                 </div>
 
-
-
-
-                        </form>
-
+                            </div>-->
 
 
 
 
+                    </form>
 
-    </div>
+
+
+
+
+
+</div>
 </div>
 <!-- /Page Body -->
 </div>
 <!-- /Page Content -->
 </div>
+
+            </div>
 <!-- /Page Content -->
 </div>
 <!-- Main Container -->

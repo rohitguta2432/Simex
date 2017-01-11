@@ -15,6 +15,10 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.codec.TIFFLZWDecoder;
 import com.itextpdf.text.pdf.codec.TiffImage;
 import com.itextpdf.text.pdf.codec.TiffWriter;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
 import jdk.internal.org.objectweb.asm.tree.TryCatchBlockNode;
@@ -1619,18 +1623,20 @@ e.printStackTrace();
         String agentNo = "";
         String ftpPath = "";
         String url = "";
+        String spoke="";
         int circleCode = 4;
         String imagePath = "/F6Images/20072016/4/KYCNumber1445/";
         JSONObject json = new JSONObject();
         StringBuffer strbr = new StringBuffer("/");
         String customerNumber = request.getParameter("customer_Number");
+        String scanID=request.getParameter("scanid");
 
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
                 userName = (String) session.getAttribute("name");
                 circleCode = (Integer) session.getAttribute("cirCode");
-
+                spoke=(String)session.getAttribute("spoke_code");
             }
 
             if(circleCode!=0) {
@@ -1697,6 +1703,51 @@ e.printStackTrace();
         //    json.put("url","http:/www.sanface.com/pdf/test.pdf");
         json.put("url", ftpPath);
         return json;
+    }
+
+    public  static JSONObject getDownloadedImages(String customerUID,String path){
+        JSONObject jsonObject=new JSONObject();
+        ArrayList<String> listOfPaths=new ArrayList<String>();
+        customerUID="1000000001";
+        path="D://"+customerUID+"//";
+        File file=new File(path);
+        String[] files=file.list();
+        int len=files.length;
+        if(len>0){
+            for (String filename:files){
+                listOfPaths.add(filename);
+            }
+        }
+        jsonObject.put("count",len+1);
+        jsonObject.put("pathList",listOfPaths);
+        return jsonObject;
+    }
+
+    public static String generatePdfFromSftp(String path,String kycNumber,String localPath,String user,String password,String host){
+        String filename=null;
+        Integer port=null;
+        FileInputStream fis=null;
+        JSch jSch=null;
+        Session session=null;
+        Channel channel=null;
+        ChannelSftp sftpchannel=null;
+        try {
+            jSch = new JSch();
+            session = jSch.getSession(user, host, port);
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.setPassword(password);
+            session.connect();
+            channel=session.openChannel("sftp");
+            channel.connect();
+            sftpchannel = (ChannelSftp) channel;
+            sftpchannel.cd(path);
+
+
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static String generatePdf(String path, String kycNumber, String localPath, String user, String password, String ip) {
@@ -1812,6 +1863,7 @@ e.printStackTrace();
 
 
     }
+
     private String customerCalling(String mobileNo, String agentNumber) {
         String msg = null;
         String result = "done";
@@ -2357,10 +2409,43 @@ e.printStackTrace();
     @ResponseBody
     public JSONObject getCustomerMobileNumber(HttpServletRequest request) {
         HttpSession session=request.getSession();
-        String spokecode=(String)session.getAttribute("spoke_code");
-        return qcStatusService.getMobileNumber(spokecode);
+        String spokecode="DELSOU205";
+        //int imgCount=1;
+        //String spokecode=(String)session.getAttribute("spoke_code"); Currently spoke code set static -JIA Sarai
+        JSONObject jsonObject=new JSONObject();
+        List<String> filepathList=new ArrayList<String>();
+        JSONObject detailJson=qcStatusService.getMobileNumber(spokecode);
+        /*String imagePath=(String)detailJson.get("imagePath");
+        File file=new File(imagePath);
+        File[] files=file.listFiles();
+        for(File filename: files){
+            filepathList.add(filename.getAbsolutePath());
+            imgCount=imgCount+1;
+        }*/
+        //downloadImages(filepathList);
+        String f1="../resources/ftpimages/1000000001/1000000001_1.jpg";
+        String f2="../resources/ftpimages/1000000001/1000000001_2.jpg";
+        filepathList.add(f1);
+        filepathList.add(f2);
+        String mobNo=(String)detailJson.get("mobile");
+        Integer scanid=(Integer)detailJson.get("scanID");
+        String sim_no=(String)detailJson.get("simNo");
+        String username=(String)detailJson.get("name");
+        String address=(String)detailJson.get("address");
+        jsonObject.put("mobile",mobNo);
+        jsonObject.put("scanID",scanid);
+        jsonObject.put("simNo",sim_no);
+        jsonObject.put("name",username);
+        jsonObject.put("address",address);
+        jsonObject.put("imgCount",2);
+        jsonObject.put("filePathList",filepathList);
+        //return qcStatusService.getMobileNumber(spokecode);
+        return jsonObject;
     }
 
+    public static void downloadImages(List<String> imglist){
+
+    }
 
     @RequestMapping(value = "/getInwordFrom", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody

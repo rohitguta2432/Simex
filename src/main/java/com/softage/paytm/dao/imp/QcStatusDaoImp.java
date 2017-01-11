@@ -86,15 +86,28 @@ public class QcStatusDaoImp implements QcStatusDao {
         String customerNumber="";
         String res="";
         int scanid=0;
+        String simNo="";
+        String name="";
+        String address="";
+        String imgPath="";
         try {
             entityManager=entityManagerFactory.createEntityManager();
-            Query query=entityManager.createNativeQuery("{call usp_qcGetMobileNumber(spokeCode)}");
+            Query query=entityManager.createNativeQuery("{call usp_qcGetMobileNumber(?)}");
+            query.setParameter(1,spokeCode);
             Object[] scanObj=(Object[])query.getSingleResult();
             //customerNumber=(String)query.getSingleResult();
             customerNumber=(String)scanObj[0];
             scanid=(Integer)scanObj[1];
+            simNo=(String)scanObj[2];
+            imgPath=(String)scanObj[3];
+            name=(String)scanObj[4];
+            address=(String)scanObj[5];
             jsonObject.put("mobile",customerNumber);
             jsonObject.put("scanID",scanid);
+            jsonObject.put("simNo",simNo);
+            jsonObject.put("name",name);
+            jsonObject.put("address",address);
+            jsonObject.put("imagePath",imgPath);
         }catch (Exception e){
             e.printStackTrace();
         }finally {

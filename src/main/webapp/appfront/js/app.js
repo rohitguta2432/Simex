@@ -930,17 +930,157 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
     //$scope.cust_number='';
    // $scope.url='';
    // $scope.flag=false;
-    $scope.state1=true;
-    $scope.trustSrc = function(src) {
+    var index=0;
+    //$scope.state1=true;
+    /*$scope.trustSrc = function(src) {
         return $sce.trustAsResourceUrl(src);
     }
-
+*/
 
 
     $scope.errormessage = '';
 
 
-    $scope.change=function(){
+    $scope.auditInit=function(){
+
+        $http.get(domain+'/getCustomer')
+            .success(function(data,status,headers,config){
+                $scope.cust_number=data.mobile;
+                $scope.sim_number=data.simNo;
+                $scope.cust_name=data.name;
+                $scope.cust_address=data.address;
+                $scope.scan_id=data.scanID;
+                //$scope.image_path=data.imagePath;
+                $scope.pathList=data.filePathList;
+                $scope.img_count=data.imgCount;
+                $scope.image_source=$scope.pathList[index];
+            })
+            .error(function(data,status,headers,config){
+                alert('Error');
+            })
+
+    }
+
+    $scope.next=function(){
+        var img=$scope.image_source;
+        var imgNumber=img.substring(45,46);
+        if(imgNumber<$scope.img_count){
+            index=index+1;
+            $scope.image_source=$scope.pathList[index];
+        }else{
+            index=$scope.img_count-1;
+            $scope.image_source=$scope.pathList[index];
+        }
+    }
+
+    $scope.previous=function(){
+        var image=$scope.image_source;
+        var imageNumber=image.substring(45,46);
+        if(imageNumber > 1){
+            index=index-1;
+            $scope.image_source=$scope.pathList[index];
+        }else{
+            index=0;
+            $scope.image_source=$scope.pathList[index];
+        }
+    }
+
+    $scope.qcOK= function(ev) {
+        if($scope.cust_number.length == 0 || $scope.cust_number == undefined) {
+            ev.preventDefault();
+        }
+        else
+
+            var data = '&mobileNo=' + $scope.cust_number +'&status=2' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
+
+
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/qcstatus?' + data)
+            .success(function (data, status, headers, config) {
+                //     $scope.url1= data.url;
+
+                console.log("dataa" +$scope.url1);
+                location.reload();
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+
+    };
+
+    $scope.qcReject= function(ev) {
+        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
+            ev.preventDefault();
+        } if($scope.rejct_pages.length == 0 || $scope.rejct_pages == undefined){
+            alert("Please enter Rejected Page")
+            ev.preventDefault();
+        } else if($scope.user_comment.length == 0 || $scope.user_comment == undefined){
+            alert("Please enter Remark");
+            ev.preventDefault();
+        }
+        else
+        //    alert(" Reject "+ $scope.rejct_pages);
+
+            var data = '&mobileNo=' + $scope.cust_number +'&status=3' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
+
+
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/qcstatus?' + data)
+            .success(function (data, status, headers, config) {
+                //    $scope.url1= data.url;
+
+                console.log("dataa" +$scope.url1);
+
+                location.reload();
+
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
+
+                    );
+                }
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+
+    };
+
+    /*$scope.change=function(){
 
         $http.get(domain+'/getCustomer')
             .success(function (data, status, headers, config) {
@@ -971,20 +1111,20 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
 
     };
+*/
 
-
-    var call=function(){
+ /*   var call=function(){
         $scope.change();
     }
 
      call();
 
-
-    $scope.submit = function(ev) {
+*/
+   /* $scope.submit = function(ev) {
         if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
             ev.preventDefault();
         } else
-            var data = 'customer_Number=' + $scope.cust_number;
+            var data = 'customer_Number=' + $scope.cust_number +'&scanid=' + $scope.scan_id;
 
 
            //console.log(data);
@@ -1023,59 +1163,9 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
         };
 
-    $scope.qcReject= function(ev) {
-        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
-            ev.preventDefault();
-        } if($scope.rejct_pages.length == 0 || $scope.rejct_pages == undefined){
-            alert("Please enter Rejected Page")
-            ev.preventDefault();
-        } else if($scope.user_comment.length == 0 || $scope.user_comment == undefined){
-            alert("Please enter Remark");
-            ev.preventDefault();
-        }
-        else
-        //    alert(" Reject "+ $scope.rejct_pages);
-
-        var data = '&mobileNo=' + $scope.cust_number +'&status=3' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
 
 
-        //console.log(data);
-        //alert(" data   "+data);
-
-        $http.get(domain+'/qcstatus?' + data)
-         .success(function (data, status, headers, config) {
-     //    $scope.url1= data.url;
-
-         console.log("dataa" +$scope.url1);
-
-                location.reload();
-
-         if(data.status == 'error'){
-         // alert('Agent Already Registered');
-         $scope.status = '';
-         $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
-
-         $mdDialog.show(
-         $mdDialog.alert()
-         .parent(angular.element(document.querySelector('#popupContainer')))
-         .clickOutsideToClose(true)
-         .title('')
-         .textContent(data.msg)
-         .ariaLabel('Alert Dialog Demo')
-         .ok('OK')
-         .targetEvent(ev)
-
-         );
-         }
-         })
-         .error(function (data, status, headers, config) {
-         alert("failure message: " + JSON.stringify({data: data}));
-         });
-
-
-    };
-
-
+*/
    /* $scope.checkStatus2= function(ev) {
         if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
             ev.preventDefault();
@@ -1096,50 +1186,7 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
 
     };*/
-    $scope.qcOK= function(ev) {
-        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
-            ev.preventDefault();
-        }else if($scope.user_comment.length == 0 || $scope.user_comment == undefined){
-            alert("Please enter Remark");
-            ev.preventDefault();
-        } else
-
-        var data = '&mobileNo=' + $scope.cust_number +'&status=2' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
-
-
-        //console.log(data);
-        //alert(" data   "+data);
-
-        $http.get(domain+'/qcstatus?' + data)
-            .success(function (data, status, headers, config) {
-           //     $scope.url1= data.url;
-
-                console.log("dataa" +$scope.url1);
-                location.reload();
-                if(data.status == 'error'){
-                    // alert('Agent Already Registered');
-                    $scope.status = '';
-                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
-
-                    $mdDialog.show(
-                        $mdDialog.alert()
-                            .parent(angular.element(document.querySelector('#popupContainer')))
-                            .clickOutsideToClose(true)
-                            .title('')
-                            .textContent(data.msg)
-                            .ariaLabel('Alert Dialog Demo')
-                            .ok('OK')
-                            .targetEvent(ev)
-
-                    );
-                }
-            })
-            .error(function (data, status, headers, config) {
-                alert("failure message: " + JSON.stringify({data: data}));
-            });
-
-
-    };
+    /**/
 
 
 }]);

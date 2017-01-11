@@ -53,7 +53,7 @@ public class TblScan {
     }
 
     @Basic
-    @Column(name = "data_date",nullable = false,insertable = true,updatable = true)
+    @Column(name = "request_date",nullable = false,insertable = true,updatable = true)
     public Date getDataDate() {
         return dataDate;
     }
