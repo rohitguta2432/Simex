@@ -186,6 +186,13 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
+    public PaytmMastEntity getPaytmmasterServiceDate(String cust_uid) {
+
+        //int customer=Integer.parseInt(cust_uid);
+        return paytmMasterDao.getpaytmmasterservice(cust_uid);
+    }
+
+    @Override
     public JSONObject telecallingScreen(String userName,int cirCode) {
         JSONObject json=null;
         for(int i=0; i<=5; i++){

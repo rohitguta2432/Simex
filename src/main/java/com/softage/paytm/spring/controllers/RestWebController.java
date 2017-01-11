@@ -7,9 +7,8 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +19,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by SS0085 on 01-02-2016.
@@ -105,7 +103,7 @@ public class RestWebController {
     }*/
 
 
-    @RequestMapping(value = "/UpdateDeviceInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces =MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @RequestMapping(value = "/UpdateDeviceInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String UpdateDeviceInfo(HttpServletRequest request, HttpServletResponse response) {
         String msg = "0";
         PaytmdeviceidinfoEntity paytmdeviceidinfoEntity1 = null;
@@ -136,40 +134,40 @@ public class RestWebController {
 
     @RequestMapping(value = "/AgentLeads", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONObject agentLeads(HttpServletRequest request) {
-        int timedeff=1;
+        int timedeff = 1;
         JSONArray array = new JSONArray();
-        JSONObject leadsObject=new JSONObject();
-        String cuurentDate=null;
-        List<JSONObject> arrayList=new ArrayList();
+        JSONObject leadsObject = new JSONObject();
+        String cuurentDate = null;
+        List<JSONObject> arrayList = new ArrayList();
         try {
             String agentCode = request.getParameter("AgentCode");
             String leaddate = request.getParameter("leaddate");
-            arrayList = leadsService.getAgentLeads(agentCode,timedeff,leaddate);
+            arrayList = leadsService.getAgentLeads(agentCode, timedeff, leaddate);
             array.addAll(arrayList);
 
         } catch (Exception e) {
             logger.error("", e);
         }
-        leadsObject.put("leads",array);
-        leadsObject.put("timediff",1);
-        leadsObject.put("starttime",9);
-        leadsObject.put("endtime",18);
+        leadsObject.put("leads", array);
+        leadsObject.put("timediff", 1);
+        leadsObject.put("starttime", 9);
+        leadsObject.put("endtime", 18);
         return leadsObject;
 
     }
 
 
-    @RequestMapping(value = "/agentNewLeads", method = {RequestMethod.GET, RequestMethod.POST} ,produces ="application/json; charset=utf-8")
+    @RequestMapping(value = "/agentNewLeads", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json; charset=utf-8")
     public JSONArray agentNewLeads(HttpServletRequest request) {
-        int timedeff=1;
+        int timedeff = 1;
         JSONArray array = new JSONArray();
-        JSONObject leadsObject=new JSONObject();
-        String cuurentDate=null;
-        List<JSONObject> arrayList=new ArrayList();
+        JSONObject leadsObject = new JSONObject();
+        String cuurentDate = null;
+        List<JSONObject> arrayList = new ArrayList();
         try {
             String agentCode = request.getParameter("AgentCode");
             String leaddate = request.getParameter("leaddate");
-            arrayList = leadsService.getAgentLeads(agentCode,timedeff,leaddate);
+            arrayList = leadsService.getAgentLeads(agentCode, timedeff, leaddate);
             array.addAll(arrayList);
 
         } catch (Exception e) {
@@ -229,12 +227,12 @@ public class RestWebController {
         String agentCode = request.getParameter("agentcode");
         String customerNumber = request.getParameter("customerNumber");
         String location = request.getParameter("location");
-        String latitude= request.getParameter("latitude");
-        String longitude= request.getParameter("longitude");
-        double lati=Double.parseDouble(latitude);
-        double longi=Double.parseDouble(longitude);
+        String latitude = request.getParameter("latitude");
+        String longitude = request.getParameter("longitude");
+        double lati = Double.parseDouble(latitude);
+        double longi = Double.parseDouble(longitude);
 
-        String result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location,lati,longi);
+        String result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location, lati, longi);
         return result;
     }
 
@@ -251,8 +249,6 @@ public class RestWebController {
         String emailId = "";
         String city = "";
         String pincode = "";
-
-
         try {
             String phoneNumber = request.getParameter("custPhone");
             if (phoneNumber != null) {
@@ -268,21 +264,22 @@ public class RestWebController {
             String custName = request.getParameter("custName");
             String dob = request.getParameter("dob"); // not required
             String custPOICode = request.getParameter("custPOICode"); // not required
-            String custPOINumber = request.getParameter("custPOINumber"); // not required
+            //String custPOINumber = request.getParameter("custPOINumber"); // not required
             String custPOACode = request.getParameter("custPOACode");  // not requied
-            String custPOANumber = request.getParameter("custPOANumber"); // not reqired
+           // String custPOANumber = request.getParameter("custPOANumber"); // not reqired
             String agentCode = request.getParameter("agentCode");
             String gender = request.getParameter("gender");     // not requied
             String jobid = request.getParameter("jobid");
             String remarksCode = request.getParameter("remarksCode");
             String customerId = request.getParameter("customerId");
+            String coStatus = request.getParameter("subscriberType");
+            String Simno = request.getParameter("simno");
             if (!StringUtils.isEmpty(agentCode)) {
                 paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
             }
             if (!StringUtils.isEmpty(jobid)) {
                 allocationMastEntity = allocationService.findByPrimaryKey(Integer.parseInt(jobid));
             }
-
             if (custPOICode != null) {
                 proofMastEntityPOICode = leadsService.findBykey(custPOICode);
             }
@@ -304,12 +301,12 @@ public class RestWebController {
             dataentryEntity.setCusEmailId(emailId);
             dataentryEntity.setCusName(custName);
             dataentryEntity.setCusPincode(pincode);
-            dataentryEntity.setCusPoaNumber(custPOANumber);
-            dataentryEntity.setCusPoiNumber(custPOINumber);
+            //dataentryEntity.setCusPoaNumber(custPOANumber);
+           // dataentryEntity.setCusPoiNumber(custPOINumber);
             dataentryEntity.setCusState(state);
             dataentryEntity.setCustomerPhone(phoneNumber);
             dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
-            dataentryEntity.setDocStatus("");
+            dataentryEntity.setDocStatus(coStatus);
             dataentryEntity.setEntryBy(agentCode);
             dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
             dataentryEntity.setGender(gender);
@@ -370,35 +367,39 @@ public class RestWebController {
 
 
     @RequestMapping(value = "/ValidateCustomerId", method = {RequestMethod.GET, RequestMethod.POST})
-    public String validateCustomer(@RequestParam(value = "jobid") String jobid,
-                                   @RequestParam(value = "customerid") String customerid) {
+    public
+    @ResponseBody
+    JSONObject validateCustomer(@RequestParam(value = "jobid") String jobid,
+                                @RequestParam(value = "customerid") String customerid) {
         String customerPhone = null;
         String result = "false";
-
+        JSONObject jsonObject = new JSONObject();
         try {
-            AllocationMastEntity allocationMastEntity = allocationService.findByPrimaryKey(Integer.parseInt(jobid));
-            if (allocationMastEntity != null) {
-                customerPhone = allocationMastEntity.getCustomerPhone();
-                if (customerPhone != null) {
-                    PaytmMastEntity paytmMastData = paytmMasterService.getPaytmMaster(customerPhone);
-                    if (paytmMastData != null) {
-                        if (paytmMastData.getCustomerId().equals(customerid)) {
-                            result = "true";
-                        }
-                    }
-                }
-            } else {
-                result = "false";
-            }
 
+            if (customerid != null) {
+                PaytmMastEntity paytmMastData = paytmMasterService.getPaytmmasterServiceDate(customerid);
+                if (paytmMastData != null) {
+
+                    jsonObject.put("simType", paytmMastData.getSimType());
+                    jsonObject.put("customeName", paytmMastData.getUsername());
+                    jsonObject.put("coStatus", paytmMastData.getCoStatus());
+                    jsonObject.put("Msg", "Data Found");
+
+
+                    result = "true";
+
+                } else {
+                    jsonObject.put("Msg", "Data Not Found");
+                }
+            }
         } catch (Exception e) {
             logger.error("", e);
             result = "false";
-
         }
 
-        return result;
+        return jsonObject;
     }
+
 
     @RequestMapping(value = "/ftpDocumentDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public String ftpDocumentDetails(HttpServletRequest request) {
@@ -427,22 +428,19 @@ public class RestWebController {
         JSONArray array = new JSONArray();
         List<RemarkMastEntity> remarkMastEntityList = postCallingService.remarkList();
         for (RemarkMastEntity remarkMastEntity : remarkMastEntityList) {
-            if(!remarkMastEntity.getRemarksCode().equalsIgnoreCase("U")){
+            if (!remarkMastEntity.getRemarksCode().equalsIgnoreCase("U")) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("Code", remarkMastEntity.getRemarksCode());
                 jsonObject.put("Text", remarkMastEntity.getRemarksText());
                 array.add(jsonObject);
             }
-
-
-
         }
         return array;
     }
-
     @RequestMapping(value = "/KYCDone", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray kycDone(@RequestParam(value = "AgentCode") String agentCode) {
         JSONArray array = new JSONArray();
+JSONObject result=new JSONObject();
         List<JSONObject> listjson = leadsService.kycDone(agentCode);
         array.addAll(listjson);
         return array;
@@ -469,6 +467,7 @@ public class RestWebController {
             json.put("Applicable", proofMastEntity.getApplicable());
             json.put("Code", proofMastEntity.getIdCode());
             json.put("Text", proofMastEntity.getIdText());
+
             array.add(json);
         }
         //  jsonObject.put("ArrayOfProofType",array);
@@ -586,5 +585,42 @@ public class RestWebController {
 
     }
 
+    @RequestMapping(value = "/UpdatePassword", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject resetPassword(HttpServletRequest request, HttpServletResponse response) {
+        //logger.info("Welcome home! The client locale is {}.", locale);
+        JSONObject jsonObject = new JSONObject();
+        String result = null;
+        try {
+            String user = request.getParameter("userName");
+            String password = request.getParameter("password");
+            Date expireDate = new Date();
+            System.out.println("Current Date   " + expireDate);
+            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+            expireDate.setTime(expireDate.getTime() + expireTime);
 
+            System.out.println("Date After 30 Days  " + expireDate);
+
+
+            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String hashedPassword = passwordEncoder.encode(password);
+            emplogintableEntity.setEmpPassword(password);
+            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+
+            emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+            result = agentPaytmService.updatePassword(emplogintableEntity, password);
+            if (result.equalsIgnoreCase("done")) {
+                result = "success";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        jsonObject.put("status", result);
+
+        return jsonObject;
+    }
 }

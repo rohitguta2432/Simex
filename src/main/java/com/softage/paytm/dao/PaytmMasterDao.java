@@ -23,5 +23,5 @@ public interface PaytmMasterDao extends CrudRepository<PaytmMastEntity,String> {
     public String savePaytmMaster(PaytmMastEntity paytmMastEntity);
     public PaytmMastEntity getPaytmMasterData(int cust_uid);
     public PaytmMastEntity getPaytmMastEntityByDate(String mobile,Date date);
-
+    public PaytmMastEntity getpaytmmasterservice(String cust_uid);
 }

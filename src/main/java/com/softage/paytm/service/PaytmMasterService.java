@@ -24,10 +24,7 @@ public interface PaytmMasterService {
     public List<StateMasterEntity> getStateList();
     public List<CallStatusMasterEntity> getStatusList();
     public void uploadRejectedData(List<Map<String, String>> list,File filename);
-
     public PaytmMastEntity getPaytmMastDatas(int cust_uid);
-
     public PaytmMastEntity getPaytmMasterByDate(String mobileNo,Date date);
-
-
+    public PaytmMastEntity getPaytmmasterServiceDate(String cust_uid);
 }

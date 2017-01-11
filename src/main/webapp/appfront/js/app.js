@@ -1756,8 +1756,6 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','
     var fac1 = {};
 
     fac1.UploadFile = function (file) {
-
-
         var formData = new FormData();
         formData.append("file", file);
 

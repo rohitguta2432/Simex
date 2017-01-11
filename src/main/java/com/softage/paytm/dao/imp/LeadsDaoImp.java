@@ -6,6 +6,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -118,6 +119,7 @@ public class LeadsDaoImp implements LeadsDao {
                     json.put("PinCode", s[5]);
                     json.put("AppointmentDate", s[6]);
                     json.put("AppointmentTime", s[7]);
+                    json.put("simType",s[8]);
                 }
                 arrList.add(json);
 
@@ -173,6 +175,7 @@ public class LeadsDaoImp implements LeadsDao {
     }
 
     @Override
+    @Transactional
     public List<JSONObject> kycDone(String agentCode) {
         EntityManager entityManager = null;
         List list = new ArrayList<>();

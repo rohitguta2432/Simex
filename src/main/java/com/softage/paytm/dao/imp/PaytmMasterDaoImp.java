@@ -6,6 +6,7 @@ import com.softage.paytm.models.AllocationMastEntity;
 import com.softage.paytm.models.CallStatusMasterEntity;
 import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.StateMasterEntity;
+import org.hibernate.Session;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -346,6 +347,40 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         }
         return  paytmMastEntity;
     }
+    public PaytmMastEntity getpaytmmasterservice(String customerId){
+        EntityManager entityManager = null;
+        PaytmMastEntity paytmMastEntityServices=null;
+        Query query=null;
+        try
+        {
+            String likeParameter="%"+customerId+"%";
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "from PaytmMastEntity where str(customerId) like :customer";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("customer",likeParameter);
+            paytmMastEntityServices = (PaytmMastEntity)query.getSingleResult();
+
+
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  paytmMastEntityServices;
+
+    }
+
+
+
+
+
     @Override
     public boolean exists(String s) {
         return false;
