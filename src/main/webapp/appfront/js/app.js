@@ -990,8 +990,11 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
             ev.preventDefault();
         }
         else
-
-            var data = '&mobileNo=' + $scope.cust_number +'&status=2' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
+        var qcStatus='Accepted';
+            var data = 'scanId='+$scope.scan_id +
+                '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
+                +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
+                '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus;
 
 
         //console.log(data);
@@ -1031,17 +1034,14 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
     $scope.qcReject= function(ev) {
         if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
             ev.preventDefault();
-        } if($scope.rejct_pages.length == 0 || $scope.rejct_pages == undefined){
-            alert("Please enter Rejected Page")
-            ev.preventDefault();
-        } else if($scope.user_comment.length == 0 || $scope.user_comment == undefined){
-            alert("Please enter Remark");
-            ev.preventDefault();
         }
         else
         //    alert(" Reject "+ $scope.rejct_pages);
-
-            var data = '&mobileNo=' + $scope.cust_number +'&status=3' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
+        var qcStatus='Rejected';
+            var data = 'scanId='+$scope.scan_id +
+                '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
+                +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
+                '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus;
 
 
         //console.log(data);

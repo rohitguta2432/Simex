@@ -16,7 +16,6 @@ public class TblScan {
     private Date dataDate;
     private String simNo;
     private String imagePath;
-    private String spokeCode;
     private int pageNo;
     private Date createdOn;
     private String createdBy;
@@ -29,6 +28,8 @@ public class TblScan {
     private String spoke_code;
     private Integer circle_code;
     private CircleMastEntity circleMastEntity;
+    private Integer statusID;
+    private AuditStatusEntity auditStatusEntity;
 
 
     @Id
@@ -111,7 +112,7 @@ public class TblScan {
     }
 
     @Basic
-    @Column(name = "audit_status",nullable = false,insertable = true,updatable = false)
+    @Column(name = "audit_status",nullable = false,insertable = false,updatable = false)
     public int getAuditStatus() {
         return auditStatus;
     }
@@ -194,5 +195,16 @@ public class TblScan {
 
     public void setCircleMastEntity(CircleMastEntity circleMastEntity) {
         this.circleMastEntity = circleMastEntity;
+    }
+
+
+    @ManyToOne
+    @JoinColumn(name = "audit_status",referencedColumnName = "status_id")
+    public AuditStatusEntity getAuditStatusEntity() {
+        return auditStatusEntity;
+    }
+
+    public void setAuditStatusEntity(AuditStatusEntity auditStatusEntity) {
+        this.auditStatusEntity = auditStatusEntity;
     }
 }

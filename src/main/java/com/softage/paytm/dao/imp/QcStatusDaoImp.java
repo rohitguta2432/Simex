@@ -1,6 +1,9 @@
 package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.QcStatusDao;
+import com.softage.paytm.models.AuditStatusEntity;
+import com.softage.paytm.models.CircleAuditEntity;
+import com.softage.paytm.models.TblScan;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -181,6 +184,72 @@ public class QcStatusDaoImp implements QcStatusDao {
             }
         }
         return jsonObject;
+    }
+
+    @Override
+    public AuditStatusEntity getAuditStatusEntity(int status) {
+        EntityManager entityManager = null;
+        AuditStatusEntity auditStatusEntity=null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            auditStatusEntity=entityManager.find(AuditStatusEntity.class,status);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+                if(entityManager!=null && entityManager.isOpen()){
+                    entityManager.close();
+                }
+        }
+        return auditStatusEntity;
+    }
+
+    @Override
+    public TblScan getScanTableEntity(int scanid) {
+        EntityManager entityManager=null;
+        TblScan tblScan=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            tblScan=entityManager.find(TblScan.class,scanid);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(entityManager!=null && entityManager.isOpen()){
+                entityManager.close();
+            }
+        }
+        return tblScan;
+    }
+
+    @Override
+    public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity) {
+        EntityManager entityManager=null;
+        EntityTransaction transaction=null;
+        String message=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            transaction=entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(circleAuditEntity);
+            transaction.commit();
+            message="inserted";
+        }catch(Exception e){
+            transaction.rollback();
+            message="error";
+            e.printStackTrace();
+        }
+        finally {
+            if(entityManager!=null && entityManager.isOpen()){
+                entityManager.close();
+            }
+        }
+        return message;
+    }
+
+    @Override
+    public String updateTblScanEntity(TblScan tblScan) {
+        EntityManager entityManager=entityManagerFactory.createEntityManager();
+        return null;
     }
 
 

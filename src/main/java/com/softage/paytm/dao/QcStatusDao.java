@@ -1,6 +1,9 @@
 package com.softage.paytm.dao;
 
 
+import com.softage.paytm.models.AuditStatusEntity;
+import com.softage.paytm.models.CircleAuditEntity;
+import com.softage.paytm.models.TblScan;
 import org.json.simple.JSONObject;
 
 import java.util.List;
@@ -15,4 +18,8 @@ public interface QcStatusDao {
     public JSONObject qcGetMobileNumber(String spokeCode);
     public JSONObject qcGetCustomerDetails(String mobileNum);
     public JSONObject downloadList(String mobileNumber,String todate,String fromdate);
+    public AuditStatusEntity getAuditStatusEntity(int status);
+    public TblScan getScanTableEntity(int scanid);
+    public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity);
+    public String updateTblScanEntity(TblScan tblScan);
 }

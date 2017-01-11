@@ -2370,17 +2370,42 @@ e.printStackTrace();
     public JSONObject getQcStatus(HttpServletRequest request,HttpSession session) {
         String result = "";
         JSONObject jsonObject = new JSONObject();
-        String mobileNo = request.getParameter("mobileNo");
-        String status = request.getParameter("status");
-        String rejectedPage = request.getParameter("rejectedPage");
-        String remarks = request.getParameter("remarks");
-        String message = qcStatusService.updateQcStatus(mobileNo, status, rejectedPage, remarks);
+        String scanid_string=(String)request.getParameter("scanId");
+        int scanid=Integer.parseInt(scanid_string);
+        int audit_status = 0;
+        String name_mathched=(String)request.getParameter("nameMatched");
+        String photo_matched=(String)request.getParameter("photoMatched");
+        String sign_matched=(String)request.getParameter("signMatched");
+        String dob_matched=(String)request.getParameter("dobMatched");
+        String other_reason=(String)request.getParameter("otherReason");
+        String qcStatus=(String)request.getParameter("qcStatus");
+        if(qcStatus.equalsIgnoreCase("Accepted")) {
+             audit_status = 3;
+        }else {
+            audit_status=2;
+        }
+            AuditStatusEntity auditStatusEntity=qcStatusService.getAuditStatusEntity(audit_status);
+            TblScan tblScan=qcStatusService.getScanTableEntity(scanid);
+            CircleAuditEntity circleAuditEntity=new CircleAuditEntity();
+            circleAuditEntity.setNameMatched(name_mathched);
+            circleAuditEntity.setPhotoMatched(photo_matched);
+            circleAuditEntity.setSignMatched(sign_matched);
+            circleAuditEntity.setDobMatched(dob_matched);
+            circleAuditEntity.setOtherReason(other_reason);
+            circleAuditEntity.setTblScan(tblScan);
+        String msg=qcStatusService.saveCircleAuditEntity(circleAuditEntity);
+        if(msg.equalsIgnoreCase("error")){
+
+        }else{
+
+        }
+        //String message = qcStatusService.updateQcStatus(mobileNo, status, rejectedPage, remarks);
         //JSONObject mobileNum=qcStatusService.getMobileNumber();
         // String mobileNumber= (String) mobileNum.get("mobile");
         //  JSONObject imgPath=qcStatusService.qcCustomerDetails(mobileNumber);
         //  String img=(String)imgPath.get(1);
 
-        String message1 = qcStatusService.saveQcStatus(mobileNo, status, rejectedPage, remarks);
+      /*  String message1 = qcStatusService.saveQcStatus(mobileNo, status, rejectedPage, remarks);
         if (message.equals("done") && status.equals("A")) {
             result = "QC status successfully inserted successfully";
             jsonObject.put("result", result);
@@ -2399,7 +2424,7 @@ e.printStackTrace();
             jsonObject.put("mobile", mobileNo);
             // jsonObject.put("imagePath",img);
             logger.info(" Result   " + result);
-        }
+        }*/
         return jsonObject;
 
     }

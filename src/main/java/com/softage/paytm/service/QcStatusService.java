@@ -1,6 +1,9 @@
 package com.softage.paytm.service;
 
 
+import com.softage.paytm.models.AuditStatusEntity;
+import com.softage.paytm.models.CircleAuditEntity;
+import com.softage.paytm.models.TblScan;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -16,6 +19,10 @@ public interface QcStatusService {
     public JSONObject getMobileNumber(String spokeCode);
     public JSONObject qcCustomerDetails(String mobileNumber);
     public JSONObject downloadList(String mobileNumber,String todate,String fromdate);
+    public AuditStatusEntity getAuditStatusEntity(int status);
+    public TblScan getScanTableEntity(int scanID);
+    public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity);
+    public String updateTblSacnEntity(TblScan tblScan);
 
 
 }

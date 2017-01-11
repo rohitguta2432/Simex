@@ -40,6 +40,7 @@
         <class>com.softage.paytm.models.UploadedImagesEntity</class>
             <class>com.softage.paytm.models.AgentLocationEntity</class>
             <class>com.softage.paytm.models.CallTimeDetailsEntity</class>
+            <class>com.softage.paytm.models.AuditStatusEntity</class>
 
         <exclude-unlisted-classes />
 

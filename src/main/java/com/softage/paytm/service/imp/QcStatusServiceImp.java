@@ -3,10 +3,7 @@ package com.softage.paytm.service.imp;
 import com.softage.paytm.dao.AgentPaytmDao;
 import com.softage.paytm.dao.PostCallingDao;
 import com.softage.paytm.dao.QcStatusDao;
-import com.softage.paytm.models.PaytmagententryEntity;
-import com.softage.paytm.models.ProcessMastEntity;
-import com.softage.paytm.models.ReceiverMastEntity;
-import com.softage.paytm.models.SmsSendlogEntity;
+import com.softage.paytm.models.*;
 import com.softage.paytm.service.QcStatusService;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +97,26 @@ public class QcStatusServiceImp implements QcStatusService {
     @Override
     public JSONObject downloadList(String mobileNumber, String todate, String fromdate) {
         return qcStatusDao.downloadList(mobileNumber,todate,fromdate);
+    }
+
+    @Override
+    public AuditStatusEntity getAuditStatusEntity(int status) {
+        return qcStatusDao.getAuditStatusEntity(status);
+    }
+
+    @Override
+    public TblScan getScanTableEntity(int scanID) {
+        return qcStatusDao.getScanTableEntity(scanID);
+    }
+
+    @Override
+    public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity) {
+        return qcStatusDao.saveCircleAuditEntity(circleAuditEntity);
+    }
+
+    @Override
+    public String updateTblSacnEntity(TblScan tblScan) {
+        return null;
     }
 
 
