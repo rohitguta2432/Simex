@@ -15,7 +15,6 @@ public class DataentryEntity implements Serializable {
     private String cusAdd;
     private String cusArea;
     private String cusCity;
-    private String cusDob;
     private String cusEmailId;
     private String cusName;
     private String cusPincode;
@@ -27,13 +26,15 @@ public class DataentryEntity implements Serializable {
     private String docStatus;
     private String entryBy;
     private Timestamp entryDateTime;
-    private String gender;
     private int id;
     private String cusPoiCode;
     private String agentCode;
     private int allocationId;
     private String cusPOACode;
     private String rejectionResion;
+    private String sim_no;
+    private String folder_name;
+    private int page_count;
     private PaytmagententryEntity paytmagententryByAgentCode;
     private AllocationMastEntity allocationMastByAllocationId;
     private ProofMastEntity proofMastByCcusPOACode;
@@ -52,6 +53,22 @@ public class DataentryEntity implements Serializable {
     }
 
     @Basic
+    @Column(name = "folder_name", nullable = true, insertable = true, updatable = true, length = 20)
+    public String getFolder_name (){
+        return folder_name;
+    }
+    public void setFolder_name(String folder_name) {
+        this.folder_name = folder_name;
+    }
+    @Basic
+    @Column(name = "page_count", nullable = false, insertable = true, updatable = true, length =20)
+    public int getPage_count() {
+        return page_count;
+    }
+    public void setPage_count(int page_count) {
+        this.page_count = page_count;
+    }
+    @Basic
     @Column(name = "CusAdd", nullable = false, insertable = true, updatable = true, length = 250)
     public String getCusAdd() {
         return cusAdd;
@@ -62,7 +79,7 @@ public class DataentryEntity implements Serializable {
     }
 
     @Basic
-    @Column(name = "CusArea", nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "CusArea", nullable = false, insertable = true, updatable = true, length = 30)
     public String getCusArea() {
         return cusArea;
     }
@@ -81,18 +98,15 @@ public class DataentryEntity implements Serializable {
         this.cusCity = cusCity;
     }
 
-    @Basic
-    @Column(name = "CusDOB", nullable = false, insertable = true, updatable = true, length = 20)
-    public String getCusDob() {
-        return cusDob;
-    }
-
-    public void setCusDob(String cusDob) {
-        this.cusDob = cusDob;
-    }
 
     @Basic
-    @Column(name = "CusEmailID", nullable = false, insertable = true, updatable = true, length = 70)
+    @Column(name="sim_no", nullable=false,insertable = true,updatable = true,length = 20)
+    public String getSim_no() {return sim_no;}
+
+public void setSim_no(String sim_no) {this.sim_no=sim_no;}
+
+    @Basic
+    @Column(name = "CusEmailID", nullable = true, insertable = true, updatable = true, length = 70)
     public String getCusEmailId() {
         return cusEmailId;
     }
@@ -172,7 +186,7 @@ public class DataentryEntity implements Serializable {
     }
 
     @Basic
-    @Column(name = "DocStatus", nullable = true, insertable = true, updatable = true, length = 1)
+    @Column(name = "DocStatus", nullable = true, insertable = true, updatable = true, length = 50)
     public String getDocStatus() {
         return docStatus;
     }
@@ -201,15 +215,6 @@ public class DataentryEntity implements Serializable {
         this.entryDateTime = entryDateTime;
     }
 
-    @Basic
-    @Column(name = "gender", nullable = false, insertable = true, updatable = true, length = 10)
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
 
     @Id
     @Basic
@@ -235,7 +240,7 @@ public class DataentryEntity implements Serializable {
         if (cusAdd != null ? !cusAdd.equals(that.cusAdd) : that.cusAdd != null) return false;
         if (cusArea != null ? !cusArea.equals(that.cusArea) : that.cusArea != null) return false;
         if (cusCity != null ? !cusCity.equals(that.cusCity) : that.cusCity != null) return false;
-        if (cusDob != null ? !cusDob.equals(that.cusDob) : that.cusDob != null) return false;
+
         if (cusEmailId != null ? !cusEmailId.equals(that.cusEmailId) : that.cusEmailId != null) return false;
         if (cusName != null ? !cusName.equals(that.cusName) : that.cusName != null) return false;
         if (cusPincode != null ? !cusPincode.equals(that.cusPincode) : that.cusPincode != null) return false;
@@ -249,7 +254,7 @@ public class DataentryEntity implements Serializable {
         if (entryBy != null ? !entryBy.equals(that.entryBy) : that.entryBy != null) return false;
         if (entryDateTime != null ? !entryDateTime.equals(that.entryDateTime) : that.entryDateTime != null)
             return false;
-        if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
+
 
         return true;
     }
@@ -260,7 +265,6 @@ public class DataentryEntity implements Serializable {
         result = 31 * result + (cusAdd != null ? cusAdd.hashCode() : 0);
         result = 31 * result + (cusArea != null ? cusArea.hashCode() : 0);
         result = 31 * result + (cusCity != null ? cusCity.hashCode() : 0);
-        result = 31 * result + (cusDob != null ? cusDob.hashCode() : 0);
         result = 31 * result + (cusEmailId != null ? cusEmailId.hashCode() : 0);
         result = 31 * result + (cusName != null ? cusName.hashCode() : 0);
         result = 31 * result + (cusPincode != null ? cusPincode.hashCode() : 0);
@@ -272,7 +276,6 @@ public class DataentryEntity implements Serializable {
         result = 31 * result + (docStatus != null ? docStatus.hashCode() : 0);
         result = 31 * result + (entryBy != null ? entryBy.hashCode() : 0);
         result = 31 * result + (entryDateTime != null ? entryDateTime.hashCode() : 0);
-        result = 31 * result + (gender != null ? gender.hashCode() : 0);
         result = 31 * result + id;
         return result;
     }
@@ -342,7 +345,7 @@ public class DataentryEntity implements Serializable {
         this.cusPOACode = cusPOACode;
     }
     @Basic
-    @Column(name = "rejection_reason",  nullable = false, insertable = false, updatable = false, length = 100)
+    @Column(name = "rejection_reason",  nullable = true, insertable = false, updatable = false, length = 100)
     public String getRejectionResion() {
         return rejectionResion;
     }
@@ -352,7 +355,7 @@ public class DataentryEntity implements Serializable {
     }
 
     @ManyToOne
-    @JoinColumn(name = "rejection_reason", referencedColumnName = "Reason_code", nullable = false)
+    @JoinColumn(name = "rejection_reason", referencedColumnName = "Reason_code", nullable = true)
     public ReasonMastEntity getReasonMastByRejectionResion() {
         return reasonMastByRejectionResion;
     }

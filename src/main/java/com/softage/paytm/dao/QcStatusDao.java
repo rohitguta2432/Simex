@@ -22,4 +22,5 @@ public interface QcStatusDao {
     public TblScan getScanTableEntity(int scanid);
     public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity);
     public String updateTblScanEntity(TblScan tblScan);
+    public TblScan getScanDetails(String customerphone);
 }

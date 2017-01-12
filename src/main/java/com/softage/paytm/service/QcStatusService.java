@@ -23,6 +23,6 @@ public interface QcStatusService {
     public TblScan getScanTableEntity(int scanID);
     public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity);
     public String updateTblSacnEntity(TblScan tblScan);
-
+    public TblScan getUserScanDetails(String  customerphone);
 
 }

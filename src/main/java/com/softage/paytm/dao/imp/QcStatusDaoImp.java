@@ -3,6 +3,7 @@ package com.softage.paytm.dao.imp;
 import com.softage.paytm.dao.QcStatusDao;
 import com.softage.paytm.models.AuditStatusEntity;
 import com.softage.paytm.models.CircleAuditEntity;
+import com.softage.paytm.models.PaytmMastEntity;
 import com.softage.paytm.models.TblScan;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -250,6 +251,35 @@ public class QcStatusDaoImp implements QcStatusDao {
     public String updateTblScanEntity(TblScan tblScan) {
         EntityManager entityManager=entityManagerFactory.createEntityManager();
         return null;
+    }
+
+    @Override
+    public TblScan getScanDetails(String customerphone) {
+
+        EntityManager entityManager = null;
+        TblScan tblScan=null;
+        Query query=null;
+        try
+        {
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select cust from TblScan cust where cust.customerNumber=:customerphone";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("customerphone",customerphone);
+            tblScan = (TblScan)query.getSingleResult();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return tblScan;
+
+
     }
 
 

@@ -119,5 +119,10 @@ public class QcStatusServiceImp implements QcStatusService {
         return null;
     }
 
+    @Override
+    public TblScan getUserScanDetails(String customerphone) {
+        return qcStatusDao.getScanDetails(customerphone);
+    }
+
 
 }

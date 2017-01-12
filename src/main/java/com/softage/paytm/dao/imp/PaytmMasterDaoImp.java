@@ -355,7 +355,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         {
             String likeParameter="%"+customerId+"%";
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "from PaytmMastEntity where str(customerId) like :customer";
+            String strQuery = "from PaytmMastEntity where str(cust_uid) like :customer";
             query=entityManager.createQuery(strQuery);
             query.setParameter("customer",likeParameter);
             paytmMastEntityServices = (PaytmMastEntity)query.getSingleResult();
