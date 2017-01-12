@@ -9,7 +9,7 @@
                     <div class="widget-body" style="overflow:hidden;">
 
                 <!--<iframe width="100%" height="400px" ng-src="D:/1000000001/1000000001_11.jpg"></iframe>-->
-                        <div style="overflow: auto;max-height: 400px;width: 100%" ng-model="image_source">
+                        <div style="overflow: auto; height: 400px;width: 100%" ng-model="image_source">
                             <!--<img src="../resources/ftpimages/1000000001/1000000001_1.jpg" ng-model="image_source">-->
                             <img src="{{image_source}}">
                         </div>
@@ -134,11 +134,11 @@
                                     <div class="col-sm-12">
                                         <div class="col-sm-2" style="float: left;">
 
-                                        <button ng-click="submit($event)" class="btn btn-azure shiny">Accept</button>
+                                        <button ng-click="qcOK()" class="btn btn-azure shiny">Accept</button>
                                             </div>
                                         <div class="col-sm-2" style="float: right;">
 
-                                        <button ng-click="submit($event)" class="btn btn-azure shiny">Reject</button>
+                                        <button ng-click="qcReject()" class="btn btn-azure shiny">Reject</button>
                                             </div>
 
                                     </div>

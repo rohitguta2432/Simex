@@ -22,7 +22,12 @@ public interface QcStatusService {
     public AuditStatusEntity getAuditStatusEntity(int status);
     public TblScan getScanTableEntity(int scanID);
     public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity);
+
     public String updateTblSacnEntity(TblScan tblScan);
     public TblScan getUserScanDetails(String  customerphone);
+
+    public String updateTblSacnEntity(TblScan tblScan,AuditStatusEntity auditStatusEntity);
+
+
 
 }

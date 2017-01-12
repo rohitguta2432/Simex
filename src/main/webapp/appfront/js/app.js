@@ -963,7 +963,9 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
     $scope.next=function(){
         var img=$scope.image_source;
-        var imgNumber=img.substring(45,46);
+        var substringIndex=img.lastIndexOf("_");
+        var extensioinIndex=img.lastIndexOf(".");
+        var imgNumber=img.substring(substringIndex+1,extensioinIndex);
         if(imgNumber<$scope.img_count){
             index=index+1;
             $scope.image_source=$scope.pathList[index];
@@ -975,7 +977,9 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
     $scope.previous=function(){
         var image=$scope.image_source;
-        var imageNumber=image.substring(45,46);
+        var substringIndex=image.lastIndexOf("_");
+        var extensioinIndex=image.lastIndexOf(".");
+        var imageNumber=image.substring(substringIndex+1,extensioinIndex);
         if(imageNumber > 1){
             index=index-1;
             $scope.image_source=$scope.pathList[index];
@@ -986,10 +990,6 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
     }
 
     $scope.qcOK= function(ev) {
-        if($scope.cust_number.length == 0 || $scope.cust_number == undefined) {
-            ev.preventDefault();
-        }
-        else
         var qcStatus='Accepted';
             var data = 'scanId='+$scope.scan_id +
                 '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
@@ -1006,7 +1006,8 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
                 console.log("dataa" +$scope.url1);
                 location.reload();
-                if(data.status == 'error'){
+                alert(data.message);
+                /*if(data.status == 'error'){
                     // alert('Agent Already Registered');
                     $scope.status = '';
                     $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
@@ -1022,7 +1023,7 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
                             .targetEvent(ev)
 
                     );
-                }
+                }*/
             })
             .error(function (data, status, headers, config) {
                 alert("failure message: " + JSON.stringify({data: data}));
@@ -1032,10 +1033,6 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
     };
 
     $scope.qcReject= function(ev) {
-        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
-            ev.preventDefault();
-        }
-        else
         //    alert(" Reject "+ $scope.rejct_pages);
         var qcStatus='Rejected';
             var data = 'scanId='+$scope.scan_id +
@@ -1054,8 +1051,8 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
                 console.log("dataa" +$scope.url1);
 
                 location.reload();
-
-                if(data.status == 'error'){
+                alert(data.message);
+                /*if(data.status == 'error'){
                     // alert('Agent Already Registered');
                     $scope.status = '';
                     $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
@@ -1071,7 +1068,7 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
                             .targetEvent(ev)
 
                     );
-                }
+                }*/
             })
             .error(function (data, status, headers, config) {
                 alert("failure message: " + JSON.stringify({data: data}));

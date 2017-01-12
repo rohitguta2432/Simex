@@ -115,8 +115,8 @@ public class QcStatusServiceImp implements QcStatusService {
     }
 
     @Override
-    public String updateTblSacnEntity(TblScan tblScan) {
-        return null;
+    public String updateTblSacnEntity(TblScan tblScan,AuditStatusEntity auditStatusEntity) {
+        return qcStatusDao.updateTblScanEntity(tblScan,auditStatusEntity);
     }
 
     @Override

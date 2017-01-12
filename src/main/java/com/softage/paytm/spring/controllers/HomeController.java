@@ -2379,6 +2379,7 @@ e.printStackTrace();
         String dob_matched=(String)request.getParameter("dobMatched");
         String other_reason=(String)request.getParameter("otherReason");
         String qcStatus=(String)request.getParameter("qcStatus");
+        String updateStatusMessage=null;
         if(qcStatus.equalsIgnoreCase("Accepted")) {
              audit_status = 3;
         }else {
@@ -2395,9 +2396,15 @@ e.printStackTrace();
             circleAuditEntity.setTblScan(tblScan);
         String msg=qcStatusService.saveCircleAuditEntity(circleAuditEntity);
         if(msg.equalsIgnoreCase("error")){
-
+          updateStatusMessage="Unable to insert the audit values";
         }else{
-
+            updateStatusMessage=qcStatusService.updateTblSacnEntity(tblScan,auditStatusEntity);
+            if(updateStatusMessage.equalsIgnoreCase("success")){
+                jsonObject.put("message","Successfully updated audit status");
+            }
+            else{
+                jsonObject.put("message","Unable to update the audit status");
+            }
         }
         //String message = qcStatusService.updateQcStatus(mobileNo, status, rejectedPage, remarks);
         //JSONObject mobileNum=qcStatusService.getMobileNumber();
@@ -2440,18 +2447,20 @@ e.printStackTrace();
         JSONObject jsonObject=new JSONObject();
         List<String> filepathList=new ArrayList<String>();
         JSONObject detailJson=qcStatusService.getMobileNumber(spokecode);
-        /*String imagePath=(String)detailJson.get("imagePath");
-        File file=new File(imagePath);
-        File[] files=file.listFiles();
-        for(File filename: files){
-            filepathList.add(filename.getAbsolutePath());
-            imgCount=imgCount+1;
-        }*/
-        //downloadImages(filepathList);
-        String f1="../resources/ftpimages/1000000001/1000000001_1.jpg";
+        String imagePath=(String)detailJson.get("imagePath");
+        Integer custUID=(Integer)detailJson.get("custUID");
+        Integer imgCount=(Integer)detailJson.get("imgCount");
+        String projectPath=request.getServletContext().getRealPath("/");
+        String localPath=projectPath+"/resources/ftpimages/"+custUID;
+/*        String f1="../resources/ftpimages/1000000001/1000000001_1.jpg";
         String f2="../resources/ftpimages/1000000001/1000000001_2.jpg";
         filepathList.add(f1);
-        filepathList.add(f2);
+        filepathList.add(f2);*/
+        downloadImages(imagePath,localPath);
+        for(int i=0;i<imgCount;i++){
+            String filepath="../resources/ftpimages/"+custUID+"/"+custUID+"_"+(i+1)+".jpg";
+            filepathList.add(filepath);
+        }
         String mobNo=(String)detailJson.get("mobile");
         Integer scanid=(Integer)detailJson.get("scanID");
         String sim_no=(String)detailJson.get("simNo");
@@ -2462,13 +2471,59 @@ e.printStackTrace();
         jsonObject.put("simNo",sim_no);
         jsonObject.put("name",username);
         jsonObject.put("address",address);
-        jsonObject.put("imgCount",2);
+        jsonObject.put("imgCount",imgCount);
         jsonObject.put("filePathList",filepathList);
+        jsonObject.put("custuid",custUID);
         //return qcStatusService.getMobileNumber(spokecode);
         return jsonObject;
     }
 
-    public static void downloadImages(List<String> imglist){
+    public static void downloadImages(String imagePath,String localpath){
+        String sftpHost="172.25.37.216";
+        Integer sftpPort=22;
+        String sftpUsername="soft";
+        String sftpPassword="$oFt@ge@123456";
+        //imagePath="/soft/home/simex";check how to handle the path
+        Session session=null;
+        Channel channel=null;
+        ChannelSftp channelSftp=null;
+        try{
+            JSch jSch=new JSch();
+            session=jSch.getSession(sftpUsername,sftpHost,sftpPort);
+            session.setPassword(sftpPassword);
+            Properties config=new Properties();
+            config.put("StrictHostKeyChecking","no");
+            session.setConfig(config);
+            session.connect();
+            channel=session.openChannel("sftp");
+            channel.connect();
+            channelSftp=(ChannelSftp)channel;
+            channelSftp.cd(imagePath);
+            //check whether path returned is full or just file name & If list is file type or string
+            List<ChannelSftp.LsEntry> listOfImages=channelSftp.ls(imagePath);
+            for(ChannelSftp.LsEntry lsEntry : listOfImages){
+                String filename=lsEntry.getFilename();
+                byte[] buffer=new byte[1024];
+                BufferedInputStream bis=new BufferedInputStream(channelSftp.get(filename));
+                File file=new File(localpath);
+                if(!file.isDirectory()){
+                    file.mkdir();
+                }
+                    File fileToBeDownloaded=new File(localpath+"//"+filename);
+                    OutputStream os=new FileOutputStream(fileToBeDownloaded);
+                    BufferedOutputStream bos=new BufferedOutputStream(os);
+                    int readCount;
+                    while((readCount=bis.read(buffer))>0){
+                        System.out.println("Writing...");
+                        bos.write(buffer,0,readCount);
+                    }
+                    bis.close();
+                    bos.close();
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 

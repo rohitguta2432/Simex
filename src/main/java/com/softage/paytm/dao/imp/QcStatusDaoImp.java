@@ -94,6 +94,8 @@ public class QcStatusDaoImp implements QcStatusDao {
         String name="";
         String address="";
         String imgPath="";
+        Integer cust_uid=0;
+        Integer imageCount=0;
         try {
             entityManager=entityManagerFactory.createEntityManager();
             Query query=entityManager.createNativeQuery("{call usp_qcGetMobileNumber(?)}");
@@ -106,12 +108,16 @@ public class QcStatusDaoImp implements QcStatusDao {
             imgPath=(String)scanObj[3];
             name=(String)scanObj[4];
             address=(String)scanObj[5];
+            cust_uid=(Integer)scanObj[6];
+            imageCount=(Integer)scanObj[7];
             jsonObject.put("mobile",customerNumber);
             jsonObject.put("scanID",scanid);
             jsonObject.put("simNo",simNo);
             jsonObject.put("name",name);
             jsonObject.put("address",address);
             jsonObject.put("imagePath",imgPath);
+            jsonObject.put("custUID",cust_uid);
+            jsonObject.put("imgCount",imageCount);
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -248,9 +254,29 @@ public class QcStatusDaoImp implements QcStatusDao {
     }
 
     @Override
-    public String updateTblScanEntity(TblScan tblScan) {
-        EntityManager entityManager=entityManagerFactory.createEntityManager();
-        return null;
+    public String updateTblScanEntity(TblScan tblScan,AuditStatusEntity auditStatusEntity) {
+        EntityManager entityManager=null;
+        EntityTransaction transaction=null;
+        String message=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            transaction=entityManager.getTransaction();
+            transaction.begin();
+            tblScan.setAuditStatusEntity(auditStatusEntity);
+            transaction.commit();
+            message="success";
+        }catch (Exception e){
+            transaction.rollback();
+            message="error";
+            e.printStackTrace();
+        }
+        finally {
+            if(entityManager!=null && entityManager.isOpen()){
+                entityManager.close();
+            }
+        }
+
+        return message;
     }
 
     @Override
