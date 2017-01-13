@@ -82,6 +82,9 @@ class HomeController {
     @Autowired
     private BatchService batchService;
 
+    @Autowired
+    private AoAuditService aoAuditService;
+
     /**
      * Simply selects the home view to render by returning its name.
      */
@@ -2401,6 +2404,7 @@ e.printStackTrace();
             tblScan.setAuditStatusEntity(auditStatusEntity);
             updateStatusMessage=qcStatusService.updateTblSacnEntity(tblScan);
             if(updateStatusMessage.equalsIgnoreCase("success")){
+
                 jsonObject.put("message","Successfully updated audit status");
             }
             else{
@@ -2448,35 +2452,43 @@ e.printStackTrace();
         JSONObject jsonObject=new JSONObject();
         List<String> filepathList=new ArrayList<String>();
         JSONObject detailJson=qcStatusService.getMobileNumber(spokecode);
-        String imagePath=(String)detailJson.get("imagePath");
-        Integer custUID=(Integer)detailJson.get("custUID");
-        Integer imgCount=(Integer)detailJson.get("imgCount");
-        String projectPath=request.getServletContext().getRealPath("/");
-        String localPath=projectPath+"/resources/ftpimages/"+custUID;
+        String status=(String)detailJson.get("status");
+        if (status.equals("Unavailable")){
+            jsonObject.put("auditStatus","No Images To Audit");
+        }
+        else {
+            jsonObject.put("auditStatus", "Available");
+        }
+            String imagePath = (String) detailJson.get("imagePath");
+            Integer custUID = (Integer) detailJson.get("custUID");
+            Integer imgCount = (Integer) detailJson.get("imgCount");
+            String projectPath = request.getServletContext().getRealPath("/");
+            String localPath = projectPath + "/resources/ftpimages/" + custUID;
 /*        String f1="../resources/ftpimages/1000000001/1000000001_1.jpg";
         String f2="../resources/ftpimages/1000000001/1000000001_2.jpg";
         filepathList.add(f1);
         filepathList.add(f2);*/
-        downloadImages(imagePath,localPath);
-        for(int i=0;i<imgCount;i++){
-            String filepath="../resources/ftpimages/"+custUID+"/"+custUID+"_"+(i+1)+".jpg";
-            filepathList.add(filepath);
-        }
-        String mobNo=(String)detailJson.get("mobile");
-        Integer scanid=(Integer)detailJson.get("scanID");
-        String sim_no=(String)detailJson.get("simNo");
-        String username=(String)detailJson.get("name");
-        String address=(String)detailJson.get("address");
-        jsonObject.put("mobile",mobNo);
-        jsonObject.put("scanID",scanid);
-        jsonObject.put("simNo",sim_no);
-        jsonObject.put("name",username);
-        jsonObject.put("address",address);
-        jsonObject.put("imgCount",imgCount);
-        jsonObject.put("filePathList",filepathList);
-        jsonObject.put("custuid",custUID);
-        //return qcStatusService.getMobileNumber(spokecode);
-        return jsonObject;
+            downloadImages(imagePath, localPath);
+            for (int i = 0; i < imgCount; i++) {
+                String filepath = "../resources/ftpimages/" + custUID + "/" + custUID + "_" + (i + 1) + ".jpg";
+                filepathList.add(filepath);
+            }
+            String mobNo = (String) detailJson.get("mobile");
+            Integer scanid = (Integer) detailJson.get("scanID");
+            String sim_no = (String) detailJson.get("simNo");
+            String username = (String) detailJson.get("name");
+            String address = (String) detailJson.get("address");
+            jsonObject.put("mobile", mobNo);
+            jsonObject.put("scanID", scanid);
+            jsonObject.put("simNo", sim_no);
+            jsonObject.put("name", username);
+            jsonObject.put("address", address);
+            jsonObject.put("imgCount", imgCount);
+            jsonObject.put("filePathList", filepathList);
+            jsonObject.put("custuid", custUID);
+
+            //return qcStatusService.getMobileNumber(spokecode);
+            return jsonObject;
     }
 
     public static void downloadImages(String imagePath,String localpath){
@@ -2526,6 +2538,166 @@ e.printStackTrace();
             e.printStackTrace();
         }
 
+    }
+
+    @RequestMapping(value = "/getCustomerDetailsForAoAudit",method = {RequestMethod.POST,RequestMethod.GET})
+    @ResponseBody
+    public JSONObject getCustomerDetailsForAoAudit(HttpServletRequest request){
+        JSONObject jsonObject=new JSONObject();
+        HttpSession session=request.getSession();
+        //String spokecode=(String)session.getAttribute("spoke_code"); Currently spoke code set static -JIA Sarai
+        String spokecode="DELSOU205";
+        List<String> filepathList=new ArrayList<String>();
+        JSONObject detailJson=aoAuditService.getAoAuditDetails(spokecode);
+        String status=(String)detailJson.get("status");
+        if (status.equals("Unavailable")){
+            jsonObject.put("auditStatus","No Images To Audit");
+        }
+        else {
+            jsonObject.put("auditStatus", "Available");
+        }
+       // String imagePath = (String) detailJson.get("imagePath");
+        Integer custUID = (Integer) detailJson.get("custUID");
+        Integer imgCount = (Integer) detailJson.get("imgCount");
+        String projectPath = request.getServletContext().getRealPath("/");
+        String localPath = projectPath + "/resources/ftpimages/" + custUID;
+
+
+        for (int i = 0; i < imgCount; i++) {
+            String filepath = "../resources/ftpimages/" + custUID + "/" + custUID + "_" + (i + 1) + ".jpg";
+            filepathList.add(filepath);
+        }
+        String mobNo = (String) detailJson.get("mobile");
+        Integer scanid = (Integer) detailJson.get("scanID");
+        String sim_no = (String) detailJson.get("simNo");
+        String username = (String) detailJson.get("name");
+        String address = (String) detailJson.get("address");
+        jsonObject.put("mobile", mobNo);
+        jsonObject.put("scanID", scanid);
+        jsonObject.put("simNo", sim_no);
+        jsonObject.put("name", username);
+        jsonObject.put("address", address);
+        jsonObject.put("imgCount", imgCount);
+        jsonObject.put("filePathList", filepathList);
+        jsonObject.put("custuid", custUID);
+        return jsonObject;
+    }
+
+    @RequestMapping(value = "/aoAuditStatus",method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    public JSONObject aoAuditQcStatus(HttpServletRequest request){
+        String result = "";
+        JSONObject jsonObject = new JSONObject();
+        String scanid_string=(String)request.getParameter("scanId");
+        int scanid=Integer.parseInt(scanid_string);
+        int audit_status = 0;
+        String custUid=(String)request.getParameter("custUID");
+        String name_mathched=(String)request.getParameter("nameMatched");
+        String photo_matched=(String)request.getParameter("photoMatched");
+        String sign_matched=(String)request.getParameter("signMatched");
+        String dob_matched=(String)request.getParameter("dobMatched");
+        String other_reason=(String)request.getParameter("otherReason");
+        String qcStatus=(String)request.getParameter("qcStatus");
+        String updateStatusMessage=null;
+        if(qcStatus.equalsIgnoreCase("Accepted")) {
+            audit_status = 5;
+        }else {
+            audit_status=4;
+        }
+        AuditStatusEntity auditStatusEntity=qcStatusService.getAuditStatusEntity(audit_status);
+        TblScan tblScan=qcStatusService.getScanTableEntity(scanid);
+        AoAuditEntity aoAuditEntity=new AoAuditEntity();
+        aoAuditEntity.setPhotoMatched(photo_matched);
+        aoAuditEntity.setNameMatched(name_mathched);
+        aoAuditEntity.setDobMatched(dob_matched);
+        aoAuditEntity.setSignMatched(sign_matched);
+        aoAuditEntity.setOtherReason(other_reason);
+        String msg=aoAuditService.saveAuditEntity(aoAuditEntity);
+        if(msg.equalsIgnoreCase("error")){
+            updateStatusMessage="Unable to insert the audit values";
+        }else{
+            String filepath=request.getServletContext().getRealPath("/");
+            String folderPath=filepath+"/resources/ftpimages/" + custUid;
+            File file=new File(folderPath);
+            if (file.isDirectory()){
+                file.delete();
+            }
+            tblScan.setAuditStatusEntity(auditStatusEntity);
+            updateStatusMessage=qcStatusService.updateTblSacnEntity(tblScan);
+            if(updateStatusMessage.equalsIgnoreCase("success")){
+
+                jsonObject.put("message","Successfully updated audit status");
+            }
+            else{
+                jsonObject.put("message","Unable to update the audit status");
+            }
+        }
+        return  jsonObject;
+    }
+
+    @RequestMapping(value = "/getFormRecievingDetails",method = {RequestMethod.GET,RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getFormRecievingDetails(HttpServletRequest request){
+        JSONObject jsonObject=new JSONObject();
+        String customer_number=(String)request.getParameter("mobNo");
+        JSONObject resultJson=aoAuditService.getFormRecievingDetails(customer_number);
+        String bucket=null;
+        String status=null;
+        Integer statusID=(Integer)resultJson.get("status");
+        Integer scanID=(Integer)resultJson.get("scanID");
+        if(statusID==2){
+            bucket="Circle Audit";
+            status="Rejected";
+            jsonObject.put("bucket",bucket);
+            jsonObject.put("status",status);
+        }
+        else if(statusID==3){
+            bucket="Circle Audit";
+            status="Accepted";
+            jsonObject.put("bucket",bucket);
+            jsonObject.put("status",status);
+        }
+        else if(statusID==4){
+            bucket="Ao Audit";
+            status="Rejected";
+            jsonObject.put("bucket",bucket);
+            jsonObject.put("status",status);
+        }
+        else if(statusID==5){
+            bucket="Ao Audit";
+            status="Accepted";
+            jsonObject.put("bucket",bucket);
+            jsonObject.put("status",status);
+        }
+        else{
+            bucket="Pending";
+            status="Pending";
+            jsonObject.put("bucket",bucket);
+            jsonObject.put("status",status);
+        }
+        jsonObject.put("simNum",resultJson.get("simNo"));
+        jsonObject.put("address",resultJson.get("address"));
+        jsonObject.put("name",resultJson.get("name"));
+        jsonObject.put("scanID",scanID);
+        return jsonObject;
+    }
+
+    @RequestMapping(value = "/formRecievingSubmit",method = {RequestMethod.POST,RequestMethod.GET})
+    @ResponseBody
+    public JSONObject formRecievingSubmit(HttpServletRequest request){
+        JSONObject jsonObject=new JSONObject();
+        String scanID=(String)request.getParameter("scanID");
+        Integer scanid=Integer.parseInt(scanID);
+        TblScan scanEntity=qcStatusService.getScanTableEntity(scanid);
+        AuditStatusEntity auditStatusEntity=qcStatusService.getAuditStatusEntity(6);
+        scanEntity.setAuditStatusEntity(auditStatusEntity);
+        String message=qcStatusService.updateTblSacnEntity(scanEntity);
+        if(message.equalsIgnoreCase("success")){
+            jsonObject.put("result","Successfully Updated");
+        }else{
+            jsonObject.put("result","Error in updating status");
+        }
+        return  jsonObject;
     }
 
     @RequestMapping(value = "/getInwordFrom", method = {RequestMethod.GET, RequestMethod.POST})

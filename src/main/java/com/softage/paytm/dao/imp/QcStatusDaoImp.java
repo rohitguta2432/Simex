@@ -102,22 +102,28 @@ public class QcStatusDaoImp implements QcStatusDao {
             query.setParameter(1,spokeCode);
             Object[] scanObj=(Object[])query.getSingleResult();
             //customerNumber=(String)query.getSingleResult();
-            customerNumber=(String)scanObj[0];
-            scanid=(Integer)scanObj[1];
-            simNo=(String)scanObj[2];
-            imgPath=(String)scanObj[3];
-            name=(String)scanObj[4];
-            address=(String)scanObj[5];
-            cust_uid=(Integer)scanObj[6];
-            imageCount=(Integer)scanObj[7];
-            jsonObject.put("mobile",customerNumber);
-            jsonObject.put("scanID",scanid);
-            jsonObject.put("simNo",simNo);
-            jsonObject.put("name",name);
-            jsonObject.put("address",address);
-            jsonObject.put("imagePath",imgPath);
-            jsonObject.put("custUID",cust_uid);
-            jsonObject.put("imgCount",imageCount);
+            if(scanObj==null){
+                jsonObject.put("status","Unavailable");
+            }
+            else {
+                customerNumber = (String) scanObj[0];
+                scanid = (Integer) scanObj[1];
+                simNo = (String) scanObj[2];
+                imgPath = (String) scanObj[3];
+                name = (String) scanObj[4];
+                address = (String) scanObj[5];
+                cust_uid = (Integer) scanObj[6];
+                imageCount = (Integer) scanObj[7];
+                jsonObject.put("mobile", customerNumber);
+                jsonObject.put("scanID", scanid);
+                jsonObject.put("simNo", simNo);
+                jsonObject.put("name", name);
+                jsonObject.put("address", address);
+                jsonObject.put("imagePath", imgPath);
+                jsonObject.put("custUID", cust_uid);
+                jsonObject.put("imgCount", imageCount);
+                jsonObject.put("status","Available");
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {

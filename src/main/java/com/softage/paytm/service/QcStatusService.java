@@ -26,4 +26,5 @@ public interface QcStatusService {
     public TblScan getUserScanDetails(int cust_uid);
     public String updateTblSacnEntity(TblScan tblScan);
     public String SaveScanimages(TblScan scantbl);
+
 }

@@ -84,7 +84,16 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'CompanyRegistration/companyRegistration.html',
             controller:'companyRegistration'
 
-        }).state('projectRegistration', {
+        }).state('AoAudit',{
+            url:'/AoAudit',
+            templateUrl:'AoAudit/aoaudit.html',
+            controller:'AoAudit'
+        }).state('FormRecieving',{
+            url:'/FormRecieving',
+            templateUrl:'FormRecieving/formRecieving',
+            controller:'FormRecieving'
+        })
+        .state('projectRegistration', {
             url: '/projectRegistration',
             templateUrl: 'projectRegistration/projectRegistration.html',
             controller:'projectRegistration'
@@ -942,9 +951,11 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
 
     $scope.auditInit=function(){
-
         $http.get(domain+'/getCustomer')
             .success(function(data,status,headers,config){
+                if(data.auditStatus=='No Images To Audit'){
+                    alert('No Images To Audit')
+                }else{
                 $scope.cust_number=data.mobile;
                 $scope.sim_number=data.simNo;
                 $scope.cust_name=data.name;
@@ -954,6 +965,7 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
                 $scope.pathList=data.filePathList;
                 $scope.img_count=data.imgCount;
                 $scope.image_source=$scope.pathList[index];
+                }
             })
             .error(function(data,status,headers,config){
                 alert('Error');
@@ -1189,6 +1201,165 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 }]);
 
 
+//QCInterface changed to CircleAudit By Arpan
+routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
+
+
+    var index=0;
+
+
+
+    $scope.errormessage = '';
+
+
+    $scope.AoAuditInit=function(){
+        $http.get(domain+'/getCustomerDetailsForAoAudit')
+            .success(function(data,status,headers,config){
+                alert(data.auditStatus);
+                if(data.auditStatus=='No Images To Audit'){
+                    alert('No Images To Audit')
+                }else{
+                    $scope.cust_number=data.mobile;
+                    $scope.sim_number=data.simNo;
+                    $scope.cust_name=data.name;
+                    $scope.cust_address=data.address;
+                    $scope.scan_id=data.scanID;
+                    //$scope.image_path=data.imagePath;
+                    $scope.pathList=data.filePathList;
+                    $scope.img_count=data.imgCount;
+                    $scope.image_source=$scope.pathList[index];
+                    $scope.custUID=data.custuid;
+                }
+            })
+            .error(function(data,status,headers,config){
+                alert('Error');
+            })
+
+    }
+
+    $scope.next=function(){
+        var img=$scope.image_source;
+        var substringIndex=img.lastIndexOf("_");
+        var extensioinIndex=img.lastIndexOf(".");
+        var imgNumber=img.substring(substringIndex+1,extensioinIndex);
+        if(imgNumber<$scope.img_count){
+            index=index+1;
+            $scope.image_source=$scope.pathList[index];
+        }else{
+            index=$scope.img_count-1;
+            $scope.image_source=$scope.pathList[index];
+        }
+    }
+
+    $scope.previous=function(){
+        var image=$scope.image_source;
+        var substringIndex=image.lastIndexOf("_");
+        var extensioinIndex=image.lastIndexOf(".");
+        var imageNumber=image.substring(substringIndex+1,extensioinIndex);
+        if(imageNumber > 1){
+            index=index-1;
+            $scope.image_source=$scope.pathList[index];
+        }else{
+            index=0;
+            $scope.image_source=$scope.pathList[index];
+        }
+    }
+
+    $scope.qcOK= function(ev) {
+        var qcStatus='Accepted';
+        var data = 'scanId='+$scope.scan_id +
+            '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
+            +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
+            '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus+'&custUID='+$scope.custUID;
+
+
+
+
+        $http.get(domain+'/aoAuditStatus?' + data)
+            .success(function (data, status, headers, config) {
+                //     $scope.url1= data.url;
+
+                console.log("dataa" +$scope.url1);
+                location.reload();
+                alert(data.message);
+
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+
+    };
+
+    $scope.qcReject= function(ev) {
+        //    alert(" Reject "+ $scope.rejct_pages);
+        var qcStatus='Rejected';
+        var data = 'scanId='+$scope.scan_id +
+            '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
+            +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
+            '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus+'&custUID='+$scope.custUID;
+
+
+
+        $http.get(domain+'/aoAuditStatus?' + data)
+            .success(function (data, status, headers, config) {
+                //    $scope.url1= data.url;
+
+                console.log("dataa" +$scope.url1);
+
+                location.reload();
+                alert(data.message);
+
+            })
+            .error(function (data, status, headers, config) {
+                alert("failure message: " + JSON.stringify({data: data}));
+            });
+
+
+    };
+
+
+
+}]);
+
+
+
+routerApp.controller('FormRecieving',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
+
+$scope.mobFlag=false;
+$scope.cust_number='';
+    $scope.flag=true;
+    if($scope.cust_number.length==10){
+        $scope.mobFlag=true;
+        var data='mobNo='+$scope.cust_number;
+        $http.get(domain+'/getFormRecievingDetails?'+data)
+            .success(function(data,status,headers,config){
+                $scope.scanid=data.scanID;
+                if(data.bucket=='Ao Audit' && data.status!='Accepted'){
+                    $scope.flag=false;
+                }
+                $scope.simNumber=data.simNum;
+                $scope.address=data.address;
+                $scope.username=data.name;
+                $scope.bucketvalue=data.bucket;
+                $scope.statusvalue=data.status;
+            }).error(function(data,status,headers,config){
+               alert('Error');
+            });
+    }
+    else{
+        $scope.flag=true;
+    }
+    $scope.formSubmit=function(){
+        var data='scanID='+$scope.scanid;
+        $http.get(domain+'/formRecievingSubmit?'+data)
+            .success(function(data,status,headers,config){
+                alert(data.result);
+            }).error(function(data,status,headers,config){
+                alert('Error');
+            })
+    }
+}]);
 
 
 
