@@ -2,10 +2,7 @@ package com.softage.paytm.dao.imp;
 
 import com.itextpdf.text.log.SysoCounter;
 import com.softage.paytm.dao.PaytmMasterDao;
-import com.softage.paytm.models.AllocationMastEntity;
-import com.softage.paytm.models.CallStatusMasterEntity;
-import com.softage.paytm.models.PaytmMastEntity;
-import com.softage.paytm.models.StateMasterEntity;
+import com.softage.paytm.models.*;
 import org.hibernate.Session;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -377,9 +374,54 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
 
     }
 
+    @Override
+    public PaytmcustomerDataEntity getPaytmCustomerData(int cust_uid) {
+        EntityManager entityManager = null;
+        PaytmcustomerDataEntity paytmcustomerDataEntity=null;
+        Query query=null;
+        try
+        {
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select cust from PaytmcustomerDataEntity cust where cust.cust_uid=:cust_uid";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("cust_uid",cust_uid);
+            paytmcustomerDataEntity = (PaytmcustomerDataEntity)query.getSingleResult();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  paytmcustomerDataEntity;
+    }
+
+    @Override
+    public SpokeMastEntity getSpokemast(String spokeCode) {
+        EntityManager entityManager = null;
+        SpokeMastEntity spokeMastEntity = null;
+        Query query = null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select cust from SpokeMastEntity cust where cust.spokeCode=:spokeCode";
+            query = entityManager.createQuery(strQuery);
+            query.setParameter("spokeCode", spokeCode);
+            spokeMastEntity = (SpokeMastEntity) query.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return spokeMastEntity;
 
 
-
+    }
 
     @Override
     public boolean exists(String s) {

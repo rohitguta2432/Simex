@@ -3,10 +3,7 @@ package com.softage.paytm.service.imp;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.softage.paytm.dao.CircleMastDao;
 import com.softage.paytm.dao.PaytmMasterDao;
-import com.softage.paytm.models.CallStatusMasterEntity;
-import com.softage.paytm.models.CircleMastEntity;
-import com.softage.paytm.models.PaytmMastEntity;
-import com.softage.paytm.models.StateMasterEntity;
+import com.softage.paytm.models.*;
 import com.softage.paytm.service.PaytmMasterService;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,6 +178,11 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
+    public PaytmcustomerDataEntity getPaytmCustomerData(int cust_uid) {
+        return paytmMasterDao.getPaytmCustomerData(cust_uid);
+    }
+
+    @Override
     public PaytmMastEntity getPaytmMasterByDate(String mobileNo, Date date) {
         return paytmMasterDao.getPaytmMastEntityByDate(mobileNo,date);
     }
@@ -190,6 +192,11 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
 
         //int customer=Integer.parseInt(cust_uid);
         return paytmMasterDao.getpaytmmasterservice(cust_uid);
+    }
+
+    @Override
+    public SpokeMastEntity spokeMastEntity(String spokecode) {
+        return paytmMasterDao.getSpokemast(spokecode);
     }
 
     @Override

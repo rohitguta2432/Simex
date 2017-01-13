@@ -1,6 +1,7 @@
 package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.FtpDetailsDao;
+import com.softage.paytm.models.UploadedImagesEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -55,5 +56,29 @@ public class FtpDetailsDaoImp implements FtpDetailsDao {
         }
 
         return res;
+    }
+    @Override
+    public String insertImageUploadDetails(UploadedImagesEntity imagesEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String result=null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(imagesEntity);
+            transaction.commit();
+            result="done";
+        } catch (Exception e) {
+            result="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return result;
     }
 }

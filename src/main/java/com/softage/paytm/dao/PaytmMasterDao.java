@@ -1,8 +1,6 @@
 package com.softage.paytm.dao;
 
-import com.softage.paytm.models.CallStatusMasterEntity;
-import com.softage.paytm.models.PaytmMastEntity;
-import com.softage.paytm.models.StateMasterEntity;
+import com.softage.paytm.models.*;
 import org.json.simple.JSONObject;
 import org.springframework.data.repository.CrudRepository;
 
@@ -24,4 +22,6 @@ public interface PaytmMasterDao extends CrudRepository<PaytmMastEntity,String> {
     public PaytmMastEntity getPaytmMasterData(int cust_uid);
     public PaytmMastEntity getPaytmMastEntityByDate(String mobile,Date date);
     public PaytmMastEntity getpaytmmasterservice(String cust_uid);
+    public PaytmcustomerDataEntity getPaytmCustomerData(int cust_uid);
+    public SpokeMastEntity getSpokemast(String spokeCode);
 }

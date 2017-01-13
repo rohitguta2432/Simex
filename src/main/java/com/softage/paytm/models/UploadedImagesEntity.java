@@ -1,6 +1,8 @@
 package com.softage.paytm.models;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by SS0090 on 1/4/2017.
@@ -13,6 +15,8 @@ public class UploadedImagesEntity {
     private String imagePath;
     private TblScan tblScan;
     private Integer scan_id;
+    private Timestamp uploadedon;
+
 
     @Id
     @GeneratedValue
@@ -35,6 +39,15 @@ public class UploadedImagesEntity {
         this.imagePath = imagePath;
     }
 
+    @Basic
+    @Column(name = "uploadedon", nullable = true,insertable = true,updatable = true)
+    public Timestamp getUploadedon() {
+        return uploadedon;
+    }
+
+    public void setUploadedon(Timestamp uploadedon) {
+        this.uploadedon = uploadedon;
+    }
 
     @Basic
     @Column(name = "scan_id", nullable = true, insertable = false, updatable =false)

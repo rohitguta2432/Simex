@@ -2398,7 +2398,8 @@ e.printStackTrace();
         if(msg.equalsIgnoreCase("error")){
           updateStatusMessage="Unable to insert the audit values";
         }else{
-            updateStatusMessage=qcStatusService.updateTblSacnEntity(tblScan,auditStatusEntity);
+            tblScan.setAuditStatusEntity(auditStatusEntity);
+            updateStatusMessage=qcStatusService.updateTblSacnEntity(tblScan);
             if(updateStatusMessage.equalsIgnoreCase("success")){
                 jsonObject.put("message","Successfully updated audit status");
             }

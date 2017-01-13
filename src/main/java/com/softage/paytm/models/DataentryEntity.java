@@ -21,7 +21,7 @@ public class DataentryEntity implements Serializable {
     private String cusPoaNumber;
     private String cusPoiNumber;
     private String cusState;
-    private String customerId;
+    private int customerId;
     private Timestamp dateOfCollection;
     private String docStatus;
     private String entryBy;
@@ -41,8 +41,20 @@ public class DataentryEntity implements Serializable {
     private ProofMastEntity proofMastByCusPoiCode;
     private ReasonMastEntity reasonMastByRejectionResion;
 
-    @Basic
+
+
     @Id
+    @GeneratedValue
+    @Column(name = "Id", nullable = false, insertable = true, updatable = true)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Basic
     @Column(name = "CustomerPhone", nullable = false, insertable = true, updatable = true, length = 10)
     public String getCustomerPhone() {
         return customerPhone;
@@ -166,12 +178,12 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
     }
 
     @Basic
-    @Column(name = "CustomerID", nullable = false, insertable = true, updatable = true, length = 20)
-    public String getCustomerId() {
+    @Column(name = "cust_uid", nullable = false, insertable = true, updatable = true, length = 20)
+    public int getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(String customerId) {
+    public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 
@@ -216,16 +228,6 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
     }
 
 
-    @Id
-    @Basic
-    @Column(name = "Id", nullable = false, insertable = true, updatable = true)
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -247,7 +249,7 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
         if (cusPoaNumber != null ? !cusPoaNumber.equals(that.cusPoaNumber) : that.cusPoaNumber != null) return false;
         if (cusPoiNumber != null ? !cusPoiNumber.equals(that.cusPoiNumber) : that.cusPoiNumber != null) return false;
         if (cusState != null ? !cusState.equals(that.cusState) : that.cusState != null) return false;
-        if (customerId != null ? !customerId.equals(that.customerId) : that.customerId != null) return false;
+       /* if (customerId != null ? !customerId.equals(that.customerId) : that.customerId != null) return false;*/
         if (dateOfCollection != null ? !dateOfCollection.equals(that.dateOfCollection) : that.dateOfCollection != null)
             return false;
         if (docStatus != null ? !docStatus.equals(that.docStatus) : that.docStatus != null) return false;
@@ -271,7 +273,7 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
         result = 31 * result + (cusPoaNumber != null ? cusPoaNumber.hashCode() : 0);
         result = 31 * result + (cusPoiNumber != null ? cusPoiNumber.hashCode() : 0);
         result = 31 * result + (cusState != null ? cusState.hashCode() : 0);
-        result = 31 * result + (customerId != null ? customerId.hashCode() : 0);
+      /*  result = 31 * result + (customerId != null ? customerId.hashCode() : 0);*/
         result = 31 * result + (dateOfCollection != null ? dateOfCollection.hashCode() : 0);
         result = 31 * result + (docStatus != null ? docStatus.hashCode() : 0);
         result = 31 * result + (entryBy != null ? entryBy.hashCode() : 0);

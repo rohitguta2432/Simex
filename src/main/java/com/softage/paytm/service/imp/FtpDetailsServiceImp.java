@@ -1,6 +1,7 @@
 package com.softage.paytm.service.imp;
 
 import com.softage.paytm.dao.FtpDetailsDao;
+import com.softage.paytm.models.UploadedImagesEntity;
 import com.softage.paytm.service.FtpDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,12 @@ public class FtpDetailsServiceImp implements FtpDetailsService {
         String result= ftpDetailsDao.insertFtpDetails(custNumber, imgPath, pageNo, createdBy, qcStatus);
 
         return result;
-
+    }
+    @Override
+    public String saveImagesDeetails(UploadedImagesEntity imagesEntity) {
+  String result=null;
+        result=ftpDetailsDao.insertImageUploadDetails(imagesEntity);
+        return result;
     }
 
 }

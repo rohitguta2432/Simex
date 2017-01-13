@@ -140,7 +140,7 @@
       <!-- Navbar Barnd -->
       <div class="navbar-header pull-left">
         <a href="#" class="navbar-brand"><small>
-          <img src="assets/img/paytm-logo.png" alt="simex"  />
+          <img src="assets/img/simex-logo.png" alt="simex"  />
         </small></a>
       </div>
       <!-- /Navbar Barnd -->

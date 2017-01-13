@@ -113,15 +113,21 @@ public class QcStatusServiceImp implements QcStatusService {
     public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity) {
         return qcStatusDao.saveCircleAuditEntity(circleAuditEntity);
     }
-
     @Override
-    public String updateTblSacnEntity(TblScan tblScan,AuditStatusEntity auditStatusEntity) {
-        return qcStatusDao.updateTblScanEntity(tblScan,auditStatusEntity);
+    public String updateTblSacnEntity(TblScan tblScan) {
+        return qcStatusDao.updateTblScanEntity(tblScan);
     }
 
     @Override
-    public TblScan getUserScanDetails(String customerphone) {
-        return qcStatusDao.getScanDetails(customerphone);
+    public String SaveScanimages(TblScan scantbl) {
+        String result=null;
+        result= qcStatusDao.savetblscan(scantbl);
+        return result;
+    }
+
+    @Override
+    public TblScan getUserScanDetails(int cust_uid) {
+        return qcStatusDao.getScanDetails(cust_uid);
     }
 
 

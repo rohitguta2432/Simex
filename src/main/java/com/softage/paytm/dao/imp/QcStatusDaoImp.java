@@ -253,8 +253,10 @@ public class QcStatusDaoImp implements QcStatusDao {
         return message;
     }
 
+
+
     @Override
-    public String updateTblScanEntity(TblScan tblScan,AuditStatusEntity auditStatusEntity) {
+    public String updateTblScanEntity(TblScan tblScan) {
         EntityManager entityManager=null;
         EntityTransaction transaction=null;
         String message=null;
@@ -262,7 +264,7 @@ public class QcStatusDaoImp implements QcStatusDao {
             entityManager=entityManagerFactory.createEntityManager();
             transaction=entityManager.getTransaction();
             transaction.begin();
-            tblScan.setAuditStatusEntity(auditStatusEntity);
+            entityManager.merge(tblScan);
             transaction.commit();
             message="success";
         }catch (Exception e){
@@ -280,7 +282,32 @@ public class QcStatusDaoImp implements QcStatusDao {
     }
 
     @Override
-    public TblScan getScanDetails(String customerphone) {
+    public String savetblscan(TblScan savesimages) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg=null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(savesimages);
+            transaction.commit();
+            msg="done";
+        } catch (Exception e) {
+            msg="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return msg;
+    }
+
+    @Override
+    public TblScan getScanDetails(int cust_uid) {
 
         EntityManager entityManager = null;
         TblScan tblScan=null;
@@ -288,9 +315,9 @@ public class QcStatusDaoImp implements QcStatusDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = " select cust from TblScan cust where cust.customerNumber=:customerphone";
+            String strQuery = " select cust from TblScan cust where cust.paytmcustomerDataEntity.cust_uid=:cust_uid";
             query=entityManager.createQuery(strQuery);
-            query.setParameter("customerphone",customerphone);
+            query.setParameter("cust_uid",cust_uid);
             tblScan = (TblScan)query.getSingleResult();
         }
         catch (Exception e)

@@ -212,7 +212,6 @@ public class RestWebController {
         return array;
 
     }
-
     @RequestMapping(value = "/AgentRejectedLeads", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray agentRejectedLeads(@RequestParam(value = "AgentCode") String agentCode) {
         JSONArray array = new JSONArray();
@@ -220,8 +219,6 @@ public class RestWebController {
         array.addAll(listjson);
         return array;
     }
-
-
     @RequestMapping(value = "/getagentLocation", method = {RequestMethod.GET, RequestMethod.POST})
     public String getagentLocation(HttpServletRequest request) {
         JSONArray array = new JSONArray();
@@ -233,11 +230,9 @@ public class RestWebController {
         String longitude = request.getParameter("longitude");
         double lati = Double.parseDouble(latitude);
         double longi = Double.parseDouble(longitude);
-
         String result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location, lati, longi);
         return result;
     }
-
     @RequestMapping(value = "/AcceptedEntry", method = {RequestMethod.GET, RequestMethod.POST})
     public String acceptedEntry(HttpServletRequest request) {
         AllocationMastEntity allocationMastEntity = null;
@@ -245,31 +240,40 @@ public class RestWebController {
         ProofMastEntity proofMastEntityPOICode = null;
         ProofMastEntity proofMastEntityPOACode = null;
         PaytmMastEntity paytmMastData=null;
+        PaytmcustomerDataEntity paytmcustomerDataEntity=null;
+        SpokeMastEntity spokeMastEntity=null;
         String result = null;
+
         PaytmMastEntity paytmMastEntity = null;
-        TblScan tblScan;
+        TblScan tblScan=null;
         String address = "";
         String state = "";
         String emailId = "";
         String city = "";
         String pincode = "";
-        String custid="";
+        int custid=0;
+        CircleMastEntity circleMastEntity = null;
+        String spokecode="";
+        int auditstatus=0;
         int circlecode=0;
-        String spokecode="DELSOU205";
         try {
+            String customerid = request.getParameter("customerId");
             String phoneNumber = request.getParameter("custPhone");
-            if (phoneNumber != null) {
-                paytmMastEntity = paytmMasterService.getPaytmMaster(phoneNumber);
-                if (paytmMastEntity != null) {
-                    address = paytmMastEntity.getAddress();
-                    city = paytmMastEntity.getCity();
-                    state = paytmMastEntity.getState();
-                    pincode = paytmMastEntity.getPincode();
-                    emailId = paytmMastEntity.getEmail();
-                    circlecode=paytmMastEntity.getCirCode();
+            if (customerid != null) {
+                paytmMastData = paytmMasterService.getPaytmmasterServiceDate(customerid);
+                custid=paytmMastData.getCust_uid();
+                address = paytmMastData.getAddress();
+                city = paytmMastData.getCity();
+                state = paytmMastData.getState();
+                pincode = paytmMastData.getPincode();
+                emailId = paytmMastData.getEmail();
+              circlecode=paytmMastData.getCirCode();
+                circleMastEntity=paytmMastData.getCircleMastByCirCode();
 
-                }
             }
+            spokeMastEntity=paytmMasterService.spokeMastEntity("DELCIR001");
+            paytmcustomerDataEntity =paytmMasterService.getPaytmCustomerData(custid);
+
             String custName = request.getParameter("custName");
             String custPOICode = request.getParameter("custPOICode"); // not required
             //String custPOINumber = request.getParameter("custPOINumber"); // not required
@@ -280,13 +284,12 @@ public class RestWebController {
             String jobid = request.getParameter("jobid");
             int jobID=Integer.parseInt(jobid);
             String remarksCode = request.getParameter("remarksCode");
-            String customerid = request.getParameter("customerId");
+
             String coStatus = request.getParameter("subscriberType");
             String Simno = request.getParameter("simno");
             String folderName=request.getParameter("folderName");
             String pageCount=request.getParameter("pageCount");
             int pages=Integer.parseInt(pageCount);
-
 
             //checklist data
             String srf=request.getParameter("SRF");
@@ -307,12 +310,12 @@ public class RestWebController {
             int originalopoapc=Integer.parseInt(opoapc);
             String photoPC=request.getParameter("PhotoPC");
             int originalphotoPC=Integer.parseInt(photoPC);
-
            if (!StringUtils.isEmpty(agentCode)) {
                 paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
             }
             if (!StringUtils.isEmpty(jobid)) {
                 allocationMastEntity = allocationService.findByPrimaryKey(jobID);
+
             }
             if (custPOICode != null) {
                 proofMastEntityPOICode = leadsService.findBykey(custPOICode);
@@ -320,11 +323,7 @@ public class RestWebController {
             if (custPOACode != null) {
                 proofMastEntityPOACode = leadsService.findBykey(custPOACode);
             }
-            if (customerid != null) {
-               paytmMastData = paytmMasterService.getPaytmmasterServiceDate(customerid);
-               custid=paytmMastData.getCustomerId();
 
-            }
             ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
 
             DataentryEntity dataentryEntity = new DataentryEntity();
@@ -358,26 +357,22 @@ public class RestWebController {
             dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
             result = dataEntryService.saveDataEntry(dataentryEntity);
 
+            TblScan scanresult=new TblScan();
 
-            /*tblScan=qcservices.getUserScanDetails(phoneNumber);
-         spokecode=tblScan.getSpoke_code();
-*/
-     TblScan scanresult=new TblScan();
+            AuditStatusEntity auditStatusEntity =qcservices.getAuditStatusEntity(1);
+            scanresult.setPaytmcustomerDataEntity(paytmcustomerDataEntity);
+            scanresult.setAuditStatusEntity(auditStatusEntity);
             scanresult.setSimNo(Simno);
             scanresult.setCreatedBy("System");
             scanresult.setCreatedOn(new Timestamp(new Date().getTime()));
             scanresult.setCustomerNumber(phoneNumber);
             scanresult.setImagePath("");
-            scanresult.setCircle_code(circlecode);
+            scanresult.setCircleMastEntity(circleMastEntity);
             scanresult.setPageNo(pages);
-            scanresult.setAuditStatus(1);
-            scanresult.setSpoke_code(spokecode);
-           /* scanresult.set*/
+            scanresult.setSpokeMastEntity(spokeMastEntity);
+            scanresult.setDataDate(new Timestamp(new Date().getTime()));
 
-
-
-
-
+            result=qcservices.SaveScanimages(scanresult);
             if ("done".equals(result)) {
                 updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
                 //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
@@ -409,19 +404,47 @@ public class RestWebController {
     @RequestMapping(value = "/ftpdetails", method = {RequestMethod.GET, RequestMethod.POST})
     public String ftpDetails(HttpServletRequest request) {
         String result = "";
+        TblScan tblScan=null;
+        int cust_uid=0;
         System.out.println("Service done ");
-        String customer_number = request.getParameter("customer_no");
+       // String customer_number = request.getParameter("customer_no");
         String image_path = request.getParameter("image_path");
         int page_number = Integer.parseInt(request.getParameter("page_number"));
         String created_on = request.getParameter("created_on");
         String created_by = request.getParameter("created_by");
         int qc_status = Integer.parseInt(request.getParameter("qc_status"));
-        if (customer_number == "" || customer_number.equals(null) || customer_number == " " || customer_number.equals("")) {
-            result = "Customer Number is empty";
-        } else if (image_path == "" || image_path.equals(null) || image_path == " " || image_path.equals("")) {
-            result = "Image path is empty";
+        cust_uid=Integer.parseInt(request.getParameter("customer_no"));
+
+        tblScan=qcservices.getUserScanDetails(cust_uid);
+        String ImagePath=tblScan.getImagePath();
+        int scanid=tblScan.getScanid();
+        if(cust_uid==0)
+          {
+            result = "cust_uid is empty";
+        } else if (ImagePath == "" || ImagePath.equals(null) || ImagePath == " " || ImagePath.equals("")) {
+            tblScan.setImagePath(image_path);
+            qcservices.updateTblSacnEntity(tblScan);
+            UploadedImagesEntity imagesEntity=new UploadedImagesEntity();
+            imagesEntity.setImagePath(image_path);
+            imagesEntity.setScan_id(scanid);
+            imagesEntity.setUploadedon(new Timestamp(new Date().getTime()));
+            imagesEntity.setTblScan(tblScan);
+            result=ftpDetailsService.saveImagesDeetails(imagesEntity);
+            if (result.equals("done")) {
+                result = "success";
+                logger.info(" Result   " + result);
+            } else {
+                result = "Fail";
+                logger.info(" Result   " + result);
+            }
         } else {
-            result = ftpDetailsService.saveFTPData(customer_number, image_path, page_number, created_by, qc_status);
+            //result = ftpDetailsService.saveFTPData(customer_number, image_path, page_number, created_by, qc_status);
+        UploadedImagesEntity imagesEntity=new UploadedImagesEntity();
+            imagesEntity.setImagePath(image_path);
+            imagesEntity.setScan_id(scanid);
+            imagesEntity.setUploadedon(new Timestamp(new Date().getTime()));
+            imagesEntity.setTblScan(tblScan);
+            result=ftpDetailsService.saveImagesDeetails(imagesEntity);
             if (result.equals("done")) {
                 result = "success";
                 logger.info(" Result   " + result);
