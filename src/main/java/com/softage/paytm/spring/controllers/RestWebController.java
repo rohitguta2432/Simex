@@ -393,9 +393,28 @@ public class RestWebController {
     @RequestMapping(value = "/RejectedEntry", method = {RequestMethod.GET, RequestMethod.POST})
     public String rejectedEntry(HttpServletRequest request) {
 
+        TblScan tblScan=null;
         String agentCode = request.getParameter("AgentCode");
         String jobid = request.getParameter("Jobid");
         String statusCode = request.getParameter("statusCode");
+        String custName = request.getParameter("custName");
+        String custPOICode = request.getParameter("custPOICode"); // not required
+        //String custPOINumber = request.getParameter("custPOINumber"); // not required
+        String custPOACode = request.getParameter("custPOACode");  // not requied
+        // String custPOANumber = request.getParameter("custPOANumber"); // not reqired
+       // String agentCode = request.getParameter("agentCode");
+        // String gender = request.getParameter("gender");     // not requied
+       // String jobid = request.getParameter("jobid");
+        String remarksCode = request.getParameter("remarksCode");
+        String coStatus = request.getParameter("subscriberType");
+        String Simno = request.getParameter("simno");
+        String folderName=request.getParameter("folderName");
+        String pageCount=request.getParameter("pageCount");
+        int pages=Integer.parseInt(pageCount);
+
+      /*  tblScan=qcservices.updateTblSacnEntity();
+        int jobID=Integer.parseInt(jobid);
+*/
         String result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
         //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
         return result;
@@ -476,7 +495,9 @@ public class RestWebController {
                     jsonObject.put("coStatus", paytmMastData.getCoStatus());
                     jsonObject.put("cust_uid",paytmMastData.getCust_uid());
                     jsonObject.put("circleCode",paytmMastData.getCirCode());
+                    jsonObject.put("cust_uid",paytmMastData.getCust_uid());
                     jsonObject.put("Msg", "Data Found");
+
 
 
                     result = "true";
