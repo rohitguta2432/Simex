@@ -394,28 +394,91 @@ public class RestWebController {
     public String rejectedEntry(HttpServletRequest request) {
 
         TblScan tblScan=null;
+        String result=null;
+        String address=null;
+        String city=null;
+        String state=null;
+        String pincode=null;
+        String emailId=null;
+        int circlecode=0;
+        AllocationMastEntity allocationMastEntity=null;
+        PaytmagententryEntity paytmagententryEntity = null;
+        ProofMastEntity proofMastEntityPOICode = null;
+        ProofMastEntity proofMastEntityPOACode = null;
+        PaytmMastEntity paytmMastData=null;
+        String phonenumber=null;
+
+
         String agentCode = request.getParameter("AgentCode");
         String jobid = request.getParameter("Jobid");
+        int jobID=Integer.parseInt(jobid);
         String statusCode = request.getParameter("statusCode");
         String custName = request.getParameter("custName");
         String custPOICode = request.getParameter("custPOICode"); // not required
         //String custPOINumber = request.getParameter("custPOINumber"); // not required
         String custPOACode = request.getParameter("custPOACode");  // not requied
-        // String custPOANumber = request.getParameter("custPOANumber"); // not reqired
-       // String agentCode = request.getParameter("agentCode");
-        // String gender = request.getParameter("gender");     // not requied
-       // String jobid = request.getParameter("jobid");
         String remarksCode = request.getParameter("remarksCode");
         String coStatus = request.getParameter("subscriberType");
         String Simno = request.getParameter("simno");
         String folderName=request.getParameter("folderName");
         String pageCount=request.getParameter("pageCount");
         int pages=Integer.parseInt(pageCount);
-
-      /*  tblScan=qcservices.updateTblSacnEntity();
-        int jobID=Integer.parseInt(jobid);
-*/
-        String result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
+        String customerid=request.getParameter("custid");
+        int cust_uid=Integer.parseInt(customerid);
+        if (customerid != null) {
+            paytmMastData = paytmMasterService.getPaytmmasterServiceDate(customerid);
+           /* custid = paytmMastData.getCust_uid();*/
+            address = paytmMastData.getAddress();
+            city = paytmMastData.getCity();
+            state = paytmMastData.getState();
+            pincode = paytmMastData.getPincode();
+            emailId = paytmMastData.getEmail();
+            circlecode = paytmMastData.getCirCode();
+            phonenumber=paytmMastData.getCustomerPhone();
+        }
+        if (!StringUtils.isEmpty(agentCode)) {
+            paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
+        }
+        if (!StringUtils.isEmpty(jobid)) {
+            allocationMastEntity = allocationService.findByPrimaryKey(jobID);
+        }
+        if (custPOICode != null) {
+            proofMastEntityPOICode = leadsService.findBykey(custPOICode);
+        }
+        if (custPOACode != null) {
+            proofMastEntityPOACode = leadsService.findBykey(custPOACode);
+        }
+        ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
+        DataentryEntity dataentryEntity=new DataentryEntity();
+        dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
+        //  dataentryEntity.setRejectionResion("ACC");
+        dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
+        dataentryEntity.setCusPOACode(custPOACode);
+        dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
+        dataentryEntity.setCusPoiCode(custPOICode);
+        dataentryEntity.setCusAdd(address);
+        dataentryEntity.setCusArea("");
+        dataentryEntity.setCusCity(city);
+        dataentryEntity.setCusEmailId("");
+        dataentryEntity.setCusName(custName);
+        dataentryEntity.setCusPincode(pincode);
+        //dataentryEntity.setCusPoaNumber(custPOANumber);
+        // dataentryEntity.setCusPoiNumber(custPOINumber);
+        dataentryEntity.setCusState(state);
+        dataentryEntity.setCustomerPhone(phonenumber);
+        dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
+        dataentryEntity.setDocStatus(coStatus);
+        dataentryEntity.setEntryBy(agentCode);
+        dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
+        //dataentryEntity.setGender(gender);
+        dataentryEntity.setCustomerId(cust_uid);
+        dataentryEntity.setSim_no(Simno);
+        dataentryEntity.setFolder_name(folderName);
+        dataentryEntity.setPage_count(pages);
+        dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
+        dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
+        result = dataEntryService.saveDataEntry(dataentryEntity);
+        result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
         //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
         return result;
     }
@@ -483,12 +546,20 @@ public class RestWebController {
                                 @RequestParam(value = "customerid") String customerid) {
         String customerPhone = null;
         String result = "false";
+        AllocationMastEntity allocationMastEntity=null;
         JSONObject jsonObject = new JSONObject();
+
+        int custid=Integer.parseInt(customerid);
+        int jobId=Integer.parseInt(jobid);
         try {
 
             if (customerid != null) {
+                allocationMastEntity=paytmMasterService.getallocationMastEntity(custid,jobId);
+                allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
+
+
                 PaytmMastEntity paytmMastData = paytmMasterService.getPaytmmasterServiceDate(customerid);
-                if (paytmMastData != null) {
+                if (allocationMastEntity != null) {
 
                     jsonObject.put("simType", paytmMastData.getSimType());
                     jsonObject.put("customeName", paytmMastData.getUsername());

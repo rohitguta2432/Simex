@@ -10,7 +10,6 @@ import java.util.Date;
 @Entity
 @Table(name="tbl_scan")
 public class TblScan {
-
     private int scanid;
     private String customerNumber;
     private Date dataDate;
@@ -31,14 +30,12 @@ public class TblScan {
     private Integer statusID;
     private AuditStatusEntity auditStatusEntity;
 
-
     @Id
     @GeneratedValue
     @Column(name = "scan_id",nullable = false,insertable = true,updatable = true)
     public int getScanid() {
         return scanid;
     }
-
     public void setScanid(int scanid) {
         this.scanid = scanid;
     }
@@ -196,7 +193,6 @@ public class TblScan {
     public void setCircleMastEntity(CircleMastEntity circleMastEntity) {
         this.circleMastEntity = circleMastEntity;
     }
-
 
     @ManyToOne
     @JoinColumn(name = "audit_status",referencedColumnName = "status_id")

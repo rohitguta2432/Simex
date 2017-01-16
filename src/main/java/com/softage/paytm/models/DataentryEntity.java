@@ -40,9 +40,6 @@ public class DataentryEntity implements Serializable {
     private ProofMastEntity proofMastByCcusPOACode;
     private ProofMastEntity proofMastByCusPoiCode;
     private ReasonMastEntity reasonMastByRejectionResion;
-
-
-
     @Id
     @GeneratedValue
     @Column(name = "Id", nullable = false, insertable = true, updatable = true)

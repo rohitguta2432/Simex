@@ -200,6 +200,11 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
+    public AllocationMastEntity getallocationMastEntity(int custid, int jobid) {
+        return paytmMasterDao.getAllocationentity(custid,jobid);
+    }
+
+    @Override
     public JSONObject telecallingScreen(String userName,int cirCode) {
         JSONObject json=null;
         for(int i=0; i<=5; i++){

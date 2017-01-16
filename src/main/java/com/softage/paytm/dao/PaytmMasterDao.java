@@ -24,4 +24,5 @@ public interface PaytmMasterDao extends CrudRepository<PaytmMastEntity,String> {
     public PaytmMastEntity getpaytmmasterservice(String cust_uid);
     public PaytmcustomerDataEntity getPaytmCustomerData(int cust_uid);
     public SpokeMastEntity getSpokemast(String spokeCode);
+    public AllocationMastEntity getAllocationentity(int custid,int jobid);
 }

@@ -424,6 +424,39 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    public AllocationMastEntity getAllocationentity(int custid, int jobid) {
+        EntityManager entityManager = null;
+        AllocationMastEntity allocationMastEntity=null;
+        Query query=null;
+        try
+        {
+            String likeParameter="%"+custid+"%";
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "from AllocationMastEntity where str(paytmcustomerDataByCustomerPhone.cust_uid) like :customer and id=:jobid";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("customer",likeParameter);
+            query.setParameter("jobid",jobid);
+            allocationMastEntity = (AllocationMastEntity)query.getSingleResult();
+
+
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  allocationMastEntity;
+
+
+    }
+
+    @Override
     public boolean exists(String s) {
         return false;
     }

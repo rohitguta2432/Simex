@@ -14,7 +14,7 @@
               <intercept-url pattern="/dba**" access="hasRole('ADMIN') and hasRole('DBA')" />
               <form-login  login-page="/" username-parameter="ssoId"
                            password-parameter="password" authentication-failure-url="/login?error=1" />
-             <!-- <csrf disabled="true" />-->
+              <csrf disabled="true" />
 
              <!-- <form-login username-parameter='j_username' password-parameter='j_password' login-page='/login' authentication-failure-url="/login?error" default-target-url="/home"
                           authentication-success-handler-ref="authSuccessHandler" login-processing-url="/loginReq"/>-->
