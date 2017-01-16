@@ -109,16 +109,24 @@ public class AoAuditDaoImp implements AoAuditDao {
             query.setParameter(1,mobileNumber);
             query.setParameter(2,spokecode);
             Object[] formRecievingDetails=(Object[])query.getSingleResult();
-            String simnumber=(String)formRecievingDetails[0];
-            String address=(String)formRecievingDetails[1];
-            String name=(String)formRecievingDetails[2];
-            Integer status=(Integer)formRecievingDetails[3];
-            Integer scanID=((BigInteger)formRecievingDetails[4]).intValue();
-            jsonObject.put("simNo",simnumber);
-            jsonObject.put("address",address);
-            jsonObject.put("user_name",name);
-            jsonObject.put("status",status);
-            jsonObject.put("scanID",scanID);
+            if (formRecievingDetails!=null) {
+                String simnumber = (String) formRecievingDetails[0];
+                String address = (String) formRecievingDetails[1];
+                String name = (String) formRecievingDetails[2];
+                Integer status = (Integer) formRecievingDetails[3];
+                Integer scanID = ((BigInteger) formRecievingDetails[4]).intValue();
+                jsonObject.put("simNo", simnumber);
+                jsonObject.put("address", address);
+                jsonObject.put("user_name", name);
+                jsonObject.put("status", status);
+                jsonObject.put("scanID", scanID);
+            }else{
+                jsonObject.put("simNo", "No Records Available For This Number");
+                jsonObject.put("address", "No Records Available For This Number");
+                jsonObject.put("user_name", "No Records Available For This Number");
+                jsonObject.put("status", "No Records Available For This Number");
+                jsonObject.put("scanID", "No Records Available For This Number");
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
