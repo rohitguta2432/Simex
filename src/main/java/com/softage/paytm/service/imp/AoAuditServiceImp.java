@@ -27,7 +27,7 @@ public class AoAuditServiceImp implements AoAuditService {
     }
 
     @Override
-    public JSONObject getFormRecievingDetails(String mobile_number) {
-        return aoAuditDao.getFormRecievingDetails(mobile_number);
+    public JSONObject getFormRecievingDetails(String mobile_number,String spokecode) {
+        return aoAuditDao.getFormRecievingDetails(mobile_number,spokecode);
     }
 }

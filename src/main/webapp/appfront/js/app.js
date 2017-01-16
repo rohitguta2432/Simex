@@ -90,7 +90,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             controller:'AoAudit'
         }).state('FormRecieving',{
             url:'/FormRecieving',
-            templateUrl:'FormRecieving/formRecieving',
+            templateUrl:'FormRecieving/formRecieving.html',
             controller:'FormRecieving'
         })
         .state('projectRegistration', {
@@ -1326,29 +1326,46 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDi
 
 routerApp.controller('FormRecieving',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
 
-$scope.mobFlag=false;
+    $scope.scanid='';
+    $scope.simNumber='';
+    $scope.useraddress='';
+    $scope.username='';
+    $scope.bucketvalue='';
+    $scope.statusvalue='';
+//$scope.mobFlag=false;
 $scope.cust_number='';
-    $scope.flag=true;
+    $scope.auditFlag=true;
+    $scope.searchDetails=function(){
     if($scope.cust_number.length==10){
-        $scope.mobFlag=true;
+       // $scope.mobFlag=true;
         var data='mobNo='+$scope.cust_number;
         $http.get(domain+'/getFormRecievingDetails?'+data)
             .success(function(data,status,headers,config){
+                alert(JSON.stringify({data: data}))
+                alert($scope.auditFlag);
                 $scope.scanid=data.scanID;
-                if(data.bucket=='Ao Audit' && data.status!='Accepted'){
-                    $scope.flag=false;
+                if(data.bucket=='Ao Audit' && data.user_status=='Accepted'){
+                    $scope.auditFlag=false;
                 }
+                alert($scope.auditFlag);
                 $scope.simNumber=data.simNum;
-                $scope.address=data.address;
-                $scope.username=data.name;
+                $scope.useraddress=data.user_address;
+                $scope.username=data.user_name;
                 $scope.bucketvalue=data.bucket;
-                $scope.statusvalue=data.status;
+                $scope.statusvalue=data.user_status;
             }).error(function(data,status,headers,config){
                alert('Error');
             });
     }
     else{
-        $scope.flag=true;
+        $scope.auditFlag=true;
+        $scope.scanid='';
+        $scope.simNumber='';
+        $scope.useraddress='';
+        $scope.username='';
+        $scope.bucketvalue='';
+        $scope.statusvalue='';
+    }
     }
     $scope.formSubmit=function(){
         var data='scanID='+$scope.scanid;

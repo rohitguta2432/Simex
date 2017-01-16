@@ -2612,6 +2612,7 @@ e.printStackTrace();
         aoAuditEntity.setDobMatched(dob_matched);
         aoAuditEntity.setSignMatched(sign_matched);
         aoAuditEntity.setOtherReason(other_reason);
+        aoAuditEntity.setTblScan(tblScan);
         String msg=aoAuditService.saveAuditEntity(aoAuditEntity);
         if(msg.equalsIgnoreCase("error")){
             updateStatusMessage="Unable to insert the audit values";
@@ -2639,8 +2640,11 @@ e.printStackTrace();
     @ResponseBody
     public JSONObject getFormRecievingDetails(HttpServletRequest request){
         JSONObject jsonObject=new JSONObject();
+        HttpSession session=request.getSession();
+        //String spokecode=(String)session.getAttribute("spoke_code"); Currently spoke code set static -JIA Sarai
+        String spokecode="DELSOU205";
         String customer_number=(String)request.getParameter("mobNo");
-        JSONObject resultJson=aoAuditService.getFormRecievingDetails(customer_number);
+        JSONObject resultJson=aoAuditService.getFormRecievingDetails(customer_number,spokecode);
         String bucket=null;
         String status=null;
         Integer statusID=(Integer)resultJson.get("status");
@@ -2649,36 +2653,37 @@ e.printStackTrace();
             bucket="Circle Audit";
             status="Rejected";
             jsonObject.put("bucket",bucket);
-            jsonObject.put("status",status);
+            jsonObject.put("user_status",status);
         }
         else if(statusID==3){
             bucket="Circle Audit";
             status="Accepted";
             jsonObject.put("bucket",bucket);
-            jsonObject.put("status",status);
+            jsonObject.put("user_status",status);
         }
         else if(statusID==4){
             bucket="Ao Audit";
             status="Rejected";
             jsonObject.put("bucket",bucket);
-            jsonObject.put("status",status);
+            jsonObject.put("user_status",status);
         }
         else if(statusID==5){
             bucket="Ao Audit";
             status="Accepted";
             jsonObject.put("bucket",bucket);
-            jsonObject.put("status",status);
+            jsonObject.put("user_status",status);
         }
         else{
             bucket="Pending";
             status="Pending";
             jsonObject.put("bucket",bucket);
-            jsonObject.put("status",status);
+            jsonObject.put("user_status",status);
         }
         jsonObject.put("simNum",resultJson.get("simNo"));
-        jsonObject.put("address",resultJson.get("address"));
-        jsonObject.put("name",resultJson.get("name"));
+        jsonObject.put("user_address",resultJson.get("address"));
+        jsonObject.put("user_name",resultJson.get("user_name"));
         jsonObject.put("scanID",scanID);
+        System.out.println("The returned values are :"+jsonObject);
         return jsonObject;
     }
 

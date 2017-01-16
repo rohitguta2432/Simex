@@ -9,5 +9,5 @@ import org.json.simple.JSONObject;
 public interface AoAuditService {
     public JSONObject getAoAuditDetails(String spokecode);
     public String saveAuditEntity(AoAuditEntity aoAuditEntity);
-    public JSONObject getFormRecievingDetails(String mobile_number);
+    public JSONObject getFormRecievingDetails(String mobile_number,String spokecode);
 }

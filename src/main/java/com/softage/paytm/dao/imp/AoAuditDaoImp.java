@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -98,23 +99,24 @@ public class AoAuditDaoImp implements AoAuditDao {
     }
 
     @Override
-    public JSONObject getFormRecievingDetails(String mobileNumber) {
+    public JSONObject getFormRecievingDetails(String mobileNumber,String spokecode) {
         JSONObject jsonObject=new JSONObject();
         EntityManager entityManager=null;
         EntityTransaction transaction=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            Query query=entityManager.createNativeQuery("{call usp_getFormRecievingDetails(?)}");
+            Query query=entityManager.createNativeQuery("{call usp_getFormRecievingDetails(?,?)}");
             query.setParameter(1,mobileNumber);
+            query.setParameter(2,spokecode);
             Object[] formRecievingDetails=(Object[])query.getSingleResult();
             String simnumber=(String)formRecievingDetails[0];
             String address=(String)formRecievingDetails[1];
             String name=(String)formRecievingDetails[2];
             Integer status=(Integer)formRecievingDetails[3];
-            Integer scanID=(Integer)formRecievingDetails[4];
+            Integer scanID=((BigInteger)formRecievingDetails[4]).intValue();
             jsonObject.put("simNo",simnumber);
             jsonObject.put("address",address);
-            jsonObject.put("name",name);
+            jsonObject.put("user_name",name);
             jsonObject.put("status",status);
             jsonObject.put("scanID",scanID);
         }catch (Exception e){

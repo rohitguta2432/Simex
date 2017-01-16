@@ -28,10 +28,10 @@
                         <form class="form-horizontal" name="myForm" role="form" ng-submit="formSubmit()"  novalidate>
                             <div  >
                                 <div style="clear: both; height: 20px;"></div>
-                                <div ng-show="" class="form-group col-sm-6" >
+                                <div  class="form-group col-sm-6" >
                                     <label class="col-sm-3 control-label no-padding-right">Mobile Number</label>
                                     <div  class="col-sm-9"  >
-                                        <input type="text" ng-model="cust_number"  name="cust_number" ng-disabled="{{mobFlag}}" class="form-control"  />
+                                        <input ng-change="searchDetails()" type="text" ng-model="cust_number"  name="cust_number"  class="form-control"  />
                                     </div>
                                 </div>
                             </div>
@@ -47,17 +47,17 @@
                                 <tbody>
 
                                 <tr >
-                                    <td ng-model="simNumber" ng-disabled="true"></td>
-                                    <td ng-model="address" ng-disabled="true"></td>
-                                    <td ng-model="username" ng-disabled="true"></td>
-                                    <td ng-model="bucketvalue" ng-disabled="true"></td>
-                                    <td ng-model="statusvalue" ng-disabled="true"></td>
+                                    <td ng-disabled="true">{{simNumber}}</td>
+                                    <td ng-disabled="true">{{useraddress}}</td>
+                                    <td ng-disabled="true">{{username}}</td>
+                                    <td ng-disabled="true">{{bucketvalue}}</td>
+                                    <td ng-disabled="true">{{statusvalue}}</td>
                                 </tr>
                                 </tbody>
                             </table>
                             <div  class="form-group">
                                 <div class="col-sm-offset-5 col-sm-10">
-                                    <input type="submit" class="btn btn-azure shiny" value="Submit" ng-disabled="{{flag}}">
+                                    <input type="submit" class="btn btn-azure shiny" value="Submit" ng-disabled="auditFlag">
                                     <!-- <button type="button" class="btn btn-azure shiny">Submit</button>-->
                                 </div>
                             </div>
