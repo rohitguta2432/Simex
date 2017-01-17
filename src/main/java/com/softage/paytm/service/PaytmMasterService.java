@@ -25,7 +25,7 @@ public interface PaytmMasterService {
     public PaytmMastEntity getPaytmMastDatas(int cust_uid);
     public PaytmcustomerDataEntity getPaytmCustomerData(int cust_uid);
     public PaytmMastEntity getPaytmMasterByDate(String mobileNo,Date date);
-    public PaytmMastEntity getPaytmmasterServiceDate(String cust_uid);
+    public PaytmMastEntity getPaytmmasterServiceDate(int cust_uid);
     public SpokeMastEntity spokeMastEntity(String spokeAudit);
-    public AllocationMastEntity getallocationMastEntity(int custid,int jobid);
+    public AllocationMastEntity getallocationMastEntity(String custid,int jobid);
 }

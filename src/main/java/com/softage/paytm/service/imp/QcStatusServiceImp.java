@@ -126,6 +126,11 @@ public class QcStatusServiceImp implements QcStatusService {
     }
 
     @Override
+    public String savetbldocdetails(TblcustDocDetails tblcustDocDetails) {
+        return qcStatusDao.saveTblDocdetails(tblcustDocDetails);
+    }
+
+    @Override
     public TblScan getUserScanDetails(int cust_uid) {
         return qcStatusDao.getScanDetails(cust_uid);
     }

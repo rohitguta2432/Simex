@@ -188,7 +188,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
-    public PaytmMastEntity getPaytmmasterServiceDate(String cust_uid) {
+    public PaytmMastEntity getPaytmmasterServiceDate(int cust_uid) {
 
         //int customer=Integer.parseInt(cust_uid);
         return paytmMasterDao.getpaytmmasterservice(cust_uid);
@@ -200,7 +200,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
-    public AllocationMastEntity getallocationMastEntity(int custid, int jobid) {
+    public AllocationMastEntity getallocationMastEntity(String custid, int jobid) {
         return paytmMasterDao.getAllocationentity(custid,jobid);
     }
 

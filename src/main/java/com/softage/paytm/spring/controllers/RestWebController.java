@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -258,21 +258,23 @@ public class RestWebController {
         int circlecode=0;
         try {
             String customerid = request.getParameter("customerId");
+            int cust_uid=Integer.parseInt(customerid);
+
             String phoneNumber = request.getParameter("custPhone");
             if (customerid != null) {
-                paytmMastData = paytmMasterService.getPaytmmasterServiceDate(customerid);
+                paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
                 custid=paytmMastData.getCust_uid();
                 address = paytmMastData.getAddress();
                 city = paytmMastData.getCity();
                 state = paytmMastData.getState();
                 pincode = paytmMastData.getPincode();
                 emailId = paytmMastData.getEmail();
-              circlecode=paytmMastData.getCirCode();
+                circlecode=paytmMastData.getCirCode();
                 circleMastEntity=paytmMastData.getCircleMastByCirCode();
 
             }
             spokeMastEntity=paytmMasterService.spokeMastEntity("DELCIR001");
-            paytmcustomerDataEntity =paytmMasterService.getPaytmCustomerData(custid);
+            paytmcustomerDataEntity =paytmMasterService.getPaytmCustomerData(cust_uid);
 
             String custName = request.getParameter("custName");
             String custPOICode = request.getParameter("custPOICode"); // not required
@@ -349,7 +351,7 @@ public class RestWebController {
             dataentryEntity.setEntryBy(agentCode);
             dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
             //dataentryEntity.setGender(gender);
-            dataentryEntity.setCustomerId(custid);
+            dataentryEntity.setCustomerId(cust_uid);
             dataentryEntity.setSim_no(Simno);
             dataentryEntity.setFolder_name(folderName);
             dataentryEntity.setPage_count(pages);
@@ -357,26 +359,46 @@ public class RestWebController {
             dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
             result = dataEntryService.saveDataEntry(dataentryEntity);
 
-            TblScan scanresult=new TblScan();
+           if(!result.equals("err")) {
+               TblScan scanresult = new TblScan();
+               AuditStatusEntity auditStatusEntity = qcservices.getAuditStatusEntity(1);
+               scanresult.setPaytmcustomerDataEntity(paytmcustomerDataEntity);
+               scanresult.setAuditStatusEntity(auditStatusEntity);
+               scanresult.setSimNo(Simno);
+               scanresult.setCreatedBy("System");
+               scanresult.setCreatedOn(new Timestamp(new Date().getTime()));
+               scanresult.setCustomerNumber(phoneNumber);
+               scanresult.setImagePath("");
+               scanresult.setCircleMastEntity(circleMastEntity);
+               scanresult.setPageNo(pages);
+               scanresult.setSpokeMastEntity(spokeMastEntity);
+               scanresult.setDataDate(new Timestamp(new Date().getTime()));
 
-            AuditStatusEntity auditStatusEntity =qcservices.getAuditStatusEntity(1);
-            scanresult.setPaytmcustomerDataEntity(paytmcustomerDataEntity);
-            scanresult.setAuditStatusEntity(auditStatusEntity);
-            scanresult.setSimNo(Simno);
-            scanresult.setCreatedBy("System");
-            scanresult.setCreatedOn(new Timestamp(new Date().getTime()));
-            scanresult.setCustomerNumber(phoneNumber);
-            scanresult.setImagePath("");
-            scanresult.setCircleMastEntity(circleMastEntity);
-            scanresult.setPageNo(pages);
-            scanresult.setSpokeMastEntity(spokeMastEntity);
-            scanresult.setDataDate(new Timestamp(new Date().getTime()));
 
-            result=qcservices.SaveScanimages(scanresult);
+               result = qcservices.SaveScanimages(scanresult);
+
+           }
+            if(!result.equals("err")) {
+                TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
+                tblcustDocDetails.setCust_uid(cust_uid);
+                tblcustDocDetails.setcPOA(poa);
+                tblcustDocDetails.setcPOI(poi);
+                tblcustDocDetails.setOrigPoi(originalpoi);
+                tblcustDocDetails.setOrigPoa(originalpoa);
+                tblcustDocDetails.setSRF(srf);
+                tblcustDocDetails.setPhoto(originalphoto);
+                tblcustDocDetails.setPoiPc(ipoipc);
+                tblcustDocDetails.setPoaPc(ipoapc);
+                tblcustDocDetails.setOrigpoiPc(originalopipc);
+                tblcustDocDetails.setOrigpoaPc(originalopoapc);
+                tblcustDocDetails.setSrfPc(originalsrfpc);
+                tblcustDocDetails.setPhotoPc(originalphotoPC);
+                result = qcservices.savetbldocdetails(tblcustDocDetails);
+            }
             if ("done".equals(result)) {
                 updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
                 //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
-                result = "0";
+                result = "done";
 
             }
             else
@@ -407,7 +429,14 @@ public class RestWebController {
         ProofMastEntity proofMastEntityPOACode = null;
         PaytmMastEntity paytmMastData=null;
         String phonenumber=null;
-
+        int pages=0;
+        int cust_uid=0;
+        int originalsrfpc=0;
+        int ipoipc=0;
+        int ipoapc=0;
+        int originalopipc=0;
+        int originalopoapc=0;
+        int originalphotoPC=0;
 
         String agentCode = request.getParameter("AgentCode");
         String jobid = request.getParameter("Jobid");
@@ -422,11 +451,65 @@ public class RestWebController {
         String Simno = request.getParameter("simno");
         String folderName=request.getParameter("folderName");
         String pageCount=request.getParameter("pageCount");
-        int pages=Integer.parseInt(pageCount);
-        String customerid=request.getParameter("custid");
-        int cust_uid=Integer.parseInt(customerid);
-        if (customerid != null) {
-            paytmMastData = paytmMasterService.getPaytmmasterServiceDate(customerid);
+
+        if(StringUtils.isNotBlank(pageCount)){
+             pages=Integer.parseInt(pageCount);
+        }
+
+        String customerid=request.getParameter("customerId");
+        /*if(StringUtils.isNotBlank(customerid)) {
+            int cust_uids = Integer.parseInt(customerid);
+        }*/
+        String srf=request.getParameter("SRF");
+        String poi=request.getParameter("POI");
+        String poa=request.getParameter("POA");
+        String originalpoi=request.getParameter("OrigPOI");
+        String originalpoa=request.getParameter("OrigPOA");
+        String originalphoto=request.getParameter("OrigPhoto");
+        String srfpc=request.getParameter("SRFPC");
+        if(StringUtils.isNotBlank(srfpc)) {
+           originalsrfpc = Integer.parseInt(srfpc);
+        }
+        String poipc=request.getParameter("POIPC");
+        if (StringUtils.isNotBlank(poipc)) {
+           ipoipc = Integer.parseInt(poipc);
+        }
+        String poapc=request.getParameter("POAPC");
+        if(StringUtils.isNotBlank(poapc)) {
+            ipoapc = Integer.parseInt(poapc);
+        }
+        String opoipc=request.getParameter("OPOIPC");
+        if(StringUtils.isNotBlank(opoipc)) {
+             originalopipc = Integer.parseInt(opoipc);
+        }
+        String opoapc=request.getParameter("OPOAPC");
+        if(StringUtils.isNotBlank(opoapc)) {
+            originalopoapc = Integer.parseInt(opoapc);
+        }
+        String photoPC=request.getParameter("PhotoPC");
+        if(StringUtils.isNotBlank(photoPC)) {
+            originalphotoPC = Integer.parseInt(photoPC);
+        }
+        if (!StringUtils.isEmpty(agentCode)) {
+            paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
+        }
+        if (!StringUtils.isEmpty(jobid)) {
+            allocationMastEntity = allocationService.findByPrimaryKey(jobID);
+         cust_uid= allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
+        }
+        if (custPOICode != null && StringUtils.isNotBlank(custPOICode)) {
+            proofMastEntityPOICode = leadsService.findBykey(custPOICode);
+        }else{
+            proofMastEntityPOICode = leadsService.findBykey("8");
+        }
+        if (custPOACode != null && StringUtils.isNotBlank(custPOACode) ) {
+            proofMastEntityPOACode = leadsService.findBykey(custPOACode);
+        }else {
+            proofMastEntityPOACode = leadsService.findBykey("8");
+        }
+
+        if (cust_uid != 0) {
+            paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
            /* custid = paytmMastData.getCust_uid();*/
             address = paytmMastData.getAddress();
             city = paytmMastData.getCity();
@@ -436,26 +519,13 @@ public class RestWebController {
             circlecode = paytmMastData.getCirCode();
             phonenumber=paytmMastData.getCustomerPhone();
         }
-        if (!StringUtils.isEmpty(agentCode)) {
-            paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
-        }
-        if (!StringUtils.isEmpty(jobid)) {
-            allocationMastEntity = allocationService.findByPrimaryKey(jobID);
-        }
-        if (custPOICode != null) {
-            proofMastEntityPOICode = leadsService.findBykey(custPOICode);
-        }
-        if (custPOACode != null) {
-            proofMastEntityPOACode = leadsService.findBykey(custPOACode);
-        }
-        ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
+
+        ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("REJECT");
         DataentryEntity dataentryEntity=new DataentryEntity();
         dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
         //  dataentryEntity.setRejectionResion("ACC");
         dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
-        dataentryEntity.setCusPOACode(custPOACode);
         dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
-        dataentryEntity.setCusPoiCode(custPOICode);
         dataentryEntity.setCusAdd(address);
         dataentryEntity.setCusArea("");
         dataentryEntity.setCusCity(city);
@@ -478,6 +548,25 @@ public class RestWebController {
         dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
         dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
         result = dataEntryService.saveDataEntry(dataentryEntity);
+
+        if(!result.equals("err")) {
+            TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
+            tblcustDocDetails.setCust_uid(cust_uid);
+            tblcustDocDetails.setcPOA(poa);
+            tblcustDocDetails.setcPOI(poi);
+            tblcustDocDetails.setOrigPoi(originalpoi);
+            tblcustDocDetails.setOrigPoa(originalpoa);
+            tblcustDocDetails.setSRF(srf);
+            tblcustDocDetails.setPhoto(originalphoto);
+            tblcustDocDetails.setPoiPc(ipoipc);
+            tblcustDocDetails.setPoaPc(ipoapc);
+            tblcustDocDetails.setOrigpoiPc(originalopipc);
+            tblcustDocDetails.setOrigpoaPc(originalopoapc);
+            tblcustDocDetails.setSrfPc(originalsrfpc);
+            tblcustDocDetails.setPhotoPc(originalphotoPC);
+
+            result = qcservices.savetbldocdetails(tblcustDocDetails);
+        }
         result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
         //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
         return result;
@@ -545,6 +634,7 @@ public class RestWebController {
     JSONObject validateCustomer(@RequestParam(value = "jobid") String jobid,
                                 @RequestParam(value = "customerid") String customerid) {
         String customerPhone = null;
+        int cust_uid=0;
         String result = "false";
         AllocationMastEntity allocationMastEntity=null;
         JSONObject jsonObject = new JSONObject();
@@ -554,12 +644,13 @@ public class RestWebController {
         try {
 
             if (customerid != null) {
-                allocationMastEntity=paytmMasterService.getallocationMastEntity(custid,jobId);
-                allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
+                allocationMastEntity=paytmMasterService.getallocationMastEntity(customerid,jobId);
+
+              cust_uid= allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
 
 
-                PaytmMastEntity paytmMastData = paytmMasterService.getPaytmmasterServiceDate(customerid);
-                if (allocationMastEntity != null) {
+                PaytmMastEntity paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
+                if (paytmMastData != null) {
 
                     jsonObject.put("simType", paytmMastData.getSimType());
                     jsonObject.put("customeName", paytmMastData.getUsername());
@@ -568,9 +659,6 @@ public class RestWebController {
                     jsonObject.put("circleCode",paytmMastData.getCirCode());
                     jsonObject.put("cust_uid",paytmMastData.getCust_uid());
                     jsonObject.put("Msg", "Data Found");
-
-
-
                     result = "true";
 
                 } else {
@@ -580,6 +668,7 @@ public class RestWebController {
         } catch (Exception e) {
             logger.error("", e);
             result = "false";
+            jsonObject.put("Msg","Data Not Found");
         }
 
         return jsonObject;
@@ -686,7 +775,7 @@ JSONObject result=new JSONObject();
                 allocationMastEntity.setVisitDateTime(new Timestamp(new Date().getTime()));
                 String status = allocationService.updateAllocationMastEntity(allocationMastEntity);
                 if ("done".equals(status)) {
-                    result = "1";
+                    result = "done";
                 }
             }
         } catch (Exception e) {

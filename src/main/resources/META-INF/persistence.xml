@@ -41,6 +41,7 @@
             <class>com.softage.paytm.models.AgentLocationEntity</class>
             <class>com.softage.paytm.models.CallTimeDetailsEntity</class>
             <class>com.softage.paytm.models.AuditStatusEntity</class>
+        <class>com.softage.paytm.models.TblcustDocDetails</class>
 
         <exclude-unlisted-classes />
 

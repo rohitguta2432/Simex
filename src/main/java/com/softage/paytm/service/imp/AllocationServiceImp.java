@@ -29,6 +29,9 @@ public class AllocationServiceImp implements AllocationService {
         String result=null;
         for(int i=1; i<=4; i++) {
             result= allocationDao.updateAllocationMastEntity(allocationMastEntity);
+            if(result.equals("done")){
+                break;
+            }
         }
         return result;
     }

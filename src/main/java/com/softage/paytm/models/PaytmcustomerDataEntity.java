@@ -36,7 +36,7 @@ public class PaytmcustomerDataEntity {
     private TblScan tblScan;
     private AgentLocationEntity agentLocationEntity;
     private CallTimeDetailsEntity callTimeDetailsEntity;
-
+  // private TblcustDocDetails tblcustDocDetails;
 
     /*   public void setPcdVisitDate(String pcdVisitDate) {
         this.pcdVisitDate = pcdVisitDate;
@@ -322,5 +322,15 @@ public class PaytmcustomerDataEntity {
         this.callTimeDetailsEntity = callTimeDetailsEntity;
     }
 
+
+   /* @OneToOne(mappedBy = "custidByDataEntryCustid")
+    public TblcustDocDetails getTblcustDocDetails() {
+        return tblcustDocDetails;
+    }
+
+    public void setTblcustDocDetails(TblcustDocDetails tblcustDocDetails) {
+        this.tblcustDocDetails = tblcustDocDetails;
+    }
+*/
 
 }

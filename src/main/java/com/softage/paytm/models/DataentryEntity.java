@@ -40,6 +40,10 @@ public class DataentryEntity implements Serializable {
     private ProofMastEntity proofMastByCcusPOACode;
     private ProofMastEntity proofMastByCusPoiCode;
     private ReasonMastEntity reasonMastByRejectionResion;
+
+
+
+
     @Id
     @GeneratedValue
     @Column(name = "Id", nullable = false, insertable = true, updatable = true)
@@ -70,7 +74,7 @@ public class DataentryEntity implements Serializable {
         this.folder_name = folder_name;
     }
     @Basic
-    @Column(name = "page_count", nullable = false, insertable = true, updatable = true, length =20)
+    @Column(name = "page_count", nullable = true, insertable = true, updatable = true, length =20)
     public int getPage_count() {
         return page_count;
     }
@@ -109,7 +113,7 @@ public class DataentryEntity implements Serializable {
 
 
     @Basic
-    @Column(name="sim_no", nullable=false,insertable = true,updatable = true,length = 20)
+    @Column(name="sim_no", nullable=true,insertable = true,updatable = true,length = 20)
     public String getSim_no() {return sim_no;}
 
 public void setSim_no(String sim_no) {this.sim_no=sim_no;}
@@ -173,7 +177,6 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
     public void setCusState(String cusState) {
         this.cusState = cusState;
     }
-
     @Basic
     @Column(name = "cust_uid", nullable = false, insertable = true, updatable = true, length = 20)
     public int getCustomerId() {
@@ -354,7 +357,7 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
     }
 
     @ManyToOne
-    @JoinColumn(name = "rejection_reason", referencedColumnName = "Reason_code", nullable = true)
+    @JoinColumn(name = "kyc_status", referencedColumnName = "Reason_code", nullable = true)
     public ReasonMastEntity getReasonMastByRejectionResion() {
         return reasonMastByRejectionResion;
     }
@@ -372,4 +375,8 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
     public void setProofMastByCcusPOACode(ProofMastEntity proofMastByCcusPOACode) {
         this.proofMastByCcusPOACode = proofMastByCcusPOACode;
     }
+
+
+
 }
+

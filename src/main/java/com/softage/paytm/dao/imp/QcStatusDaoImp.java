@@ -1,10 +1,7 @@
 package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.QcStatusDao;
-import com.softage.paytm.models.AuditStatusEntity;
-import com.softage.paytm.models.CircleAuditEntity;
-import com.softage.paytm.models.PaytmMastEntity;
-import com.softage.paytm.models.TblScan;
+import com.softage.paytm.models.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -297,6 +294,32 @@ public class QcStatusDaoImp implements QcStatusDao {
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(savesimages);
+            transaction.commit();
+            msg="done";
+        } catch (Exception e) {
+            msg="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return msg;
+    }
+
+    @Override
+    public String saveTblDocdetails(TblcustDocDetails tblcustDocDetails) {
+
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg=null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(tblcustDocDetails);
             transaction.commit();
             msg="done";
         } catch (Exception e) {

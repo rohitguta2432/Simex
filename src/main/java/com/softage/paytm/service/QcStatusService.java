@@ -4,6 +4,7 @@ package com.softage.paytm.service;
 import com.softage.paytm.models.AuditStatusEntity;
 import com.softage.paytm.models.CircleAuditEntity;
 import com.softage.paytm.models.TblScan;
+import com.softage.paytm.models.TblcustDocDetails;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -26,5 +27,6 @@ public interface QcStatusService {
     public TblScan getUserScanDetails(int cust_uid);
     public String updateTblSacnEntity(TblScan tblScan);
     public String SaveScanimages(TblScan scantbl);
+    public String savetbldocdetails(TblcustDocDetails tblcustDocDetails);
 
 }

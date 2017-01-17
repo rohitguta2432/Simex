@@ -344,20 +344,18 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         }
         return  paytmMastEntity;
     }
-    public PaytmMastEntity getpaytmmasterservice(String customerId){
+    public PaytmMastEntity getpaytmmasterservice(int customerId){
         EntityManager entityManager = null;
         PaytmMastEntity paytmMastEntityServices=null;
         Query query=null;
         try
         {
-            String likeParameter="%"+customerId+"%";
+            /*String likeParameter="%"+customerId+"%";*/
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "from PaytmMastEntity where str(cust_uid) like :customer";
+            String strQuery = "from PaytmMastEntity where cust_uid=:customerId";
             query=entityManager.createQuery(strQuery);
-            query.setParameter("customer",likeParameter);
+            query.setParameter("customerId",customerId);
             paytmMastEntityServices = (PaytmMastEntity)query.getSingleResult();
-
-
 
         }
         catch (Exception e)
@@ -424,7 +422,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
-    public AllocationMastEntity getAllocationentity(int custid, int jobid) {
+    public AllocationMastEntity getAllocationentity(String custid, int jobid) {
         EntityManager entityManager = null;
         AllocationMastEntity allocationMastEntity=null;
         Query query=null;

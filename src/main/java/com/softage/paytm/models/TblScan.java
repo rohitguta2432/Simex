@@ -59,6 +59,7 @@ public class TblScan {
     public void setDataDate(Date dataDate) {
         this.dataDate = dataDate;
     }
+
     @Basic
     @Column(name = "sim_no",nullable = false,insertable = true,updatable = true)
     public String getSimNo() {

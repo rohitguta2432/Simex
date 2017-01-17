@@ -261,7 +261,6 @@ public class AllocationMastEntity {
     public void setPaytmagententryByAgentCode(PaytmagententryEntity paytmagententryByAgentCode) {
         this.paytmagententryByAgentCode = paytmagententryByAgentCode;
     }
-
     @OneToOne
     @JoinColumn(name = "cust_uid")
     public PaytmcustomerDataEntity getPaytmcustomerDataByCustomerPhone() {
