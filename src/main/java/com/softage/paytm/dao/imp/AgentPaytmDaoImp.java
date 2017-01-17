@@ -239,7 +239,7 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
     }
 
     @Override
-    public String saveAgentLocation(String agentCode, String CustomerNumber, String location,double lati,double longi) {
+    public String saveAgentLocation(String agentCode, String CustomerNumber, String location,double lati,double longi,int cust_uid){
         EntityManager entityManager=null;
         EntityTransaction transaction=null;
         List message=new ArrayList<>();
@@ -247,12 +247,13 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
         try{
             entityManager=entityManagerFactory.createEntityManager();
             entityManager.getTransaction().begin();
-            Query query=entityManager.createNativeQuery("{call usp_insertAgentLocation(?,?,?,?,?)}");
+            Query query=entityManager.createNativeQuery("{call usp_insertAgentLocation(?,?,?,?,?,?)}");
             query.setParameter(1,agentCode);
             query.setParameter(2,CustomerNumber);
             query.setParameter(3,location);
             query.setParameter(4,lati);
             query.setParameter(5,longi);
+            query.setParameter(6,cust_uid);
             res=(String)query.getSingleResult();
             entityManager.getTransaction().commit();
             /*if(message.equals("")||message.equals(null)){

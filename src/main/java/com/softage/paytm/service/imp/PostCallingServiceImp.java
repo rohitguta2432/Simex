@@ -466,8 +466,8 @@ public class PostCallingServiceImp implements PostCallingService {
 
                     if (allocationMastEntity1 != null) {
                         jobNumber = allocationMastEntity1.getId();
-                        String phoneNumber = allocationMastEntity1.getCustomerPhone();
-                        paytmMastEntity = paytmMasterDao.getPaytmMaster(phoneNumber);
+                        int cust_uid = allocationMastEntity1.getPaytmcustomerDataByCustomerPhone().getCust_uid();
+                        paytmMastEntity = paytmMasterDao.getPaytmMasterData(cust_uid);
 
                     }
 

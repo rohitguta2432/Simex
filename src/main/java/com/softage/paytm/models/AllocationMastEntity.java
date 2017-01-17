@@ -292,7 +292,7 @@ public class AllocationMastEntity {
     public void setAppointmentMastByAppointmentId(AppointmentMastEntity appointmentMastByAppointmentId) {
         this.appointmentMastByAppointmentId = appointmentMastByAppointmentId;
     }
-    @OneToMany(mappedBy = "allocationMastByAllocationId",cascade =CascadeType.ALL )
+    @OneToMany(mappedBy = "allocationMastByAllocationId" )
     public Collection<DataentryEntity> getDataentriesById() {
         return dataentriesById;
     }

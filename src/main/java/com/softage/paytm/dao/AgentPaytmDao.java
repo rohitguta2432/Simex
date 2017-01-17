@@ -18,5 +18,5 @@ public interface AgentPaytmDao {
     public String updateEmployee(EmplogintableEntity emplogintableEntity);
     public PaytmagententryEntity findByPrimaryKey(String agentCode);
     public PaytmagententryEntity findByPincode(String pincode);
-    public String saveAgentLocation(String agentCode,String CustomerNumber,String location,double lati,double longi);
+    public String saveAgentLocation(String agentCode,String CustomerNumber,String location,double lati,double longi,int cust_uid);
 }

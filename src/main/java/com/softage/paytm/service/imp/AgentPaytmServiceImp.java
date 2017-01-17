@@ -50,8 +50,8 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     }
 
     @Override
-    public String saveAgentLocation(String agentCode, String CustomerNumber, String location,double lati,double longi) {
-        return agentPaytmDao.saveAgentLocation(agentCode,CustomerNumber,location,lati,longi);
+    public String saveAgentLocation(String agentCode, String CustomerNumber, String location,double lati,double longi,int cust_uid) {
+        return agentPaytmDao.saveAgentLocation(agentCode,CustomerNumber,location,lati,longi, cust_uid);
     }
 
     @Override

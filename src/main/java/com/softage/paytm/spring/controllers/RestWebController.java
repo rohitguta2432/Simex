@@ -62,6 +62,8 @@ public class RestWebController {
             Object obj = enumeration.nextElement();
             System.out.println("Key: "+obj+"\tOutPut= "+System.getProperty(obj.toString()));
         }*/
+
+
         EmplogintableEntity emplogintableEntity = userService.getUserByToken("[B@503d88d8");
 
 
@@ -87,6 +89,7 @@ public class RestWebController {
     @RequestMapping(value = "/validateEmployee", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String validateEmployee(HttpServletRequest request, HttpServletResponse response) {
         try {
+
             String empcode = request.getParameter("username");
             String pass = request.getParameter("password");
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(empcode);
@@ -111,9 +114,9 @@ public class RestWebController {
     public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
         //logger.info("Welcome home! The client locale is {}.", locale);
 
-        String result = "invalid";
+        String result = "Invalid Password";
         JSONObject jsonObject = new JSONObject();
-        String user = request.getParameter("userName");
+        String user = request.getParameter("username");
         String password = request.getParameter("password");
         String dbUser = null;
         String token=null;
@@ -161,7 +164,7 @@ public class RestWebController {
                         agentPaytmService.updatePassword(emplogintableEntity, null);
 
                     } else if (currentDate.getTime() > expireDate.getTime()) {
-                        result = "expirePassword";
+                        result = "Password Expired";
 
                     } else if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
                         dbUser = emplogintableEntity.getEmpCode();
@@ -187,7 +190,7 @@ public class RestWebController {
                         agentPaytmService.updatePassword(emplogintableEntity, null);
                     }
                 } else if ( lockedDate.getTime() > currentDate.getTime()) {
-                    result="locked";
+                    result="Your Account has locked! Try after 1 Hour";
                 } else {
                     if (expireDate == null) {
 
@@ -214,7 +217,7 @@ public class RestWebController {
                         agentPaytmService.updatePassword(emplogintableEntity, null);
 
                     } else if (currentDate.getTime() > expireDate.getTime()) {
-                        result = "expirePassword";
+                        result = "Password Expired";
 
                     } else if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
                         dbUser = emplogintableEntity.getEmpCode();
@@ -240,7 +243,7 @@ public class RestWebController {
                     }
                 }
             }else {
-                result = "invalid";
+                result = "Invalid Password";
             }
         }catch(Exception e){
             result = "error";
@@ -281,26 +284,33 @@ public class RestWebController {
     public String UpdateDeviceInfo(HttpServletRequest request, HttpServletResponse response) {
         String msg = "0";
         PaytmdeviceidinfoEntity paytmdeviceidinfoEntity1 = null;
-        try {
-            String loginId = request.getParameter("loginid");
-            String deviceId = request.getParameter("deviceId");
-            String importby = request.getParameter("importby");
-            PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = new PaytmdeviceidinfoEntity();
-            paytmdeviceidinfoEntity.setDeviceId(deviceId);
-            paytmdeviceidinfoEntity.setLoginId(loginId);
-            paytmdeviceidinfoEntity.setImportBy(importby);
-            paytmdeviceidinfoEntity.setImportDate(new Timestamp(new Date().getTime()));
-            paytmdeviceidinfoEntity1 = paytmDeviceService.getByloginId(loginId);
-            if (paytmdeviceidinfoEntity1 == null) {
-                msg = paytmDeviceService.saveDevice(paytmdeviceidinfoEntity);
-            } else {
-                paytmdeviceidinfoEntity1.setDeviceId(deviceId);
-                paytmdeviceidinfoEntity1.setImportBy(importby);
-                msg = paytmDeviceService.updateDevice(paytmdeviceidinfoEntity1);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+            try {
+                String loginId = request.getParameter("loginid");
+                String deviceId = request.getParameter("deviceId");
+                String importby = request.getParameter("importby");
+                PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = new PaytmdeviceidinfoEntity();
+                paytmdeviceidinfoEntity.setDeviceId(deviceId);
+                paytmdeviceidinfoEntity.setLoginId(loginId);
+                paytmdeviceidinfoEntity.setImportBy(importby);
+                paytmdeviceidinfoEntity.setImportDate(new Timestamp(new Date().getTime()));
+                paytmdeviceidinfoEntity1 = paytmDeviceService.getByloginId(loginId);
+                if (paytmdeviceidinfoEntity1 == null) {
+                    msg = paytmDeviceService.saveDevice(paytmdeviceidinfoEntity);
+                } else {
+                    paytmdeviceidinfoEntity1.setDeviceId(deviceId);
+                    paytmdeviceidinfoEntity1.setImportBy(importby);
+                    msg = paytmDeviceService.updateDevice(paytmdeviceidinfoEntity1);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("", e);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("", e);
+        }
+        else{
+            msg="NOT AUTHENTICABLE USER";
         }
         return msg;
 
@@ -313,13 +323,13 @@ public class RestWebController {
         JSONObject leadsObject = new JSONObject();
         String cuurentDate = null;
         List<JSONObject> arrayList = new ArrayList();
-        EmplogintableEntity emplogintableEntity = userService.getUserByToken("[B@503d88d8");
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if(emplogintableEntity!=null){
             Timestamp timestamp= emplogintableEntity.getLastLoginDate();
             long time=(long)timestamp.getTime()+24*60*60*1000;
             timestamp.setTime(time);
-            Timestamp timestamp1=new Timestamp(new Date().getTime());
-
+            Timestamp timestamp1=new Timestamp(new Date().getTime());;
             if(timestamp.getTime()>timestamp1.getTime() ) {
                 try {
                     String agentCode = request.getParameter("AgentCode");
@@ -349,18 +359,26 @@ public class RestWebController {
     @RequestMapping(value = "/agentNewLeads", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json; charset=utf-8")
     public JSONArray agentNewLeads(HttpServletRequest request) {
         int timedeff = 1;
+        String msg=null;
         JSONArray array = new JSONArray();
         JSONObject leadsObject = new JSONObject();
         String cuurentDate = null;
         List<JSONObject> arrayList = new ArrayList();
-        try {
-            String agentCode = request.getParameter("AgentCode");
-            String leaddate = request.getParameter("leaddate");
-            arrayList = leadsService.getAgentLeads(agentCode, timedeff, leaddate);
-            array.addAll(arrayList);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
 
-        } catch (Exception e) {
-            logger.error("", e);
+            try {
+                String agentCode = request.getParameter("AgentCode");
+                String leaddate = request.getParameter("leaddate");
+                arrayList = leadsService.getAgentLeads(agentCode, timedeff, leaddate);
+                array.addAll(arrayList);
+
+            } catch (Exception e) {
+                logger.error("", e);
+            }
+        }else{
+             msg="NOT AUTHENTICABLE USER";
         }
      /*   leadsObject.put("leads",array);
         leadsObject.put("timediff",1);
@@ -374,51 +392,89 @@ public class RestWebController {
     @RequestMapping(value = "/UpdateLeadStatus", method = {RequestMethod.GET, RequestMethod.POST})
     public String updateLeadStatus(HttpServletRequest request) {
         String result = null;
-        String agentCode = request.getParameter("AgentCode");
-        String jobid = request.getParameter("Jobid");
-        String response1 = request.getParameter("response");
-        boolean response = Boolean.parseBoolean(response1);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
 
-
-        for (int i = 1; i <= 5; i++) {
-
-            result = leadsService.updateLeadStatus(agentCode, jobid, response);
-            if (result.equalsIgnoreCase("1")) {
-                break;
+            String agentCode = request.getParameter("AgentCode");
+            String jobid = request.getParameter("Jobid");
+            String response1 = request.getParameter("response");
+            boolean response = Boolean.parseBoolean(response1);
+            for (int i = 1; i <= 5; i++) {
+                result = leadsService.updateLeadStatus(agentCode, jobid, response);
+                if (result.equalsIgnoreCase("1")) {
+                    break;
+                }
             }
         }
-
+        else{
+            result="NOT AUTHENTICATBLE USER";
+        }
         return result;
     }
 
     @RequestMapping(value = "/AgentAcceptedLeads", method = {RequestMethod.GET, RequestMethod.POST})
-    public JSONArray agentAcceptedLeads(@RequestParam(value = "AgentCode") String agentCode) {
+    public JSONArray agentAcceptedLeads(HttpServletRequest request) {
+        String Msg=null;
         JSONArray array = new JSONArray();
-        List<JSONObject> listjson = leadsService.agentAcceptedLeads(agentCode);
-        array.addAll(listjson);
+        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+            String agentCode=request.getParameter("AgentCode");
+            List<JSONObject> listjson = leadsService.agentAcceptedLeads(agentCode);
+            array.addAll(listjson);
+        }
+        else{
+
+         array.add("NOT AUTHENTICABLE USER");
+        }
         return array;
 
     }
     @RequestMapping(value = "/AgentRejectedLeads", method = {RequestMethod.GET, RequestMethod.POST})
-    public JSONArray agentRejectedLeads(@RequestParam(value = "AgentCode") String agentCode) {
+    public JSONArray agentRejectedLeads(HttpServletRequest request) {
+        String Msg=null;
         JSONArray array = new JSONArray();
-        List<JSONObject> listjson = leadsService.agentRejectedLeads(agentCode);
-        array.addAll(listjson);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+            String agentCode=request.getParameter("AgentCode");
+            List<JSONObject> listjson = leadsService.agentRejectedLeads(agentCode);
+            array.addAll(listjson);
+        }
+        else{
+            array.add("NOT AUTHENTICABLE USER");
+        }
         return array;
     }
     @RequestMapping(value = "/getagentLocation", method = {RequestMethod.GET, RequestMethod.POST})
     public String getagentLocation(HttpServletRequest request) {
         JSONArray array = new JSONArray();
+        AllocationMastEntity allocationMastEntity=null;
+       int cust_uid=0;
+        String result=null;
+        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+            String agentCode = request.getParameter("agentcode");
+            String customerNumber = request.getParameter("customerNumber");
+            String location = request.getParameter("location");
+            String latitude = request.getParameter("latitude");
+            String longitude = request.getParameter("longitude");
+            String JObId = request.getParameter("jobid");
+            int jobid = Integer.parseInt(JObId);
 
-        String agentCode = request.getParameter("agentcode");
-        String customerNumber = request.getParameter("customerNumber");
-        String location = request.getParameter("location");
-        String latitude = request.getParameter("latitude");
-        String longitude = request.getParameter("longitude");
-        double lati = Double.parseDouble(latitude);
-        double longi = Double.parseDouble(longitude);
-        String result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location, lati, longi);
-        return result;
+            if (!StringUtils.isEmpty(JObId)) {
+                allocationMastEntity = allocationService.findByPrimaryKey(jobid);
+                cust_uid = allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
+            }
+
+            double lati = Double.parseDouble(latitude);
+            double longi = Double.parseDouble(longitude);
+            result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location, lati, longi, cust_uid);
+        } else{
+              result="NOT AUTHENTICABLE USER";
+            }
+
+            return result;
     }
     @RequestMapping(value = "/AcceptedEntry", method = {RequestMethod.GET, RequestMethod.POST})
     public String acceptedEntry(HttpServletRequest request) {
@@ -443,158 +499,171 @@ public class RestWebController {
         String spokecode="";
         int auditstatus=0;
         int circlecode=0;
-        try {
-            String customerid = request.getParameter("customerId");
-            int cust_uid=Integer.parseInt(customerid);
 
-            String phoneNumber = request.getParameter("custPhone");
-            if (customerid != null) {
-                paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
-                custid=paytmMastData.getCust_uid();
-                address = paytmMastData.getAddress();
-                city = paytmMastData.getCity();
-                state = paytmMastData.getState();
-                pincode = paytmMastData.getPincode();
-                emailId = paytmMastData.getEmail();
-                circlecode=paytmMastData.getCirCode();
-                circleMastEntity=paytmMastData.getCircleMastByCirCode();
+        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+            try {
+                String customerid = request.getParameter("customerId");
+                int cust_uid = Integer.parseInt(customerid);
 
+                String phoneNumber = request.getParameter("custPhone");
+                if (customerid != null) {
+                    paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
+                    custid = paytmMastData.getCust_uid();
+                    address = paytmMastData.getAddress();
+                    city = paytmMastData.getCity();
+                    state = paytmMastData.getState();
+                    pincode = paytmMastData.getPincode();
+                    emailId = paytmMastData.getEmail();
+                    circlecode = paytmMastData.getCirCode();
+                    circleMastEntity = paytmMastData.getCircleMastByCirCode();
+
+                }
+                spokeMastEntity = paytmMasterService.spokeMastEntity("DELCIR001");
+                paytmcustomerDataEntity = paytmMasterService.getPaytmCustomerData(cust_uid);
+
+                String custName = request.getParameter("custName");
+                String custPOICode = request.getParameter("custPOICode"); // not required
+                //String custPOINumber = request.getParameter("custPOINumber"); // not required
+                String custPOACode = request.getParameter("custPOACode");  // not requied
+                // String custPOANumber = request.getParameter("custPOANumber"); // not reqired
+                String agentCode = request.getParameter("agentCode");
+                // String gender = request.getParameter("gender");     // not requied
+                String jobid = request.getParameter("jobid");
+                int jobID = Integer.parseInt(jobid);
+                String remarksCode = request.getParameter("remarksCode");
+
+                String coStatus = request.getParameter("subscriberType");
+                String Simno = request.getParameter("simno");
+                String folderName = request.getParameter("folderName");
+                String pageCount = request.getParameter("pageCount");
+                int pages = Integer.parseInt(pageCount);
+
+                //checklist data
+                String srf = request.getParameter("SRF");
+                String poi = request.getParameter("POI");
+                String poa = request.getParameter("POA");
+                String originalpoi = request.getParameter("OrigPOI");
+                String originalpoa = request.getParameter("OrigPOA");
+                String originalphoto = request.getParameter("OrigPhoto");
+                String srfpc = request.getParameter("SRFPC");
+                int originalsrfpc = Integer.parseInt(srfpc);
+                String poipc = request.getParameter("POIPC");
+                int ipoipc = Integer.parseInt(poipc);
+                String poapc = request.getParameter("POAPC");
+                int ipoapc = Integer.parseInt(poapc);
+                String opoipc = request.getParameter("OPOIPC");
+                int originalopipc = Integer.parseInt(opoipc);
+                String opoapc = request.getParameter("OPOAPC");
+                int originalopoapc = Integer.parseInt(opoapc);
+                String photoPC = request.getParameter("PhotoPC");
+                int originalphotoPC = Integer.parseInt(photoPC);
+                if (!StringUtils.isEmpty(agentCode)) {
+
+                    paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
+                }
+                if (!StringUtils.isEmpty(jobid)) {
+                    allocationMastEntity = allocationService.findByPrimaryKey(jobID);
+
+                }
+                if (custPOICode != null) {
+                    proofMastEntityPOICode = leadsService.findBykey(custPOICode);
+                }
+                if (custPOACode != null) {
+                    proofMastEntityPOACode = leadsService.findBykey(custPOACode);
+                }
+                ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
+
+                if(StringUtils.isNotBlank(customerid)) {
+
+                    DataentryEntity dataentryEntity = new DataentryEntity();
+                    //  dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
+                    dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
+                    //  dataentryEntity.setRejectionResion("ACC");
+                    dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
+                    dataentryEntity.setCusPOACode(custPOACode);
+                    dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
+                    dataentryEntity.setCusPoiCode(custPOICode);
+                    dataentryEntity.setCusAdd(address);
+                    dataentryEntity.setCusArea("");
+                    dataentryEntity.setCusCity(city);
+                    dataentryEntity.setCusEmailId("");
+                    dataentryEntity.setCusName(custName);
+                    dataentryEntity.setCusPincode(pincode);
+                    //dataentryEntity.setCusPoaNumber(custPOANumber);
+                    // dataentryEntity.setCusPoiNumber(custPOINumber);
+                    dataentryEntity.setCusState(state);
+                    dataentryEntity.setCustomerPhone(phoneNumber);
+                    dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
+                    dataentryEntity.setDocStatus(coStatus);
+                    dataentryEntity.setEntryBy(agentCode);
+                    dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
+                    //dataentryEntity.setGender(gender);
+                    dataentryEntity.setCustomerId(cust_uid);
+                    dataentryEntity.setSim_no(Simno);
+                    dataentryEntity.setFolder_name(folderName);
+                    dataentryEntity.setPage_count(pages);
+                    dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
+                    dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
+                    result = dataEntryService.saveDataEntry(dataentryEntity);
+
+                    if (!result.equals("err") && cust_uid!=0) {
+                        TblScan scanresult = new TblScan();
+                        AuditStatusEntity auditStatusEntity = qcservices.getAuditStatusEntity(1);
+                        scanresult.setPaytmcustomerDataEntity(paytmcustomerDataEntity);
+                        scanresult.setAuditStatusEntity(auditStatusEntity);
+                        scanresult.setSimNo(Simno);
+                        scanresult.setCreatedBy("System");
+                        scanresult.setCreatedOn(new Timestamp(new Date().getTime()));
+                        scanresult.setCustomerNumber(phoneNumber);
+                        scanresult.setImagePath("");
+                        scanresult.setCircleMastEntity(circleMastEntity);
+                        scanresult.setPageNo(pages);
+                        scanresult.setSpokeMastEntity(spokeMastEntity);
+                        scanresult.setDataDate(new Timestamp(new Date().getTime()));
+                        scanresult.setAssignedStatus("U");
+                        scanresult.setAoAssignedstatus("U");
+                        scanresult.setFormRecievingStatus("P");
+
+                        result = qcservices.SaveScanimages(scanresult);
+
+                    }
+                    if (!result.equals("err") && cust_uid!=0) {
+                        TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
+                        tblcustDocDetails.setCust_uid(cust_uid);
+                        tblcustDocDetails.setcPOA(poa);
+                        tblcustDocDetails.setcPOI(poi);
+                        tblcustDocDetails.setOrigPoi(originalpoi);
+                        tblcustDocDetails.setOrigPoa(originalpoa);
+                        tblcustDocDetails.setSRF(srf);
+                        tblcustDocDetails.setPhoto(originalphoto);
+                        tblcustDocDetails.setPoiPc(ipoipc);
+                        tblcustDocDetails.setPoaPc(ipoapc);
+                        tblcustDocDetails.setOrigpoiPc(originalopipc);
+                        tblcustDocDetails.setOrigpoaPc(originalopoapc);
+                        tblcustDocDetails.setSrfPc(originalsrfpc);
+                        tblcustDocDetails.setPhotoPc(originalphotoPC);
+                        result = qcservices.savetbldocdetails(tblcustDocDetails);
+                    }
+                    if ("done".equals(result)) {
+                        updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+                        //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
+                        result = "done";
+
+                    } else {
+                        result = "Not found";
+                    }
+
+                }else{
+                    result="CustomerID Not Found ";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            spokeMastEntity=paytmMasterService.spokeMastEntity("DELCIR001");
-            paytmcustomerDataEntity =paytmMasterService.getPaytmCustomerData(cust_uid);
-
-            String custName = request.getParameter("custName");
-            String custPOICode = request.getParameter("custPOICode"); // not required
-            //String custPOINumber = request.getParameter("custPOINumber"); // not required
-            String custPOACode = request.getParameter("custPOACode");  // not requied
-            // String custPOANumber = request.getParameter("custPOANumber"); // not reqired
-            String agentCode = request.getParameter("agentCode");
-            // String gender = request.getParameter("gender");     // not requied
-            String jobid = request.getParameter("jobid");
-            int jobID=Integer.parseInt(jobid);
-            String remarksCode = request.getParameter("remarksCode");
-
-            String coStatus = request.getParameter("subscriberType");
-            String Simno = request.getParameter("simno");
-            String folderName=request.getParameter("folderName");
-            String pageCount=request.getParameter("pageCount");
-            int pages=Integer.parseInt(pageCount);
-
-            //checklist data
-            String srf=request.getParameter("SRF");
-            String poi=request.getParameter("POI");
-            String poa=request.getParameter("POA");
-            String originalpoi=request.getParameter("OrigPOI");
-            String originalpoa=request.getParameter("OrigPOA");
-            String originalphoto=request.getParameter("OrigPhoto");
-            String srfpc=request.getParameter("SRFPC");
-            int originalsrfpc=Integer.parseInt(srfpc);
-            String poipc=request.getParameter("POIPC");
-            int ipoipc=Integer.parseInt(poipc);
-            String poapc=request.getParameter("POAPC");
-            int ipoapc=Integer.parseInt(poapc);
-            String opoipc=request.getParameter("OPOIPC");
-            int originalopipc=Integer.parseInt(opoipc);
-            String opoapc=request.getParameter("OPOAPC");
-            int originalopoapc=Integer.parseInt(opoapc);
-            String photoPC=request.getParameter("PhotoPC");
-            int originalphotoPC=Integer.parseInt(photoPC);
-           if (!StringUtils.isEmpty(agentCode)) {
-
-                paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
-            }
-            if (!StringUtils.isEmpty(jobid)) {
-                allocationMastEntity = allocationService.findByPrimaryKey(jobID);
-
-            }
-            if (custPOICode != null) {
-                proofMastEntityPOICode = leadsService.findBykey(custPOICode);
-            }
-            if (custPOACode != null) {
-                proofMastEntityPOACode = leadsService.findBykey(custPOACode);
-            }
-            ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
-
-            DataentryEntity dataentryEntity = new DataentryEntity();
-            //  dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
-            dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
-            //  dataentryEntity.setRejectionResion("ACC");
-            dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
-            dataentryEntity.setCusPOACode(custPOACode);
-            dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
-            dataentryEntity.setCusPoiCode(custPOICode);
-            dataentryEntity.setCusAdd(address);
-            dataentryEntity.setCusArea("");
-            dataentryEntity.setCusCity(city);
-            dataentryEntity.setCusEmailId("");
-            dataentryEntity.setCusName(custName);
-            dataentryEntity.setCusPincode(pincode);
-            //dataentryEntity.setCusPoaNumber(custPOANumber);
-            // dataentryEntity.setCusPoiNumber(custPOINumber);
-            dataentryEntity.setCusState(state);
-            dataentryEntity.setCustomerPhone(phoneNumber);
-            dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
-            dataentryEntity.setDocStatus(coStatus);
-            dataentryEntity.setEntryBy(agentCode);
-            dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
-            //dataentryEntity.setGender(gender);
-            dataentryEntity.setCustomerId(cust_uid);
-            dataentryEntity.setSim_no(Simno);
-            dataentryEntity.setFolder_name(folderName);
-            dataentryEntity.setPage_count(pages);
-            dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
-            dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
-            result = dataEntryService.saveDataEntry(dataentryEntity);
-           if(!result.equals("err")) {
-               TblScan scanresult = new TblScan();
-               AuditStatusEntity auditStatusEntity = qcservices.getAuditStatusEntity(1);
-               scanresult.setPaytmcustomerDataEntity(paytmcustomerDataEntity);
-               scanresult.setAuditStatusEntity(auditStatusEntity);
-               scanresult.setSimNo(Simno);
-               scanresult.setCreatedBy("System");
-               scanresult.setCreatedOn(new Timestamp(new Date().getTime()));
-               scanresult.setCustomerNumber(phoneNumber);
-               scanresult.setImagePath("");
-               scanresult.setCircleMastEntity(circleMastEntity);
-               scanresult.setPageNo(pages);
-               scanresult.setSpokeMastEntity(spokeMastEntity);
-               scanresult.setDataDate(new Timestamp(new Date().getTime()));
-
-
-               result = qcservices.SaveScanimages(scanresult);
-
-           }
-            if(!result.equals("err")) {
-                TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
-                tblcustDocDetails.setCust_uid(cust_uid);
-                tblcustDocDetails.setcPOA(poa);
-                tblcustDocDetails.setcPOI(poi);
-                tblcustDocDetails.setOrigPoi(originalpoi);
-                tblcustDocDetails.setOrigPoa(originalpoa);
-                tblcustDocDetails.setSRF(srf);
-                tblcustDocDetails.setPhoto(originalphoto);
-                tblcustDocDetails.setPoiPc(ipoipc);
-                tblcustDocDetails.setPoaPc(ipoapc);
-                tblcustDocDetails.setOrigpoiPc(originalopipc);
-                tblcustDocDetails.setOrigpoaPc(originalopoapc);
-                tblcustDocDetails.setSrfPc(originalsrfpc);
-                tblcustDocDetails.setPhotoPc(originalphotoPC);
-                result = qcservices.savetbldocdetails(tblcustDocDetails);
-            }
-            if ("done".equals(result)) {
-                updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
-                //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
-                result = "done";
-
-            }
-            else
-            {
-                result = "Not found";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }else
+        {
+            result="NOT AUTHENTICABLE USER";
         }
-
         return result;
     }
 
@@ -624,137 +693,148 @@ public class RestWebController {
         int originalopoapc=0;
         int originalphotoPC=0;
 
-        String agentCode = request.getParameter("AgentCode");
-        String jobid = request.getParameter("Jobid");
-        int jobID=Integer.parseInt(jobid);
-        String statusCode = request.getParameter("statusCode");
-        String custName = request.getParameter("custName");
-        String custPOICode = request.getParameter("custPOICode"); // not required
-        //String custPOINumber = request.getParameter("custPOINumber"); // not required
-        String custPOACode = request.getParameter("custPOACode");  // not requied
-        String remarksCode = request.getParameter("remarksCode");
-        String coStatus = request.getParameter("subscriberType");
-        String Simno = request.getParameter("simno");
-        String folderName=request.getParameter("folderName");
-        String pageCount=request.getParameter("pageCount");
 
-        if(StringUtils.isNotBlank(pageCount)){
-             pages=Integer.parseInt(pageCount);
-        }
+        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
 
-        String customerid=request.getParameter("customerId");
+
+            String agentCode = request.getParameter("AgentCode");
+            String jobid = request.getParameter("Jobid");
+            int jobID = Integer.parseInt(jobid);
+            String statusCode = request.getParameter("statusCode");
+            String custName = request.getParameter("custName");
+            String custPOICode = request.getParameter("custPOICode"); // not required
+            //String custPOINumber = request.getParameter("custPOINumber"); // not required
+            String custPOACode = request.getParameter("custPOACode");  // not requied
+            String remarksCode = request.getParameter("remarksCode");
+            String coStatus = request.getParameter("subscriberType");
+            String Simno = request.getParameter("simno");
+            String folderName = request.getParameter("folderName");
+            String pageCount = request.getParameter("pageCount");
+
+            if (StringUtils.isNotBlank(pageCount)) {
+                pages = Integer.parseInt(pageCount);
+            }
+
+            String customerid = request.getParameter("customerId");
         /*if(StringUtils.isNotBlank(customerid)) {
             int cust_uids = Integer.parseInt(customerid);
         }*/
-        String srf=request.getParameter("SRF");
-        String poi=request.getParameter("POI");
-        String poa=request.getParameter("POA");
-        String originalpoi=request.getParameter("OrigPOI");
-        String originalpoa=request.getParameter("OrigPOA");
-        String originalphoto=request.getParameter("OrigPhoto");
-        String srfpc=request.getParameter("SRFPC");
-        if(StringUtils.isNotBlank(srfpc)) {
-           originalsrfpc = Integer.parseInt(srfpc);
-        }
-        String poipc=request.getParameter("POIPC");
-        if (StringUtils.isNotBlank(poipc)) {
-           ipoipc = Integer.parseInt(poipc);
-        }
-        String poapc=request.getParameter("POAPC");
-        if(StringUtils.isNotBlank(poapc)) {
-            ipoapc = Integer.parseInt(poapc);
-        }
-        String opoipc=request.getParameter("OPOIPC");
-        if(StringUtils.isNotBlank(opoipc)) {
-             originalopipc = Integer.parseInt(opoipc);
-        }
-        String opoapc=request.getParameter("OPOAPC");
-        if(StringUtils.isNotBlank(opoapc)) {
-            originalopoapc = Integer.parseInt(opoapc);
-        }
-        String photoPC=request.getParameter("PhotoPC");
-        if(StringUtils.isNotBlank(photoPC)) {
-            originalphotoPC = Integer.parseInt(photoPC);
-        }
-        if (!StringUtils.isEmpty(agentCode)) {
-            paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
-        }
-        if (!StringUtils.isEmpty(jobid)) {
-            allocationMastEntity = allocationService.findByPrimaryKey(jobID);
-         cust_uid= allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
-        }
-        if (custPOICode != null && StringUtils.isNotBlank(custPOICode)) {
-            proofMastEntityPOICode = leadsService.findBykey(custPOICode);
-        }else{
-            proofMastEntityPOICode = leadsService.findBykey("8");
-        }
-        if (custPOACode != null && StringUtils.isNotBlank(custPOACode) ) {
-            proofMastEntityPOACode = leadsService.findBykey(custPOACode);
-        }else {
-            proofMastEntityPOACode = leadsService.findBykey("8");
-        }
+            String srf = request.getParameter("SRF");
+            String poi = request.getParameter("POI");
+            String poa = request.getParameter("POA");
+            String originalpoi = request.getParameter("OrigPOI");
+            String originalpoa = request.getParameter("OrigPOA");
+            String originalphoto = request.getParameter("OrigPhoto");
+            String srfpc = request.getParameter("SRFPC");
+            if (StringUtils.isNotBlank(srfpc)) {
+                originalsrfpc = Integer.parseInt(srfpc);
+            }
+            String poipc = request.getParameter("POIPC");
+            if (StringUtils.isNotBlank(poipc)) {
+                ipoipc = Integer.parseInt(poipc);
+            }
+            String poapc = request.getParameter("POAPC");
+            if (StringUtils.isNotBlank(poapc)) {
+                ipoapc = Integer.parseInt(poapc);
+            }
+            String opoipc = request.getParameter("OPOIPC");
+            if (StringUtils.isNotBlank(opoipc)) {
+                originalopipc = Integer.parseInt(opoipc);
+            }
+            String opoapc = request.getParameter("OPOAPC");
+            if (StringUtils.isNotBlank(opoapc)) {
+                originalopoapc = Integer.parseInt(opoapc);
+            }
+            String photoPC = request.getParameter("PhotoPC");
+            if (StringUtils.isNotBlank(photoPC)) {
+                originalphotoPC = Integer.parseInt(photoPC);
+            }
+            if (!StringUtils.isEmpty(agentCode)) {
+                paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
+            }
+            if (!StringUtils.isEmpty(jobid)) {
+                allocationMastEntity = allocationService.findByPrimaryKey(jobID);
+                cust_uid = allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
+            }
+            if (custPOICode != null && StringUtils.isNotBlank(custPOICode)) {
+                proofMastEntityPOICode = leadsService.findBykey(custPOICode);
+            } else {
+                proofMastEntityPOICode = leadsService.findBykey("8");
+            }
+            if (custPOACode != null && StringUtils.isNotBlank(custPOACode)) {
+                proofMastEntityPOACode = leadsService.findBykey(custPOACode);
+            } else {
+                proofMastEntityPOACode = leadsService.findBykey("8");
+            }
 
-        if (cust_uid != 0) {
-            paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
+            if (cust_uid != 0) {
+                paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
            /* custid = paytmMastData.getCust_uid();*/
-            address = paytmMastData.getAddress();
-            city = paytmMastData.getCity();
-            state = paytmMastData.getState();
-            pincode = paytmMastData.getPincode();
-            emailId = paytmMastData.getEmail();
-            circlecode = paytmMastData.getCirCode();
-            phonenumber=paytmMastData.getCustomerPhone();
+                address = paytmMastData.getAddress();
+                city = paytmMastData.getCity();
+                state = paytmMastData.getState();
+                pincode = paytmMastData.getPincode();
+                emailId = paytmMastData.getEmail();
+                circlecode = paytmMastData.getCirCode();
+                phonenumber = paytmMastData.getCustomerPhone();
+            }
+
+            ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("REJECT");
+            DataentryEntity dataentryEntity = new DataentryEntity();
+            dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
+            //  dataentryEntity.setRejectionResion("ACC");
+            dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
+            dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
+            dataentryEntity.setCusAdd(address);
+            dataentryEntity.setCusArea("");
+            dataentryEntity.setCusCity(city);
+            dataentryEntity.setCusEmailId("");
+            dataentryEntity.setCusName(custName);
+            dataentryEntity.setCusPincode(pincode);
+            //dataentryEntity.setCusPoaNumber(custPOANumber);
+            // dataentryEntity.setCusPoiNumber(custPOINumber);
+            dataentryEntity.setCusState(state);
+            dataentryEntity.setCustomerPhone(phonenumber);
+            dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
+            dataentryEntity.setDocStatus(coStatus);
+            dataentryEntity.setEntryBy(agentCode);
+            dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
+            //dataentryEntity.setGender(gender);
+            dataentryEntity.setCustomerId(cust_uid);
+            dataentryEntity.setSim_no(Simno);
+            dataentryEntity.setFolder_name(folderName);
+            dataentryEntity.setPage_count(pages);
+            dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
+            dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
+            result = dataEntryService.saveDataEntry(dataentryEntity);
+
+            if (!result.equals("err")) {
+                TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
+                tblcustDocDetails.setCust_uid(cust_uid);
+                tblcustDocDetails.setcPOA(poa);
+                tblcustDocDetails.setcPOI(poi);
+                tblcustDocDetails.setOrigPoi(originalpoi);
+                tblcustDocDetails.setOrigPoa(originalpoa);
+                tblcustDocDetails.setSRF(srf);
+                tblcustDocDetails.setPhoto(originalphoto);
+                tblcustDocDetails.setPoiPc(ipoipc);
+                tblcustDocDetails.setPoaPc(ipoapc);
+                tblcustDocDetails.setOrigpoiPc(originalopipc);
+                tblcustDocDetails.setOrigpoaPc(originalopoapc);
+                tblcustDocDetails.setSrfPc(originalsrfpc);
+                tblcustDocDetails.setPhotoPc(originalphotoPC);
+
+
+                result = qcservices.savetbldocdetails(tblcustDocDetails);
+            }
+            result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
+            //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
+
+        }else{
+            result="NOT AUTHENTICABLE USER";
         }
 
-        ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("REJECT");
-        DataentryEntity dataentryEntity=new DataentryEntity();
-        dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
-        //  dataentryEntity.setRejectionResion("ACC");
-        dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
-        dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
-        dataentryEntity.setCusAdd(address);
-        dataentryEntity.setCusArea("");
-        dataentryEntity.setCusCity(city);
-        dataentryEntity.setCusEmailId("");
-        dataentryEntity.setCusName(custName);
-        dataentryEntity.setCusPincode(pincode);
-        //dataentryEntity.setCusPoaNumber(custPOANumber);
-        // dataentryEntity.setCusPoiNumber(custPOINumber);
-        dataentryEntity.setCusState(state);
-        dataentryEntity.setCustomerPhone(phonenumber);
-        dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
-        dataentryEntity.setDocStatus(coStatus);
-        dataentryEntity.setEntryBy(agentCode);
-        dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
-        //dataentryEntity.setGender(gender);
-        dataentryEntity.setCustomerId(cust_uid);
-        dataentryEntity.setSim_no(Simno);
-        dataentryEntity.setFolder_name(folderName);
-        dataentryEntity.setPage_count(pages);
-        dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
-        dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
-        result = dataEntryService.saveDataEntry(dataentryEntity);
-
-        if(!result.equals("err")) {
-            TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
-            tblcustDocDetails.setCust_uid(cust_uid);
-            tblcustDocDetails.setcPOA(poa);
-            tblcustDocDetails.setcPOI(poi);
-            tblcustDocDetails.setOrigPoi(originalpoi);
-            tblcustDocDetails.setOrigPoa(originalpoa);
-            tblcustDocDetails.setSRF(srf);
-            tblcustDocDetails.setPhoto(originalphoto);
-            tblcustDocDetails.setPoiPc(ipoipc);
-            tblcustDocDetails.setPoaPc(ipoapc);
-            tblcustDocDetails.setOrigpoiPc(originalopipc);
-            tblcustDocDetails.setOrigpoaPc(originalopoapc);
-            tblcustDocDetails.setSrfPc(originalsrfpc);
-            tblcustDocDetails.setPhotoPc(originalphotoPC);
-
-            result = qcservices.savetbldocdetails(tblcustDocDetails);
-        }
-        result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
-        //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
         return result;
     }
 
@@ -765,102 +845,112 @@ public class RestWebController {
         int cust_uid=0;
         System.out.println("Service done ");
        // String customer_number = request.getParameter("customer_no");
-        String image_path = request.getParameter("image_path");
-        int page_number = Integer.parseInt(request.getParameter("page_number"));
-        String created_on = request.getParameter("created_on");
-        String created_by = request.getParameter("created_by");
-        int qc_status = Integer.parseInt(request.getParameter("qc_status"));
-        cust_uid=Integer.parseInt(request.getParameter("customer_no"));
+        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
 
-        tblScan=qcservices.getUserScanDetails(cust_uid);
-        String ImagePath=tblScan.getImagePath();
-        int scanid=tblScan.getScanid();
-        if(cust_uid==0)
-          {
-            result = "cust_uid is empty";
-        } else if (ImagePath == "" || ImagePath.equals(null) || ImagePath == " " || ImagePath.equals("")) {
-            tblScan.setImagePath(image_path);
-            qcservices.updateTblSacnEntity(tblScan);
-            UploadedImagesEntity imagesEntity=new UploadedImagesEntity();
-            imagesEntity.setImagePath(image_path);
-            imagesEntity.setScan_id(scanid);
-            imagesEntity.setUploadedon(new Timestamp(new Date().getTime()));
-            imagesEntity.setTblScan(tblScan);
-            result=ftpDetailsService.saveImagesDeetails(imagesEntity);
-            if (result.equals("done")) {
-                result = "success";
-                logger.info(" Result   " + result);
+            String image_path = request.getParameter("image_path");
+            int page_number = Integer.parseInt(request.getParameter("page_number"));
+            String created_on = request.getParameter("created_on");
+            String created_by = request.getParameter("created_by");
+            int qc_status = Integer.parseInt(request.getParameter("qc_status"));
+            cust_uid = Integer.parseInt(request.getParameter("customer_no"));
+
+            tblScan = qcservices.getUserScanDetails(cust_uid);
+            String ImagePath = tblScan.getImagePath();
+            int scanid = tblScan.getScanid();
+            if (cust_uid == 0) {
+                result = "cust_uid is empty";
+            } else if (ImagePath == "" || ImagePath.equals(null) || ImagePath == " " || ImagePath.equals("")) {
+                tblScan.setImagePath(image_path);
+                qcservices.updateTblSacnEntity(tblScan);
+                UploadedImagesEntity imagesEntity = new UploadedImagesEntity();
+                imagesEntity.setImagePath(image_path);
+                imagesEntity.setScan_id(scanid);
+                imagesEntity.setUploadedon(new Timestamp(new Date().getTime()));
+                imagesEntity.setTblScan(tblScan);
+                result = ftpDetailsService.saveImagesDeetails(imagesEntity);
+                if (result.equals("done")) {
+                    result = "success";
+                    logger.info(" Result   " + result);
+                } else {
+                    result = "Fail";
+                    logger.info(" Result   " + result);
+                }
             } else {
-                result = "Fail";
-                logger.info(" Result   " + result);
+                //result = ftpDetailsService.saveFTPData(customer_number, image_path, page_number, created_by, qc_status);
+                UploadedImagesEntity imagesEntity = new UploadedImagesEntity();
+                imagesEntity.setImagePath(image_path);
+                imagesEntity.setScan_id(scanid);
+                imagesEntity.setUploadedon(new Timestamp(new Date().getTime()));
+                imagesEntity.setTblScan(tblScan);
+                result = ftpDetailsService.saveImagesDeetails(imagesEntity);
+                if (result.equals("done")) {
+                    result = "success";
+                    logger.info(" Result   " + result);
+                } else {
+                    result = "Fail";
+                    logger.info(" Result   " + result);
+                }
             }
-        } else {
-            //result = ftpDetailsService.saveFTPData(customer_number, image_path, page_number, created_by, qc_status);
-        UploadedImagesEntity imagesEntity=new UploadedImagesEntity();
-            imagesEntity.setImagePath(image_path);
-            imagesEntity.setScan_id(scanid);
-            imagesEntity.setUploadedon(new Timestamp(new Date().getTime()));
-            imagesEntity.setTblScan(tblScan);
-            result=ftpDetailsService.saveImagesDeetails(imagesEntity);
-            if (result.equals("done")) {
-                result = "success";
-                logger.info(" Result   " + result);
-            } else {
-                result = "Fail";
-                logger.info(" Result   " + result);
-            }
+
+        }
+        else{
+            result="NOT AUTHENTICABLE USER";
         }
         return result;
     }
-
-
     @RequestMapping(value = "/ValidateCustomerId", method = {RequestMethod.GET, RequestMethod.POST})
     public
     @ResponseBody
-    JSONObject validateCustomer(@RequestParam(value = "jobid") String jobid,
-                                @RequestParam(value = "customerid") String customerid) {
+    JSONObject validateCustomer(HttpServletRequest request) {
         String customerPhone = null;
         int cust_uid=0;
         String result = "false";
+        String customerid=null;
         AllocationMastEntity allocationMastEntity=null;
         JSONObject jsonObject = new JSONObject();
 
-        int custid=Integer.parseInt(customerid);
-        int jobId=Integer.parseInt(jobid);
-        try {
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
 
-            if (customerid != null) {
-                allocationMastEntity=paytmMasterService.getallocationMastEntity(customerid,jobId);
+            customerid = request.getParameter("customerid");
+            String jobid = request.getParameter("jobid");
+            int jobId = Integer.parseInt(jobid);
+            try {
 
-              cust_uid= allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
+                if (customerid != null) {
+                    allocationMastEntity = paytmMasterService.getallocationMastEntity(customerid, jobId);
+
+                    cust_uid = allocationMastEntity.getPaytmcustomerDataByCustomerPhone().getCust_uid();
 
 
-                PaytmMastEntity paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
-                if (paytmMastData != null) {
+                    PaytmMastEntity paytmMastData = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
+                    if (paytmMastData != null) {
 
-                    jsonObject.put("simType", paytmMastData.getSimType());
-                    jsonObject.put("customeName", paytmMastData.getUsername());
-                    jsonObject.put("coStatus", paytmMastData.getCoStatus());
-                    jsonObject.put("cust_uid",paytmMastData.getCust_uid());
-                    jsonObject.put("circleCode",paytmMastData.getCirCode());
-                    jsonObject.put("cust_uid",paytmMastData.getCust_uid());
-                    jsonObject.put("Msg", "Data Found");
-                    result = "true";
+                        jsonObject.put("simType", paytmMastData.getSimType());
+                        jsonObject.put("customeName", paytmMastData.getUsername());
+                        jsonObject.put("coStatus", paytmMastData.getCoStatus());
+                        jsonObject.put("cust_uid", paytmMastData.getCust_uid());
+                        jsonObject.put("circleCode", paytmMastData.getCirCode());
+                        jsonObject.put("cust_uid", paytmMastData.getCust_uid());
+                        jsonObject.put("Msg", "Data Found");
+                        result = "true";
 
-                } else {
-                    jsonObject.put("Msg", "Data Not Found");
+                    } else {
+                        jsonObject.put("Msg", "Data Not Found");
+                    }
                 }
+            } catch (Exception e) {
+                logger.error("", e);
+                result = "false";
+                jsonObject.put("Msg", "Data Not Found");
             }
-        } catch (Exception e) {
-            logger.error("", e);
-            result = "false";
-            jsonObject.put("Msg","Data Not Found");
+        }else{
+            jsonObject.put("Msg","Authentication Failed");
         }
-
         return jsonObject;
     }
-
-
     @RequestMapping(value = "/ftpDocumentDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public String ftpDocumentDetails(HttpServletRequest request) {
 
@@ -868,77 +958,117 @@ public class RestWebController {
         return "done";
     }
 
-
     @RequestMapping(value = "/RasonsList", method = {RequestMethod.GET, RequestMethod.POST})
-    public JSONArray reasonList() {
+    public JSONArray reasonList(HttpServletRequest request) {
         JSONArray array = new JSONArray();
-        List<ReasonMastEntity> reasonMastEntities = leadsService.reasonList();
-        for (ReasonMastEntity reasonMastEntity : reasonMastEntities) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("Code", reasonMastEntity.getReasonCode());
-            jsonObject.put("Text", reasonMastEntity.getReasonText());
-            array.add(jsonObject);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+
+            List<ReasonMastEntity> reasonMastEntities = leadsService.reasonList();
+            for (ReasonMastEntity reasonMastEntity : reasonMastEntities) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("Code", reasonMastEntity.getReasonCode());
+                jsonObject.put("Text", reasonMastEntity.getReasonText());
+                array.add(jsonObject);
+            }
+        }
+        else{
+            array.add("NOT AUTHENTICABLE USER");
         }
         return array;
     }
 
     @RequestMapping(value = "/RemarkList", method = {RequestMethod.GET, RequestMethod.POST})
-    public JSONArray remarkList() {
+    public JSONArray remarkList(HttpServletRequest request) {
 
         JSONArray array = new JSONArray();
-        List<RemarkMastEntity> remarkMastEntityList = postCallingService.remarkList();
-        for (RemarkMastEntity remarkMastEntity : remarkMastEntityList) {
-            if (!remarkMastEntity.getRemarksCode().equalsIgnoreCase("U")) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("Code", remarkMastEntity.getRemarksCode());
-                jsonObject.put("Text", remarkMastEntity.getRemarksText());
-                array.add(jsonObject);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+            List<RemarkMastEntity> remarkMastEntityList = postCallingService.remarkList();
+            for (RemarkMastEntity remarkMastEntity : remarkMastEntityList) {
+                if (!remarkMastEntity.getRemarksCode().equalsIgnoreCase("U")) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("Code", remarkMastEntity.getRemarksCode());
+                    jsonObject.put("Text", remarkMastEntity.getRemarksText());
+                    array.add(jsonObject);
+                }
             }
+        }
+        else{
+            array.add("NOT AUTHENTICABLE USER");
         }
         return array;
     }
     @RequestMapping(value = "/KYCDone", method = {RequestMethod.GET, RequestMethod.POST})
-    public JSONArray kycDone(@RequestParam(value = "AgentCode") String agentCode) {
+    public JSONArray kycDone(HttpServletRequest request) {
         JSONArray array = new JSONArray();
-        JSONObject result=new JSONObject();
-        List<JSONObject> listjson = leadsService.kycDone(agentCode);
-        array.addAll(listjson);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null){
+            String agentCode = request.getParameter("AgentCode");
+            JSONObject result = new JSONObject();
+            List<JSONObject> listjson = leadsService.kycDone(agentCode);
+            array.addAll(listjson);
+        }
+        else{
+            array.add("NOT AUTHENTICABLE USER");
+        }
         return array;
 
     }
 
     @RequestMapping(value = "/KYCNotDone", method = {RequestMethod.GET, RequestMethod.POST})
-    public JSONArray kycNotDone(@RequestParam(value = "AgentCode") String agentCode) {
-
+    public JSONArray kycNotDone(HttpServletRequest request) {
         JSONArray array = new JSONArray();
-        List<JSONObject> listjson = leadsService.kycNotDone(agentCode);
-        array.addAll(listjson);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+            String agentCode = request.getParameter("AgentCode");
+            List<JSONObject> listjson = leadsService.kycNotDone(agentCode);
+            array.addAll(listjson);
+        }
+        else{
+         array.add("NOT AUTHENTICABLE USER");
+        }
         return array;
     }
 
     @RequestMapping(value = "/IdentityProofTypes", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JSONArray identifyProofType() {
+    public JSONArray identifyProofType(HttpServletRequest request) {
         String applicable = "I";
         JSONObject jsonObject = new JSONObject();
-        List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
         JSONArray array = new JSONArray();
-        for (ProofMastEntity proofMastEntity : proofMastEntities) {
-            JSONObject json = new JSONObject();
-            json.put("Applicable", proofMastEntity.getApplicable());
-            json.put("Code", proofMastEntity.getIdCode());
-            json.put("Text", proofMastEntity.getIdText());
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
+            List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
 
-            array.add(json);
+            for (ProofMastEntity proofMastEntity : proofMastEntities) {
+                JSONObject json = new JSONObject();
+                json.put("Applicable", proofMastEntity.getApplicable());
+                json.put("Code", proofMastEntity.getIdCode());
+                json.put("Text", proofMastEntity.getIdText());
+
+                array.add(json);
+            }
+        }
+        else{
+            array.add("NOT AUTHENTICABLE USER");
         }
         //  jsonObject.put("ArrayOfProofType",array);
         return array;
     }
 
     @RequestMapping(value = "/AddressProofTypes", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JSONArray addressProofType() {
+    public JSONArray addressProofType(HttpServletRequest request) {
         String applicable = "A";
         JSONObject jsonObject = new JSONObject();
         JSONArray array = new JSONArray();
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if(emplogintableEntity!=null) {
         List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
         for (ProofMastEntity proofMastEntity : proofMastEntities) {
             JSONObject json = new JSONObject();
@@ -946,6 +1076,10 @@ public class RestWebController {
             json.put("Code", proofMastEntity.getIdCode());
             json.put("Text", proofMastEntity.getIdText());
             array.add(json);
+        }
+        }
+        else{
+            array.add("NOT AUTHENTICABLE USER");
         }
         return array;
     }
@@ -971,33 +1105,43 @@ public class RestWebController {
     }
 
     @RequestMapping(value = "/EmployeeNumber", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JSONObject employeeNumber(@RequestParam(value = "username") String userName) {
+    public JSONObject employeeNumber(HttpServletRequest request) {
         String phoneNumber = "0";
         int circleCode = 0;
+        String userName=null;
         JSONObject jsonObject = new JSONObject();
         JSONObject jsonObject1 = new JSONObject();
         String status;
-        try {
-            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
-            if (emplogintableEntity != null) {
-                phoneNumber = emplogintableEntity.getEmpPhone();
-                circleCode = emplogintableEntity.getCirCode();
-                Integer intstatus = emplogintableEntity.getEmpStatus();
-                status = intstatus.toString();
-                jsonObject = userService.getEmpFtpDetails(circleCode);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity1 = userService.getUserByToken(token);
+        if(emplogintableEntity1!=null) {
 
-                jsonObject1.put("phoneNumber", phoneNumber);
-                jsonObject1.put("circleCode", circleCode);
-                jsonObject1.put("FtpDetails", jsonObject);
-                jsonObject1.put("status", status);
+            try {
+                userName = request.getParameter("username");
+                EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
+                if (emplogintableEntity != null) {
+                    phoneNumber = emplogintableEntity.getEmpPhone();
+                    circleCode = emplogintableEntity.getCirCode();
+                    Integer intstatus = emplogintableEntity.getEmpStatus();
+                    status = intstatus.toString();
+                    jsonObject = userService.getEmpFtpDetails(circleCode);
 
-            } else {
+                    jsonObject1.put("phoneNumber", phoneNumber);
+                    jsonObject1.put("circleCode", circleCode);
+                    jsonObject1.put("FtpDetails", jsonObject);
+                    jsonObject1.put("status", status);
+
+                } else {
+                    phoneNumber = "0";
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
                 phoneNumber = "0";
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            phoneNumber = "0";
+        }
+        else{
+            jsonObject1.put("Msg","NOT AUTHENTICABLE USER");
         }
         return jsonObject1;
     }
@@ -1011,36 +1155,52 @@ public class RestWebController {
         String result = null;
         HttpSession session = request.getSession(false);
         logger.info("update Agent >>>>> wait");
-        try {
-            String agentcode = request.getParameter("agentcode");
-            String status = request.getParameter("status");
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity1 = userService.getUserByToken(token);
+        if(emplogintableEntity1!=null) {
+            try {
+                String agentcode = request.getParameter("agentcode");
+                String status = request.getParameter("status");
 
-            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(agentcode);
-            if (emplogintableEntity != null) {
-                if (status.equals("active")) {
-                    emplogintableEntity.setEmpStatus(1);
-                    emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(agentcode);
+                if (emplogintableEntity != null) {
+                    if (status.equals("active")) {
+                        emplogintableEntity.setEmpStatus(1);
+                        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                    }
+                    if (status.equalsIgnoreCase("deactive")) {
+                        emplogintableEntity.setEmpStatus(0);
+                        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                    }
+                    System.out.println(emplogintableEntity.getEmpStatus());
+                    result = userService.updateAgentStatus(emplogintableEntity);
                 }
-                if (status.equalsIgnoreCase("deactive")) {
-                    emplogintableEntity.setEmpStatus(0);
-                    emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-                }
-                System.out.println(emplogintableEntity.getEmpStatus());
-                result = userService.updateAgentStatus(emplogintableEntity);
+            } catch (Exception e) {
+                e.printStackTrace();
+                result = "err";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = "err";
+        }
+        else{
+            result="NOT AUTHENTICABLE USER";
         }
 
         return result;
     }
 
     @RequestMapping(value = "/getCustomerValidation", method = {RequestMethod.GET, RequestMethod.POST})
-    public String getCustomerValidation(@RequestParam(value = "mobileNo") String mobileNo, @RequestParam(value = "agentcode") String agentcode) {
+    public String getCustomerValidation(HttpServletRequest request) {
+        String name=null;
         JSONArray array = new JSONArray();
-        String name = leadsService.getCustomerName(mobileNo);
-
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity1 = userService.getUserByToken(token);
+        if(emplogintableEntity1!=null) {
+            String mobileNo = request.getParameter("mobileNo");
+            String agentcode = request.getParameter("agentcode");
+     name = leadsService.getCustomerName(mobileNo);
+        }
+        else{
+     name="NOT AUTHENTICABLE USER";
+        }
         return name;
 
     }
@@ -1051,9 +1211,11 @@ public class RestWebController {
         //logger.info("Welcome home! The client locale is {}.", locale);
         JSONObject jsonObject = new JSONObject();
         String result = null;
+        String useroldpassword=null;
         try {
             String user = request.getParameter("userName");
-            String password = request.getParameter("password");
+            String oldpassword = request.getParameter("oldpassword");
+            String newpassword = request.getParameter("newpassword");
             Date expireDate = new Date();
             System.out.println("Current Date   " + expireDate);
             long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
@@ -1063,13 +1225,21 @@ public class RestWebController {
 
 
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String hashedPassword = passwordEncoder.encode(password);
-            emplogintableEntity.setEmpPassword(password);
-            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+           useroldpassword=emplogintableEntity.getEmpPassword();
 
-            emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
-            result = agentPaytmService.updatePassword(emplogintableEntity, password);
+            if (oldpassword.equals(useroldpassword)) {
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                String hashedPassword = passwordEncoder.encode(newpassword);
+                emplogintableEntity.setEmpPassword(newpassword);
+                emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+
+                emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+                result = agentPaytmService.updatePassword(emplogintableEntity, newpassword);
+            }
+            else{
+                result="password not matched";
+            }
+
             if (result.equalsIgnoreCase("done")) {
                 result = "success";
             }

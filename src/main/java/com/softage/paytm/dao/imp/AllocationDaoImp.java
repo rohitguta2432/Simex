@@ -170,30 +170,28 @@ public class AllocationDaoImp implements AllocationDao {
 
     @Override
     public String updateAllocationMastEntity(AllocationMastEntity allocationMastEntity) {
-        EntityManager entityManager = null;
-        EntityTransaction transaction = null;
-        String msg=null;
-
-        try {
-            entityManager = entityManagerFactory.createEntityManager();
-            transaction = entityManager.getTransaction();
-            transaction.begin();
-            entityManager.merge(allocationMastEntity);
+        EntityManager entityManager=null;
+        String message=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            entityManager.getTransaction().begin();
+            Query query=entityManager.createNativeQuery("{call usp_updateKycAllocationMastEntity(?,?,?,?)}");
+            query.setParameter(1,allocationMastEntity.getId());
+            query.setParameter(2,allocationMastEntity.getAgentCode());
+            query.setParameter(3,allocationMastEntity.getKycCollected());
+            query.setParameter(4,allocationMastEntity.getRemarkMastByRemarksCode().getRemarksCode());
+            message=(String)query.getSingleResult();
             entityManager.flush();
             entityManager.clear();
-            transaction.commit();
-            msg="done";
-        } catch (Exception e) {
-            msg="err";
+            entityManager.getTransaction().commit();
+        }catch (Exception e){
             e.printStackTrace();
-        }
-        finally {
-            if (entityManager != null && entityManager.isOpen())
-            {
+        }finally {
+            if (entityManager!=null && entityManager.isOpen()){
                 entityManager.close();
             }
         }
-        return  msg;
+        return message;
     }
 
     @Override
