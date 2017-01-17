@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class QcStatusDaoImp implements QcStatusDao {
     }
 
     @Override
-    public JSONObject qcGetMobileNumber(String spokeCode) {
+    public JSONObject qcGetMobileNumber(Integer circode,String empcode) {
         JSONObject jsonObject=new JSONObject();
         EntityManager entityManager=null;
         String customerNumber="";
@@ -95,8 +96,9 @@ public class QcStatusDaoImp implements QcStatusDao {
         Integer imageCount=0;
         try {
             entityManager=entityManagerFactory.createEntityManager();
-            Query query=entityManager.createNativeQuery("{call usp_qcGetMobileNumber(?)}");
-            query.setParameter(1,spokeCode);
+            Query query=entityManager.createNativeQuery("{call usp_qcGetMobileNumber(?,?)}");
+            query.setParameter(1,circode);
+            query.setParameter(2,empcode);
             Object[] scanObj=(Object[])query.getSingleResult();
             //customerNumber=(String)query.getSingleResult();
             if(scanObj==null){
@@ -104,7 +106,7 @@ public class QcStatusDaoImp implements QcStatusDao {
             }
             else {
                 customerNumber = (String) scanObj[0];
-                scanid = (Integer) scanObj[1];
+                scanid = ((BigInteger) scanObj[1]).intValue();
                 simNo = (String) scanObj[2];
                 imgPath = (String) scanObj[3];
                 name = (String) scanObj[4];

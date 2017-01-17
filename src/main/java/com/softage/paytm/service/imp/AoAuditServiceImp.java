@@ -17,8 +17,8 @@ public class AoAuditServiceImp implements AoAuditService {
     private AoAuditDao aoAuditDao;
 
     @Override
-    public JSONObject getAoAuditDetails(String spokecode) {
-        return aoAuditDao.getAoAuditDetails(spokecode);
+    public JSONObject getAoAuditDetails(String spokecode,String empcode) {
+        return aoAuditDao.getAoAuditDetails(spokecode,empcode);
     }
 
     @Override

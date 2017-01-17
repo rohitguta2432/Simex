@@ -82,8 +82,8 @@ public class QcStatusServiceImp implements QcStatusService {
     }
 
     @Override
-    public JSONObject getMobileNumber(String spokeCode) {
-        JSONObject result=qcStatusDao.qcGetMobileNumber(spokeCode);
+    public JSONObject getMobileNumber(Integer circode,String empcode) {
+        JSONObject result=qcStatusDao.qcGetMobileNumber(circode,empcode);
         return result;
     }
 

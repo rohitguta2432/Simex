@@ -1215,7 +1215,7 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDi
     $scope.AoAuditInit=function(){
         $http.get(domain+'/getCustomerDetailsForAoAudit')
             .success(function(data,status,headers,config){
-                alert(data.auditStatus);
+                //alert(data.auditStatus);
                 if(data.auditStatus=='No Images To Audit'){
                     alert('No Images To Audit')
                 }else{
@@ -1341,13 +1341,13 @@ $scope.cust_number='';
         var data='mobNo='+$scope.cust_number;
         $http.get(domain+'/getFormRecievingDetails?'+data)
             .success(function(data,status,headers,config){
-                alert(JSON.stringify({data: data}))
-                alert($scope.auditFlag);
+               // alert(JSON.stringify({data: data}))
+                //alert($scope.auditFlag);
                 $scope.scanid=data.scanID;
-                if(data.bucket=='Ao Audit' && data.user_status=='Accepted'){
+                if(data.simNum!='' || data.simNum!=null){
                     $scope.auditFlag=false;
                 }
-                alert($scope.auditFlag);
+               // alert($scope.auditFlag);
                 $scope.simNumber=data.simNum;
                 $scope.useraddress=data.user_address;
                 $scope.username=data.user_name;
@@ -1372,6 +1372,7 @@ $scope.cust_number='';
         $http.get(domain+'/formRecievingSubmit?'+data)
             .success(function(data,status,headers,config){
                 alert(data.result);
+                location.reload();
             }).error(function(data,status,headers,config){
                 alert('Error');
             })

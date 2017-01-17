@@ -2447,11 +2447,13 @@ e.printStackTrace();
     public JSONObject getCustomerMobileNumber(HttpServletRequest request) {
         HttpSession session=request.getSession();
         String spokecode="DELSOU205";
+        Integer circle_code=(Integer)session.getAttribute("cirCode");
+        String empcode=(String)session.getAttribute("name");
         //int imgCount=1;
         //String spokecode=(String)session.getAttribute("spoke_code"); Currently spoke code set static -JIA Sarai
         JSONObject jsonObject=new JSONObject();
         List<String> filepathList=new ArrayList<String>();
-        JSONObject detailJson=qcStatusService.getMobileNumber(spokecode);
+        JSONObject detailJson=qcStatusService.getMobileNumber(circle_code,empcode);
         String status=(String)detailJson.get("status");
         if (status.equals("Unavailable")){
             jsonObject.put("auditStatus","No Images To Audit");
@@ -2511,9 +2513,12 @@ e.printStackTrace();
             channel=session.openChannel("sftp");
             channel.connect();
             channelSftp=(ChannelSftp)channel;
-            channelSftp.cd(imagePath);
+            String homeDirectory=channelSftp.getHome();
+            String folderDirectory=imagePath.substring(0,imagePath.lastIndexOf("/"));
+            String directory=homeDirectory+"/"+folderDirectory;
+            channelSftp.cd(directory);
             //check whether path returned is full or just file name & If list is file type or string
-            List<ChannelSftp.LsEntry> listOfImages=channelSftp.ls(imagePath);
+            List<ChannelSftp.LsEntry> listOfImages=channelSftp.ls(directory);
             for(ChannelSftp.LsEntry lsEntry : listOfImages){
                 String filename=lsEntry.getFilename();
                 byte[] buffer=new byte[1024];
@@ -2547,8 +2552,9 @@ e.printStackTrace();
         HttpSession session=request.getSession();
         //String spokecode=(String)session.getAttribute("spoke_code"); Currently spoke code set static -JIA Sarai
         String spokecode="DELSOU205";
+        String empcode=(String)session.getAttribute("name");
         List<String> filepathList=new ArrayList<String>();
-        JSONObject detailJson=aoAuditService.getAoAuditDetails(spokecode);
+        JSONObject detailJson=aoAuditService.getAoAuditDetails(spokecode,empcode);
         String status=(String)detailJson.get("status");
         if (status.equals("Unavailable")){
             jsonObject.put("auditStatus","No Images To Audit");
@@ -2621,6 +2627,11 @@ e.printStackTrace();
             String folderPath=filepath+"/resources/ftpimages/" + custUid;
             File file=new File(folderPath);
             if (file.isDirectory()){
+                String[] ftpimagesfiles=file.list();
+                for(String imagefile : ftpimagesfiles){
+                    File ftpfile=new File(file.getPath(),imagefile);
+                    ftpfile.delete();
+                }
                 file.delete();
             }
             tblScan.setAuditStatusEntity(auditStatusEntity);
@@ -2694,8 +2705,9 @@ e.printStackTrace();
         String scanID=(String)request.getParameter("scanID");
         Integer scanid=Integer.parseInt(scanID);
         TblScan scanEntity=qcStatusService.getScanTableEntity(scanid);
-        AuditStatusEntity auditStatusEntity=qcStatusService.getAuditStatusEntity(6);
-        scanEntity.setAuditStatusEntity(auditStatusEntity);
+/*        AuditStatusEntity auditStatusEntity=qcStatusService.getAuditStatusEntity(6);
+        scanEntity.setAuditStatusEntity(auditStatusEntity);*/
+        scanEntity.setFormRecievingStatus("R");
         String message=qcStatusService.updateTblSacnEntity(scanEntity);
         if(message.equalsIgnoreCase("success")){
             jsonObject.put("result","Successfully Updated");

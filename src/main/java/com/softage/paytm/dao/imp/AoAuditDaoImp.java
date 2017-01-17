@@ -23,7 +23,7 @@ public class AoAuditDaoImp implements AoAuditDao {
     private EntityManagerFactory entityManagerFactory;
 
     @Override
-    public JSONObject getAoAuditDetails(String spoke) {
+    public JSONObject getAoAuditDetails(String spoke,String empcode) {
         EntityManager entityManager=null;
         EntityTransaction transaction=null;
         JSONObject jsonObject=new JSONObject();
@@ -38,8 +38,9 @@ public class AoAuditDaoImp implements AoAuditDao {
         try{
             entityManager=entityManagerFactory.createEntityManager();
             transaction=entityManager.getTransaction();
-            Query query=entityManager.createNativeQuery("{call usp_getAoAuditDetails(?)}");
+            Query query=entityManager.createNativeQuery("{call usp_getAoAuditDetails(?,?)}");
             query.setParameter(1,spoke);
+            query.setParameter(2,empcode);
             Object[] auditedObj=(Object[])query.getSingleResult();
             if(auditedObj==null){
                 jsonObject.put("status","Unavailable");

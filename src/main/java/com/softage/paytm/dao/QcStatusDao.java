@@ -16,7 +16,7 @@ import java.util.List;
 public interface QcStatusDao {
     public String qcStatusSave(String mobile_no, String status, String rejected_page, String remarks);
     public String qcStatusUpdate(String mobile_no, String status, String rejected_page, String remarks);
-    public JSONObject qcGetMobileNumber(String spokeCode);
+    public JSONObject qcGetMobileNumber(Integer circode,String empcode);
     public JSONObject qcGetCustomerDetails(String mobileNum);
     public JSONObject downloadList(String mobileNumber,String todate,String fromdate);
     public AuditStatusEntity getAuditStatusEntity(int status);
