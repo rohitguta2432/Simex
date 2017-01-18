@@ -26,6 +26,7 @@ public interface QcStatusDao {
     public String updateTblScanEntity(TblScan tblScan);
     public String savetblscan(TblScan savesimages);
     public String saveTblDocdetails(TblcustDocDetails tblcustDocDetails);
+    public boolean getAoAuditStatus(String foldername);
 
 
 }

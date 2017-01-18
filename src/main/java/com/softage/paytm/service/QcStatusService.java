@@ -29,6 +29,8 @@ public interface QcStatusService {
     public String SaveScanimages(TblScan scantbl);
     public String savetbldocdetails(TblcustDocDetails tblcustDocDetails);
 
+    public boolean getAoAuditStatus(String foldername);
+
 
 
 

@@ -100,19 +100,20 @@ public class QcStatusDaoImp implements QcStatusDao {
             query.setParameter(1,circode);
             query.setParameter(2,empcode);
             Object[] scanObj=(Object[])query.getSingleResult();
+            String returned=(String)scanObj[0];
             //customerNumber=(String)query.getSingleResult();
-            if(scanObj==null){
+            if(returned.equalsIgnoreCase("unavailable")){
                 jsonObject.put("status","Unavailable");
             }
             else {
-                customerNumber = (String) scanObj[0];
-                scanid = ((BigInteger) scanObj[1]).intValue();
-                simNo = (String) scanObj[2];
-                imgPath = (String) scanObj[3];
-                name = (String) scanObj[4];
-                address = (String) scanObj[5];
-                cust_uid = (Integer) scanObj[6];
-                imageCount = (Integer) scanObj[7];
+                customerNumber = (String) scanObj[1];
+                scanid = ((BigInteger) scanObj[2]).intValue();
+                simNo = (String) scanObj[3];
+                imgPath = (String) scanObj[4];
+                name = (String) scanObj[5];
+                address = (String) scanObj[6];
+                cust_uid = (Integer) scanObj[7];
+                imageCount = (Integer) scanObj[8];
                 jsonObject.put("mobile", customerNumber);
                 jsonObject.put("scanID", scanid);
                 jsonObject.put("simNo", simNo);
@@ -335,6 +336,26 @@ public class QcStatusDaoImp implements QcStatusDao {
             }
         }
         return msg;
+    }
+
+    @Override
+    public boolean getAoAuditStatus(String foldername) {
+        EntityManager entityManager=null;
+        Boolean result=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            String sql="Select audit_status from tbl_scan where cust_uid="+foldername;
+            Query query=entityManager.createNativeQuery(sql);
+            Integer auditStatus=(Integer)query.getSingleResult();
+            if (auditStatus >3){
+                result=true;
+            }else{
+                result=false;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @Override

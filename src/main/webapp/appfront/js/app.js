@@ -976,7 +976,10 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
         $http.get(domain+'/getCustomer')
             .success(function(data,status,headers,config){
                 if(data.auditStatus=='No Images To Audit'){
-                    alert('No Images To Audit')
+                    //alert('No Images To Audit');
+                    $scope.img_count=1;
+                    $scope.image_source='assets/img/noimage.jpg';
+
                 }else{
                 $scope.cust_number=data.mobile;
                 $scope.sim_number=data.simNo;
@@ -1239,7 +1242,9 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDi
             .success(function(data,status,headers,config){
                 //alert(data.auditStatus);
                 if(data.auditStatus=='No Images To Audit'){
-                    alert('No Images To Audit')
+                    alert('No Images To Audit');
+                    $scope.img_count=1;
+                    $scope.image_source='assets/img/noimage.jpg';
                 }else{
                     $scope.cust_number=data.mobile;
                     $scope.sim_number=data.simNo;
@@ -1365,6 +1370,9 @@ $scope.cust_number='';
             .success(function(data,status,headers,config){
                // alert(JSON.stringify({data: data}))
                 //alert($scope.auditFlag);
+                if(data.retMessage=='No Record Found'){
+                    alert('Record Not Found');
+                }else{
                 $scope.scanid=data.scanID;
                 if(data.simNum!='' || data.simNum!=null){
                     $scope.auditFlag=false;
@@ -1375,6 +1383,7 @@ $scope.cust_number='';
                 $scope.username=data.user_name;
                 $scope.bucketvalue=data.bucket;
                 $scope.statusvalue=data.user_status;
+                }
             }).error(function(data,status,headers,config){
                alert('Error');
             });

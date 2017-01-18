@@ -42,18 +42,19 @@ public class AoAuditDaoImp implements AoAuditDao {
             query.setParameter(1,spoke);
             query.setParameter(2,empcode);
             Object[] auditedObj=(Object[])query.getSingleResult();
-            if(auditedObj==null){
+            String returnedResult=(String)auditedObj[0];
+            if(returnedResult.equalsIgnoreCase("unavailable")){
                 jsonObject.put("status","Unavailable");
             }
             else {
-                customerNumber = (String) auditedObj[0];
-                scanid = (Integer) auditedObj[1];
-                simNo = (String) auditedObj[2];
-                imgPath = (String) auditedObj[3];
-                name = (String) auditedObj[4];
-                address = (String) auditedObj[5];
-                cust_uid = (Integer) auditedObj[6];
-                imageCount = (Integer) auditedObj[7];
+                customerNumber = (String) auditedObj[1];
+                scanid = (Integer) auditedObj[2];
+                simNo = (String) auditedObj[3];
+                imgPath = (String) auditedObj[4];
+                name = (String) auditedObj[5];
+                address = (String) auditedObj[6];
+                cust_uid = (Integer) auditedObj[7];
+                imageCount = (Integer) auditedObj[8];
                 jsonObject.put("mobile", customerNumber);
                 jsonObject.put("scanID", scanid);
                 jsonObject.put("simNo", simNo);
@@ -110,23 +111,26 @@ public class AoAuditDaoImp implements AoAuditDao {
             query.setParameter(1,mobileNumber);
             query.setParameter(2,spokecode);
             Object[] formRecievingDetails=(Object[])query.getSingleResult();
-            if (formRecievingDetails!=null) {
-                String simnumber = (String) formRecievingDetails[0];
-                String address = (String) formRecievingDetails[1];
-                String name = (String) formRecievingDetails[2];
-                Integer status = (Integer) formRecievingDetails[3];
-                Integer scanID = ((BigInteger) formRecievingDetails[4]).intValue();
+            String returnedVal=(String)formRecievingDetails[0];
+            if (returnedVal.equalsIgnoreCase("available")) {
+                String simnumber = (String) formRecievingDetails[1];
+                String address = (String) formRecievingDetails[2];
+                String name = (String) formRecievingDetails[3];
+                Integer status = (Integer) formRecievingDetails[4];
+                Integer scanID = ((BigInteger) formRecievingDetails[5]).intValue();
+                jsonObject.put("returned","available");
                 jsonObject.put("simNo", simnumber);
                 jsonObject.put("address", address);
                 jsonObject.put("user_name", name);
                 jsonObject.put("status", status);
                 jsonObject.put("scanID", scanID);
             }else{
+                jsonObject.put("returned","unavailable");
                 jsonObject.put("simNo", "No Records Available For This Number");
                 jsonObject.put("address", "No Records Available For This Number");
                 jsonObject.put("user_name", "No Records Available For This Number");
-                jsonObject.put("status", "No Records Available For This Number");
-                jsonObject.put("scanID", "No Records Available For This Number");
+                jsonObject.put("status", 0);
+                jsonObject.put("scanID", 0);
             }
         }catch (Exception e){
             e.printStackTrace();

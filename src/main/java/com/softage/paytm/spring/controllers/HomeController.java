@@ -198,7 +198,7 @@ class HomeController {
                     session.setAttribute("name", user);
                     session.setAttribute("role", emplogintableEntity.getRoleCode());
                     session.setAttribute("cirCode", emplogintableEntity.getCirCode());
-                    session.setAttribute("spoke_code", emplogintableEntity.getCirCode());
+                    session.setAttribute("spoke_code", emplogintableEntity.getSpoke_code());
                     result = "success";
                 }
             } else {
@@ -2455,11 +2455,11 @@ e.printStackTrace();
     @ResponseBody
     public JSONObject getCustomerMobileNumber(HttpServletRequest request) {
         HttpSession session=request.getSession();
-        String spokecode="DELSOU205";
+        //String spokecode="DELSOU205";   Currently spoke code set static -JIA Sarai
         Integer circle_code=(Integer)session.getAttribute("cirCode");
         String empcode=(String)session.getAttribute("name");
         //int imgCount=1;
-        //String spokecode=(String)session.getAttribute("spoke_code"); Currently spoke code set static -JIA Sarai
+       // String spokecode=(String)session.getAttribute("spoke_code");
         JSONObject jsonObject=new JSONObject();
         List<String> filepathList=new ArrayList<String>();
         JSONObject detailJson=qcStatusService.getMobileNumber(circle_code,empcode);
@@ -2469,7 +2469,7 @@ e.printStackTrace();
         }
         else {
             jsonObject.put("auditStatus", "Available");
-        }
+
             String imagePath = (String) detailJson.get("imagePath");
             Integer custUID = (Integer) detailJson.get("custUID");
             Integer imgCount = (Integer) detailJson.get("imgCount");
@@ -2479,6 +2479,24 @@ e.printStackTrace();
         String f2="../resources/ftpimages/1000000001/1000000001_2.jpg";
         filepathList.add(f1);
         filepathList.add(f2);*/
+        String ftpImagespath=projectPath+"/resources/ftpimages";
+        File ftpImagesFolder=new File(ftpImagespath);
+        String[] filenames=ftpImagesFolder.list();
+        for(String folders : filenames){
+            File imgFolder=new File(ftpImagesFolder.getPath(),folders);
+            if (imgFolder.isDirectory() && !folders.equalsIgnoreCase(String.valueOf(custUID))){
+                Boolean isAoAuditDone=qcStatusService.getAoAuditStatus(folders);
+                if (isAoAuditDone){
+                    String[] images=imgFolder.list();
+                    for (String image:images){
+                        File imgpath=new File(imgFolder.getPath(),image);
+                        imgpath.delete();
+                    }
+                }
+                imgFolder.delete();
+            }
+        }
+
             downloadImages(imagePath, localPath);
             for (int i = 0; i < imgCount; i++) {
                 String filepath = "../resources/ftpimages/" + custUID + "/" + custUID + "_" + (i + 1) + ".jpg";
@@ -2497,7 +2515,7 @@ e.printStackTrace();
             jsonObject.put("imgCount", imgCount);
             jsonObject.put("filePathList", filepathList);
             jsonObject.put("custuid", custUID);
-
+        }
             //return qcStatusService.getMobileNumber(spokecode);
             return jsonObject;
     }
@@ -2559,8 +2577,8 @@ e.printStackTrace();
     public JSONObject getCustomerDetailsForAoAudit(HttpServletRequest request){
         JSONObject jsonObject=new JSONObject();
         HttpSession session=request.getSession();
-        //String spokecode=(String)session.getAttribute("spoke_code"); Currently spoke code set static -JIA Sarai
-        String spokecode="DELSOU205";
+        String spokecode=(String)session.getAttribute("spoke_code");
+        //String spokecode="DELSOU205"; Currently spoke code set static -JIA Sarai
         String empcode=(String)session.getAttribute("name");
         List<String> filepathList=new ArrayList<String>();
         JSONObject detailJson=aoAuditService.getAoAuditDetails(spokecode,empcode);
@@ -2570,7 +2588,7 @@ e.printStackTrace();
         }
         else {
             jsonObject.put("auditStatus", "Available");
-        }
+
        // String imagePath = (String) detailJson.get("imagePath");
         Integer custUID = (Integer) detailJson.get("custUID");
         Integer imgCount = (Integer) detailJson.get("imgCount");
@@ -2595,6 +2613,7 @@ e.printStackTrace();
         jsonObject.put("imgCount", imgCount);
         jsonObject.put("filePathList", filepathList);
         jsonObject.put("custuid", custUID);
+        }
         return jsonObject;
     }
 
@@ -2632,7 +2651,7 @@ e.printStackTrace();
         if(msg.equalsIgnoreCase("error")){
             updateStatusMessage="Unable to insert the audit values";
         }else{
-            String filepath=request.getServletContext().getRealPath("/");
+           /* String filepath=request.getServletContext().getRealPath("/");
             String folderPath=filepath+"/resources/ftpimages/" + custUid;
             File file=new File(folderPath);
             if (file.isDirectory()){
@@ -2642,7 +2661,7 @@ e.printStackTrace();
                     ftpfile.delete();
                 }
                 file.delete();
-            }
+            }*/
             tblScan.setAuditStatusEntity(auditStatusEntity);
             updateStatusMessage=qcStatusService.updateTblSacnEntity(tblScan);
             if(updateStatusMessage.equalsIgnoreCase("success")){
@@ -2661,49 +2680,51 @@ e.printStackTrace();
     public JSONObject getFormRecievingDetails(HttpServletRequest request){
         JSONObject jsonObject=new JSONObject();
         HttpSession session=request.getSession();
-        //String spokecode=(String)session.getAttribute("spoke_code"); Currently spoke code set static -JIA Sarai
-        String spokecode="DELSOU205";
+        String spokecode=(String)session.getAttribute("spoke_code");
+        //String spokecode="DELSOU205";  Currently spoke code set static -JIA Sarai
         String customer_number=(String)request.getParameter("mobNo");
         JSONObject resultJson=aoAuditService.getFormRecievingDetails(customer_number,spokecode);
-        String bucket=null;
-        String status=null;
-        Integer statusID=(Integer)resultJson.get("status");
-        Integer scanID=(Integer)resultJson.get("scanID");
-        if(statusID==2){
-            bucket="Circle Audit";
-            status="Rejected";
-            jsonObject.put("bucket",bucket);
-            jsonObject.put("user_status",status);
+        String retValue=(String)resultJson.get("returned");
+        if(retValue.equalsIgnoreCase("unavailable")){
+            jsonObject.put("retMessage","No Record Found");
+        }else {
+            String bucket = null;
+            String status = null;
+            Integer statusID = (Integer) resultJson.get("status");
+            Integer scanID = (Integer) resultJson.get("scanID");
+            if (statusID == 2) {
+                bucket = "Circle Audit";
+                status = "Rejected";
+                jsonObject.put("bucket", bucket);
+                jsonObject.put("user_status", status);
+            } else if (statusID == 3) {
+                bucket = "Circle Audit";
+                status = "Accepted";
+                jsonObject.put("bucket", bucket);
+                jsonObject.put("user_status", status);
+            } else if (statusID == 4) {
+                bucket = "Ao Audit";
+                status = "Rejected";
+                jsonObject.put("bucket", bucket);
+                jsonObject.put("user_status", status);
+            } else if (statusID == 5) {
+                bucket = "Ao Audit";
+                status = "Accepted";
+                jsonObject.put("bucket", bucket);
+                jsonObject.put("user_status", status);
+            } else {
+                bucket = "No Records Available For This Number";
+                status = "No Records Available For This Number";
+                jsonObject.put("bucket", bucket);
+                jsonObject.put("user_status", status);
+            }
+            jsonObject.put("retMessage","Found");
+            jsonObject.put("simNum", resultJson.get("simNo"));
+            jsonObject.put("user_address", resultJson.get("address"));
+            jsonObject.put("user_name", resultJson.get("user_name"));
+            jsonObject.put("scanID", scanID);
+            System.out.println("The returned values are :" + jsonObject);
         }
-        else if(statusID==3){
-            bucket="Circle Audit";
-            status="Accepted";
-            jsonObject.put("bucket",bucket);
-            jsonObject.put("user_status",status);
-        }
-        else if(statusID==4){
-            bucket="Ao Audit";
-            status="Rejected";
-            jsonObject.put("bucket",bucket);
-            jsonObject.put("user_status",status);
-        }
-        else if(statusID==5){
-            bucket="Ao Audit";
-            status="Accepted";
-            jsonObject.put("bucket",bucket);
-            jsonObject.put("user_status",status);
-        }
-        else{
-            bucket="Pending";
-            status="Pending";
-            jsonObject.put("bucket",bucket);
-            jsonObject.put("user_status",status);
-        }
-        jsonObject.put("simNum",resultJson.get("simNo"));
-        jsonObject.put("user_address",resultJson.get("address"));
-        jsonObject.put("user_name",resultJson.get("user_name"));
-        jsonObject.put("scanID",scanID);
-        System.out.println("The returned values are :"+jsonObject);
         return jsonObject;
     }
 

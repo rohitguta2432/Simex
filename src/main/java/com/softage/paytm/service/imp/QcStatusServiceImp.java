@@ -131,6 +131,11 @@ public class QcStatusServiceImp implements QcStatusService {
     }
 
     @Override
+    public boolean getAoAuditStatus(String foldername) {
+        return qcStatusDao.getAoAuditStatus(foldername);
+    }
+
+    @Override
     public TblScan getUserScanDetails(int cust_uid) {
         return qcStatusDao.getScanDetails(cust_uid);
     }
