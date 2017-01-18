@@ -2079,7 +2079,10 @@ e.printStackTrace();
                 if (todaytime.equals(datefetch)) {
                     Date today = new Date();
                     Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.HOUR, 2);
+                  //  cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                   // cal.set(Calendar.AM_PM,1);
+                    //System.out.println(cal.getTime());
+                    cal.add(Calendar.HOUR_OF_DAY, 2);
                     System.out.println("Today Date is " + new Date(cal.getTimeInMillis()).getHours());
                     int currenttime = new Date(cal.getTimeInMillis()).getHours();
                     for (Integer i = currenttime; i <= 18; i = i + timediff) {

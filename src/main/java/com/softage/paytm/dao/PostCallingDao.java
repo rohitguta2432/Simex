@@ -31,6 +31,6 @@ public interface PostCallingDao {
     public ReceiverMastEntity getRecivedByCode(int code);
     public String save(ReOpenTaleCallMaster openTaleCallMaster);
 
-    public String callJobAllocatedProcedure(long allocationId,String moblieno,String agentcode);
+    public String callJobAllocatedProcedure(Map<String,String> map);
 
 }

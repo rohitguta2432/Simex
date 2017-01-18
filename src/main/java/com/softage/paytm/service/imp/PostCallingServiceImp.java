@@ -340,6 +340,55 @@ public class PostCallingServiceImp implements PostCallingService {
         return result;
     }
 
+
+
+    public String saveCustomerData(Map<String,String> map){
+
+        int custId=Integer.parseInt(map.get("custId"));
+        String number=map.get("number");
+        String name=map.get("name");
+        String status=map.get("status");
+        String address=map.get("address");
+        String area=map.get("area");
+        String city=map.get("city");
+        String emailId=map.get("emailId");
+        String importby=map.get("importby");
+        String importType=map.get("importType");
+        String simType=map.get("simType");
+        String co_status=map.get("co_status");
+        String pincode=map.get("pinCode");
+        String state=map.get("state");
+        String pcdvisitTime=map.get("visitDate");
+        String visitTime=map.get("visitTime");
+
+
+
+
+
+
+
+        return "";
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public String saveAppoinment(Map<String, String> map, PaytmcustomerDataEntity paytmcustomerDataEntity) {
         String result = null;
         DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");

@@ -598,7 +598,7 @@ public class PostCallingDaoImp implements PostCallingDao {
     }
 
     @Override
-    public String callJobAllocatedProcedure(long allocationId, String moblieno, String agentcode) {
+    public String callJobAllocatedProcedure(Map<String,String> map) {
         EntityManager entityManager = null;
         List list = new ArrayList<>();
         Query query=null;
@@ -611,9 +611,6 @@ public class PostCallingDaoImp implements PostCallingDao {
             entityTransaction.begin();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
             Query query1= entityManager.createNativeQuery("{call sp_allocate1(?,?,?)}");
-            query1.setParameter(1,allocationId);
-            query1.setParameter(2,moblieno);
-            query1.setParameter(3,agentcode);
             String s = (String)query1.getSingleResult();
             entityTransaction.commit();
           /*  if (s.length>0) {
