@@ -113,7 +113,8 @@ public class PostCallingServiceImp implements PostCallingService {
                 result = "Customer Rejected because Appointment Date more then 3 days ";
             } else if ("CON".equals(status)) {
                 tcStatus = "D";
-                result = saveCustomer(map);
+               result = saveCustomer(map);
+                //result=saveCustomerData(map);
                 if ("JOB ALLOCATED".equalsIgnoreCase(result)) {
                     result1 = "done";
                 }
@@ -343,27 +344,61 @@ public class PostCallingServiceImp implements PostCallingService {
 
 
     public String saveCustomerData(Map<String,String> map){
+        Map<String,String> allocation_map=new HashMap<String,String>();
+        String agentCode=null;
+        String confirmationAllowed="";
+        String finalconfirmation="";
+        DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            int custId = Integer.parseInt(map.get("custId"));
+            String number = map.get("number");
+            String name = map.get("name");
+            String status = map.get("status");
+            String address = map.get("address");
+            String area = map.get("area");
+            String city = map.get("city");
+            String emailId = map.get("emailId");
+            String importby = map.get("importby");
+            String importType = map.get("importType");
+            String simType = map.get("simType");
+            String co_status = map.get("co_status");
+            String pincode = map.get("pinCode");
+            String state = map.get("state");
+            String pcdvisitTime = map.get("visitDate");
+            java.util.Date parsedUtilDate = formater.parse(map.get("visitDate"));
+            java.sql.Date sqltDate = new java.sql.Date(parsedUtilDate.getTime());
+            map.put("visitDate",sqltDate.toString());
+            String visitTime = map.get("visitTime");
 
-        int custId=Integer.parseInt(map.get("custId"));
-        String number=map.get("number");
-        String name=map.get("name");
-        String status=map.get("status");
-        String address=map.get("address");
-        String area=map.get("area");
-        String city=map.get("city");
-        String emailId=map.get("emailId");
-        String importby=map.get("importby");
-        String importType=map.get("importType");
-        String simType=map.get("simType");
-        String co_status=map.get("co_status");
-        String pincode=map.get("pinCode");
-        String state=map.get("state");
-        String pcdvisitTime=map.get("visitDate");
-        String visitTime=map.get("visitTime");
+        String appoinmentId=postCallingDao.callJobAllocatedProcedure(map);
+
+            String allocationDate1 = sqltDate + " " + visitTime;
+            agentCode = postCallingDao.getAgentCode(pincode, sqltDate, allocationDate1, 0, "0");
+            confirmationAllowed = "Y";
+            finalconfirmation = "W";
+
+            allocation_map.put("appointmentID",appoinmentId);
+            allocation_map.put("agentcode",agentCode);
+            allocation_map.put("custUID",map.get("custId"));
+            allocation_map.put("mobileNo",number);
+            //map.put("allocationTime",);  use now()
+            allocation_map.put("visitDatetime",allocationDate1);
+            allocation_map.put("importBy",importby);
+            //map.put("importDatetime") use now()
+            allocation_map.put("confirmationDatetime",allocationDate1);
+           // allocation_map.put("sendSMSDatetime",) use now()
+            allocation_map.put("finalConfirmation","W");
+            allocation_map.put("confirmation","W");
+            allocation_map.put("confirmationAllowed","Y");
+            allocation_map.put("kycCollected","P");
+            allocation_map.put("remarkCode","U");
+            allocation_map.put("spokeCode","DELCIR001");
+            String allocationId=postCallingDao.JobAllocatedProcedure(allocation_map);
 
 
-
-
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
 
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -604,14 +605,48 @@ public class PostCallingDaoImp implements PostCallingDao {
         Query query=null;
         JSONObject json=new JSONObject();
         String result="";
+        Integer appointmentID=null;
         EntityTransaction entityTransaction=null;
+        int custId=Integer.parseInt(map.get("custId"));
+        String number=map.get("number");
+        String name=map.get("name");
+        String status=map.get("status");
+        String address=map.get("address");
+        String area=map.get("area");
+        String city=map.get("city");
+        String emailId=map.get("emailId");
+        String importby=map.get("importby");
+        String importType=map.get("importType");
+        String simType=map.get("simType");
+        String co_status=map.get("co_status");
+        String pincode=map.get("pinCode");
+        String state=map.get("state");
+        String pcdvisitTime=map.get("visitDate");
+        String visitTime=map.get("visitTime");
         try{
             entityManager = entityManagerFactory.createEntityManager();
             entityTransaction=entityManager.getTransaction();
             entityTransaction.begin();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
-            Query query1= entityManager.createNativeQuery("{call sp_allocate1(?,?,?)}");
-            String s = (String)query1.getSingleResult();
+            Query query1= entityManager.createNativeQuery("{call usp_insertPaytmCustomerData(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            query1.setParameter(1,custId);
+            query1.setParameter(2,status);
+            query1.setParameter(3,address);
+            query1.setParameter(4,area);
+            query1.setParameter(5,city);
+            query1.setParameter(6,number);
+            query1.setParameter(7,emailId);
+            query1.setParameter(8,importby);
+            query1.setParameter(9,importType);
+            query1.setParameter(10,name);
+            query1.setParameter(11,pincode);
+            query1.setParameter(12,state);
+            query1.setParameter(13,pcdvisitTime);
+            query1.setParameter(14,visitTime);
+            query1.setParameter(15,simType);
+            query1.setParameter(16,co_status);
+             appointmentID=((BigInteger)query1.getSingleResult()).intValue();
+            //String s = (String)query1.getSingleResult();
             entityTransaction.commit();
           /*  if (s.length>0) {
                *//* json.put("mobileNo", s[0]);
@@ -627,8 +662,76 @@ public class PostCallingDaoImp implements PostCallingDao {
                 entityManager.close();
             }
         }
-        return result;
+        return appointmentID.toString();
     }
+
+    @Override
+    public String JobAllocatedProcedure(Map<String, String> map) {
+        EntityManager entityManager = null;
+        List list = new ArrayList<>();
+        Query query=null;
+        JSONObject json=new JSONObject();
+        String result="";
+        Integer appointmentID=null;
+        EntityTransaction entityTransaction=null;
+        int custId=Integer.parseInt(map.get("custId"));
+        String number=map.get("number");
+        String name=map.get("name");
+        String status=map.get("status");
+        String address=map.get("address");
+        String area=map.get("area");
+        String city=map.get("city");
+        String emailId=map.get("emailId");
+        String importby=map.get("importby");
+        String importType=map.get("importType");
+        String simType=map.get("simType");
+        String co_status=map.get("co_status");
+        String pincode=map.get("pinCode");
+        String state=map.get("state");
+        String pcdvisitTime=map.get("visitDate");
+        String visitTime=map.get("visitTime");
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
+            StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
+            Query query1= entityManager.createNativeQuery("{call usp_insertAllocationData(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            query1.setParameter(1,custId);
+            query1.setParameter(2,status);
+            query1.setParameter(3,address);
+            query1.setParameter(4,area);
+            query1.setParameter(5,city);
+            query1.setParameter(6,number);
+            query1.setParameter(7,emailId);
+            query1.setParameter(8,importby);
+            query1.setParameter(9,importType);
+            query1.setParameter(10,name);
+            query1.setParameter(11,pincode);
+            query1.setParameter(12,state);
+            query1.setParameter(13,pcdvisitTime);
+            query1.setParameter(14,visitTime);
+            query1.setParameter(15,simType);
+            query1.setParameter(16,co_status);
+            appointmentID=((BigInteger)query1.getSingleResult()).intValue();
+            //String s = (String)query1.getSingleResult();
+            entityTransaction.commit();
+          /*  if (s.length>0) {
+               *//* json.put("mobileNo", s[0]);
+                json.put("customerName", s[1]);*//*
+                result=(String)s[0];
+            }*/
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return appointmentID.toString();
+    }
+
 
     @Override
     public ProcessMastEntity getProcessByCode(int code) {

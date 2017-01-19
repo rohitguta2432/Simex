@@ -94,6 +94,9 @@ public class QcStatusDaoImp implements QcStatusDao {
         String imgPath="";
         Integer cust_uid=0;
         Integer imageCount=0;
+        Integer actualImageCount=0;
+        String retStatus="pending";
+        while(retStatus.equalsIgnoreCase("pending")){
         try {
             entityManager=entityManagerFactory.createEntityManager();
             Query query=entityManager.createNativeQuery("{call usp_qcGetMobileNumber(?,?)}");
@@ -103,7 +106,12 @@ public class QcStatusDaoImp implements QcStatusDao {
             String returned=(String)scanObj[0];
             //customerNumber=(String)query.getSingleResult();
             if(returned.equalsIgnoreCase("unavailable")){
+                retStatus="unavailable";
                 jsonObject.put("status","Unavailable");
+            }
+            else if(returned.equalsIgnoreCase("pending")){
+                jsonObject.put("status","Unavailable");
+                retStatus="pending";
             }
             else {
                 customerNumber = (String) scanObj[1];
@@ -114,6 +122,7 @@ public class QcStatusDaoImp implements QcStatusDao {
                 address = (String) scanObj[6];
                 cust_uid = (Integer) scanObj[7];
                 imageCount = (Integer) scanObj[8];
+                actualImageCount=((BigInteger)scanObj[9]).intValue();
                 jsonObject.put("mobile", customerNumber);
                 jsonObject.put("scanID", scanid);
                 jsonObject.put("simNo", simNo);
@@ -123,13 +132,17 @@ public class QcStatusDaoImp implements QcStatusDao {
                 jsonObject.put("custUID", cust_uid);
                 jsonObject.put("imgCount", imageCount);
                 jsonObject.put("status","Available");
+                jsonObject.put("actualCount",actualImageCount);
+                retStatus="available";
             }
-        }catch (Exception e){
+
+    }catch (Exception e){
             e.printStackTrace();
         }finally {
             if (entityManager!=null && entityManager.isOpen()){
                 entityManager.close();
             }
+        }
         }
         return jsonObject;
     }

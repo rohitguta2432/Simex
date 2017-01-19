@@ -979,17 +979,20 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
                     //alert('No Images To Audit');
                     $scope.img_count=1;
                     $scope.image_source='assets/img/noimage.jpg';
+                    $scope.acceptFlag=true;
+                    $scope.rejectFlag=true;
 
                 }else{
-                $scope.cust_number=data.mobile;
-                $scope.sim_number=data.simNo;
-                $scope.cust_name=data.name;
-                $scope.cust_address=data.address;
-                $scope.scan_id=data.scanID;
-                //$scope.image_path=data.imagePath;
-                $scope.pathList=data.filePathList;
-                $scope.img_count=data.imgCount;
-                $scope.image_source=$scope.pathList[index];
+                    $scope.cust_number=data.mobile;
+                    $scope.sim_number=data.simNo;
+                    $scope.cust_name=data.name;
+                    $scope.cust_address=data.address;
+                    $scope.scan_id=data.scanID;
+                    //$scope.image_path=data.imagePath;
+                    $scope.pathList=data.filePathList;
+                    $scope.img_count=data.imgCount;
+                    $scope.actual_img_count=data.actualCount;
+                    $scope.image_source=$scope.pathList[index];
                 }
             })
             .error(function(data,status,headers,config){
@@ -1003,11 +1006,11 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
         var substringIndex=img.lastIndexOf("_");
         var extensioinIndex=img.lastIndexOf(".");
         var imgNumber=img.substring(substringIndex+1,extensioinIndex);
-        if(imgNumber<$scope.img_count){
+        if(imgNumber<$scope.actual_img_count){
             index=index+1;
             $scope.image_source=$scope.pathList[index];
         }else{
-            index=$scope.img_count-1;
+            index=$scope.actual_img_count-1;
             $scope.image_source=$scope.pathList[index];
         }
     }
@@ -1242,9 +1245,11 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDi
             .success(function(data,status,headers,config){
                 //alert(data.auditStatus);
                 if(data.auditStatus=='No Images To Audit'){
-                    alert('No Images To Audit');
+                    //alert('No Images To Audit');
                     $scope.img_count=1;
                     $scope.image_source='assets/img/noimage.jpg';
+                    $scope.acceptFlag=true;
+                    $scope.rejectFlag=true;
                 }else{
                     $scope.cust_number=data.mobile;
                     $scope.sim_number=data.simNo;
@@ -1254,6 +1259,7 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDi
                     //$scope.image_path=data.imagePath;
                     $scope.pathList=data.filePathList;
                     $scope.img_count=data.imgCount;
+                    $scope.actual_img_count=data.actualCount;
                     $scope.image_source=$scope.pathList[index];
                     $scope.custUID=data.custuid;
                 }
@@ -1269,11 +1275,11 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDi
         var substringIndex=img.lastIndexOf("_");
         var extensioinIndex=img.lastIndexOf(".");
         var imgNumber=img.substring(substringIndex+1,extensioinIndex);
-        if(imgNumber<$scope.img_count){
+        if(imgNumber<$scope.actual_img_count){
             index=index+1;
             $scope.image_source=$scope.pathList[index];
         }else{
-            index=$scope.img_count-1;
+            index=$scope.actual_img_count-1;
             $scope.image_source=$scope.pathList[index];
         }
     }

@@ -134,11 +134,11 @@
                                     <div class="col-sm-12">
                                         <div class="col-sm-2" style="float: left;">
 
-                                            <button ng-click="qcOK()" class="btn btn-azure shiny">Accept</button>
+                                            <button ng-click="qcOK()" class="btn btn-azure shiny" ng-disabled="acceptFlag">Accept</button>
                                         </div>
                                         <div class="col-sm-2" style="float: right;">
 
-                                            <button ng-click="qcReject()" class="btn btn-azure shiny">Reject</button>
+                                            <button ng-click="qcReject()" class="btn btn-azure shiny" ng-disabled="rejectFlag">Reject</button>
                                         </div>
 
                                     </div>

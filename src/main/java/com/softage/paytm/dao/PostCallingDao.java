@@ -32,5 +32,6 @@ public interface PostCallingDao {
     public String save(ReOpenTaleCallMaster openTaleCallMaster);
 
     public String callJobAllocatedProcedure(Map<String,String> map);
+    public String JobAllocatedProcedure(Map<String,String> map);
 
 }

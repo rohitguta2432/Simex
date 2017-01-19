@@ -24,55 +24,70 @@ public class AoAuditDaoImp implements AoAuditDao {
 
     @Override
     public JSONObject getAoAuditDetails(String spoke,String empcode) {
-        EntityManager entityManager=null;
-        EntityTransaction transaction=null;
-        JSONObject jsonObject=new JSONObject();
-        String customerNumber=null;
-        Integer scanid=null;
-        String simNo=null;
-        String imgPath=null;
-        String name=null;
-        String address=null;
-        Integer cust_uid=null;
-        Integer imageCount=null;
-        try{
-            entityManager=entityManagerFactory.createEntityManager();
-            transaction=entityManager.getTransaction();
-            Query query=entityManager.createNativeQuery("{call usp_getAoAuditDetails(?,?)}");
-            query.setParameter(1,spoke);
-            query.setParameter(2,empcode);
-            Object[] auditedObj=(Object[])query.getSingleResult();
-            String returnedResult=(String)auditedObj[0];
-            if(returnedResult.equalsIgnoreCase("unavailable")){
-                jsonObject.put("status","Unavailable");
-            }
-            else {
-                customerNumber = (String) auditedObj[1];
-                scanid = (Integer) auditedObj[2];
-                simNo = (String) auditedObj[3];
-                imgPath = (String) auditedObj[4];
-                name = (String) auditedObj[5];
-                address = (String) auditedObj[6];
-                cust_uid = (Integer) auditedObj[7];
-                imageCount = (Integer) auditedObj[8];
-                jsonObject.put("mobile", customerNumber);
-                jsonObject.put("scanID", scanid);
-                jsonObject.put("simNo", simNo);
-                jsonObject.put("name", name);
-                jsonObject.put("address", address);
-                jsonObject.put("imagePath", imgPath);
-                jsonObject.put("custUID", cust_uid);
-                jsonObject.put("imgCount", imageCount);
-                jsonObject.put("status","Available");
-            }
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        JSONObject jsonObject = new JSONObject();
+        String customerNumber = null;
+        Integer scanid = null;
+        String simNo = null;
+        String imgPath = null;
+        String name = null;
+        String address = null;
+        Integer cust_uid = null;
+        Integer imageCount = null;
+        Integer actualImageCount = 0;
+        String retStatus = "pending";
+        while (retStatus.equalsIgnoreCase("pending")){
+            try {
+                entityManager = entityManagerFactory.createEntityManager();
+                transaction = entityManager.getTransaction();
+                Query query = entityManager.createNativeQuery("{call usp_getAoAuditDetails(?,?)}");
+                query.setParameter(1, spoke);
+                query.setParameter(2, empcode);
+                Object[] auditedObj = (Object[]) query.getSingleResult();
+                String returnedResult = (String) auditedObj[0];
+                if (returnedResult.equalsIgnoreCase("unavailable")) {
+                    retStatus="unavailable";
+                    jsonObject.put("status", "Unavailable");
 
-        }catch(Exception e){
-            e.printStackTrace();
-        }finally {
-            if (entityManager != null && entityManager.isOpen()) {
-                entityManager.close();
+                }
+                else if(returnedResult.equalsIgnoreCase("pending")){
+                    jsonObject.put("status","Unavailable");
+                    retStatus="pending";
+
+                }
+                else {
+
+                    customerNumber = (String) auditedObj[1];
+                    scanid = (Integer) auditedObj[2];
+                    simNo = (String) auditedObj[3];
+                    imgPath = (String) auditedObj[4];
+                    name = (String) auditedObj[5];
+                    address = (String) auditedObj[6];
+                    cust_uid = (Integer) auditedObj[7];
+                    imageCount = (Integer) auditedObj[8];
+                    actualImageCount = ((BigInteger) auditedObj[9]).intValue();
+                    jsonObject.put("mobile", customerNumber);
+                    jsonObject.put("scanID", scanid);
+                    jsonObject.put("simNo", simNo);
+                    jsonObject.put("name", name);
+                    jsonObject.put("address", address);
+                    jsonObject.put("imagePath", imgPath);
+                    jsonObject.put("custUID", cust_uid);
+                    jsonObject.put("imgCount", imageCount);
+                    jsonObject.put("status", "Available");
+                    jsonObject.put("actualCount", actualImageCount);
+                    retStatus="available";
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (entityManager != null && entityManager.isOpen()) {
+                    entityManager.close();
+                }
             }
-        }
+    }
         return jsonObject;
     }
 
