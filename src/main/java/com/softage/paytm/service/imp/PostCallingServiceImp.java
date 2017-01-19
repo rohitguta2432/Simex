@@ -1,5 +1,6 @@
 package com.softage.paytm.service.imp;
 
+import antlr.StringUtils;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
@@ -16,6 +17,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.poi.util.StringUtil;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -348,9 +350,18 @@ public class PostCallingServiceImp implements PostCallingService {
         String agentCode=null;
         String confirmationAllowed="";
         String finalconfirmation="";
+        PaytmagententryEntity paytmagententryEntity=null;
+        String loginId="";
+        int custId=0;
         DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
+        String customerAlternativeNo="";
+        String agentMobileNumber="";
+        String result="";
         try {
-            int custId = Integer.parseInt(map.get("custId"));
+            custId = Integer.parseInt(map.get("custId"));
+            PaytmMastEntity paytmMastEntity= paytmMasterDao.getPaytmMasterData(custId);
+
+
             String number = map.get("number");
             String name = map.get("name");
             String status = map.get("status");
@@ -370,39 +381,81 @@ public class PostCallingServiceImp implements PostCallingService {
             map.put("visitDate",sqltDate.toString());
             String visitTime = map.get("visitTime");
 
-        String appoinmentId=postCallingDao.callJobAllocatedProcedure(map);
+            String appoinmentId=postCallingDao.callJobAllocatedProcedure(map);
 
             String allocationDate1 = sqltDate + " " + visitTime;
             agentCode = postCallingDao.getAgentCode(pincode, sqltDate, allocationDate1, 0, "0");
+
             confirmationAllowed = "Y";
             finalconfirmation = "W";
 
-            allocation_map.put("appointmentID",appoinmentId);
-            allocation_map.put("agentcode",agentCode);
-            allocation_map.put("custUID",map.get("custId"));
-            allocation_map.put("mobileNo",number);
-            //map.put("allocationTime",);  use now()
-            allocation_map.put("visitDatetime",allocationDate1);
-            allocation_map.put("importBy",importby);
-            //map.put("importDatetime") use now()
-            allocation_map.put("confirmationDatetime",allocationDate1);
-           // allocation_map.put("sendSMSDatetime",) use now()
-            allocation_map.put("finalConfirmation","W");
-            allocation_map.put("confirmation","W");
-            allocation_map.put("confirmationAllowed","Y");
-            allocation_map.put("kycCollected","P");
-            allocation_map.put("remarkCode","U");
-            allocation_map.put("spokeCode","DELCIR001");
-            String allocationId=postCallingDao.JobAllocatedProcedure(allocation_map);
+            if(agentCode!=null) {
+                paytmagententryEntity =agentPaytmDao.findByPrimaryKey(agentCode);
+                allocation_map.put("appointmentID", appoinmentId);
+                allocation_map.put("agentcode", agentCode);
+                allocation_map.put("custUID", map.get("custId"));
+                allocation_map.put("mobileNo", number);
+                //map.put("allocationTime",);  use now()
+                allocation_map.put("visitDatetime", allocationDate1);
+                allocation_map.put("importBy", importby);
+                //map.put("importDatetime") use now()
+                allocation_map.put("confirmationDatetime", allocationDate1);
+                // allocation_map.put("sendSMSDatetime",) use now()
+                allocation_map.put("finalConfirmation", "W");
+                allocation_map.put("confirmation", "W");
+                allocation_map.put("confirmationAllowed", "Y");
+                allocation_map.put("kycCollected", "P");
+                allocation_map.put("remarkCode", "U");
+                allocation_map.put("spokeCode", "DELCIR001");
+                String jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
 
+                if(paytmMastEntity!=null){
+                    customerAlternativeNo =paytmMastEntity.getAlternatePhone1();
+                    if(customerAlternativeNo!=null && !customerAlternativeNo.equalsIgnoreCase("")){
+                        number=customerAlternativeNo;
+                    }
+                }
+
+                String text = "Dear Agent Job No-" + jobNumber + "" +
+                        ", Your visit is fixed at " + pcdvisitTime
+                        + " " + visitTime + "with " + name + " Address-" +
+                        "" + address + " " + pincode + "Contact no-" +
+                        "" + number + " Please See Leads in App";
+                String custext = "Dear Customer  Your CustomerId-" + custId+ "" +
+                        ",   Agent visit dateTime " + pcdvisitTime
+                        + " " + visitTime + " Please Available with ...... ";
+
+                PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
+                if (paytmdeviceidinfoEntity != null) {
+                    loginId = paytmdeviceidinfoEntity.getLoginId();
+                }
+
+                if (loginId != null) {
+                    String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
+                    String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
+                    //     String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                    String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
+                } else {
+                    String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
+                    //   String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                    String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
+                }
+
+                result = "JOB ALLOCATED";
+
+
+            }else{
+                result = "NO AGENT AVAILABLE";
+            }
 
         }catch (Exception e){
             e.printStackTrace();
+            result="err";
         }
 
 
 
-        return "";
+        return result;
     }
 
 

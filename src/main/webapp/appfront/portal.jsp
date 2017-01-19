@@ -132,7 +132,7 @@
         rolename="CircleAudit";
     }
     if ("DULD".equalsIgnoreCase(role)){
-        rolename="Data Uploader";
+        rolename="Client User";
     }
   if(name==null){
 %>
@@ -385,7 +385,7 @@
 <footer style="background: #fff;">
   <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="border-top:1px solid #ddd; text-align:center; padding-top:5px;">
-      Copyright &copy; 2016,  <img src="assets/img/softage_logo.png" alt="softage" style="margin-top: -1px; height:20px;" />
+      Copyright &copy; 2017,  <img src="assets/img/softage_logo.png" alt="softage" style="margin-top: -1px; height:20px;" />
     </div>
   </div>
 </footer>

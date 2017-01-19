@@ -326,7 +326,6 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
 
     $scope.getSpokeByCircle=function(){
 
-        alert(" circle name "+$scope.circlecode.name);
 
         $http.get(domain+'/getSpokeByCircle?circleCode='+$scope.circlecode.name).success(function(data,status,headers,config){
 
@@ -1763,7 +1762,7 @@ alert(pincode)
 
     }
     $scope.calling = function(){            /////for customer calling
-        var data = 'customer_number=' + $scope.codes.alternatePhone1 + '&customerID='+$scope.codes.cust_uid;
+        var data = 'customer_number=' + $scope.codes.alternatePhone1 + '&cust_uid='+$scope.codes.cust_uid;
        /*alert(data);*/
         $http.get(domain+'/customerCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
@@ -1939,6 +1938,9 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','
                 $mdDialog.show(confirm).then(function() {
                     $scope.status = 'You decided to get rid of your debt.';
                     $scope.rejectReport = d.data.rejectedRecord
+                    if(angular.equals({},$scope.rejectReport)){
+                        return false;
+                    }
                     window.setTimeout(function(){
                         $scope.exportToExcel();
                         //location.reload();
@@ -2070,10 +2072,12 @@ routerApp.controller('uploadAgent', ['$scope', '$http', 'FileProductUploadServic
                 // .cancel('Cancel');
                 $mdDialog.show(confirm).then(function() {
                     $scope.status = 'You decided to get rid of your debt.';
-                    $scope.rejectReport = d.data.rejectedRecord
+                    $scope.rejectReport = d.data.rejectedRecord;
+                    if(angular.equals({},$scope.rejectReport)){
+                        return false;
+                    }
                     window.setTimeout(function(){
                         $scope.exportToExcel();
-                        //location.reload();
 
                     }, 2000)
                 }, function() {

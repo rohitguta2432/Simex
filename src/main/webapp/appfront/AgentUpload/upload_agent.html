@@ -59,6 +59,19 @@
 
 
                             <div style="clear:both; height:20px;"></div>
+                            <div id="exportable" style="display:none">
+                                <table align="center" border="1" >
+                                    <tr>
+                                        <th>Reason</th>
+
+                                    </tr>
+                                    <tr ng-repeat="x in rejectReport">
+                                        <td>{{ x.Resion }}</td>
+
+                                    </tr>
+                                </table>
+
+                            </div>
 
                         </form>
                     </div>

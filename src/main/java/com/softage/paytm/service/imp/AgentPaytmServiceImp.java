@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by SS0085 on 30-12-2015.
@@ -56,6 +57,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
 
     @Override
     public String saveBulkAgent(List<Map<String, String>> agentList,int circlecode) {
+        String result="done";
         for (Map<String, String> map : agentList) {
 
             try {
@@ -87,7 +89,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
                 paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
                 int pincode1 = Integer.parseInt(pincode);
 
-                String result = saveAgent(paytmagententryEntity, circleMastEntity);
+                result = saveAgent(paytmagententryEntity, circleMastEntity);
 
             }catch (Exception e){
                 e.printStackTrace();
@@ -95,7 +97,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
 
         }
 
-        return null;
+        return result;
     }
 
     @Override
@@ -243,7 +245,11 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         emplogintableEntity.setEmpCode(paytmagententryEntity.getAcode());
         emplogintableEntity.setEmpName(paytmagententryEntity.getAfullname());
         emplogintableEntity.setEmpPhone(paytmagententryEntity.getAphone());
-        password = paytmagententryEntity.getAcode().substring(0, 4) + paytmagententryEntity.getAphone().substring(0, 4);
+
+        Random randomGenerator = new Random();
+        int randomInt = randomGenerator.nextInt(10000);
+        password =  paytmagententryEntity.getAcode().substring(0, 4)+ "@"+randomInt;
+      //  password = paytmagententryEntity.getAcode().substring(0, 4) +"@"+paytmagententryEntity.getAphone().substring(0, 4);
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 

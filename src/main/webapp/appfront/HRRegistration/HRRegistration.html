@@ -39,7 +39,7 @@
                             <div class="form-group col-sm-6">
                                 <label for="Text1" class="col-sm-3 control-label no-padding-right">Emp Code</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" minlength="6" maxlength="6" name="emp_code" ng-model="emp_code" id="Text1" placeholder="Employee Code"  validation="alpha|min_len:4|required" required/>
+                                    <input type="text" class="form-control" ng-pattern="/^[a-zA-Z].*/i" minlength="6" maxlength="6" name="emp_code" ng-model="emp_code" id="Text1" placeholder="Employee Code"  validation="alpha|min_len:4|required" required/>
 
                                 </div>
                             </div>

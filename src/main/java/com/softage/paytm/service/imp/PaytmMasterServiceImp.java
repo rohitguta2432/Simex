@@ -92,7 +92,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
         PaytmMastEntity paytmMastEntity=null;
         String circleCode=null;
         CircleMastEntity circleMastEntity=null;
-        String result=null;
+        String result="done";
         try {
             int i=1;
             for (Map<String, String> map : paytmList) {
