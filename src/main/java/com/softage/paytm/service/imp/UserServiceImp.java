@@ -33,7 +33,14 @@ public class UserServiceImp implements UserService {
 
     @Override
     public EmplogintableEntity getUserByToken(String token) {
-        return userDao.getUserByToken(token);
+        EmplogintableEntity emplogintableEntity=null;
+        for(int i=0; i<=5; i++){
+            emplogintableEntity=  userDao.getUserByToken(token);
+            if(emplogintableEntity!=null){
+                break;
+            }
+        }
+        return emplogintableEntity;
     }
 
     public JSONObject getEmpFtpDetails(int circleCode) {
@@ -48,6 +55,18 @@ public class UserServiceImp implements UserService {
     @Override
     public String updateAgentStatus(EmplogintableEntity emplogintableEntity) {
         return userDao.updateAgentStatus(emplogintableEntity);
+    }
+
+    @Override
+    public EmplogintableEntity getUserByOldPassword(String OldPassword) {
+        return userDao.getUserByOldPassword(OldPassword);
+    }
+
+    @Override
+    public String UpdateLastThreePassword(EmplogintableEntity emplogintableEntity,String updatedpassword) {
+
+        return userDao.UpdateLastThreePassword(emplogintableEntity,updatedpassword);
+
     }
 
 }

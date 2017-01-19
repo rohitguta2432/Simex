@@ -60,6 +60,7 @@ public class UserDaoImp implements UserDao {
         try {
             entityManager = entityManagerFactory.createEntityManager();
             String strQuery = "select emp from EmplogintableEntity emp where emp.token=:token";
+
             query = entityManager.createQuery(strQuery);
             query.setParameter("token", token);
             query.setMaxResults(1);
@@ -161,6 +162,54 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public String updateAgentStatus(EmplogintableEntity emplogintableEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg = null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.merge(emplogintableEntity);
+            transaction.commit();
+            msg = "done";
+        } catch (Exception e) {
+            msg = "err";
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return msg;
+    }
+
+    @Override
+    public EmplogintableEntity getUserByOldPassword(String oldpassword) {
+        EntityManager entityManager = null;
+        Query query = null;
+        EmplogintableEntity emplogintableEntity = null;
+        try {
+            String updatedpassword="%"+oldpassword+"%";
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select emp from EmplogintableEntity emp where emp.lastThreePassword like:password";
+            query = entityManager.createQuery(strQuery);
+            query.setParameter("password", updatedpassword);
+            emplogintableEntity = (EmplogintableEntity) query.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+               /* entityManager.flush();
+                entityManager.clear();*/
+                entityManager.close();
+            }
+        }
+        return emplogintableEntity;
+    }
+
+    @Override
+    public String UpdateLastThreePassword(EmplogintableEntity emplogintableEntity,String updatedpasword) {
         EntityManager entityManager = null;
         EntityTransaction transaction = null;
         String msg = null;

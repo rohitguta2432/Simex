@@ -13,4 +13,6 @@ public interface UserDao {
     public JSONObject getEmpFtpDetailsDao(int circleCode);
     public JSONObject getStatus(String mobileno);
     public String updateAgentStatus(EmplogintableEntity emplogintableEntity);
+    public EmplogintableEntity getUserByOldPassword(String oldpassword);
+    public String UpdateLastThreePassword(EmplogintableEntity emplogintableEntity,String updatedpassword);
 }

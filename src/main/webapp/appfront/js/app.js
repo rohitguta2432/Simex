@@ -102,7 +102,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
 
 
 });
-routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
+routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia',function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$rootScope){
 
     $scope.name='';
     $scope.agent_code='';
@@ -1453,7 +1453,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                 $scope.datecallback = data.dateList1;
                 $scope.codes = data.paytmmastjson;
                 $scope.mob = data.teleData;
-                agentslot();
+              // agentslot();
             }, function (reason) {
             });
     }
@@ -1616,37 +1616,27 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
         }
 
     };
+    $scope.getAvlAgentChart=function(pincode){
 
-
-
-
-    $scope.getAvlAgentChart=function(){
-
-
-            var data = 'pincode='+$scope.codes.pincode + 'customerID='+$scope.codes.cust_uid+'coStatus='+$scope.codes.coStatus;
-
-              //    alert("pincode "+$scope.codes.pincode);
+        $scope.pincode=$scope.params.pincode;
+        var data ='pincode='+$scope.pincode;
+        alert($scope.visit_date)
+        alert("pincode "+$scope.pincode);
             $http.get(domain + '/getAvailableSlot?' + data)
                 .success(function (data, status, headers, config) {
-
-
-
                     $scope.dataSets = data.slotList;
                     $scope.dateList2 = data.dateList;
                     $scope.timediff  = data.timedeff;
-
-
+                    alert($scope.dateList2)
                 })
                 .error(function (data, status, headers, config) {
                 });
-
-
     };
 
     $scope.selectDateTime=function(time,vstdate,status){
 
      //   alert(" key "+ key +" value "+value );
-        var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' +vstdate + '&visitTime=' + time+':00' + '&status=' +status + 'customerID='+$scope.codes.cust_uid+'coStatus='+$scope.codes.coStatus;
+        var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' +vstdate + '&visitTime=' + time+':00' + '&status=' +status + '&customerID='+$scope.codes.cust_uid+'&coStatus='+$scope.codes.coStatus;
         console.log(data);
         $http.get(domain+'/postCalling?'+ data)
             .success(function(data, status, headers, config) {
@@ -1697,14 +1687,16 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
   var agentslot=function(){
         $scope.getAvlAgentChart();
     }
-
-
-
-
-    $scope.showchart=function(){
-
+    $scope.showchart=function(pincode){
         $scope.flagcall=false;
+alert(pincode)
+        var pincode=pincode;
+
+        var scope=$rootScope.$new();
+         scope.pincode=pincode;
+        scope.params={pincode:pincode}
             var modalInstance = $modal.open({
+                scope: scope,
                 templateUrl: 'Telecalling/availableAgentChart.html',
                 controller: 'telecalling',
             });

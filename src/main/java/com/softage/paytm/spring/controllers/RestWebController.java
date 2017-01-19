@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.StringLiteral;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.apache.commons.lang.StringUtils;
@@ -120,7 +121,6 @@ public class RestWebController {
         String password = request.getParameter("password");
         String dbUser = null;
         String token=null;
-
         try {
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -417,7 +417,8 @@ public class RestWebController {
     public JSONArray agentAcceptedLeads(HttpServletRequest request) {
         String Msg=null;
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if(emplogintableEntity!=null) {
             String agentCode=request.getParameter("AgentCode");
             List<JSONObject> listjson = leadsService.agentAcceptedLeads(agentCode);
@@ -660,7 +661,8 @@ public class RestWebController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else
+        }
+        else
         {
             result="NOT AUTHENTICABLE USER";
         }
@@ -694,7 +696,8 @@ public class RestWebController {
         int originalphotoPC=0;
 
 
-        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if(emplogintableEntity!=null) {
 
 
@@ -845,7 +848,8 @@ public class RestWebController {
         int cust_uid=0;
         System.out.println("Service done ");
        // String customer_number = request.getParameter("customer_no");
-        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        String token=request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if(emplogintableEntity!=null) {
 
             String image_path = request.getParameter("image_path");
@@ -1204,11 +1208,10 @@ public class RestWebController {
         return name;
 
     }
-
-    @RequestMapping(value = "/UpdatePassword", method = RequestMethod.GET)
+   /* @RequestMapping(value = "/UpdatePassword", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject resetPassword(HttpServletRequest request, HttpServletResponse response) {
-        //logger.info("Welcome home! The client locale is {}.", locale);
+
         JSONObject jsonObject = new JSONObject();
         String result = null;
         String useroldpassword=null;
@@ -1222,11 +1225,8 @@ public class RestWebController {
             expireDate.setTime(expireDate.getTime() + expireTime);
 
             System.out.println("Date After 30 Days  " + expireDate);
-
-
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
            useroldpassword=emplogintableEntity.getEmpPassword();
-
             if (oldpassword.equals(useroldpassword)) {
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 String hashedPassword = passwordEncoder.encode(newpassword);
@@ -1252,5 +1252,64 @@ public class RestWebController {
         jsonObject.put("status", result);
 
         return jsonObject;
+    }*/
+
+    @RequestMapping(value = "/UpdatePassword", method = RequestMethod.GET)
+    @ResponseBody
+    public String resetPassword(HttpServletRequest request, HttpServletResponse response) {
+
+       // JSONObject jsonObject = new JSONObject();
+        String result = null;
+        String useroldpassword=null;
+        String finalpass=null;
+        try {
+            String user = request.getParameter("userName");
+            String oldpassword  = request.getParameter("oldpassword");
+            String newpassword = request.getParameter("newpassword");
+            Date expireDate = new Date();
+            System.out.println("Current Date   " + expireDate);
+            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+            expireDate.setTime(expireDate.getTime() + expireTime);
+            System.out.println("Date After 30 Days  " + expireDate);
+
+            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+            if(emplogintableEntity!=null) {
+                EmplogintableEntity emplogintableEntity1 = userService.getUserByOldPassword(oldpassword);
+                //Old password mismatch
+                String lastThreePassword = emplogintableEntity.getLastThreePassword();
+                String[] arr = lastThreePassword.split(",");
+                arr[0] = newpassword;
+                String passCsv = StringUtils.join(arr, ',');
+                if (emplogintableEntity!= null) {
+                    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    String hashedPassword = passwordEncoder.encode(newpassword);
+                    emplogintableEntity.setEmpPassword(newpassword);
+                    emplogintableEntity.setLastThreePassword(passCsv);
+                    emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                    emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+                    result = agentPaytmService.updatePassword(emplogintableEntity, newpassword);
+                } else {
+                    result = "New password cannot be last three password";
+                }
+            }
+                else{
+                result="User Not Found";
+            }
+
+            if (result.equalsIgnoreCase("done")) {
+                result = "success";
+            }
+
+        }
+        catch (Exception e) {
+            result="Technical Error";
+            e.printStackTrace();
+        }
+
+
+      //  jsonObject.put("status", result);
+
+        return result;
     }
+
 }

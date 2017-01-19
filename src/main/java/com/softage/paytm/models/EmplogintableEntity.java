@@ -27,6 +27,18 @@ public class EmplogintableEntity {
     private String spoke_code;
     private CircleMastEntity circleMastByCirCode;
     private String roleCode;
+    private String lastThreePassword;
+
+
+    @Basic
+    @Column(name = "lastThreePassword", nullable = false, insertable = true, updatable = true)
+    public String getLastThreePassword() {
+        return lastThreePassword;
+    }
+
+    public void setLastThreePassword(String lastThreePassword) {
+        this.lastThreePassword = lastThreePassword;
+    }
 
     @Basic
     @Column(name = "Emp_Status", nullable = false, insertable = true, updatable = true)
