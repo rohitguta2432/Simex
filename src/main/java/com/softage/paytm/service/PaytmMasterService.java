@@ -28,4 +28,5 @@ public interface PaytmMasterService {
     public PaytmMastEntity getPaytmmasterServiceDate(int cust_uid);
     public SpokeMastEntity spokeMastEntity(String spokeAudit);
     public AllocationMastEntity getallocationMastEntity(String custid,int jobid);
+
 }

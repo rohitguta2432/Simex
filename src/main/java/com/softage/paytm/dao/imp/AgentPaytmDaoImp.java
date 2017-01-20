@@ -175,7 +175,7 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
             transaction.begin();
             entityManager.merge(emplogintableEntity);
             transaction.commit();
-            msg = "done";
+            msg = "success";
         } catch (Exception e) {
             msg = "err";
             e.printStackTrace();

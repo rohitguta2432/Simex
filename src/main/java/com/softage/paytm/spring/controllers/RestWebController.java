@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -68,11 +69,11 @@ public class RestWebController {
         EmplogintableEntity emplogintableEntity = userService.getUserByToken("[B@503d88d8");
 
 
-        String s=request.getServletContext().getRealPath("/");
+        String s = request.getServletContext().getRealPath("/");
 
         System.out.println(request.getServletContext().getRealPath("/"));
 
-        SecureRandom random=new SecureRandom();
+        SecureRandom random = new SecureRandom();
         byte bytes[] = new byte[20];
         random.nextBytes(bytes);
         String token = bytes.toString();
@@ -82,8 +83,8 @@ public class RestWebController {
         arr.add("Anil");
         jsonObject.put("msg", "this is JSON Testing");
         jsonObject.put("identification", arr);
-        jsonObject.put("directoryPath",s);
-        jsonObject.put("token",token);
+        jsonObject.put("directoryPath", s);
+        jsonObject.put("token", token);
         return jsonObject;
     }
 
@@ -120,7 +121,7 @@ public class RestWebController {
         String user = request.getParameter("username");
         String password = request.getParameter("password");
         String dbUser = null;
-        String token=null;
+        String token = null;
         try {
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -128,14 +129,14 @@ public class RestWebController {
             if (emplogintableEntity != null) {
 
                 Timestamp expireDate = emplogintableEntity.getExpireDate();
-                Integer attamptCount=emplogintableEntity.getAttamptCount();
-                if(attamptCount==null){
-                    attamptCount=0;
+                Integer attamptCount = emplogintableEntity.getAttamptCount();
+                if (attamptCount == null) {
+                    attamptCount = 0;
                 }
                 Timestamp currentDate = new Timestamp(new Date().getTime());
                 Timestamp lockedDate = emplogintableEntity.getLockedDate();
 
-                if ( attamptCount!=5) {
+                if (attamptCount != 5) {
 
 
                     //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
@@ -189,8 +190,8 @@ public class RestWebController {
                         }
                         agentPaytmService.updatePassword(emplogintableEntity, null);
                     }
-                } else if ( lockedDate.getTime() > currentDate.getTime()) {
-                    result="Your Account has locked! Try after 1 Hour";
+                } else if (lockedDate.getTime() > currentDate.getTime()) {
+                    result = "Your Account has locked! Try after 1 Hour";
                 } else {
                     if (expireDate == null) {
 
@@ -214,7 +215,7 @@ public class RestWebController {
                             emplogintableEntity.setAttamptCount(0);
                             emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
                         }
-                        agentPaytmService.updatePassword(emplogintableEntity, null);
+                        userService.updateAttaptStatus(emplogintableEntity);
 
                     } else if (currentDate.getTime() > expireDate.getTime()) {
                         result = "Password Expired";
@@ -242,14 +243,14 @@ public class RestWebController {
                         agentPaytmService.updatePassword(emplogintableEntity, null);
                     }
                 }
-            }else {
+            } else {
                 result = "Invalid Password";
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             result = "error";
-            logger.error("",e);
+            logger.error("", e);
         }
-        if(result.equalsIgnoreCase("success")){
+        if (result.equalsIgnoreCase("success")) {
             jsonObject.put("token", token);
         }
         jsonObject.put("status", result);
@@ -284,9 +285,9 @@ public class RestWebController {
     public String UpdateDeviceInfo(HttpServletRequest request, HttpServletResponse response) {
         String msg = "0";
         PaytmdeviceidinfoEntity paytmdeviceidinfoEntity1 = null;
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
             try {
                 String loginId = request.getParameter("loginid");
                 String deviceId = request.getParameter("deviceId");
@@ -308,9 +309,8 @@ public class RestWebController {
                 e.printStackTrace();
                 logger.error("", e);
             }
-        }
-        else{
-            msg="NOT AUTHENTICABLE USER";
+        } else {
+            msg = "NOT AUTHENTICABLE USER";
         }
         return msg;
 
@@ -323,14 +323,15 @@ public class RestWebController {
         JSONObject leadsObject = new JSONObject();
         String cuurentDate = null;
         List<JSONObject> arrayList = new ArrayList();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null){
-            Timestamp timestamp= emplogintableEntity.getLastLoginDate();
-            long time=(long)timestamp.getTime()+24*60*60*1000;
+        if (emplogintableEntity != null) {
+            Timestamp timestamp = emplogintableEntity.getLastLoginDate();
+            long time = (long) timestamp.getTime() + 24 * 60 * 60 * 1000;
             timestamp.setTime(time);
-            Timestamp timestamp1=new Timestamp(new Date().getTime());;
-            if(timestamp.getTime()>timestamp1.getTime() ) {
+            Timestamp timestamp1 = new Timestamp(new Date().getTime());
+            ;
+            if (timestamp.getTime() > timestamp1.getTime()) {
                 try {
                     String agentCode = request.getParameter("AgentCode");
                     String leaddate = request.getParameter("leaddate");
@@ -344,11 +345,11 @@ public class RestWebController {
                 leadsObject.put("timediff", 1);
                 leadsObject.put("starttime", 9);
                 leadsObject.put("endtime", 18);
-            }else {
-                leadsObject.put("authentication","expired");
+            } else {
+                leadsObject.put("authentication", "expired");
             }
-        }else{
-            leadsObject.put("authentication","invalid");
+        } else {
+            leadsObject.put("authentication", "invalid");
         }
 
         return leadsObject;
@@ -359,14 +360,14 @@ public class RestWebController {
     @RequestMapping(value = "/agentNewLeads", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json; charset=utf-8")
     public JSONArray agentNewLeads(HttpServletRequest request) {
         int timedeff = 1;
-        String msg=null;
+        String msg = null;
         JSONArray array = new JSONArray();
         JSONObject leadsObject = new JSONObject();
         String cuurentDate = null;
         List<JSONObject> arrayList = new ArrayList();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
 
             try {
                 String agentCode = request.getParameter("AgentCode");
@@ -377,8 +378,8 @@ public class RestWebController {
             } catch (Exception e) {
                 logger.error("", e);
             }
-        }else{
-             msg="NOT AUTHENTICABLE USER";
+        } else {
+            msg = "NOT AUTHENTICABLE USER";
         }
      /*   leadsObject.put("leads",array);
         leadsObject.put("timediff",1);
@@ -392,9 +393,9 @@ public class RestWebController {
     @RequestMapping(value = "/UpdateLeadStatus", method = {RequestMethod.GET, RequestMethod.POST})
     public String updateLeadStatus(HttpServletRequest request) {
         String result = null;
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
 
             String agentCode = request.getParameter("AgentCode");
             String jobid = request.getParameter("Jobid");
@@ -406,55 +407,55 @@ public class RestWebController {
                     break;
                 }
             }
-        }
-        else{
-            result="NOT AUTHENTICATBLE USER";
+        } else {
+            result = "NOT AUTHENTICATBLE USER";
         }
         return result;
     }
 
     @RequestMapping(value = "/AgentAcceptedLeads", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray agentAcceptedLeads(HttpServletRequest request) {
-        String Msg=null;
+        String Msg = null;
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
-            String agentCode=request.getParameter("AgentCode");
+        if (emplogintableEntity != null) {
+            String agentCode = request.getParameter("AgentCode");
             List<JSONObject> listjson = leadsService.agentAcceptedLeads(agentCode);
             array.addAll(listjson);
-        }
-        else{
+        } else {
 
-         array.add("NOT AUTHENTICABLE USER");
+            array.add("NOT AUTHENTICABLE USER");
         }
         return array;
 
     }
+
     @RequestMapping(value = "/AgentRejectedLeads", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray agentRejectedLeads(HttpServletRequest request) {
-        String Msg=null;
+        String Msg = null;
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
-            String agentCode=request.getParameter("AgentCode");
+        if (emplogintableEntity != null) {
+            String agentCode = request.getParameter("AgentCode");
             List<JSONObject> listjson = leadsService.agentRejectedLeads(agentCode);
             array.addAll(listjson);
-        }
-        else{
+        } else {
             array.add("NOT AUTHENTICABLE USER");
         }
         return array;
     }
+
     @RequestMapping(value = "/getagentLocation", method = {RequestMethod.GET, RequestMethod.POST})
     public String getagentLocation(HttpServletRequest request) {
         JSONArray array = new JSONArray();
-        AllocationMastEntity allocationMastEntity=null;
-       int cust_uid=0;
-        String result=null;
-        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        AllocationMastEntity allocationMastEntity = null;
+        int cust_uid = 0;
+        String result = null;
+        String token = request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if (emplogintableEntity != null) {
             String agentCode = request.getParameter("agentcode");
             String customerNumber = request.getParameter("customerNumber");
             String location = request.getParameter("location");
@@ -471,38 +472,40 @@ public class RestWebController {
             double lati = Double.parseDouble(latitude);
             double longi = Double.parseDouble(longitude);
             result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location, lati, longi, cust_uid);
-        } else{
-              result="NOT AUTHENTICABLE USER";
-            }
+        } else {
+            result = "NOT AUTHENTICABLE USER";
+        }
 
-            return result;
+        return result;
     }
+
     @RequestMapping(value = "/AcceptedEntry", method = {RequestMethod.GET, RequestMethod.POST})
     public String acceptedEntry(HttpServletRequest request) {
         AllocationMastEntity allocationMastEntity = null;
         PaytmagententryEntity paytmagententryEntity = null;
         ProofMastEntity proofMastEntityPOICode = null;
         ProofMastEntity proofMastEntityPOACode = null;
-        PaytmMastEntity paytmMastData=null;
-        PaytmcustomerDataEntity paytmcustomerDataEntity=null;
-        SpokeMastEntity spokeMastEntity=null;
+        PaytmMastEntity paytmMastData = null;
+        PaytmcustomerDataEntity paytmcustomerDataEntity = null;
+        SpokeMastEntity spokeMastEntity = null;
         String result = null;
 
         PaytmMastEntity paytmMastEntity = null;
-        TblScan tblScan=null;
+        TblScan tblScan = null;
         String address = "";
         String state = "";
         String emailId = "";
         String city = "";
         String pincode = "";
-        int custid=0;
+        int custid = 0;
         CircleMastEntity circleMastEntity = null;
-        String spokecode="";
-        int auditstatus=0;
-        int circlecode=0;
+        String spokecode = "";
+        int auditstatus = 0;
+        int circlecode = 0;
 
-        String token=request.getParameter("agentToken");EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        String token = request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if (emplogintableEntity != null) {
             try {
                 String customerid = request.getParameter("customerId");
                 int cust_uid = Integer.parseInt(customerid);
@@ -575,7 +578,7 @@ public class RestWebController {
                 }
                 ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
 
-                if(StringUtils.isNotBlank(customerid)) {
+                if (StringUtils.isNotBlank(customerid)) {
 
                     DataentryEntity dataentryEntity = new DataentryEntity();
                     //  dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
@@ -608,7 +611,7 @@ public class RestWebController {
                     dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
                     result = dataEntryService.saveDataEntry(dataentryEntity);
 
-                    if (!result.equals("err") && cust_uid!=0) {
+                    if (!result.equals("err") && cust_uid != 0) {
                         TblScan scanresult = new TblScan();
                         AuditStatusEntity auditStatusEntity = qcservices.getAuditStatusEntity(1);
                         scanresult.setPaytmcustomerDataEntity(paytmcustomerDataEntity);
@@ -629,7 +632,7 @@ public class RestWebController {
                         result = qcservices.SaveScanimages(scanresult);
 
                     }
-                    if (!result.equals("err") && cust_uid!=0) {
+                    if (!result.equals("err") && cust_uid != 0) {
                         TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
                         tblcustDocDetails.setCust_uid(cust_uid);
                         tblcustDocDetails.setcPOA(poa);
@@ -655,16 +658,14 @@ public class RestWebController {
                         result = "Not found";
                     }
 
-                }else{
-                    result="CustomerID Not Found ";
+                } else {
+                    result = "CustomerID Not Found ";
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        else
-        {
-            result="NOT AUTHENTICABLE USER";
+        } else {
+            result = "NOT AUTHENTICABLE USER";
         }
         return result;
     }
@@ -672,33 +673,33 @@ public class RestWebController {
     @RequestMapping(value = "/RejectedEntry", method = {RequestMethod.GET, RequestMethod.POST})
     public String rejectedEntry(HttpServletRequest request) {
 
-        TblScan tblScan=null;
-        String result=null;
-        String address=null;
-        String city=null;
-        String state=null;
-        String pincode=null;
-        String emailId=null;
-        int circlecode=0;
-        AllocationMastEntity allocationMastEntity=null;
+        TblScan tblScan = null;
+        String result = null;
+        String address = null;
+        String city = null;
+        String state = null;
+        String pincode = null;
+        String emailId = null;
+        int circlecode = 0;
+        AllocationMastEntity allocationMastEntity = null;
         PaytmagententryEntity paytmagententryEntity = null;
         ProofMastEntity proofMastEntityPOICode = null;
         ProofMastEntity proofMastEntityPOACode = null;
-        PaytmMastEntity paytmMastData=null;
-        String phonenumber=null;
-        int pages=0;
-        int cust_uid=0;
-        int originalsrfpc=0;
-        int ipoipc=0;
-        int ipoapc=0;
-        int originalopipc=0;
-        int originalopoapc=0;
-        int originalphotoPC=0;
+        PaytmMastEntity paytmMastData = null;
+        String phonenumber = null;
+        int pages = 0;
+        int cust_uid = 0;
+        int originalsrfpc = 0;
+        int ipoipc = 0;
+        int ipoapc = 0;
+        int originalopipc = 0;
+        int originalopoapc = 0;
+        int originalphotoPC = 0;
 
 
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
 
 
             String agentCode = request.getParameter("AgentCode");
@@ -834,8 +835,8 @@ public class RestWebController {
             result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
             //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
 
-        }else{
-            result="NOT AUTHENTICABLE USER";
+        } else {
+            result = "NOT AUTHENTICABLE USER";
         }
 
         return result;
@@ -844,13 +845,13 @@ public class RestWebController {
     @RequestMapping(value = "/ftpdetails", method = {RequestMethod.GET, RequestMethod.POST})
     public String ftpDetails(HttpServletRequest request) {
         String result = "";
-        TblScan tblScan=null;
-        int cust_uid=0;
+        TblScan tblScan = null;
+        int cust_uid = 0;
         System.out.println("Service done ");
-       // String customer_number = request.getParameter("customer_no");
-        String token=request.getParameter("agentToken");
+        // String customer_number = request.getParameter("customer_no");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
 
             String image_path = request.getParameter("image_path");
             int page_number = Integer.parseInt(request.getParameter("page_number"));
@@ -897,26 +898,26 @@ public class RestWebController {
                 }
             }
 
-        }
-        else{
-            result="NOT AUTHENTICABLE USER";
+        } else {
+            result = "NOT AUTHENTICABLE USER";
         }
         return result;
     }
+
     @RequestMapping(value = "/ValidateCustomerId", method = {RequestMethod.GET, RequestMethod.POST})
     public
     @ResponseBody
     JSONObject validateCustomer(HttpServletRequest request) {
         String customerPhone = null;
-        int cust_uid=0;
+        int cust_uid = 0;
         String result = "false";
-        String customerid=null;
-        AllocationMastEntity allocationMastEntity=null;
+        String customerid = null;
+        AllocationMastEntity allocationMastEntity = null;
         JSONObject jsonObject = new JSONObject();
 
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
 
             customerid = request.getParameter("customerid");
             String jobid = request.getParameter("jobid");
@@ -950,11 +951,12 @@ public class RestWebController {
                 result = "false";
                 jsonObject.put("Msg", "Data Not Found");
             }
-        }else{
-            jsonObject.put("Msg","Authentication Failed");
+        } else {
+            jsonObject.put("Msg", "Authentication Failed");
         }
         return jsonObject;
     }
+
     @RequestMapping(value = "/ftpDocumentDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public String ftpDocumentDetails(HttpServletRequest request) {
 
@@ -965,9 +967,9 @@ public class RestWebController {
     @RequestMapping(value = "/RasonsList", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray reasonList(HttpServletRequest request) {
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
 
             List<ReasonMastEntity> reasonMastEntities = leadsService.reasonList();
             for (ReasonMastEntity reasonMastEntity : reasonMastEntities) {
@@ -976,8 +978,7 @@ public class RestWebController {
                 jsonObject.put("Text", reasonMastEntity.getReasonText());
                 array.add(jsonObject);
             }
-        }
-        else{
+        } else {
             array.add("NOT AUTHENTICABLE USER");
         }
         return array;
@@ -987,9 +988,9 @@ public class RestWebController {
     public JSONArray remarkList(HttpServletRequest request) {
 
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
             List<RemarkMastEntity> remarkMastEntityList = postCallingService.remarkList();
             for (RemarkMastEntity remarkMastEntity : remarkMastEntityList) {
                 if (!remarkMastEntity.getRemarksCode().equalsIgnoreCase("U")) {
@@ -999,24 +1000,23 @@ public class RestWebController {
                     array.add(jsonObject);
                 }
             }
-        }
-        else{
+        } else {
             array.add("NOT AUTHENTICABLE USER");
         }
         return array;
     }
+
     @RequestMapping(value = "/KYCDone", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray kycDone(HttpServletRequest request) {
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null){
+        if (emplogintableEntity != null) {
             String agentCode = request.getParameter("AgentCode");
             JSONObject result = new JSONObject();
             List<JSONObject> listjson = leadsService.kycDone(agentCode);
             array.addAll(listjson);
-        }
-        else{
+        } else {
             array.add("NOT AUTHENTICABLE USER");
         }
         return array;
@@ -1026,15 +1026,14 @@ public class RestWebController {
     @RequestMapping(value = "/KYCNotDone", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONArray kycNotDone(HttpServletRequest request) {
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
             String agentCode = request.getParameter("AgentCode");
             List<JSONObject> listjson = leadsService.kycNotDone(agentCode);
             array.addAll(listjson);
-        }
-        else{
-         array.add("NOT AUTHENTICABLE USER");
+        } else {
+            array.add("NOT AUTHENTICABLE USER");
         }
         return array;
     }
@@ -1044,9 +1043,9 @@ public class RestWebController {
         String applicable = "I";
         JSONObject jsonObject = new JSONObject();
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
+        if (emplogintableEntity != null) {
             List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
 
             for (ProofMastEntity proofMastEntity : proofMastEntities) {
@@ -1057,8 +1056,7 @@ public class RestWebController {
 
                 array.add(json);
             }
-        }
-        else{
+        } else {
             array.add("NOT AUTHENTICABLE USER");
         }
         //  jsonObject.put("ArrayOfProofType",array);
@@ -1070,19 +1068,18 @@ public class RestWebController {
         String applicable = "A";
         JSONObject jsonObject = new JSONObject();
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
-        if(emplogintableEntity!=null) {
-        List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
-        for (ProofMastEntity proofMastEntity : proofMastEntities) {
-            JSONObject json = new JSONObject();
-            json.put("Applicable", proofMastEntity.getApplicable());
-            json.put("Code", proofMastEntity.getIdCode());
-            json.put("Text", proofMastEntity.getIdText());
-            array.add(json);
-        }
-        }
-        else{
+        if (emplogintableEntity != null) {
+            List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
+            for (ProofMastEntity proofMastEntity : proofMastEntities) {
+                JSONObject json = new JSONObject();
+                json.put("Applicable", proofMastEntity.getApplicable());
+                json.put("Code", proofMastEntity.getIdCode());
+                json.put("Text", proofMastEntity.getIdText());
+                array.add(json);
+            }
+        } else {
             array.add("NOT AUTHENTICABLE USER");
         }
         return array;
@@ -1112,13 +1109,13 @@ public class RestWebController {
     public JSONObject employeeNumber(HttpServletRequest request) {
         String phoneNumber = "0";
         int circleCode = 0;
-        String userName=null;
+        String userName = null;
         JSONObject jsonObject = new JSONObject();
         JSONObject jsonObject1 = new JSONObject();
         String status;
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity1 = userService.getUserByToken(token);
-        if(emplogintableEntity1!=null) {
+        if (emplogintableEntity1 != null) {
 
             try {
                 userName = request.getParameter("username");
@@ -1143,9 +1140,8 @@ public class RestWebController {
                 e.printStackTrace();
                 phoneNumber = "0";
             }
-        }
-        else{
-            jsonObject1.put("Msg","NOT AUTHENTICABLE USER");
+        } else {
+            jsonObject1.put("Msg", "NOT AUTHENTICABLE USER");
         }
         return jsonObject1;
     }
@@ -1159,9 +1155,9 @@ public class RestWebController {
         String result = null;
         HttpSession session = request.getSession(false);
         logger.info("update Agent >>>>> wait");
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity1 = userService.getUserByToken(token);
-        if(emplogintableEntity1!=null) {
+        if (emplogintableEntity1 != null) {
             try {
                 String agentcode = request.getParameter("agentcode");
                 String status = request.getParameter("status");
@@ -1183,9 +1179,8 @@ public class RestWebController {
                 e.printStackTrace();
                 result = "err";
             }
-        }
-        else{
-            result="NOT AUTHENTICABLE USER";
+        } else {
+            result = "NOT AUTHENTICABLE USER";
         }
 
         return result;
@@ -1193,17 +1188,16 @@ public class RestWebController {
 
     @RequestMapping(value = "/getCustomerValidation", method = {RequestMethod.GET, RequestMethod.POST})
     public String getCustomerValidation(HttpServletRequest request) {
-        String name=null;
+        String name = null;
         JSONArray array = new JSONArray();
-        String token=request.getParameter("agentToken");
+        String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity1 = userService.getUserByToken(token);
-        if(emplogintableEntity1!=null) {
+        if (emplogintableEntity1 != null) {
             String mobileNo = request.getParameter("mobileNo");
             String agentcode = request.getParameter("agentcode");
-     name = leadsService.getCustomerName(mobileNo);
-        }
-        else{
-     name="NOT AUTHENTICABLE USER";
+            name = leadsService.getCustomerName(mobileNo);
+        } else {
+            name = "NOT AUTHENTICABLE USER";
         }
         return name;
 
@@ -1258,13 +1252,14 @@ public class RestWebController {
     @ResponseBody
     public String resetPassword(HttpServletRequest request, HttpServletResponse response) {
 
-       // JSONObject jsonObject = new JSONObject();
+        // JSONObject jsonObject = new JSONObject();
         String result = null;
-        String useroldpassword=null;
-        String finalpass=null;
+        String useroldpassword = null;
+        String finalpass = null;
+        String passCsv="";
         try {
             String user = request.getParameter("userName");
-            String oldpassword  = request.getParameter("oldpassword");
+            String oldpassword = request.getParameter("oldpassword");
             String newpassword = request.getParameter("newpassword");
             Date expireDate = new Date();
             System.out.println("Current Date   " + expireDate);
@@ -1273,41 +1268,51 @@ public class RestWebController {
             System.out.println("Date After 30 Days  " + expireDate);
 
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
-            if(emplogintableEntity!=null) {
-                EmplogintableEntity emplogintableEntity1 = userService.getUserByOldPassword(oldpassword);
-                //Old password mismatch
-                String lastThreePassword = emplogintableEntity.getLastThreePassword();
-                String[] arr = lastThreePassword.split(",");
-                arr[0] = newpassword;
-                String passCsv = StringUtils.join(arr, ',');
-                if (emplogintableEntity!= null) {
-                    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                    String hashedPassword = passwordEncoder.encode(newpassword);
-                    emplogintableEntity.setEmpPassword(newpassword);
-                    emplogintableEntity.setLastThreePassword(passCsv);
-                    emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-                    emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
-                    result = agentPaytmService.updatePassword(emplogintableEntity, newpassword);
+            if (emplogintableEntity != null) {
+                if (oldpassword.equals(emplogintableEntity.getEmpPassword())) {
+                    String lastThrePassword = emplogintableEntity.getLastThreePassword();
+
+                    if (!lastThrePassword.contains(newpassword)) {
+                        //Old password mismatch
+                        String lastThreePassword = emplogintableEntity.getLastThreePassword();
+                        if(lastThreePassword!=null) {
+                            String[] arr = lastThreePassword.split(",");
+
+                            if (arr.length == 3) {
+                                arr[0] = arr[1];
+                                arr[1] = arr[2];
+                                arr[2] = newpassword;
+                                passCsv = StringUtils.join(arr, ',');
+                            } else {
+                                passCsv = lastThreePassword + "," + newpassword;
+                            }
+                        }else{
+                            passCsv=newpassword;
+                        }
+                        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                        String hashedPassword = passwordEncoder.encode(newpassword);
+                        emplogintableEntity.setEmpPassword(newpassword);
+                        emplogintableEntity.setLastThreePassword(passCsv);
+                        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                        emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+                        result = agentPaytmService.updatePassword(emplogintableEntity, newpassword);
+
+                    } else {
+                        result = "New Password can't be last 3 password";
+                    }
                 } else {
-                    result = "New password cannot be last three password";
+                    result = "old password is not valid";
                 }
+            } else {
+                result = "Invalid User";
             }
-                else{
-                result="User Not Found";
-            }
-
-            if (result.equalsIgnoreCase("done")) {
-                result = "success";
-            }
-
-        }
-        catch (Exception e) {
-            result="Technical Error";
+        } catch (Exception e) {
+            result = "Technical Error";
             e.printStackTrace();
         }
 
 
-      //  jsonObject.put("status", result);
+        //  jsonObject.put("status", result);
 
         return result;
     }

@@ -58,8 +58,8 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public EmplogintableEntity getUserByOldPassword(String OldPassword) {
-        return userDao.getUserByOldPassword(OldPassword);
+    public EmplogintableEntity getUserByOldPassword(String OldPassword,String user) {
+        return userDao.getUserByOldPassword(OldPassword,user);
     }
 
     @Override
@@ -67,6 +67,11 @@ public class UserServiceImp implements UserService {
 
         return userDao.UpdateLastThreePassword(emplogintableEntity,updatedpassword);
 
+    }
+
+    @Override
+    public String updateAttaptStatus(EmplogintableEntity emplogintableEntity) {
+        return userDao.updateAttaptStatus(emplogintableEntity);
     }
 
 }

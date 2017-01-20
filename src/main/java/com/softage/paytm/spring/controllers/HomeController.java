@@ -1966,7 +1966,7 @@ e.printStackTrace();
     public JSONObject getAvailableSlot(HttpServletRequest request,HttpSession session) {
         int circleCode = 4;
         int pincode1 = 0;
-        String   dated="";
+       /* String   dated="";*/
         JSONObject jsonObject = new JSONObject();
         JSONObject finalJson = new JSONObject();
 
@@ -2006,7 +2006,7 @@ e.printStackTrace();
                   Calendar todat = Calendar.getInstance();
                   String todaytime = format.format(todat.getTime());
 
-                  if (todaytime.equals("19/01/2017")) {
+                /*  if (todaytime.equals("19/01/2017")) {
                       Date today = new Date();
                       Calendar cal = Calendar.getInstance();
                       cal.add(Calendar.HOUR, 2);
@@ -2025,7 +2025,7 @@ e.printStackTrace();
                               String timeKey = time + ":00-" + strNextTime + ":00";
                           }
                       }
-                  }else {
+                  }else {*/
                       for (Integer i = 9; i <= 18; i = i + timediff) {
                           String time = i.toString();
                           Integer nextTime = i + timediff;
@@ -2042,7 +2042,7 @@ e.printStackTrace();
                           jsonObject.put(i, jsonArray);
                           // finalList.add(jsonObject);
                       }
-                  }
+                 /* }*/
                   finalJson.put("slotList", jsonObject);
                   finalJson.put("dateList", dateArray);
                   finalJson.put("timedeff", timediff);

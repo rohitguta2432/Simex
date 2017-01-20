@@ -12,6 +12,7 @@ public interface UserService {
     public JSONObject getEmpFtpDetails(int circleCode);
     public JSONObject getStatus(String mobileno);
     public String updateAgentStatus(EmplogintableEntity emplogintableEntity);
-    public EmplogintableEntity getUserByOldPassword(String OldPassword);
+    public EmplogintableEntity getUserByOldPassword(String OldPassword,String user);
     public String UpdateLastThreePassword(EmplogintableEntity emplogintableEntity,String updatedpassword);
+    public String updateAttaptStatus(EmplogintableEntity emplogintableEntity);
 }

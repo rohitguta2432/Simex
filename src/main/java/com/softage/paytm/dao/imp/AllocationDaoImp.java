@@ -201,6 +201,7 @@ public class AllocationDaoImp implements AllocationDao {
         Query query=null;
         try
         {
+
             entityManager = entityManagerFactory.createEntityManager();
             String strQuery = " select al from AllocationMastEntity al where al.id=:id";
             query=entityManager.createQuery(strQuery);

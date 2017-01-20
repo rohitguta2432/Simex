@@ -185,16 +185,19 @@ public class UserDaoImp implements UserDao {
     }
 
     @Override
-    public EmplogintableEntity getUserByOldPassword(String oldpassword) {
+    public EmplogintableEntity getUserByOldPassword(String oldpassword,String user) {
         EntityManager entityManager = null;
         Query query = null;
         EmplogintableEntity emplogintableEntity = null;
         try {
+            String usercode="%"+user+"%";
             String updatedpassword="%"+oldpassword+"%";
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "select emp from EmplogintableEntity emp where emp.lastThreePassword like:password";
+            String strQuery = "select emp from EmplogintableEntity emp where str(emp.empPassword)=:password and emp.empCode=:username";
+            /*String strQuery = "select emp from EmplogintableEntity emp where str(emp.empPassword) and emp.lastThreePassword like:password and emp.empCode=:username";*/
             query = entityManager.createQuery(strQuery);
             query.setParameter("password", updatedpassword);
+            query.setParameter("username", usercode);
             emplogintableEntity = (EmplogintableEntity) query.getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,6 +233,33 @@ public class UserDaoImp implements UserDao {
             }
         }
         return msg;
+    }
+
+    @Override
+    public String updateAttaptStatus(EmplogintableEntity emplogintableEntity) {
+        String result=null;
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        boolean status=false;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            Query query = entityManager.createNativeQuery("{call usp_updateEmploginAttemptCount(?,?)}");
+            query.setParameter(1, emplogintableEntity.getEmpCode());
+            query.setParameter(2, emplogintableEntity.getAttamptCount());
+            result = (String) query.getSingleResult();
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            {
+                if (entityManager != null && entityManager.isOpen()) {
+                    entityManager.close();
+                }
+            }
+        }
+        return result;
     }
 }
 
