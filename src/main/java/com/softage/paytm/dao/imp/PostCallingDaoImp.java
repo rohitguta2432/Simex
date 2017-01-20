@@ -709,7 +709,7 @@ public class PostCallingDaoImp implements PostCallingDao {
             query1.setParameter(11,spoke);
             query1.setParameter(12,visitDatetiem);
             query1.setParameter(13,custUID);
-            allocationID=((BigInteger)query1.getSingleResult()).intValue();
+            allocationID=(Integer)query1.getSingleResult();
             //String s = (String)query1.getSingleResult();
             entityTransaction.commit();
           /*  if (s.length>0) {

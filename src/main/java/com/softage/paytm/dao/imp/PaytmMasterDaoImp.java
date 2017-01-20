@@ -1,9 +1,7 @@
 package com.softage.paytm.dao.imp;
 
-import com.itextpdf.text.log.SysoCounter;
 import com.softage.paytm.dao.PaytmMasterDao;
 import com.softage.paytm.models.*;
-import org.hibernate.Session;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +115,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
-    public PaytmMastEntity getPaytmMastEntityByDate(String mobile, Date date) {
+    public PaytmMastEntity getPaytmMastEntityByDate(String mobile, String date) {
         EntityManager entityManager=null;
         EntityTransaction transaction=null;
         Query query=null;
@@ -126,10 +124,10 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             entityManager = entityManagerFactory.createEntityManager();
             transaction = entityManager.getTransaction();
             transaction.begin();
-            String hql = "select paytmMast from PaytmMastEntity paytmMast where paytmMast.customerPhone=:phone and paytmMast.requestDate=:req_date";
+            String hql = "select paytmMast from PaytmMastEntity paytmMast where paytmMast.customerPhone=:phone and paytmMast.requestDate='"+date+"'";
             query = entityManager.createQuery(hql);
             query.setParameter("phone", mobile);
-            query.setParameter("req_date", date);
+            //query.setParameter("req_date", date);
             paytmMastEntity = (PaytmMastEntity) query.getSingleResult();
         }catch (Exception e){
             e.printStackTrace();

@@ -7,6 +7,8 @@ import java.net.URLConnection;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -24,6 +26,7 @@ import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
 import jdk.internal.org.objectweb.asm.tree.TryCatchBlockNode;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -32,11 +35,13 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.joda.time.format.DateTimeFormat;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -1335,6 +1340,7 @@ e.printStackTrace();
                     String mobileNumber = null;
                     String customerId=null;
                     String co_id=null;
+                    String alternateNumber=null;
                     String alternateNumber1=null;
                     String alternateNumber2=null;
                     String request_date=null;
@@ -1384,9 +1390,13 @@ e.printStackTrace();
                     } else {
                         pincode = NumberToTextConverter.toText(row.getCell(15).getNumericCellValue()).trim();
                     }
+                    if(row.getCell(16).getCellType()==Cell.CELL_TYPE_NUMERIC){
+                        alternateNumber=NumberToTextConverter.toText(row.getCell(16).getNumericCellValue()).trim();
+                        //alternateNumber=row.getCell(16).getStringCellValue().trim();
+                    }else{
+                        alternateNumber=row.getCell(16).getStringCellValue().trim();
+                    }
 
-
-                    String alternateNumber=row.getCell(16).getStringCellValue().trim();
                     String altNum=alternateNumber.replace("'","");
                     String altNumbers=altNum.replace("-"," ");
                     String[] alternateNumbers=altNumbers.split("\\s+");
@@ -1405,18 +1415,23 @@ e.printStackTrace();
                     }
                     String remarks=row.getCell(17).getStringCellValue().trim();
                     Date reqDate=row.getCell(18).getDateCellValue();
+
                     if(row.getCell(18).getCellType() == Cell.CELL_TYPE_STRING){
                         request_date=row.getCell(18).getStringCellValue().trim();
+                        request_date=request_date.trim()+" 00:00:00";
                     }else if (row.getCell(18).getCellType()==Cell.CELL_TYPE_NUMERIC){
                         //request_date=NumberToTextConverter.toText(row.getCell(18).getNumericCellValue()).trim();
-                        DateFormat df=new SimpleDateFormat("yyyy/MM/dd");
+                        DateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         request_date=df.format(reqDate).trim();
                     }
                     String lot_no=row.getCell(19).getStringCellValue().trim();
 
                     if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
                        // paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
-                        paytmMastEntity=paytmMasterService.getPaytmMasterByDate(mobileNumber,reqDate);
+                        /*DateFormat df=new SimpleDateFormat("yyyy/MM/dd");
+                        String requestDate=df.format(request_date);*/
+                        paytmMastEntity=paytmMasterService.getPaytmMasterByDate(mobileNumber,request_date);
+                        //paytmMastEntity=paytmMasterService.getPaytmMasterByDate(mobileNumber,newReqDate);
                     }
                     if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
                         int pincode1 = Integer.parseInt(pincode);

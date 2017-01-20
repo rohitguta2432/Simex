@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -113,7 +114,8 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 paytmMastEntity.setCoID(map.get("co_id"));
                 paytmMastEntity.setCoStatus(map.get("co_status"));
                 //it will be change
-                Date req_date=new Date(map.get("request_date"));
+                //Date req_date=new Date(map.get("request_date"));
+                Date req_date=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(map.get("request_date"));;
                 paytmMastEntity.setRequestDate(req_date);
                 //paytmMastEntity.setEmail("");
                //paytmMastEntity.setAddressId(map.get(""));
@@ -183,7 +185,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
-    public PaytmMastEntity getPaytmMasterByDate(String mobileNo, Date date) {
+    public PaytmMastEntity getPaytmMasterByDate(String mobileNo, String date) {
         return paytmMasterDao.getPaytmMastEntityByDate(mobileNo,date);
     }
 

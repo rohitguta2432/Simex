@@ -115,8 +115,8 @@ public class PostCallingServiceImp implements PostCallingService {
                 result = "Customer Rejected because Appointment Date more then 3 days ";
             } else if ("CON".equals(status)) {
                 tcStatus = "D";
-               result = saveCustomer(map);
-                //result=saveCustomerData(map);
+               //result = saveCustomer(map);
+                result=saveCustomerData(map);
                 if ("JOB ALLOCATED".equalsIgnoreCase(result)) {
                     result1 = "done";
                 }
