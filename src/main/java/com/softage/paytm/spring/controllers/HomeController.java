@@ -1171,7 +1171,10 @@ class HomeController {
                 emplogintableEntity.setEmpName(empName);
                 emplogintableEntity.setEmpPhone(mobileNo);
 
-                password = empcode.substring(0, 4) + mobileNo.substring(0, 4);
+                Random randomGenerator = new Random();
+                int randomInt = randomGenerator.nextInt(10000);
+
+                password = empcode.substring(0, 4) + "@"+randomInt;
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 String hashedPassword = passwordEncoder.encode(password);
 
