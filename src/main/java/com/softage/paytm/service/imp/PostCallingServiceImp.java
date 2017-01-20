@@ -350,9 +350,13 @@ public class PostCallingServiceImp implements PostCallingService {
         String agentCode=null;
         String confirmationAllowed="";
         String finalconfirmation="";
+
         PaytmagententryEntity paytmagententryEntity=null;
         String loginId="";
         int custId=0;
+
+        String allocationId=null;
+
         DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
         String customerAlternativeNo="";
         String agentMobileNumber="";
@@ -409,6 +413,8 @@ public class PostCallingServiceImp implements PostCallingService {
                 allocation_map.put("spokeCode", "DELCIR001");
                 String jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
 
+
+
                 if(paytmMastEntity!=null){
                     customerAlternativeNo =paytmMastEntity.getAlternatePhone1();
                     if(customerAlternativeNo!=null && !customerAlternativeNo.equalsIgnoreCase("")){
@@ -456,6 +462,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
 
         return result;
+
     }
 
 
