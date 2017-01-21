@@ -151,7 +151,7 @@ public class RestWebController {
                         //    emplogintableEntity.setEmpPassword(hashedPassword);
 
 
-                        if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                        if (password.equals(emplogintableEntity.getEmpPassword())) {
                             SecureRandom random = new SecureRandom();
                             byte bytes[] = new byte[20];
                             random.nextBytes(bytes);
@@ -167,7 +167,7 @@ public class RestWebController {
                     } else if (currentDate.getTime() > expireDate.getTime()) {
                         result = "Password Expired";
 
-                    } else if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                    } else if (password.equals(emplogintableEntity.getEmpPassword())) {
                         dbUser = emplogintableEntity.getEmpCode();
                         SecureRandom random = new SecureRandom();
                         byte bytes[] = new byte[20];
@@ -204,7 +204,7 @@ public class RestWebController {
                         //    emplogintableEntity.setEmpPassword(hashedPassword);
 
 
-                        if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                        if (password.equals(emplogintableEntity.getEmpPassword())) {
                             SecureRandom random = new SecureRandom();
                             byte bytes[] = new byte[20];
                             random.nextBytes(bytes);
@@ -220,7 +220,7 @@ public class RestWebController {
                     } else if (currentDate.getTime() > expireDate.getTime()) {
                         result = "Password Expired";
 
-                    } else if (password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                    } else if (password.equals(emplogintableEntity.getEmpPassword())) {
                         dbUser = emplogintableEntity.getEmpCode();
                         SecureRandom random = new SecureRandom();
                         byte bytes[] = new byte[20];
@@ -298,6 +298,7 @@ public class RestWebController {
                 paytmdeviceidinfoEntity.setImportBy(importby);
                 paytmdeviceidinfoEntity.setImportDate(new Timestamp(new Date().getTime()));
                 paytmdeviceidinfoEntity1 = paytmDeviceService.getByloginId(loginId);
+
                 if (paytmdeviceidinfoEntity1 == null) {
                     msg = paytmDeviceService.saveDevice(paytmdeviceidinfoEntity);
                 } else {
@@ -330,7 +331,7 @@ public class RestWebController {
             long time = (long) timestamp.getTime() + 24 * 60 * 60 * 1000;
             timestamp.setTime(time);
             Timestamp timestamp1 = new Timestamp(new Date().getTime());
-            ;
+
             if (timestamp.getTime() > timestamp1.getTime()) {
                 try {
                     String agentCode = request.getParameter("AgentCode");
@@ -341,15 +342,16 @@ public class RestWebController {
                 } catch (Exception e) {
                     logger.error("", e);
                 }
+                leadsObject.put("authentication", "token valid");
                 leadsObject.put("leads", array);
                 leadsObject.put("timediff", 1);
                 leadsObject.put("starttime", 9);
                 leadsObject.put("endtime", 18);
             } else {
-                leadsObject.put("authentication", "expired");
+                leadsObject.put("authentication", "Password expired");
             }
         } else {
-            leadsObject.put("authentication", "invalid");
+            leadsObject.put("authentication", "Authentication failed due to unauthorised login from another device");
         }
 
         return leadsObject;
@@ -368,18 +370,23 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
-
+            msg = "token valid";
+            array.add(msg);
             try {
+
                 String agentCode = request.getParameter("AgentCode");
                 String leaddate = request.getParameter("leaddate");
                 arrayList = leadsService.getAgentLeads(agentCode, timedeff, leaddate);
+
                 array.addAll(arrayList);
+
 
             } catch (Exception e) {
                 logger.error("", e);
             }
         } else {
-            msg = "NOT AUTHENTICABLE USER";
+            msg = "Authentication failed due to unauthorised login from another device";
+            array.add(msg);
         }
      /*   leadsObject.put("leads",array);
         leadsObject.put("timediff",1);
@@ -408,7 +415,7 @@ public class RestWebController {
                 }
             }
         } else {
-            result = "NOT AUTHENTICATBLE USER";
+            result = "Authentication failed due to unauthorised login from another device";
         }
         return result;
     }
@@ -420,15 +427,14 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
+            array.add("token valid");
             String agentCode = request.getParameter("AgentCode");
             List<JSONObject> listjson = leadsService.agentAcceptedLeads(agentCode);
             array.addAll(listjson);
         } else {
-
-            array.add("NOT AUTHENTICABLE USER");
+            array.add("Authentication failed due to unauthorised login from another device");
         }
         return array;
-
     }
 
     @RequestMapping(value = "/AgentRejectedLeads", method = {RequestMethod.GET, RequestMethod.POST})
@@ -438,11 +444,12 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
+            array.add("token valid");
             String agentCode = request.getParameter("AgentCode");
             List<JSONObject> listjson = leadsService.agentRejectedLeads(agentCode);
             array.addAll(listjson);
         } else {
-            array.add("NOT AUTHENTICABLE USER");
+            array.add("Authentication failed due to unauthorised login from another device");
         }
         return array;
     }
@@ -456,6 +463,7 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
+            array.add("token valid");
             String agentCode = request.getParameter("agentcode");
             String customerNumber = request.getParameter("customerNumber");
             String location = request.getParameter("location");
@@ -473,7 +481,7 @@ public class RestWebController {
             double longi = Double.parseDouble(longitude);
             result = agentPaytmService.saveAgentLocation(agentCode, customerNumber, location, lati, longi, cust_uid);
         } else {
-            result = "NOT AUTHENTICABLE USER";
+            array.add("Authentication failed due to unauthorised login from another device");
         }
 
         return result;
@@ -648,7 +656,7 @@ public class RestWebController {
                         tblcustDocDetails.setPhotoPc(originalphotoPC);
                         result = qcservices.savetbldocdetails(tblcustDocDetails);
                     }
-                    if ("done".equals(result)) {
+                    if (result.equalsIgnoreCase("done")) {
                         updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
                         //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
                         result = "done";
@@ -664,7 +672,7 @@ public class RestWebController {
                 e.printStackTrace();
             }
         } else {
-            result = "NOT AUTHENTICABLE USER";
+            result = "Authentication failed due to unauthorised login from another device";
         }
         return result;
     }
@@ -835,7 +843,7 @@ public class RestWebController {
             //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
 
         } else {
-            result = "NOT AUTHENTICABLE USER";
+            result = "Authentication failed due to unauthorised login from another device";
         }
 
         return result;
@@ -898,7 +906,7 @@ public class RestWebController {
             }
 
         } else {
-            result = "NOT AUTHENTICABLE USER";
+            result = "Authentication failed due to unauthorised login from another device";
         }
         return result;
     }
@@ -951,15 +959,13 @@ public class RestWebController {
                 jsonObject.put("Msg", "Data Not Found");
             }
         } else {
-            jsonObject.put("Msg", "Authentication Failed");
+            jsonObject.put("Msg", "Authentication failed due to unauthorised login from another device");
         }
         return jsonObject;
     }
 
     @RequestMapping(value = "/ftpDocumentDetails", method = {RequestMethod.GET, RequestMethod.POST})
     public String ftpDocumentDetails(HttpServletRequest request) {
-
-
         return "done";
     }
 
@@ -969,7 +975,8 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
-
+          //  msg = "token valid";
+            array.add("token valid");
             List<ReasonMastEntity> reasonMastEntities = leadsService.reasonList();
             for (ReasonMastEntity reasonMastEntity : reasonMastEntities) {
                 JSONObject jsonObject = new JSONObject();
@@ -978,7 +985,7 @@ public class RestWebController {
                 array.add(jsonObject);
             }
         } else {
-            array.add("NOT AUTHENTICABLE USER");
+            array.add("Authentication failed due to unauthorised login from another device");
         }
         return array;
     }
@@ -990,6 +997,7 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
+            array.add(  "token valid");
             List<RemarkMastEntity> remarkMastEntityList = postCallingService.remarkList();
             for (RemarkMastEntity remarkMastEntity : remarkMastEntityList) {
                 if (!remarkMastEntity.getRemarksCode().equalsIgnoreCase("U")) {
@@ -1000,7 +1008,7 @@ public class RestWebController {
                 }
             }
         } else {
-            array.add("NOT AUTHENTICABLE USER");
+            array.add("Authentication failed due to unauthorised login from another device");
         }
         return array;
     }
@@ -1011,12 +1019,13 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
+            array.add(  "token valid");
             String agentCode = request.getParameter("AgentCode");
             JSONObject result = new JSONObject();
             List<JSONObject> listjson = leadsService.kycDone(agentCode);
             array.addAll(listjson);
         } else {
-            array.add("NOT AUTHENTICABLE USER");
+            array.add("Authentication failed due to unauthorised login from another device");
         }
         return array;
 
@@ -1028,11 +1037,12 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
+            array.add(  "token valid");
             String agentCode = request.getParameter("AgentCode");
             List<JSONObject> listjson = leadsService.kycNotDone(agentCode);
             array.addAll(listjson);
         } else {
-            array.add("NOT AUTHENTICABLE USER");
+            array.add("Authentication failed due to unauthorised login from another device");
         }
         return array;
     }
@@ -1045,6 +1055,7 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
+            array.add(  "token valid");
             List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
 
             for (ProofMastEntity proofMastEntity : proofMastEntities) {
@@ -1056,7 +1067,7 @@ public class RestWebController {
                 array.add(json);
             }
         } else {
-            array.add("NOT AUTHENTICABLE USER");
+            array.add("Authentication failed due to unauthorised login from another device");
         }
         //  jsonObject.put("ArrayOfProofType",array);
         return array;
@@ -1070,6 +1081,7 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
+            array.add("token valid");
             List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
             for (ProofMastEntity proofMastEntity : proofMastEntities) {
                 JSONObject json = new JSONObject();
@@ -1079,7 +1091,7 @@ public class RestWebController {
                 array.add(json);
             }
         } else {
-            array.add("NOT AUTHENTICABLE USER");
+            array.add("Authentication failed due to unauthorised login from another device");
         }
         return array;
     }
@@ -1116,6 +1128,7 @@ public class RestWebController {
         EmplogintableEntity emplogintableEntity1 = userService.getUserByToken(token);
         if (emplogintableEntity1 != null) {
 
+            jsonObject1.put("Msg", "token valid");
             try {
                 userName = request.getParameter("username");
                 EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(userName);
@@ -1140,7 +1153,7 @@ public class RestWebController {
                 phoneNumber = "0";
             }
         } else {
-            jsonObject1.put("Msg", "NOT AUTHENTICABLE USER");
+            jsonObject1.put("Msg", "Authentication failed due to unauthorised login from another device");
         }
         return jsonObject1;
     }
@@ -1179,7 +1192,7 @@ public class RestWebController {
                 result = "err";
             }
         } else {
-            result = "NOT AUTHENTICABLE USER";
+            result = "Authentication failed due to unauthorised login from another device";
         }
 
         return result;
@@ -1196,7 +1209,7 @@ public class RestWebController {
             String agentcode = request.getParameter("agentcode");
             name = leadsService.getCustomerName(mobileNo);
         } else {
-            name = "NOT AUTHENTICABLE USER";
+            name = "Authentication failed due to unauthorised login from another device";
         }
         return name;
 
@@ -1309,7 +1322,6 @@ public class RestWebController {
             result = "Technical Error";
             e.printStackTrace();
         }
-
         //  jsonObject.put("status", result);
         return result;
     }
