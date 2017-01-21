@@ -28,5 +28,6 @@ public interface QcStatusDao {
     public String saveTblDocdetails(TblcustDocDetails tblcustDocDetails);
     public boolean getAoAuditStatus(String foldername);
 
+    public JSONObject getFTPDetailsForUser(int circlecode);
 
 }

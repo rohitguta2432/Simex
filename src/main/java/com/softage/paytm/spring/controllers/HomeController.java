@@ -2496,6 +2496,7 @@ e.printStackTrace();
         //int imgCount=1;
        // String spokecode=(String)session.getAttribute("spoke_code");
         JSONObject jsonObject=new JSONObject();
+        JSONObject ftpdetailsjson=new JSONObject();
         List<String> filepathList=new ArrayList<String>();
         JSONObject detailJson=qcStatusService.getMobileNumber(circle_code,empcode);
         String status=(String)detailJson.get("status");
@@ -2517,22 +2518,24 @@ e.printStackTrace();
         String ftpImagespath=projectPath+"/resources/ftpimages";
         File ftpImagesFolder=new File(ftpImagespath);
         String[] filenames=ftpImagesFolder.list();
-        for(String folders : filenames){
-            File imgFolder=new File(ftpImagesFolder.getPath(),folders);
-            if (imgFolder.isDirectory() && !folders.equalsIgnoreCase(String.valueOf(custUID))){
-                Boolean isAoAuditDone=qcStatusService.getAoAuditStatus(folders);
-                if (isAoAuditDone){
-                    String[] images=imgFolder.list();
-                    for (String image:images){
-                        File imgpath=new File(imgFolder.getPath(),image);
-                        imgpath.delete();
+            if(filenames.length!=0) {
+                for (String folders : filenames) {
+                    File imgFolder = new File(ftpImagesFolder.getPath(), folders);
+                    if (imgFolder.isDirectory() && !folders.equalsIgnoreCase(String.valueOf(custUID))) {
+                        Boolean isAoAuditDone = qcStatusService.getAoAuditStatus(folders);
+                        if (isAoAuditDone) {
+                            String[] images = imgFolder.list();
+                            for (String image : images) {
+                                File imgpath = new File(imgFolder.getPath(), image);
+                                imgpath.delete();
+                            }
+                        }
+                        imgFolder.delete();
                     }
                 }
-                imgFolder.delete();
             }
-        }
-
-            downloadImages(imagePath, localPath);
+            ftpdetailsjson=qcStatusService.getFTPDetailsForUser(circle_code);
+            downloadImages(imagePath, localPath,ftpdetailsjson);
             for (int i = 0; i < imgCount; i++) {
                 String filepath = "../resources/ftpimages/" + custUID + "/" + custUID + "_" + (i + 1) + ".jpg";
                 filepathList.add(filepath);
@@ -2542,6 +2545,7 @@ e.printStackTrace();
             String sim_no = (String) detailJson.get("simNo");
             String username = (String) detailJson.get("name");
             String address = (String) detailJson.get("address");
+            Integer actualCount=(Integer)detailJson.get("actualCount");
             jsonObject.put("mobile", mobNo);
             jsonObject.put("scanID", scanid);
             jsonObject.put("simNo", sim_no);
@@ -2549,17 +2553,21 @@ e.printStackTrace();
             jsonObject.put("address", address);
             jsonObject.put("imgCount", imgCount);
             jsonObject.put("filePathList", filepathList);
+            jsonObject.put("actualCount",actualCount);
             jsonObject.put("custuid", custUID);
         }
             //return qcStatusService.getMobileNumber(spokecode);
             return jsonObject;
     }
 
-    public static void downloadImages(String imagePath,String localpath){
-        String sftpHost="172.25.37.216";
-        Integer sftpPort=22;
-        String sftpUsername="soft";
-        String sftpPassword="$oFt@ge@123456";
+    public static void downloadImages(String imagePath,String localpath,JSONObject ftpDetailsJSON){
+        String sftpHost=(String) ftpDetailsJSON.get("ftphost");
+        String sftpUsername=(String)ftpDetailsJSON.get("ftpusername");
+        String sftpPassword=(String)ftpDetailsJSON.get("ftpPwd");
+        //String sftpHost="172.25.37.216";
+       Integer sftpPort=22;
+        //String sftpUsername="soft";
+       // String sftpPassword="$oFt@ge@123456";
         //imagePath="/soft/home/simex";check how to handle the path
         Session session=null;
         Channel channel=null;
@@ -2640,12 +2648,14 @@ e.printStackTrace();
         String sim_no = (String) detailJson.get("simNo");
         String username = (String) detailJson.get("name");
         String address = (String) detailJson.get("address");
+            Integer actualCount=(Integer)detailJson.get("actualCount");
         jsonObject.put("mobile", mobNo);
         jsonObject.put("scanID", scanid);
         jsonObject.put("simNo", sim_no);
         jsonObject.put("name", username);
         jsonObject.put("address", address);
         jsonObject.put("imgCount", imgCount);
+            jsonObject.put("actualCount",actualCount);
         jsonObject.put("filePathList", filepathList);
         jsonObject.put("custuid", custUID);
         }

@@ -31,6 +31,7 @@ public interface QcStatusService {
 
     public boolean getAoAuditStatus(String foldername);
 
+    public JSONObject getFTPDetailsForUser(int circlecode);
 
 
 

@@ -367,8 +367,40 @@ public class QcStatusDaoImp implements QcStatusDao {
             }
         }catch (Exception e){
             e.printStackTrace();
+        }finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return result;
+    }
+
+    @Override
+    public JSONObject getFTPDetailsForUser(int circlecode) {
+        EntityManager entityManager=null;
+        JSONObject jsonObject=new JSONObject();
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            String sql="select FtpIP,FtpUser,FtpPassword from tbl_circleftpdetails where Circle="+circlecode;
+            Query query=entityManager.createNativeQuery(sql);
+            Object[] objects=(Object[])query.getSingleResult();
+            String ftphost=(String)objects[0];
+            String ftpusername=(String)objects[1];
+            String ftpPwd=(String)objects[2];
+            jsonObject.put("ftphost",ftphost);
+            jsonObject.put("ftpusername",ftpusername);
+            jsonObject.put("ftpPwd",ftpPwd);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return jsonObject;
     }
 
     @Override

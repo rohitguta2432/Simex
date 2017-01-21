@@ -1005,6 +1005,7 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
         var substringIndex=img.lastIndexOf("_");
         var extensioinIndex=img.lastIndexOf(".");
         var imgNumber=img.substring(substringIndex+1,extensioinIndex);
+        //alert(imgNumber +''+ $scope.actual_img_count);
         if(imgNumber<$scope.actual_img_count){
             index=index+1;
             $scope.image_source=$scope.pathList[index];
@@ -1019,6 +1020,7 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
         var substringIndex=image.lastIndexOf("_");
         var extensioinIndex=image.lastIndexOf(".");
         var imageNumber=image.substring(substringIndex+1,extensioinIndex);
+        //alert(imageNumber+''+ $scope.actual_img_count);
         if(imageNumber > 1){
             index=index-1;
             $scope.image_source=$scope.pathList[index];

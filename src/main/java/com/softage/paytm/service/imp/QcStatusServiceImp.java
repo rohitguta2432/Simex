@@ -136,6 +136,11 @@ public class QcStatusServiceImp implements QcStatusService {
     }
 
     @Override
+    public JSONObject getFTPDetailsForUser(int circlecode) {
+        return qcStatusDao.getFTPDetailsForUser(circlecode);
+    }
+
+    @Override
     public TblScan getUserScanDetails(int cust_uid) {
         return qcStatusDao.getScanDetails(cust_uid);
     }
