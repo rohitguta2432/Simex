@@ -577,7 +577,6 @@ public class RestWebController {
                     proofMastEntityPOACode = leadsService.findBykey(custPOACode);
                 }
                 ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
-
                 if (StringUtils.isNotBlank(customerid)) {
 
                     DataentryEntity dataentryEntity = new DataentryEntity();
@@ -1271,7 +1270,6 @@ public class RestWebController {
             if (emplogintableEntity != null) {
                 if (oldpassword.equals(emplogintableEntity.getEmpPassword())) {
                     String lastThrePassword = emplogintableEntity.getLastThreePassword();
-
                     if (!lastThrePassword.contains(newpassword)) {
                         //Old password mismatch
                         String lastThreePassword = emplogintableEntity.getLastThreePassword();
@@ -1284,7 +1282,8 @@ public class RestWebController {
                                 arr[2] = newpassword;
                                 passCsv = StringUtils.join(arr, ',');
                             } else {
-                                passCsv = lastThreePassword + "," + newpassword;
+                                passCsv = StringUtils.isNotBlank(lastThreePassword)
+                                        ? lastThreePassword + "," + newpassword : newpassword;
                             }
                         }else{
                             passCsv=newpassword;
@@ -1311,9 +1310,7 @@ public class RestWebController {
             e.printStackTrace();
         }
 
-
         //  jsonObject.put("status", result);
-
         return result;
     }
 

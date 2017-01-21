@@ -1486,12 +1486,10 @@ e.printStackTrace();
 
 
             jsonObject.put("rejectedRecord", json1);
-
             System.out.println("list   " + list);
             rejectCount = count - successCount;
 
             jsonObject.put("status", "success");
-
             result = paytmMasterService.savePaytmMasterExcel(list);
             if ("done".equalsIgnoreCase(result)) {
                 result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
@@ -2010,20 +2008,20 @@ e.printStackTrace();
                   String dateList2[] = new String[3];
                   List<String> dateListReject = new ArrayList<String>();
                   for (int i = 0; i < 3; i++) {
-                      date.add(Calendar.DATE, 1);
-                      dateListReject.add(dateList1[i]);
+                      date.add(Calendar.DATE, i);
+                      dateListReject.add(new SimpleDateFormat("dd-MM-yyyy").format(date.getTime()));
                   }
                   for (String date1 : dateListReject) {
-                      date1 = date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
+                     /* date1 = date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);*/
                       dateArray.add(date1);
                   }
                   List<JSONObject> finalList = new ArrayList<JSONObject>();
 
                   // for current date
-                  SimpleDateFormat formated = new SimpleDateFormat("dd/MM/yyyy");
+                 /* SimpleDateFormat formated = new SimpleDateFormat("dd/MM/yyyy");
                   Calendar todat = Calendar.getInstance();
                   String todaytime = format.format(todat.getTime());
-
+*/
                 /*  if (todaytime.equals("19/01/2017")) {
                       Date today = new Date();
                       Calendar cal = Calendar.getInstance();
@@ -2052,8 +2050,12 @@ e.printStackTrace();
                           List<JSONObject> jsonArray = new ArrayList<JSONObject>();
                           for (String date1 : dateListReject) {
                               System.out.println(" date   " + date1);
-                              String date2 = date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
+
+                              String date2= date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
+
                               JSONObject jsonObject1 = postCallingService.getAvailableslot(date2, agentListUnique, time, date1);
+
+
                               jsonArray.add(jsonObject1);
                           }
                           String timeKey = time + ":00-" + strNextTime + ":00";

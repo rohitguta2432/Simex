@@ -1549,6 +1549,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                  console.log(data.status);
                 if(data.status == 'success'){
                   alert(data.msg);
+
                     location.reload();
                     /*$scope.status = '';
                     $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
@@ -1616,17 +1617,17 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
 
     };
     $scope.getAvlAgentChart=function(pincode){
-
         $scope.pincode=$scope.params.pincode;
         var data ='pincode='+$scope.pincode;
-        alert($scope.visit_date)
-        alert("pincode "+$scope.pincode);
+       /* alert($scope.visit_date)*/
+        /*alert("pincode "+$scope.pincode);*/
             $http.get(domain + '/getAvailableSlot?' + data)
                 .success(function (data, status, headers, config) {
                     $scope.dataSets = data.slotList;
                     $scope.dateList2 = data.dateList;
                     $scope.timediff  = data.timedeff;
-                    alert($scope.dateList2)
+                   alert($scope.dateList2)
+                    alert($scope.dataSets)
                 })
                 .error(function (data, status, headers, config) {
                 });
@@ -1688,9 +1689,8 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
     }
     $scope.showchart=function(pincode){
         $scope.flagcall=false;
-alert(pincode)
+/*alert(pincode)*/
         var pincode=pincode;
-
         var scope=$rootScope.$new();
          scope.pincode=pincode;
         scope.params={pincode:pincode}
