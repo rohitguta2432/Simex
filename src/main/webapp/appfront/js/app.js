@@ -1939,7 +1939,8 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','
                 // .cancel('Cancel');
                 $mdDialog.show(confirm).then(function() {
                     $scope.status = 'You decided to get rid of your debt.';
-                    $scope.rejectReport = d.data.rejectedRecord
+                    $scope.rejectReport = d.data.hasOwnProperty('rejectedRecord')
+                        ?d.data.rejectedRecord:new Object();
                     if(angular.equals({},$scope.rejectReport)){
                         return false;
                     }
@@ -2074,7 +2075,8 @@ routerApp.controller('uploadAgent', ['$scope', '$http', 'FileProductUploadServic
                 // .cancel('Cancel');
                 $mdDialog.show(confirm).then(function() {
                     $scope.status = 'You decided to get rid of your debt.';
-                    $scope.rejectReport = d.data.rejectedRecord;
+                    $scope.rejectReport = d.data.hasOwnProperty('rejectedRecord')
+                        ?d.data.rejectedRecord:new Object();
                     if(angular.equals({},$scope.rejectReport)){
                         return false;
                     }

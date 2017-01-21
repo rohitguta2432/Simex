@@ -82,7 +82,7 @@ public class DataentryEntity implements Serializable {
         this.page_count = page_count;
     }
     @Basic
-    @Column(name = "CusAdd", nullable = false, insertable = true, updatable = true, length = 250)
+    @Column(name = "CusAdd", nullable = true, insertable = true, updatable = true, length = 250)
     public String getCusAdd() {
         return cusAdd;
     }
@@ -102,7 +102,7 @@ public class DataentryEntity implements Serializable {
     }
 
     @Basic
-    @Column(name = "CusCity", nullable = false, insertable = true, updatable = true, length = 30)
+    @Column(name = "CusCity", nullable = true, insertable = true, updatable = true, length = 30)
     public String getCusCity() {
         return cusCity;
     }
@@ -169,7 +169,7 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
     }
 
     @Basic
-    @Column(name = "CusState", nullable = false, insertable = true, updatable = true, length = 30)
+    @Column(name = "CusState", nullable = true, insertable = true, updatable = true, length = 30)
     public String getCusState() {
         return cusState;
     }
