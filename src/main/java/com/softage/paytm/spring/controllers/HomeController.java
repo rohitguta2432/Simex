@@ -111,6 +111,8 @@ class HomeController {
         String user = request.getParameter("userName");
         String password = request.getParameter("password");
         String dbUser = null;
+
+
         EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
 
         String session1 = (String) request.getAttribute(user);
@@ -1231,12 +1233,14 @@ jsonObject.put("authentication","failed");
         String userName = "system";
         String agentNo = "";
         String returnString = null;
-        String number = "";
+        String customerId = "";
         String result = "";
         String alternatephone1 = "";
         String alternatephone2 = "";
         String alternateresult1 = "";
         String alternateresult2 = "";
+        String customerphone="";
+        int cust_uid=0;
         HttpSession session = request.getSession(false);
         logger.info("calling to customer>>>>> wait");
         if (session != null) {
@@ -1246,23 +1250,31 @@ jsonObject.put("authentication","failed");
         try {
             if (userName != null) {
 
-                number = request.getParameter("customer_number");
-                PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMaster(number);
-                alternatephone1 = paytmMastEntity.getAlternatePhone1().toString();
-                alternatephone2 = paytmMastEntity.getAlternatePhone2().toString();
-                if (alternatephone1 != null && !alternatephone1.equals("")) {
-                    alternateresult1 = customerCalling(alternatephone1, agentNo);
+                customerId = request.getParameter("cust_uid");
+                cust_uid=Integer.parseInt(customerId);
+                PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
+             if(StringUtils.isNotBlank(paytmMastEntity.getAlternatePhone1())) {
+                 alternatephone1 = paytmMastEntity.getAlternatePhone1().toString();
+             }if(StringUtils.isNotBlank(paytmMastEntity.getAlternatePhone2())) {
+                    alternatephone2 = paytmMastEntity.getAlternatePhone2().toString();
+                }
+            if(StringUtils.isNotBlank(paytmMastEntity.getCustomerPhone())){
+                customerphone = paytmMastEntity.getCustomerPhone();
+            }
+
+                if (StringUtils.isNotBlank(alternatephone1)) {
+                    result = customerCalling(alternatephone1, agentNo);
                 } else {
 
-                    alternateresult2 = customerCalling(alternatephone2, agentNo);
+                    result = customerCalling(alternatephone2, agentNo);
                 }
-                if (alternatephone2 != null && !alternatephone2.equals("")) {
-                    alternateresult1 = customerCalling(alternatephone2, agentNo);
+                if (StringUtils.isNotBlank(alternatephone2)) {
+                    result = customerCalling(alternatephone2, agentNo);
                 } else {
-                    result = customerCalling(number, agentNo);
+                    result = customerCalling(customerphone, agentNo);
 
                 }
-                if (alternateresult1.equalsIgnoreCase("done")) {
+                if (result.equalsIgnoreCase("done")) {
                     returnString = "connected to Customer...";
                 } else {
                     returnString = "Unable to connect Customer due to Network Connectivity";
@@ -2052,7 +2064,6 @@ e.printStackTrace();
                               System.out.println(" date   " + date1);
 
                               String date2= date1.substring(6, 10) + "-" + date1.substring(3, 5) + "-" + date1.substring(0, 2);
-
                               JSONObject jsonObject1 = postCallingService.getAvailableslot(date2, agentListUnique, time, date1);
 
 

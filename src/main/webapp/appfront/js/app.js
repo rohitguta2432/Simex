@@ -1771,7 +1771,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
             .success(function(data, status, headers, config) {
                 // alert(data);
                 $scope.message = data.msg;
-                alert($scope.message);
+               /* alert($scope.message);*/
                 //$scope.getscreen();
                 // $location.path('/draft');
             })
