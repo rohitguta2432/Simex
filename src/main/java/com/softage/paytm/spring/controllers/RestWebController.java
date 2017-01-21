@@ -1285,6 +1285,7 @@ public class RestWebController {
             if (emplogintableEntity != null) {
                 if (oldpassword.equals(emplogintableEntity.getEmpPassword())) {
                     String lastThrePassword = emplogintableEntity.getLastThreePassword();
+                    lastThrePassword = (lastThrePassword!=null)?lastThrePassword:"";
                     String[] lastPassArr  = lastThrePassword.split(",");
                     /*for(String pass:lastPassArr){
 
