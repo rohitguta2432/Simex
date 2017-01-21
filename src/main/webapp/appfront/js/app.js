@@ -1494,7 +1494,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
 
             alert(" We are connecting you another number of the Customer ");
 
-            var data2 = 'customer_number=' + $scope.codes.alternatePhone2 + '&customerID='+$scope.codes.cust_uid;
+            var data2 = 'customer_number=' + $scope.codes.alternatePhone2 + '&cust_uid='+$scope.codes.cust_uid;
             /*alert(data);*/
             $scope.callStatus = '2';
             $http.get(domain+'/customerCalling?'+ data2)
@@ -1545,7 +1545,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
 
 
     $scope.screen = function(ev){
-     alert("hii"+$scope.codes.cust_uid);
+     /*alert("hii"+$scope.codes.cust_uid);*/
         var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&simType=' + $scope.codes.simType + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode +'&customerID='+$scope.codes.cust_uid + '&coStatus='+$scope.codes.coStatus;
           console.log(data);
         $http.get(domain+'/postCalling?'+ data)

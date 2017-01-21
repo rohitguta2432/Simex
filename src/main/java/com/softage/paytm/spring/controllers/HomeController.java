@@ -1249,7 +1249,6 @@ jsonObject.put("authentication","failed");
         }
         try {
             if (userName != null) {
-
                 customerId = request.getParameter("cust_uid");
                 cust_uid=Integer.parseInt(customerId);
                 PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
@@ -1272,7 +1271,6 @@ jsonObject.put("authentication","failed");
                     result = customerCalling(alternatephone2, agentNo);
                 } else {
                     result = customerCalling(customerphone, agentNo);
-
                 }
                 if (result.equalsIgnoreCase("done")) {
                     returnString = "connected to Customer...";
@@ -1897,14 +1895,12 @@ e.printStackTrace();
 
         }
 
-
     }
-
     private String customerCalling(String mobileNo, String agentNumber) {
         String msg = null;
         String result = "done";
         BufferedReader in = null;
-        String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91" + mobileNo + "&agent_number=+91" + agentNumber;
+        String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91"+ mobileNo + "&agent_number=+91" + agentNumber;
         try {
             URL obj = new URL(url);
 

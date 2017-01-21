@@ -2,6 +2,7 @@ package com.softage.paytm.spring.controllers;
 
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
+import org.apache.commons.lang.ArrayUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpSession;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -1283,7 +1285,12 @@ public class RestWebController {
             if (emplogintableEntity != null) {
                 if (oldpassword.equals(emplogintableEntity.getEmpPassword())) {
                     String lastThrePassword = emplogintableEntity.getLastThreePassword();
-                    if (!lastThrePassword.contains(newpassword)) {
+                    String[] lastPassArr  = lastThrePassword.split(",");
+                    /*for(String pass:lastPassArr){
+
+                    }
+                    *///Arrays.asList(lastPassArr).contains(newpassword)
+                    if (!Arrays.asList(lastPassArr).contains(newpassword)) {
                         //Old password mismatch
                         String lastThreePassword = emplogintableEntity.getLastThreePassword();
                         if(lastThreePassword!=null) {
