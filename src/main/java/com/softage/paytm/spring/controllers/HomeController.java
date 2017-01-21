@@ -2452,6 +2452,7 @@ e.printStackTrace();
             circleAuditEntity.setDobMatched(dob_matched);
             circleAuditEntity.setOtherReason(other_reason);
             circleAuditEntity.setTblScan(tblScan);
+        circleAuditEntity.setAuditStatus(audit_status);
         String msg=qcStatusService.saveCircleAuditEntity(circleAuditEntity);
         if(msg.equalsIgnoreCase("error")){
           updateStatusMessage="Unable to insert the audit values";
@@ -2660,6 +2661,7 @@ e.printStackTrace();
         String username = (String) detailJson.get("name");
         String address = (String) detailJson.get("address");
             Integer actualCount=(Integer)detailJson.get("actualCount");
+            //String circleRemarks=(String)detailJson.get("circleRemarks");
         jsonObject.put("mobile", mobNo);
         jsonObject.put("scanID", scanid);
         jsonObject.put("simNo", sim_no);
@@ -2668,6 +2670,7 @@ e.printStackTrace();
         jsonObject.put("imgCount", imgCount);
             jsonObject.put("actualCount",actualCount);
         jsonObject.put("filePathList", filepathList);
+            //jsonObject.put("circleRemarks",circleRemarks);
         jsonObject.put("custuid", custUID);
         }
         return jsonObject;
@@ -2703,6 +2706,7 @@ e.printStackTrace();
         aoAuditEntity.setSignMatched(sign_matched);
         aoAuditEntity.setOtherReason(other_reason);
         aoAuditEntity.setTblScan(tblScan);
+        aoAuditEntity.setAuditStatus(audit_status);
         String msg=aoAuditService.saveAuditEntity(aoAuditEntity);
         if(msg.equalsIgnoreCase("error")){
             updateStatusMessage="Unable to insert the audit values";
@@ -2740,6 +2744,8 @@ e.printStackTrace();
         //String spokecode="DELSOU205";  Currently spoke code set static -JIA Sarai
         String customer_number=(String)request.getParameter("mobNo");
         JSONObject resultJson=aoAuditService.getFormRecievingDetails(customer_number,spokecode);
+        Integer cirAuditStatus=0;
+        String circleAuditResult=null;
         String retValue=(String)resultJson.get("returned");
         if(retValue.equalsIgnoreCase("unavailable")){
             jsonObject.put("retMessage","No Record Found");
@@ -2748,6 +2754,13 @@ e.printStackTrace();
             String status = null;
             Integer statusID = (Integer) resultJson.get("status");
             Integer scanID = (Integer) resultJson.get("scanID");
+            cirAuditStatus=(Integer)resultJson.get("cirStatus");
+            if(cirAuditStatus==2){
+                circleAuditResult="Rejected";
+            }else{
+                circleAuditResult="Accepted";
+            }
+            String circleRemarks=(String)resultJson.get("circleRemarks");
             if (statusID == 2) {
                 bucket = "Circle Audit";
                 status = "Rejected";
@@ -2775,10 +2788,12 @@ e.printStackTrace();
                 jsonObject.put("user_status", status);
             }
             jsonObject.put("retMessage","Found");
+            jsonObject.put("circleRemarks",circleRemarks);
             jsonObject.put("simNum", resultJson.get("simNo"));
             jsonObject.put("user_address", resultJson.get("address"));
             jsonObject.put("user_name", resultJson.get("user_name"));
             jsonObject.put("scanID", scanID);
+            jsonObject.put("cirAuditStatus",circleAuditResult);
             System.out.println("The returned values are :" + jsonObject);
         }
         return jsonObject;

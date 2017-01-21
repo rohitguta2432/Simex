@@ -1,6 +1,6 @@
 package com.softage.paytm.models;
 
-import javax.persistence.*;
+        import javax.persistence.*;
 
 /**
  * Created by SS0090 on 1/4/2017.
@@ -15,6 +15,7 @@ public class CircleAuditEntity {
     private String signMatched;
     private String dobMatched;
     private String otherReason;
+    private Integer auditStatus;
     private TblScan tblScan;
 
     @Id
@@ -88,4 +89,14 @@ public class CircleAuditEntity {
         this.tblScan = tblScan;
     }
 
+
+    @Basic
+    @Column(name="circleAuditStatus",nullable = true,insertable = true,updatable = true)
+    public Integer getAuditStatus() {
+        return auditStatus;
+    }
+
+    public void setAuditStatus(Integer auditStatus) {
+        this.auditStatus = auditStatus;
+    }
 }

@@ -37,6 +37,7 @@ public class AoAuditDaoImp implements AoAuditDao {
         Integer imageCount = null;
         Integer actualImageCount = 0;
         String retStatus = "pending";
+        String circleRemarks=null;
         while (retStatus.equalsIgnoreCase("pending")){
             try {
                 entityManager = entityManagerFactory.createEntityManager();
@@ -67,6 +68,7 @@ public class AoAuditDaoImp implements AoAuditDao {
                     cust_uid = (Integer) auditedObj[7];
                     imageCount = (Integer) auditedObj[8];
                     actualImageCount = ((BigInteger) auditedObj[9]).intValue();
+                    //circleRemarks=(String)auditedObj[10];
                     jsonObject.put("mobile", customerNumber);
                     jsonObject.put("scanID", scanid);
                     jsonObject.put("simNo", simNo);
@@ -77,6 +79,7 @@ public class AoAuditDaoImp implements AoAuditDao {
                     jsonObject.put("imgCount", imageCount);
                     jsonObject.put("status", "Available");
                     jsonObject.put("actualCount", actualImageCount);
+                  //  jsonObject.put("circleRemarks",circleRemarks);
                     retStatus="available";
                 }
 
@@ -133,19 +136,25 @@ public class AoAuditDaoImp implements AoAuditDao {
                 String name = (String) formRecievingDetails[3];
                 Integer status = (Integer) formRecievingDetails[4];
                 Integer scanID = ((BigInteger) formRecievingDetails[5]).intValue();
+                String circleRemarks=(String)formRecievingDetails[6];
+                Integer cirStatus=(Integer)formRecievingDetails[7];
                 jsonObject.put("returned","available");
                 jsonObject.put("simNo", simnumber);
                 jsonObject.put("address", address);
                 jsonObject.put("user_name", name);
                 jsonObject.put("status", status);
                 jsonObject.put("scanID", scanID);
+                jsonObject.put("circleRemarks",circleRemarks);
+                jsonObject.put("cirStatus",cirStatus);
             }else{
                 jsonObject.put("returned","unavailable");
                 jsonObject.put("simNo", "No Records Available For This Number");
                 jsonObject.put("address", "No Records Available For This Number");
                 jsonObject.put("user_name", "No Records Available For This Number");
+                jsonObject.put("circleRemarks","No Records Available For This Number");
                 jsonObject.put("status", 0);
                 jsonObject.put("scanID", 0);
+                jsonObject.put("cirStatus",0);
             }
         }catch (Exception e){
             e.printStackTrace();

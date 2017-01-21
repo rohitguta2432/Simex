@@ -15,6 +15,7 @@ public class AoAuditEntity {
     private String signMatched;
     private String dobMatched;
     private String otherReason;
+    private Integer auditStatus;
     private TblScan tblScan;
 
     @Id
@@ -86,5 +87,15 @@ public class AoAuditEntity {
 
     public void setTblScan(TblScan tblScan) {
         this.tblScan = tblScan;
+    }
+
+    @Basic
+    @Column(name = "aoAudit_status",nullable = true,insertable = true,updatable = true)
+    public Integer getAuditStatus() {
+        return auditStatus;
+    }
+
+    public void setAuditStatus(Integer auditStatus) {
+        this.auditStatus = auditStatus;
     }
 }

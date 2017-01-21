@@ -43,6 +43,7 @@
                                 <th>Name</th>
                                 <th>Bucket</th>
                                 <th>Status</th>
+                                <th ng-if="circleauditstatus+'' =='Rejected' && bucketvalue !='Circle Audit'">Circle Status</th>
                                 </thead>
                                 <tbody>
 
@@ -52,6 +53,7 @@
                                     <td ng-disabled="true">{{username}}</td>
                                     <td ng-disabled="true">{{bucketvalue}}</td>
                                     <td ng-disabled="true">{{statusvalue}}</td>
+                                    <td ng-disabled="true" ng-if="circleauditstatus+'' =='Rejected' && bucketvalue !='Circle Audit'">{{circleauditstatus}}</td>
                                 </tr>
                                 </tbody>
                             </table>

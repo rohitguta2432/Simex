@@ -1263,6 +1263,7 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDi
                     $scope.actual_img_count=data.actualCount;
                     $scope.image_source=$scope.pathList[index];
                     $scope.custUID=data.custuid;
+
                 }
             })
             .error(function(data,status,headers,config){
@@ -1390,6 +1391,9 @@ $scope.cust_number='';
                 $scope.username=data.user_name;
                 $scope.bucketvalue=data.bucket;
                 $scope.statusvalue=data.user_status;
+                    $scope.circleRemarks=data.circleRemarks;
+                    $scope.circleauditstatus=data.cirAuditStatus;
+                    //alert($scope.circleRemarks +' '+$scope.circleauditstatus+' '+$scope.bucketvalue)
                 }
             }).error(function(data,status,headers,config){
                alert('Error');
