@@ -15,7 +15,7 @@ public class CallTimeServiceImp implements CallTimeService {
     private CallTimeDao callTimeDao;
 
     @Override
-    public String insertCallTimeDetails(String customer_number, String callDateTime,int circleCode,String lastcallby) {
-        return callTimeDao.insertCallTimeDetails(customer_number,callDateTime,circleCode,lastcallby);
+    public String insertCallTimeDetails(String customer_number, String callDateTime,int circleCode,String lastcallby,int cust_uid) {
+        return callTimeDao.insertCallTimeDetails(customer_number,callDateTime,circleCode,lastcallby,cust_uid);
     }
 }

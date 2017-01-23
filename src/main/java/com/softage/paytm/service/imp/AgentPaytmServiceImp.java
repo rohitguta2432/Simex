@@ -92,6 +92,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
                 result = saveAgent(paytmagententryEntity, circleMastEntity);
 
             }catch (Exception e){
+                result = "File Not Uploaded";
                 e.printStackTrace();
             }
 
@@ -148,7 +149,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         String msg = agentPaytmDao.saveAgent(paytmagententryEntity);
         if(msg.equalsIgnoreCase("err"))
         {
-            for(int i=1; i<=5; i++) {
+            for(int i=1; i<=2; i++) {
                 msg = agentPaytmDao.saveAgent(paytmagententryEntity);
                 if ("done".equalsIgnoreCase(msg)) {
                     break;
@@ -162,6 +163,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         String result=null;
         if(agentpinmasterEntity==null){
             result = savePinmaster(paytmagententryEntity);
+            msg="done";
         }
         if ("done".equalsIgnoreCase(msg)) {
            emplogintableEntity=userDao.getUserByEmpNumber(paytmagententryEntity.getAphone());
@@ -241,66 +243,71 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
 
     public String saveUesr(PaytmagententryEntity paytmagententryEntity,CircleMastEntity circleMastEntity) {
         String password = null;
-        EmplogintableEntity emplogintableEntity = new EmplogintableEntity();
-        emplogintableEntity.setEmpCode(paytmagententryEntity.getAcode());
-        emplogintableEntity.setEmpName(paytmagententryEntity.getAfullname());
-        emplogintableEntity.setEmpPhone(paytmagententryEntity.getAphone());
+        String result="";
+        try {
+            EmplogintableEntity emplogintableEntity = new EmplogintableEntity();
+            emplogintableEntity.setEmpCode(paytmagententryEntity.getAcode());
+            emplogintableEntity.setEmpName(paytmagententryEntity.getAfullname());
+            emplogintableEntity.setEmpPhone(paytmagententryEntity.getAphone());
 
-        Random randomGenerator = new Random();
-        int randomInt = randomGenerator.nextInt(10000);
-        password =  paytmagententryEntity.getAcode().substring(0, 4)+ "@"+randomInt;
-      //  password = paytmagententryEntity.getAcode().substring(0, 4) +"@"+paytmagententryEntity.getAphone().substring(0, 4);
+            Random randomGenerator = new Random();
+            int randomInt = randomGenerator.nextInt(10000);
+            password = paytmagententryEntity.getAcode().substring(0, 4) + "@" + randomInt;
+            //  password = paytmagententryEntity.getAcode().substring(0, 4) +"@"+paytmagententryEntity.getAphone().substring(0, 4);
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        String hashedPassword = passwordEncoder.encode(password);
+            String hashedPassword = passwordEncoder.encode(password);
 
-        Date expireDate = new Date();
+            Date expireDate = new Date();
 
-        System.out.println("Current Date   " + expireDate);
-        long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
-        expireDate.setTime(expireDate.getTime() + expireTime);
+            System.out.println("Current Date   " + expireDate);
+            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+            expireDate.setTime(expireDate.getTime() + expireTime);
 
 
-        emplogintableEntity.setEmpPassword(password);
-        emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
-        emplogintableEntity.setRoleCode("A1");
-        emplogintableEntity.setEmpStatus(1);
-        emplogintableEntity.setSpoke_code(paytmagententryEntity.getAspokecode());
-        emplogintableEntity.setImportBy(paytmagententryEntity.getImportby());
-        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-        emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+            emplogintableEntity.setEmpPassword(password);
+            emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
+            emplogintableEntity.setRoleCode("A1");
+            emplogintableEntity.setEmpStatus(1);
+            emplogintableEntity.setSpoke_code(paytmagententryEntity.getAspokecode());
+            emplogintableEntity.setImportBy(paytmagententryEntity.getImportby());
+            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+            emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
 
-        String result = agentPaytmDao.saveEmployee(emplogintableEntity);
-        if ("err".equalsIgnoreCase(result)) {
-            for (int i = 0; i <= 5; i++) {
-                result = agentPaytmDao.saveEmployee(emplogintableEntity);
-                if ("done".equalsIgnoreCase(result)) {
-                    break;
+            result = agentPaytmDao.saveEmployee(emplogintableEntity);
+            if ("err".equalsIgnoreCase(result)) {
+                for (int i = 0; i <= 5; i++) {
+                    result = agentPaytmDao.saveEmployee(emplogintableEntity);
+                    if ("done".equalsIgnoreCase(result)) {
+                        break;
+                    }
                 }
+
             }
 
+            String text = "Dear Agent you are Successfully Registered in Softage ,Your Credential to use Mobile App  Username "
+                    + paytmagententryEntity.getAcode() + " Password " + password;
+            if ("done".equalsIgnoreCase(result)) {
+                ReceiverMastEntity receiverMastEntity = postCallingDao.getRecivedByCode(2);
+                ProcessMastEntity processMastEntity = postCallingDao.getProcessByCode(13);
+                SmsSendlogEntity smsSendlogEntity = new SmsSendlogEntity();
+                smsSendlogEntity.setMobileNumber(paytmagententryEntity.getAphone());
+                smsSendlogEntity.setReceiverId(paytmagententryEntity.getAcode());
+                smsSendlogEntity.setSmsText(text);
+                smsSendlogEntity.setSmsDelivered("N");
+                smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
+                smsSendlogEntity.setImportDate(new Timestamp(new Date().getTime()));
+                smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
+                smsSendlogEntity.setReceiverMastByReceiverCode(receiverMastEntity);
+                postCallingDao.saveSmsSendEntity(smsSendlogEntity);
+
+            }
+
+        }catch (Exception e){
+            result = "File Not Uploaded";
+            e.printStackTrace();
         }
-
-        String text = "Dear Agent you are Successfully Registered in Softage ,Your Credential to use Mobile App  Username "
-                + paytmagententryEntity.getAcode() + " Password " + password;
-        if ("done".equalsIgnoreCase(result)) {
-            ReceiverMastEntity receiverMastEntity = postCallingDao.getRecivedByCode(2);
-            ProcessMastEntity processMastEntity = postCallingDao.getProcessByCode(13);
-            SmsSendlogEntity smsSendlogEntity = new SmsSendlogEntity();
-            smsSendlogEntity.setMobileNumber(paytmagententryEntity.getAphone());
-            smsSendlogEntity.setReceiverId(paytmagententryEntity.getAcode());
-            smsSendlogEntity.setSmsText(text);
-            smsSendlogEntity.setSmsDelivered("N");
-            smsSendlogEntity.setSendDateTime(new Timestamp(new Date().getTime()));
-            smsSendlogEntity.setImportDate(new Timestamp(new Date().getTime()));
-            smsSendlogEntity.setProcessMastByProcessCode(processMastEntity);
-            smsSendlogEntity.setReceiverMastByReceiverCode(receiverMastEntity);
-            postCallingDao.saveSmsSendEntity(smsSendlogEntity);
-
-        }
-
-
         return result;
     }
 

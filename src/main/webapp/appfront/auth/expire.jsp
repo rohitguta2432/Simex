@@ -51,14 +51,18 @@
   <form name="myform" ng-controller="AuthCtrl" ng-submit="expire()" method="get" novalidate>
     <div class="loginbox bg-white" style="margin-bottom:20px;">
       <%--<label id="show3" ng-show="show3" style="color: red;margin-left: 40px;">Password mismatch please enter again</label>--%>
+        <div class="loginbox-textbox">
+          <input type="password"  class="form-control" ng-model="oldpass" placeholder="Old Password" required/>
+        </div>
       <div class="loginbox-textbox">
-        <input type="password" minlength="9" maxlength="15"  class="form-control" ng-model="pass" placeholder="Password" required />
+        <input type="password" maxlength="10" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}/"
+              name="pass" class="form-control" ng-model="pass" placeholder="New Password" required />
       </div>
       <div class="loginbox-textbox" >
         <input type="hidden" class="form-control" ng-init="user= '<%= user1 %>'"/>
       </div>
       <div class="loginbox-textbox">
-        <input type="password" minlength="9" maxlength="15" class="form-control" ng-model="pass1" placeholder="Confirm Password" required/>
+        <input type="password"  class="form-control" ng-model="pass1" placeholder="Confirm Password" required/>
       </div>
       <div class="loginbox-forgot">
       </div>

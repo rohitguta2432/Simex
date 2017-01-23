@@ -200,7 +200,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             entityManager = entityManagerFactory.createEntityManager();
             transaction=  entityManager.getTransaction();
     //        transaction.begin();
-           StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
+       //    StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
             Query query1= entityManager.createNativeQuery("{call sp_GetTeleDataByCustId(?)}");
             query1.setParameter(1,username);
          //   query1.setMaxResults(1);

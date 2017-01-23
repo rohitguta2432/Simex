@@ -115,8 +115,8 @@ public class PostCallingServiceImp implements PostCallingService {
                 result = "Customer Rejected because Appointment Date more then 3 days ";
             } else if ("CON".equals(status)) {
                 tcStatus = "D";
-               result = saveCustomer(map);
-               // result=saveCustomerData(map);
+              // result = saveCustomer(map);
+               result=saveCustomerData(map);
                 if ("JOB ALLOCATED".equalsIgnoreCase(result)) {
                     result1 = "done";
                 }
@@ -410,7 +410,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 allocation_map.put("confirmationAllowed", "Y");
                 allocation_map.put("kycCollected", "P");
                 allocation_map.put("remarkCode", "U");
-                allocation_map.put("spokeCode", "DELCIR001");
+                allocation_map.put("spokeCode", paytmagententryEntity.getAspokecode());
                 String jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
 
 
@@ -422,12 +422,12 @@ public class PostCallingServiceImp implements PostCallingService {
                     }
                 }
 
-                String text = "Dear Agent Job No-" + jobNumber + "" +
-                        ", Your visit is fixed at " + pcdvisitTime
-                        + " " + visitTime + "with " + name + " Address-" +
-                        "" + address + " " + pincode + "Contact no-" +
-                        "" + number + " Please See Leads in App";
-                String custext = "Dear Customer  Your CustomerId-" + custId+ "" +
+                String text = "Dear Agent Job No- " + jobNumber + "" +
+                        " , Your visit is fixed at " + pcdvisitTime
+                        + " " + visitTime + " with " + name + " Address- " +
+                        "" + address + " " + pincode + " Contact no- " +
+                        "" + number + " Please See Leads in App ";
+                String custext = "Dear Customer  Your CustomerId- " + custId+ "" +
                         ",   Agent visit dateTime " + pcdvisitTime
                         + " " + visitTime + " Please Available with ...... ";
 
@@ -682,7 +682,7 @@ public class PostCallingServiceImp implements PostCallingService {
             allocationMastEntity.setConfirmation("W");
             allocationMastEntity.setRemarkMastByRemarksCode(remarkMastEntity);
             //we have to make it dyanamic now use static
-            allocationMastEntity.setSpokeCode("DELCIR001");
+            allocationMastEntity.setSpokeCode(paytmagententryEntity.getAspokecode());
 
             result = allocationDao.saveAllocation(allocationMastEntity);
             if (result == "err") {

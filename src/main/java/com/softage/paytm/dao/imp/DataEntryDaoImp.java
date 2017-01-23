@@ -23,7 +23,7 @@ public class DataEntryDaoImp implements DataEntryDao {
     public String saveDataEntry(DataentryEntity dataentryEntity) {
         EntityManager entityManager = null;
         EntityTransaction transaction = null;
-        String msg=null;
+        String msg = null;
 
         try {
             entityManager = entityManagerFactory.createEntityManager();
@@ -31,45 +31,38 @@ public class DataEntryDaoImp implements DataEntryDao {
             transaction.begin();
             entityManager.persist(dataentryEntity);
             transaction.commit();
-            msg="done";
+            msg = "done";
         } catch (Exception e) {
-            msg="err";
+            msg = "err";
             e.printStackTrace();
-        }
-        finally {
-            if (entityManager != null && entityManager.isOpen())
-            {
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
                 entityManager.close();
             }
         }
-        return  msg;
+        return msg;
     }
 
     @Override
     public DataentryEntity getuserById(int cust_uid) {
         EntityManager entityManager = null;
-        DataentryEntity dataentryEntity=null;
-        Query query=null;
-        try
-        {
+        DataentryEntity dataentryEntity = null;
+        Query query = null;
+        try {
 
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery ="from DataentryEntity where customerId=:cust_uid";
-           query=entityManager.createQuery(strQuery);
-          query.setParameter("cust_uid", cust_uid);
-            dataentryEntity = (DataentryEntity)query.getSingleResult();
+            String strQuery = "from DataentryEntity where customerId=:cust_uid";
+            query = entityManager.createQuery(strQuery);
+            query.setParameter("cust_uid", cust_uid);
+            dataentryEntity = (DataentryEntity) query.getSingleResult();
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if (entityManager != null && entityManager.isOpen())
-            {
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
                 entityManager.close();
             }
         }
-        return null;
+        return dataentryEntity;
     }
 }

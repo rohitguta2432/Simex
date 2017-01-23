@@ -1,6 +1,7 @@
 package com.softage.paytm.models;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -12,11 +13,11 @@ public class CallTimeDetailsEntity {
 
     private Integer id;
     private String customer_number;
-    private Date call_datetime;
+    private Timestamp call_datetime;
     private Integer call_status;
     private Integer circleCode;
     private String lastcallBy;
-    private PaytmcustomerDataEntity paytmcustomerDataEntity;
+    private PaytmMastEntity paytmcustomerDataEntity;
 
     @Id
     @GeneratedValue
@@ -41,16 +42,16 @@ public class CallTimeDetailsEntity {
 
     @Basic
     @Column(name = "call_datetime",nullable = false,insertable = true,updatable = true)
-    public Date getCall_datetime() {
+    public Timestamp getCall_datetime() {
         return call_datetime;
     }
 
-    public void setCall_datetime(Date call_datetime) {
+    public void setCall_datetime(Timestamp call_datetime) {
         this.call_datetime = call_datetime;
     }
 
     @Basic
-    @Column(name = "call_status",nullable = false,insertable = true,updatable = true)
+    @Column(name = "call_status",nullable = true,insertable = true,updatable = true)
     public Integer getCall_status() {
         return call_status;
     }
@@ -60,7 +61,7 @@ public class CallTimeDetailsEntity {
     }
 
     @Basic
-    @Column(name = "circleCode",nullable = false,insertable = true,updatable = true)
+    @Column(name = "circleCode",nullable = true,insertable = true,updatable = true)
     public Integer getCircleCode() {
         return circleCode;
     }
@@ -81,11 +82,11 @@ public class CallTimeDetailsEntity {
 
     @OneToOne
     @JoinColumn(name = "cust_uid")
-    public PaytmcustomerDataEntity getPaytmcustomerDataEntity() {
+    public PaytmMastEntity getPaytmcustomerDataEntity() {
         return paytmcustomerDataEntity;
     }
 
-    public void setPaytmcustomerDataEntity(PaytmcustomerDataEntity paytmcustomerDataEntity) {
+    public void setPaytmcustomerDataEntity(PaytmMastEntity paytmcustomerDataEntity) {
         this.paytmcustomerDataEntity = paytmcustomerDataEntity;
     }
 }

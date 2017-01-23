@@ -2,14 +2,13 @@
     <h3 class="modal-title"></h3>
 </div>
 <div class="modal-body">
-    <form class="form-horizontal"  ng-controller="telecalling" >
+    <form class="form-horizontal" name="myForm" ng-controller="telecalling" ng-init="callingScreen()">
         <div class="form-group">
 
 
             <div class="form-group col-sm-6">
-                <label  class="col-sm-3 control-label no-padding-right">Call Date</label>
-                <div class="col-sm-9">
-                    <select  name="visit_date" ng-model="visit_date"  class="form-control" required ng-options="dates for dates in datecallback" ng-change="getTime()" required>
+                <label  class="col-sm-3 control-label no-padding-right">Call Date</label><div class="col-sm-9">
+                    <select  name="visit_date" ng-model="visit_date"  class="form-control"  ng-options="dates for dates in datecallback" ng-change="getTime()" required>
                         <option value="" selected="selected">Call Date</option>
 
                     </select>
@@ -20,9 +19,7 @@
             <div class="form-group col-sm-6">
                 <label  class="col-sm-3 control-label no-padding-right">Call Time</label>
                 <div class="col-sm-9">
-
-
-                    <select  name="visit_time" ng-model="visit_time"   class="form-control" required ng-options="time for time in times" required >
+                    <select  name="visit_time" ng-model="visit_time"   class="form-control"  ng-options="time for time in times" required >
                         <option value="" selected="selected">Call Time</option>
 
                     </select>
@@ -33,25 +30,10 @@
        </div>
 
 
-            <!--<label class="col-sm-2 control-label">Both</label>-->
-            <!--< class="col-sm-10">-->
-                <!--<input   type="text" ng-model="date4"   />-->
-                <!--
-                <p class="input-group">
-                    <input type="text" class="form-control" datetime-picker="MM/dd/yyyy HH:mm" ng-model="ctrl.dateTime" is-open="ctrl.picker3.open" />
-              <span class="input-group-btn">
-                  <button type="button" class="btn btn-default" ng-click="ctrl.openCalendar($event, 'picker3')"><i class="fa fa-calendar"></i></button>
-              </span>
-                </p>-->
             </div>
-<!--      <div class="form-group">
-            <label class="col-sm-2 control-label">model</label>
-            <div class="col-sm-10">
-                <p class="form-control-static">{{ ctrl.picker3.date }}</p>
-            </div>
-        </div>-->
+
         <button class="btn btn-warning" type="button"
-                ng-click="getdateTime()">Submit</button>
+                ng-click="getdateTime(codes.cust_uid ,codes.customerPhone)">Submit</button>
     </form>
 </div>
 

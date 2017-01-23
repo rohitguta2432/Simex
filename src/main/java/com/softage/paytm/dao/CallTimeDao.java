@@ -5,5 +5,5 @@ package com.softage.paytm.dao;
  */
 public interface CallTimeDao {
 
-    public  String insertCallTimeDetails(String customer_number, String callDateTime,int circleCode,String lastcallby);
+    public  String insertCallTimeDetails(String customer_number, String callDateTime,int circleCode,String lastcallby,int cust_uid);
 }

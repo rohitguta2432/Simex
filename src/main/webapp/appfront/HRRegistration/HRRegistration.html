@@ -39,7 +39,7 @@
                             <div class="form-group col-sm-6">
                                 <label for="Text1" class="col-sm-3 control-label no-padding-right">Emp Code</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" minlength="6" maxlength="6" name="emp_code" ng-model="emp_code" id="Text1" placeholder="Employee Code"  validation="alpha|min_len:4|required" required/>
+                                    <input type="text" class="form-control" ng-pattern="/^[a-zA-Z].*/i" minlength="6" maxlength="6" name="emp_code" ng-model="emp_code" id="Text1" placeholder="Employee Code"  validation="alpha|min_len:4|required" required/>
 
                                 </div>
                             </div>
@@ -56,10 +56,21 @@
                             <div class="form-group col-sm-6">
                                 <label for="Text8" class="col-sm-3 control-label no-padding-right">Circle Office</label>
                                 <div class="col-sm-9">
-                                    <select id="Text8" name="circlecode" class="form-control" required ng-model="circlecode" ng-options="circlecode.name for circlecode in circleofiices">
+                                    <select id="Text8" name="circlecode" class="form-control" required ng-model="circlecode" ng-options="circlecode.name for circlecode in circleofiices" ng-change="getSpokeByCircle()" >
                                         <option value="" selected>Select Circle Office</option>
 
                                     </select>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="Text8" class="col-sm-3 control-label no-padding-right">Spoke Code</label>
+                                <div class="col-sm-9">
+                                    <!-- <input type="text" class="form-control" id="Text2" ng-minlength="3" ng-maxlength="15" name="agent_spkcode" ng-model="user.agent_spkcode" placeholder="Agent Spoke code" allow-pattern="(\d|[a-z])" required/>-->
+                                    <select id="Text10" name="spoke_code" class="form-control" required ng-model="spoke_code" ng-options="code for code in offices1">
+                                        <option value="" selected>Select Spoke Code</option>
+
+                                    </select>
+
                                 </div>
                             </div>
 
@@ -72,7 +83,9 @@
                                         <option value="HR">HR</option>
                                         <option value="Tlec">Telecaller</option>
                                         <option value="ADM">Admin</option>
-
+                                        <option value="CAQC">Circle Auditor</option>
+                                        <option value="AOQC">AO Auditor</option>
+                                        <option value="DULD">Client</option>
                                     </select>
 
 

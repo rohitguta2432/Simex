@@ -1,4 +1,4 @@
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <head>
@@ -10,6 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <sec:csrfMetaTags/>
   <!--Basic Styles-->
   <link href="libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="libs/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
@@ -124,6 +125,15 @@
     if ("A1".equalsIgnoreCase(role)){
         rolename="Agent";
     }
+    if ("AOQC".equalsIgnoreCase(role)){
+        rolename="AO_Audit";
+    }
+    if ("CAQC".equalsIgnoreCase(role)){
+        rolename="CircleAudit";
+    }
+    if ("DULD".equalsIgnoreCase(role)){
+        rolename="Client User";
+    }
   if(name==null){
 %>
    <jsp:forward page=""/>
@@ -139,7 +149,7 @@
       <!-- Navbar Barnd -->
       <div class="navbar-header pull-left">
         <a href="#" class="navbar-brand"><small>
-          <img src="assets/img/paytm-logo.png" alt="simex"  />
+          <img src="assets/img/simex-logo.png" alt="simex"  />
         </small></a>
       </div>
       <!-- /Navbar Barnd -->
@@ -222,10 +232,10 @@
 
        <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         Reports </span></a></li>
-            <%--      <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-check"></i><span class="menu-text">
-                                 QC Interface </span></a></li>
+            <li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                           Circle Audit </span></a></li>
 
-               <li><a ui-sref="downloaddocuments"><i class="menu-icon fa fa-download"></i><span class="menu-text">
+           <%--    <li><a ui-sref="downloaddocuments"><i class="menu-icon fa fa-download"></i><span class="menu-text">
                                  Download Documents </span></a></li>
                  <li><a ui-sref="createBatch"><i class="menu-icon fa fa-file"></i><span class="menu-text">
                                 Create Batch </span></a></li>
@@ -249,8 +259,8 @@
           <li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
                        Agent Registration </span></a>
           </li>
-     <%--      <li><a ui-sref="QCInterface"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
-                        QC Interface </span></a></li>--%>
+         <%--<li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                        Circle Audit </span></a></li>--%>
           <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
                            Data Entry </span></a></li>--%>
           <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
@@ -259,6 +269,48 @@
 
             }
           %>
+            <%
+                if("CAQC".equalsIgnoreCase(role))
+                {
+
+            %>
+            <%--<li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
+                       Agent Registration </span></a>
+            </li>--%>
+            <li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                           Circle Audit </span></a></li>
+            <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>
+            <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
+                             Data Entry </span></a></li>--%>
+            <%--<li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>--%>
+            <%
+
+                }
+            %>
+            <%
+                if("AOQC".equalsIgnoreCase(role))
+                {
+
+            %>
+            <%--<li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
+                       Agent Registration </span></a>
+            </li>--%>
+            <li><a ui-sref="AoAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                           AO Audit </span></a></li>
+            <li><a ui-sref="FormRecieving"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                           Form Recieving </span></a></li>
+            <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>
+            <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
+                             Data Entry </span></a></li>--%>
+            <%--<li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>--%>
+            <%
+
+                }
+            %>
 
           <%
             if("Tlec".equalsIgnoreCase(role))
@@ -267,7 +319,6 @@
           %>
           <li><a ui-sref="telecalling"><i class="menu-icon fa fa-phone"></i><span class="menu-text">
                         Telecalling </span></a></li>
-          </li>
           <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
                            Data Entry </span></a></li>--%>
           <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
@@ -277,6 +328,21 @@
             }
           %>
 
+            <%
+                if("DULD".equalsIgnoreCase(role))
+                {
+
+            %>
+            <li><a ui-sref="uploadScreen"><i class="menu-icon fa fa-upload"></i><span class="menu-text">
+                        Import Data </span></a></li>
+            <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
+                             Data Entry </span></a></li>--%>
+            <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
+                        Sign out</span> </a></li>
+            <%
+
+                }
+            %>
 
 
 
@@ -319,7 +385,7 @@
 <footer style="background: #fff;">
   <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="border-top:1px solid #ddd; text-align:center; padding-top:5px;">
-      Copyright &copy; 2016,  <img src="assets/img/softage_logo.png" alt="softage" style="margin-top: -1px; height:20px;" />
+      Copyright &copy; 2017,  <img src="assets/img/softage_logo.png" alt="softage" style="margin-top: -1px; height:20px;" />
     </div>
   </div>
 </footer>

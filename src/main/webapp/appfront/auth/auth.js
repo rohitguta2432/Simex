@@ -38,8 +38,8 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
         $scope.expire= function()
         {
 
-            if($scope.pass1==undefined){
-                alert("Password Minimum Length should be 9 ");
+            if($scope.pass==undefined){
+                alert(" password length should be 8 to 10 with atlest 1 charecter  numeric, spacial,small alphabet,capital alphabet ");
                 ev.preventDefault();
             }
             else if($scope.pass!=$scope.pass1){
@@ -47,7 +47,7 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
                 ev.preventDefault();
             }else {
 
-                var daata = 'userName=' + $scope.user + '&password=' + $scope.pass;
+                var daata = 'userName=' + $scope.user + '&password=' + $scope.pass +'&oldpassword='+$scope.oldpass;
                 /* $http.get('http://172.25.38.49:8080/simex/login?'+daata).success(function(data, status, headers, config){*/
 
                 $http.get('/simex/resetPassword?' + daata).success(function (data, status, headers, config) {

@@ -27,6 +27,6 @@ public class DataEntryServiceImp implements DataEntryService {
 
     @Override
     public DataentryEntity getdataByUserCustid(int cust_uid) {
-        return dataEntryDao.dataentryEntity(cust_uid);
+        return dataEntryDao.getuserById(cust_uid);
     }
 }

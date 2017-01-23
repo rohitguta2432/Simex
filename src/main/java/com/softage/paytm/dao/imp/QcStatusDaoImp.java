@@ -366,7 +366,8 @@ public class QcStatusDaoImp implements QcStatusDao {
                 result=false;
             }
         }catch (Exception e){
-            e.printStackTrace();
+            result=true;
+            //e.printStackTrace();
         }finally {
             if (entityManager != null && entityManager.isOpen())
             {

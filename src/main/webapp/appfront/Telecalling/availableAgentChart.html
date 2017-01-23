@@ -2,6 +2,7 @@
 
     .Available-b{background-color:green; color:#fff;}
     .Booked-b{background-color:red; color:#fff;}
+    .NotAvailabe-b{background-color:grey; color:#fff;}
     .cancel-b{background-color:blue; color:#fff;}
 
 </style>
@@ -13,7 +14,7 @@
 </div>
 <div class="modal-body">
     <form class="form-horizontal">
-        <div class="form-group" ng-controller="telecalling">
+        <div class="form-group" ng-controller="telecalling" ng-init="callingScreen()">
             <button   class="btn cancel-b " ng-click="callgetscreen()" >Cancel</button>
             <table class="table table-striped table-bordered">
                 <thead>
@@ -25,18 +26,18 @@
                 </tr>
 
                 <tr ng-repeat="(key, value) in dataSets">
-                      <th>
+                    <th>
                         {{key}}:00-{{ key -- timediff }}:00
-                      </th>
-                        <th ng-repeat="(key1,val1)  in value">
-                            <table ng-repeat="(key2,val2)  in val1" >
-                                <tr>
-                                    <!--<th><a ng-href ng-click="selectDateTime(key,key2,'CON')">{{val2}}</a></th>-->
-                                    <th><button   class="btn {{val2}}-b " ng-click="selectDateTime(key,key2,'CON')">{{val2}}</button></th>
-                                </tr>
-                            </table>
+                    </th>
+                    <th ng-repeat="(key1,val1)  in value">
+                        <table ng-repeat="(key2,val2)  in val1" >
+                            <tr>
+                                <!--<th><a ng-href ng-click="selectDateTime(key,key2,'CON')">{{val2}}</a></th>-->
+                                <th><button  val2=='NotAvailabe' class="btn {{val2}}-b " ng-click="selectDateTime(key,key2,'CON')" ng-disabled="val2=='NotAvailabe'">{{val2}}</button></th>
+                            </tr>
+                        </table>
 
-                        </th>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>

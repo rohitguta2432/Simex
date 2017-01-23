@@ -5,5 +5,5 @@ package com.softage.paytm.service;
  */
 
 public interface CallTimeService {
-    public String insertCallTimeDetails(String customer_number, String callDateTime,int circleCode,String lastcallby);
+    public String insertCallTimeDetails(String customer_number, String callDateTime,int circleCode,String lastcallby,int cust_uid);
 }

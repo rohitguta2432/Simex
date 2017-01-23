@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -338,7 +339,10 @@ public class RestWebController {
                 try {
                     String agentCode = request.getParameter("AgentCode");
                     String leaddate = request.getParameter("leaddate");
-                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, leaddate);
+                    Date today  =new Date();
+                    String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(today.getTime());
+
+                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
                     array.addAll(arrayList);
 
                 } catch (Exception e) {
@@ -666,7 +670,7 @@ public class RestWebController {
                             }
                             if (result.equalsIgnoreCase("done")) {
                                 updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
-                                //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
+                            //    allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
                                 result = "done";
 
                             } else {
@@ -1088,9 +1092,11 @@ public class RestWebController {
 
             for (ProofMastEntity proofMastEntity : proofMastEntities) {
                 JSONObject json = new JSONObject();
-                json.put("Applicable", proofMastEntity.getApplicable());
-                json.put("Code", proofMastEntity.getIdCode());
-                json.put("Text", proofMastEntity.getIdText());
+                if(!proofMastEntity.getIdText().equalsIgnoreCase("NA")) {
+                    json.put("Applicable", proofMastEntity.getApplicable());
+                    json.put("Code", proofMastEntity.getIdCode());
+                    json.put("Text", proofMastEntity.getIdText());
+                }
 
                 array.add(json);
             }
@@ -1113,10 +1119,12 @@ public class RestWebController {
             List<ProofMastEntity> proofMastEntities = proofService.getProofMastEntity(applicable);
             for (ProofMastEntity proofMastEntity : proofMastEntities) {
                 JSONObject json = new JSONObject();
-                json.put("Applicable", proofMastEntity.getApplicable());
-                json.put("Code", proofMastEntity.getIdCode());
-                json.put("Text", proofMastEntity.getIdText());
-                array.add(json);
+                if(!proofMastEntity.getIdText().equalsIgnoreCase("NA")) {
+                    json.put("Applicable", proofMastEntity.getApplicable());
+                    json.put("Code", proofMastEntity.getIdCode());
+                    json.put("Text", proofMastEntity.getIdText());
+                    array.add(json);
+                }
             }
         } else {
             array.add("Authentication failed due to unauthorised login from another device");

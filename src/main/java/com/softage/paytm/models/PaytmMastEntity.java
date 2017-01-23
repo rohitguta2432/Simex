@@ -48,6 +48,7 @@ public class PaytmMastEntity {
     private String lotNo;
     private String remarks;
     private Collection<TelecallLogEntity> telecallLogEntity;
+    private CallTimeDetailsEntity callTimeDetailsEntity;
 
 
     @Id
@@ -433,6 +434,16 @@ public class PaytmMastEntity {
     public void setTelecallLogEntity(Collection<TelecallLogEntity> telecallLogEntity) {
         this.telecallLogEntity = telecallLogEntity;
     }
+
+    @OneToOne(mappedBy = "paytmcustomerDataEntity")
+    public CallTimeDetailsEntity getCallTimeDetailsEntity() {
+        return callTimeDetailsEntity;
+    }
+
+    public void setCallTimeDetailsEntity(CallTimeDetailsEntity callTimeDetailsEntity) {
+        this.callTimeDetailsEntity = callTimeDetailsEntity;
+    }
+
 
     @Override
     public String toString() {
