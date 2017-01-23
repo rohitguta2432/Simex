@@ -38,12 +38,7 @@
         <div class="loginbox bg-white" style="margin-bottom:20px;">
             <label id="show3" ng-show="show3" style="color: red;margin-left: 40px;">Password mismatch please enter again</label>
             <div class="loginbox-textbox">
-                <input type="oldpassword" class="form-control" ng-model="oldpass" placeholder="Old Password"/>
-            </div>
-            <div class="loginbox-textbox">
-                <input type="password" ng-pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,10}"
-                       name="pass" class="form-control" ng-model="pass" placeholder="Password"/>
-                <code>{{myForm.pass.$valid}}</code>
+                <input type="password" class="form-control" ng-model="pass" placeholder="Password"/>
             </div>
             <div class="loginbox-textbox">
                 <input type="password" class="form-control" ng-model="pass1" placeholder="Confirm Password"/>

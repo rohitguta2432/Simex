@@ -7,4 +7,6 @@ import com.softage.paytm.models.DataentryEntity;
  */
 public interface DataEntryDao {
     public String saveDataEntry(DataentryEntity dataentryEntity);
+
+    public DataentryEntity getuserById(int cust_uid);
 }

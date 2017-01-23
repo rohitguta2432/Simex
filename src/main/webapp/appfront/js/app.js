@@ -44,10 +44,10 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'Telecalling/telecalling.html',
             controller:'telecalling'
 
-        }) .state('CircleAudit', {
-            url: '/CircleAudit',
-            templateUrl: 'CircleAudit/circleaudit.html',
-            controller:'CircleAudit'
+        }) .state('QCInterface', {
+            url: '/QCInterface',
+            templateUrl: 'QCInterface/qcInterface.html',
+            controller:'QCInterface'
 
         }).state('HRRegistration', {
             url: '/HRRegistration',
@@ -84,16 +84,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'CompanyRegistration/companyRegistration.html',
             controller:'companyRegistration'
 
-        }).state('AoAudit',{
-            url:'/AoAudit',
-            templateUrl:'AoAudit/aoaudit.html',
-            controller:'AoAudit'
-        }).state('FormRecieving',{
-            url:'/FormRecieving',
-            templateUrl:'FormRecieving/formRecieving.html',
-            controller:'FormRecieving'
-        })
-        .state('projectRegistration', {
+        }).state('projectRegistration', {
             url: '/projectRegistration',
             templateUrl: 'projectRegistration/projectRegistration.html',
             controller:'projectRegistration'
@@ -102,7 +93,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
 
 
 });
-routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia',function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$rootScope){
+routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia){
 
     $scope.name='';
     $scope.agent_code='';
@@ -324,20 +315,6 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
     });
 
 
-    $scope.getSpokeByCircle=function(){
-
-
-        $http.get(domain+'/getSpokeByCircle?circleCode='+$scope.circlecode.name).success(function(data,status,headers,config){
-
-                    $scope.offices1=data.spokeList;
-
-        }).error(function(data,status,headers,config){
-            alert('Error');
-        })
-
-    }
-
-
 
     $scope.errormessage = '';
 
@@ -365,18 +342,14 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
         else if($scope.emp_Type.length == 0 || $scope.emp_Type == undefined){
             //   alert('Enter the Phone Number');
             ev.preventDefault();
-        }
-        else if(($scope.emp_Type== 'CAQC' || $scope.emp_Type == 'AOQC') && $scope.spoke_code==undefined ){
-              alert('Enter the Spoke Code');
-            ev.preventDefault();
-        }else if(firstphone == 0 || firstphone==1 ||firstphone==2 || firstphone == 3 || firstphone==4 || firstphone == 5 || firstphone==6){
+        } else if(firstphone == 0 || firstphone==1 ||firstphone==2 || firstphone == 3 || firstphone==4 || firstphone == 5 || firstphone==6){
             alert('Enter the Valid Phone Number');
             ev.preventDefault();
         }
 
         else {
 
-            var data = 'name=' + $scope.emp_name + '&empcode=' + $scope.emp_code  + '&phone=' + $scope.phone + '&circle_office=' + $scope.circlecode.code + '&empType=' + $scope.emp_Type +'&spoke_code='+$scope.spoke_code;
+            var data = 'name=' + $scope.emp_name + '&empcode=' + $scope.emp_code  + '&phone=' + $scope.phone + '&circle_office=' + $scope.circlecode.code + '&empType=' + $scope.emp_Type ;
 
 
             console.log(data);
@@ -434,9 +407,6 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
 
         };
     }
-
-
-
 
     function ClearForm() {
         //$scope.FileDescription = '';
@@ -954,176 +924,28 @@ routerApp.controller('downloaddocuments',['$scope', '$http','$q','$log','$locati
 
 
 
-//QCInterface changed to CircleAudit By Arpan
-routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
+
+routerApp.controller('QCInterface',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
 
     //$scope.cust_number='';
    // $scope.url='';
    // $scope.flag=false;
-    var index=0;
-    //$scope.state1=true;
-    /*$scope.trustSrc = function(src) {
+    $scope.state1=true;
+    $scope.trustSrc = function(src) {
         return $sce.trustAsResourceUrl(src);
     }
-*/
+
 
 
     $scope.errormessage = '';
 
 
-    $scope.auditInit=function(){
-        $http.get(domain+'/getCustomer')
-            .success(function(data,status,headers,config){
-                if(data.auditStatus=='No Images To Audit'){
-                    //alert('No Images To Audit');
-                    $scope.img_count=1;
-                    $scope.image_source='assets/img/noimage.jpg';
-                    $scope.acceptFlag=true;
-                    $scope.rejectFlag=true;
-
-                }else{
-                    $scope.cust_number=data.mobile;
-                    $scope.sim_number=data.simNo;
-                    $scope.cust_name=data.name;
-                    $scope.cust_address=data.address;
-                    $scope.scan_id=data.scanID;
-                    //$scope.image_path=data.imagePath;
-                    $scope.pathList=data.filePathList;
-                    $scope.img_count=data.imgCount;
-                    $scope.actual_img_count=data.actualCount;
-                    $scope.image_source=$scope.pathList[index];
-                }
-            })
-            .error(function(data,status,headers,config){
-                alert('Error');
-            })
-
-    }
-
-    $scope.next=function(){
-        var img=$scope.image_source;
-        var substringIndex=img.lastIndexOf("_");
-        var extensioinIndex=img.lastIndexOf(".");
-        var imgNumber=img.substring(substringIndex+1,extensioinIndex);
-        //alert(imgNumber +''+ $scope.actual_img_count);
-        if(imgNumber<$scope.actual_img_count){
-            index=index+1;
-            $scope.image_source=$scope.pathList[index];
-        }else{
-            index=$scope.actual_img_count-1;
-            $scope.image_source=$scope.pathList[index];
-        }
-    }
-
-    $scope.previous=function(){
-        var image=$scope.image_source;
-        var substringIndex=image.lastIndexOf("_");
-        var extensioinIndex=image.lastIndexOf(".");
-        var imageNumber=image.substring(substringIndex+1,extensioinIndex);
-        //alert(imageNumber+''+ $scope.actual_img_count);
-        if(imageNumber > 1){
-            index=index-1;
-            $scope.image_source=$scope.pathList[index];
-        }else{
-            index=0;
-            $scope.image_source=$scope.pathList[index];
-        }
-    }
-
-    $scope.qcOK= function(ev) {
-        var qcStatus='Accepted';
-            var data = 'scanId='+$scope.scan_id +
-                '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
-                +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
-                '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus;
-
-
-        //console.log(data);
-        //alert(" data   "+data);
-
-        $http.get(domain+'/qcstatus?' + data)
-            .success(function (data, status, headers, config) {
-                //     $scope.url1= data.url;
-
-                console.log("dataa" +$scope.url1);
-                location.reload();
-                alert(data.message);
-                /*if(data.status == 'error'){
-                    // alert('Agent Already Registered');
-                    $scope.status = '';
-                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
-
-                    $mdDialog.show(
-                        $mdDialog.alert()
-                            .parent(angular.element(document.querySelector('#popupContainer')))
-                            .clickOutsideToClose(true)
-                            .title('')
-                            .textContent(data.msg)
-                            .ariaLabel('Alert Dialog Demo')
-                            .ok('OK')
-                            .targetEvent(ev)
-
-                    );
-                }*/
-            })
-            .error(function (data, status, headers, config) {
-                alert("failure message: " + JSON.stringify({data: data}));
-            });
-
-
-    };
-
-    $scope.qcReject= function(ev) {
-        //    alert(" Reject "+ $scope.rejct_pages);
-        var qcStatus='Rejected';
-            var data = 'scanId='+$scope.scan_id +
-                '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
-                +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
-                '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus;
-
-
-        //console.log(data);
-        //alert(" data   "+data);
-
-        $http.get(domain+'/qcstatus?' + data)
-            .success(function (data, status, headers, config) {
-                //    $scope.url1= data.url;
-
-                console.log("dataa" +$scope.url1);
-
-                location.reload();
-                alert(data.message);
-                /*if(data.status == 'error'){
-                    // alert('Agent Already Registered');
-                    $scope.status = '';
-                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
-
-                    $mdDialog.show(
-                        $mdDialog.alert()
-                            .parent(angular.element(document.querySelector('#popupContainer')))
-                            .clickOutsideToClose(true)
-                            .title('')
-                            .textContent(data.msg)
-                            .ariaLabel('Alert Dialog Demo')
-                            .ok('OK')
-                            .targetEvent(ev)
-
-                    );
-                }*/
-            })
-            .error(function (data, status, headers, config) {
-                alert("failure message: " + JSON.stringify({data: data}));
-            });
-
-
-    };
-
-    /*$scope.change=function(){
+    $scope.change=function(){
 
         $http.get(domain+'/getCustomer')
             .success(function (data, status, headers, config) {
                 $scope.cust_number=data.mobile;
-                $scope.scan_id=data.scanID;
+
                 if(data.status == 'error'){
                     // alert('Agent Already Registered');
                     $scope.status = '';
@@ -1149,20 +971,20 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
 
     };
-*/
 
- /*   var call=function(){
+
+    var call=function(){
         $scope.change();
     }
 
      call();
 
-*/
-   /* $scope.submit = function(ev) {
+
+    $scope.submit = function(ev) {
         if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
             ev.preventDefault();
         } else
-            var data = 'customer_Number=' + $scope.cust_number +'&scanid=' + $scope.scan_id;
+            var data = 'customer_Number=' + $scope.cust_number;
 
 
            //console.log(data);
@@ -1201,9 +1023,59 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
         };
 
+    $scope.qcReject= function(ev) {
+        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
+            ev.preventDefault();
+        } if($scope.rejct_pages.length == 0 || $scope.rejct_pages == undefined){
+            alert("Please enter Rejected Page")
+            ev.preventDefault();
+        } else if($scope.user_comment.length == 0 || $scope.user_comment == undefined){
+            alert("Please enter Remark");
+            ev.preventDefault();
+        }
+        else
+        //    alert(" Reject "+ $scope.rejct_pages);
+
+        var data = '&mobileNo=' + $scope.cust_number +'&status=3' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
 
 
-*/
+        //console.log(data);
+        //alert(" data   "+data);
+
+        $http.get(domain+'/qcstatus?' + data)
+         .success(function (data, status, headers, config) {
+     //    $scope.url1= data.url;
+
+         console.log("dataa" +$scope.url1);
+
+                location.reload();
+
+         if(data.status == 'error'){
+         // alert('Agent Already Registered');
+         $scope.status = '';
+         $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+         $mdDialog.show(
+         $mdDialog.alert()
+         .parent(angular.element(document.querySelector('#popupContainer')))
+         .clickOutsideToClose(true)
+         .title('')
+         .textContent(data.msg)
+         .ariaLabel('Alert Dialog Demo')
+         .ok('OK')
+         .targetEvent(ev)
+
+         );
+         }
+         })
+         .error(function (data, status, headers, config) {
+         alert("failure message: " + JSON.stringify({data: data}));
+         });
+
+
+    };
+
+
    /* $scope.checkStatus2= function(ev) {
         if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
             ev.preventDefault();
@@ -1224,127 +1096,43 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$location','$
 
 
     };*/
-    /**/
-
-
-}]);
-
-
-//QCInterface changed to CircleAudit By Arpan
-routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
-
-
-    var index=0;
-
-
-
-    $scope.errormessage = '';
-
-
-    $scope.AoAuditInit=function(){
-        $http.get(domain+'/getCustomerDetailsForAoAudit')
-            .success(function(data,status,headers,config){
-                //alert(data.auditStatus);
-                if(data.auditStatus=='No Images To Audit'){
-                    //alert('No Images To Audit');
-                    $scope.img_count=1;
-                    $scope.image_source='assets/img/noimage.jpg';
-                    $scope.acceptFlag=true;
-                    $scope.rejectFlag=true;
-                }else{
-                    $scope.cust_number=data.mobile;
-                    $scope.sim_number=data.simNo;
-                    $scope.cust_name=data.name;
-                    $scope.cust_address=data.address;
-                    $scope.scan_id=data.scanID;
-                    //$scope.image_path=data.imagePath;
-                    $scope.pathList=data.filePathList;
-                    $scope.img_count=data.imgCount;
-                    $scope.actual_img_count=data.actualCount;
-                    $scope.image_source=$scope.pathList[index];
-                    $scope.custUID=data.custuid;
-
-                }
-            })
-            .error(function(data,status,headers,config){
-                alert('Error');
-            })
-
-    }
-
-    $scope.next=function(){
-        var img=$scope.image_source;
-        var substringIndex=img.lastIndexOf("_");
-        var extensioinIndex=img.lastIndexOf(".");
-        var imgNumber=img.substring(substringIndex+1,extensioinIndex);
-        if(imgNumber<$scope.actual_img_count){
-            index=index+1;
-            $scope.image_source=$scope.pathList[index];
-        }else{
-            index=$scope.actual_img_count-1;
-            $scope.image_source=$scope.pathList[index];
-        }
-    }
-
-    $scope.previous=function(){
-        var image=$scope.image_source;
-        var substringIndex=image.lastIndexOf("_");
-        var extensioinIndex=image.lastIndexOf(".");
-        var imageNumber=image.substring(substringIndex+1,extensioinIndex);
-        if(imageNumber > 1){
-            index=index-1;
-            $scope.image_source=$scope.pathList[index];
-        }else{
-            index=0;
-            $scope.image_source=$scope.pathList[index];
-        }
-    }
-
     $scope.qcOK= function(ev) {
-        var qcStatus='Accepted';
-        var data = 'scanId='+$scope.scan_id +
-            '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
-            +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
-            '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus+'&custUID='+$scope.custUID;
+        if($scope.cust_number.length == 0 || $scope.cust_number == undefined){
+            ev.preventDefault();
+        }else if($scope.user_comment.length == 0 || $scope.user_comment == undefined){
+            alert("Please enter Remark");
+            ev.preventDefault();
+        } else
+
+        var data = '&mobileNo=' + $scope.cust_number +'&status=2' + '&rejectedPage=' + $scope.rejct_pages +'&remarks=' + $scope.user_comment;
 
 
+        //console.log(data);
+        //alert(" data   "+data);
 
-
-        $http.get(domain+'/aoAuditStatus?' + data)
+        $http.get(domain+'/qcstatus?' + data)
             .success(function (data, status, headers, config) {
-                //     $scope.url1= data.url;
+           //     $scope.url1= data.url;
 
                 console.log("dataa" +$scope.url1);
                 location.reload();
-                alert(data.message);
+                if(data.status == 'error'){
+                    // alert('Agent Already Registered');
+                    $scope.status = '';
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
 
-            })
-            .error(function (data, status, headers, config) {
-                alert("failure message: " + JSON.stringify({data: data}));
-            });
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
 
-
-    };
-
-    $scope.qcReject= function(ev) {
-        //    alert(" Reject "+ $scope.rejct_pages);
-        var qcStatus='Rejected';
-        var data = 'scanId='+$scope.scan_id +
-            '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
-            +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
-            '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus+'&custUID='+$scope.custUID;
-
-
-
-        $http.get(domain+'/aoAuditStatus?' + data)
-            .success(function (data, status, headers, config) {
-                //    $scope.url1= data.url;
-
-                console.log("dataa" +$scope.url1);
-
-                location.reload();
-                alert(data.message);
-
+                    );
+                }
             })
             .error(function (data, status, headers, config) {
                 alert("failure message: " + JSON.stringify({data: data}));
@@ -1354,76 +1142,47 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$location','$mdDi
     };
 
 
-
 }]);
 
 
 
-routerApp.controller('FormRecieving',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia, $sce){
 
-    $scope.scanid='';
-    $scope.simNumber='';
-    $scope.useraddress='';
-    $scope.username='';
-    $scope.bucketvalue='';
-    $scope.statusvalue='';
-//$scope.mobFlag=false;
-$scope.cust_number='';
-    $scope.auditFlag=true;
-    $scope.searchDetails=function(){
-    if($scope.cust_number.length==10){
-       // $scope.mobFlag=true;
-        var data='mobNo='+$scope.cust_number;
-        $http.get(domain+'/getFormRecievingDetails?'+data)
-            .success(function(data,status,headers,config){
-               // alert(JSON.stringify({data: data}))
-                //alert($scope.auditFlag);
-                if(data.retMessage=='No Record Found'){
-                    alert('Record Not Found');
-                }else{
-                $scope.scanid=data.scanID;
-                if(data.simNum!='' || data.simNum!=null){
-                    $scope.auditFlag=false;
-                }
-               // alert($scope.auditFlag);
-                $scope.simNumber=data.simNum;
-                $scope.useraddress=data.user_address;
-                $scope.username=data.user_name;
-                $scope.bucketvalue=data.bucket;
-                $scope.statusvalue=data.user_status;
-                    $scope.circleRemarks=data.circleRemarks;
-                    $scope.circleauditstatus=data.cirAuditStatus;
-                    //alert($scope.circleRemarks +' '+$scope.circleauditstatus+' '+$scope.bucketvalue)
-                }
-            }).error(function(data,status,headers,config){
-               alert('Error');
-            });
-    }
-    else{
-        $scope.auditFlag=true;
-        $scope.scanid='';
-        $scope.simNumber='';
-        $scope.useraddress='';
-        $scope.username='';
-        $scope.bucketvalue='';
-        $scope.statusvalue='';
-    }
-    }
-    $scope.formSubmit=function(){
-        var data='scanID='+$scope.scanid;
-        $http.get(domain+'/formRecievingSubmit?'+data)
-            .success(function(data,status,headers,config){
-                alert(data.result);
-                location.reload();
-            }).error(function(data,status,headers,config){
-                alert('Error');
-            })
-    }
-}]);
+
+routerApp.controller('telecalling',['$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal' ,function($scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal){
+
+    /* $scope.message = {
+
+     text: 'hello world!',
+     time: new Date()
+     };*/
+
+  /*  var that = this;
+
+
+ this.picker3 = {
+        date: new Date()
+    };
+
+
+    this.openCalendar = function(e, picker) {
+       that[picker].open = true;
+
+    };
+*/
 
 
 
-routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal' ,function($rootScope,$scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal){
+/*
+    var myInit = function () {
+     alert('Hello Angularjs Function ');
+    };
+    angular.element(document).ready(myInit);*/
+
+
+
+
+
+
 
     $scope.states= [];
     $scope.times = [];
@@ -1433,7 +1192,6 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
     $scope.statuses = [{csmCode: 1, status:"Delhi"}];
     $scope.statuscode;
     $scope.status1;
-    $scope.callStatus="1";
     /* Function for get Telecalling Screen */
     $scope.getscreen = function(){
         var dfr = $q.defer();
@@ -1449,7 +1207,8 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
     };
 
     var GetScreen = function() {
-        $scope.getscreen().then(function (data) {
+
+            $scope.getscreen().then(function (data) {
 
                 //alert('getscreen');
                 $scope.statuses = data.statusList;
@@ -1458,63 +1217,39 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                 $scope.datecallback = data.dateList1;
                 $scope.codes = data.paytmmastjson;
                 $scope.mob = data.teleData;
-              // agentslot();
+                agentslot();
             }, function (reason) {
             });
     }
- //
+    GetScreen();
     $scope.ab=false;
 
     $scope.callgetscreen = function(){
         location.reload();
     }
 
-    $scope.callingScreen=function(){
-        GetScreen();
-
-    }
-
 
     $scope.changestatus = function(){
 
+
         $scope.ab=true;
-        var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.codes.customerPhone+ '&customerID='+$scope.codes.cust_uid +'&coStatus='+$scope.codes.coStatus;
-        if($scope.status.csmCode == '2-CB')
+        var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.mob.mobileNo;
+
+
+       if($scope.status.csmCode == '2-CB')
         {
-            var scope=$rootScope.$new();
-            scope.datecallback = $scope.datecallback;
             var modalInstance = $modal.open({
-                scope:scope,
                 templateUrl: 'Telecalling/EnterDateTime.html',
-                controller: 'telecalling'
+                controller: 'telecalling',
             });
 
         } else if($scope.status.csmCode == 'CON')
         {
-
-
-        } else if(($scope.status.csmCode == '6-SW' || $scope.status.csmCode == '7-WN' || $scope.status.csmCode == '8-AD') && ($scope.callStatus == '1') && ($scope.codes.alternatePhone2 != "")){
-
-            alert(" We are connecting you another number of the Customer ");
-
-            var data2 = 'customer_number=' + $scope.codes.alternatePhone2 + '&cust_uid='+$scope.codes.cust_uid;
-            alert(data);
-            $scope.callStatus = '2';
-            $http.get(domain+'/customerCalling?'+ data2)
-                /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
-                .success(function(data, status, headers, config) {
-                    $scope.message = data.msg;
-
-                })
-                .error(function(data, status, headers, config) {
-
-                    alert("Unable to Connect Customer due to Network Connectivity");
-                });
-          //  location.reload();
-
-            if(angular.isDefined($scope.status)){
-                delete $scope.status;
-            }
+            //$scope.ab=true;
+            //alert(data);
+            // $scope.screen();
+            //$scope.disabled= true;
+            // location.reload();
         }
 
         else {
@@ -1548,8 +1283,8 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
 
 
     $scope.screen = function(ev){
-     /*alert("hii"+$scope.codes.cust_uid);*/
-        var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&simType=' + $scope.codes.simType + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode +'&customerID='+$scope.codes.cust_uid + '&coStatus='+$scope.codes.coStatus;
+
+        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode;
           console.log(data);
         $http.get(domain+'/postCalling?'+ data)
             .success(function(data, status, headers, config) {
@@ -1558,7 +1293,6 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                  console.log(data.status);
                 if(data.status == 'success'){
                   alert(data.msg);
-
                     location.reload();
                     /*$scope.status = '';
                     $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
@@ -1606,7 +1340,9 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
             alert("Please enter Time");
             ev.preventDefault();
         }else {
-            var data = 'status=2-CB' + '&mobileNo=' + $scope.codes.customerPhone + '&visit_date=' + $scope.visit_date + '&visit_time=' + $scope.visit_time + 'customerID='+$scope.codes.cust_uid+'coStatus='+$scope.codes.coStatus;
+
+
+            var data = 'status=2-CB' + '&mobileNo=' + $scope.mob.mobileNo + '&visit_date=' + $scope.visit_date + '&visit_time=' + $scope.visit_time;
 
 
             $http.get(domain + '/postCallingStatus?' + data)
@@ -1625,27 +1361,37 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
         }
 
     };
-    $scope.getAvlAgentChart=function(pincode){
-        $scope.pincode=$scope.params.pincode;
-        var data ='pincode='+$scope.pincode;
-       /* alert($scope.visit_date)*/
-        /*alert("pincode "+$scope.pincode);*/
+
+
+
+
+    $scope.getAvlAgentChart=function(){
+
+
+            var data = 'pincode='+$scope.codes.pincode;
+
+              //    alert("pincode "+$scope.codes.pincode);
             $http.get(domain + '/getAvailableSlot?' + data)
                 .success(function (data, status, headers, config) {
+
+
+
                     $scope.dataSets = data.slotList;
                     $scope.dateList2 = data.dateList;
                     $scope.timediff  = data.timedeff;
-                   alert($scope.dateList2)
-                    alert($scope.dataSets)
+
+
                 })
                 .error(function (data, status, headers, config) {
                 });
+
+
     };
 
     $scope.selectDateTime=function(time,vstdate,status){
 
      //   alert(" key "+ key +" value "+value );
-        var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' +vstdate + '&visitTime=' + time+':00' + '&status=' +status + '&customerID='+$scope.codes.cust_uid+'&coStatus='+$scope.codes.coStatus;
+        var data = 'mobileNo=' + $scope.mob.mobileNo + '&name=' + $scope.mob.customerName +'&address=' + $scope.codes.address1 + '&area=' + $scope.codes.address2 + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark + '&visitDate=' +vstdate + '&visitTime=' + time+':00' + '&status=' +status ;
         console.log(data);
         $http.get(domain+'/postCalling?'+ data)
             .success(function(data, status, headers, config) {
@@ -1696,29 +1442,42 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
   var agentslot=function(){
         $scope.getAvlAgentChart();
     }
-    $scope.showchart=function(pincode){
+
+
+
+
+    $scope.showchart=function(){
+
         $scope.flagcall=false;
-/*alert(pincode)*/
-        var pincode=pincode;
-        var scope=$rootScope.$new();
-         scope.pincode=pincode;
-        scope.params={pincode:pincode}
             var modalInstance = $modal.open({
-                scope: scope,
                 templateUrl: 'Telecalling/availableAgentChart.html',
                 controller: 'telecalling',
             });
+
+
     }
+
+
     $scope.getTimebyDate=function(){
+
+
         var data = 'pincode='+$scope.codes.pincode+'&date='+$scope.visit_date;
+
         //    alert("pincode "+$scope.codes.pincode);
         $http.get(domain + '/getAvailableSlotByDate?' + data)
             .success(function (data, status, headers, config) {
+
                 $scope.times1 = data.timeList;
             })
             .error(function (data, status, headers, config) {
             });
+
+
     };
+
+
+
+
     $scope.getTime = function(){      /////get visit time according to date
         var myarr = [];
         var varDate = $scope.visit_date;
@@ -1770,22 +1529,26 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
         }
 
     }
-    $scope.calling = function(){            /////for customer calling
-        var data = 'customer_number=' + $scope.codes.alternatePhone1 + '&cust_uid='+$scope.codes.cust_uid;
-       /*alert(data);*/
-        $http.get(domain+'/customerCalling?'+ data)
 
+
+    $scope.calling = function(){            /////for customer calling
+
+        var data = 'customer_number=' + $scope.mob.mobileNo;
+        //alert(data);
+        $http.get(domain+'/customerCalling?'+ data)
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
             .success(function(data, status, headers, config) {
                 // alert(data);
                 $scope.message = data.msg;
-               /* alert($scope.message);*/
+                alert($scope.message);
                 //$scope.getscreen();
                 // $location.path('/draft');
             })
             .error(function(data, status, headers, config) {
                alert("Unable to Connect Customer due to Network Connectivity");
             });
+
+
     };
 
 
@@ -1821,9 +1584,10 @@ routerApp.directive('phone', function() {
 
 
 routerApp.controller('Ctrl',['$scope', '$http','$q','$log', function($scope,$http,$q,$log){
+
     $scope.send = function(){
 
-        /*alert(jgndfjg);*/
+        alert(jgndfjg);
     };
 }]);
 
@@ -1928,6 +1692,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','
 
         $scope.SelectedFileForUpload = file[0];
     };
+
     $scope.SaveFile1 = function (ev) {
 
 
@@ -1947,11 +1712,7 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','
                 // .cancel('Cancel');
                 $mdDialog.show(confirm).then(function() {
                     $scope.status = 'You decided to get rid of your debt.';
-                    $scope.rejectReport = d.data.hasOwnProperty('rejectedRecord')
-                        ?d.data.rejectedRecord:new Object();
-                    if(angular.equals({},$scope.rejectReport)){
-                        return false;
-                    }
+                    $scope.rejectReport = d.data.rejectedRecord
                     window.setTimeout(function(){
                         $scope.exportToExcel();
                         //location.reload();
@@ -2021,6 +1782,8 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','
     var fac1 = {};
 
     fac1.UploadFile = function (file) {
+
+
         var formData = new FormData();
         formData.append("file", file);
 
@@ -2083,13 +1846,10 @@ routerApp.controller('uploadAgent', ['$scope', '$http', 'FileProductUploadServic
                 // .cancel('Cancel');
                 $mdDialog.show(confirm).then(function() {
                     $scope.status = 'You decided to get rid of your debt.';
-                    $scope.rejectReport = d.data.hasOwnProperty('rejectedRecord')
-                        ?d.data.rejectedRecord:new Object();
-                    if(angular.equals({},$scope.rejectReport)){
-                        return false;
-                    }
+                    $scope.rejectReport = d.data.rejectedRecord
                     window.setTimeout(function(){
                         $scope.exportToExcel();
+                        //location.reload();
 
                     }, 2000)
                 }, function() {

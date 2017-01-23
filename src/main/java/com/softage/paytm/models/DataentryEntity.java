@@ -288,6 +288,7 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
         return cusPoiCode;
     }
 
+
     public void setCusPoiCode(String cusPoiCode) {
         this.cusPoiCode = cusPoiCode;
     }
@@ -375,8 +376,6 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
     public void setProofMastByCcusPOACode(ProofMastEntity proofMastByCcusPOACode) {
         this.proofMastByCcusPOACode = proofMastByCcusPOACode;
     }
-
-
 
 }
 

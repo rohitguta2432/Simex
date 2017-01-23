@@ -22,14 +22,14 @@
                 </div>
                 <div class="widget-body">
                     <div id="horizontal-form">
-                        <form class="form-horizontal" name="myForm" role="form" ng-controller="telecalling" ng-init="callingScreen()" ng-submit="screen($event)">
+                        <form class="form-horizontal" name="myForm" role="form" ng-controller="telecalling" ng-submit="screen($event)">
                             <div align="center">
                                 <label style="color:green;margin-top: 0;">{{successTextAlert}}</label>
                             </div>
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Mobile Number</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-disabled="true" ng-model="codes.customerPhone"  name="customerPhone" ng-readonly="true" placeholder="Mobile Number" />
+                                    <input type="text" class="form-control" ng-model="mob.mobileNo" name="mobile" ng-readonly="true" placeholder="Mobile Number" />
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
@@ -51,36 +51,36 @@
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Name</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-disabled="true" id="Text2" name="name"  ng-model="codes.username"  placeholder="Name" />
+                                    <input type="text" class="form-control" id="Text2" name="name"  ng-model="mob.customerName" ng-readonly="true" placeholder="Name" />
                                 </div>
                             </div>
 
                             <div class="form-group col-sm-6">
-                                <label  class="col-sm-3 control-label no-padding-right">Address</label>
+                                <label  class="col-sm-3 control-label no-padding-right">Address1</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-disabled="true"  name="address" ng-model="codes.address" placeholder="Address"  />
+                                    <input type="text" class="form-control"  name="address1" ng-model="codes.address1" placeholder="Address1"  />
 
 
                                 </div>
                             </div>
 
                             <div class="form-group col-sm-6">
-                                <label class="col-sm-3 control-label no-padding-right">Remark</label>
+                                <label class="col-sm-3 control-label no-padding-right">Address2</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="remarks" ng-disabled="true"  ng-model="codes.remarks" placeholder="Remark" />
+                                    <input type="text" class="form-control" name="address2" ng-model="codes.address2" placeholder="Address2" />
                                 </div>
                             </div>
 
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">City</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-disabled="true"  name="city" ng-model="codes.city" ng-readonly="true"  placeholder="City" />
+                                    <input type="text" class="form-control" name="city" ng-model="codes.city" ng-readonly="true"  placeholder="City" />
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">State</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-disabled="true" name="state" ng-model="codes.state" ng-readonly="true" placeholder="State" />
+                                    <input type="text" class="form-control" name="state" ng-model="codes.state" ng-readonly="true" placeholder="State" />
                                  <!--   <select  name="state" ng-model="state"  class="form-control"  ng-options="state.stateName for state in states track by state.stateCode" required>
                                         <option value="" selected="selected">State</option>
                                     </select>-->
@@ -90,21 +90,19 @@
                                 <label  class="col-sm-3 control-label no-padding-right">Pincode</label>
                                 <div class="col-sm-9">
                                 <!--   <input type="text" class="form-control" name="pincode" ng-model="codes.pincode" ng-readonly="true" placeholder="Pincode" />-->
-                                <input type="text" class="form-control" ng-disabled="true" name="pincode" ng-model="codes.pincode"  placeholder="Pincode" />
+                                <input type="text" class="form-control" name="pincode" ng-model="codes.pincode"  placeholder="Pincode" />
                             </div>
                             </div>
                             <div class="form-group col-sm-6">
-                                <label  class="col-sm-3 control-label no-padding-right">Sim Type</label>
+                                <label  class="col-sm-3 control-label no-padding-right">Landmark</label>
                                 <div class="col-sm-9">
-
-                                  <input type="text" class="form-control" ng-disabled="true" name="simType" ng-model="codes.simType" ng-readonly="true" placeholder="Sim Type"/>
+                                    <input type="text" class="form-control" name="land_mark" ng-model="land_mark" placeholder="Landmark" />
                                 </div>
                             </div>
-
                             <div class="form-group col-sm-6">
                                 <label  class="col-sm-3 control-label no-padding-right">Email</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-disabled="true" name="email" ng-model="codes.email" placeholder="Email" />
+                                    <input type="text" class="form-control" name="email" ng-model="codes.email" placeholder="Email" />
                                 </div>
                             </div>
                             <div class="form-group col-sm-6">
@@ -141,7 +139,7 @@
                                 <div class="col-sm-offset-5 col-sm-10">
                                     <button type="submit" class="btn btn-azure shiny" ng-disabled="myForm.state.$invalid || myForm.visit_date.$invalid || myForm.status.$invalid || myForm.visit_time.$invalid">Submit</button>
                                     <input type="button" value="Call" id="Call" ng-click="calling()" class="btn btn-azure shiny">
-                                    <input type="button" value="AvailableSlot" id="AvailableSlot" ng-click="showchart(codes.pincode)" class="btn btn-azure shiny">
+                                    <input type="button" value="AvailableSlot" id="AvailableSlot" ng-click="showchart()" class="btn btn-azure shiny">
                                 </div>
                             </div>
 

@@ -499,6 +499,7 @@ public class RestWebController {
         PaytmcustomerDataEntity paytmcustomerDataEntity = null;
         SpokeMastEntity spokeMastEntity = null;
         String result = null;
+        DataentryEntity dataentryEntity1=null;
 
         PaytmMastEntity paytmMastEntity = null;
         TblScan tblScan = null;
@@ -509,7 +510,7 @@ public class RestWebController {
         String pincode = "";
         int custid = 0;
         CircleMastEntity circleMastEntity = null;
-        String spokecode = "";
+        String spokeCode = "";
         int auditstatus = 0;
         int circlecode = 0;
 
@@ -533,7 +534,7 @@ public class RestWebController {
                     circleMastEntity = paytmMastData.getCircleMastByCirCode();
 
                 }
-                spokeMastEntity = paytmMasterService.spokeMastEntity("DELCIR001");
+
                 paytmcustomerDataEntity = paytmMasterService.getPaytmCustomerData(cust_uid);
 
                 String custName = request.getParameter("custName");
@@ -578,7 +579,8 @@ public class RestWebController {
                 }
                 if (!StringUtils.isEmpty(jobid)) {
                     allocationMastEntity = allocationService.findByPrimaryKey(jobID);
-
+                    spokeCode = allocationMastEntity.getSpokeCode();
+                    spokeMastEntity = paytmMasterService.spokeMastEntity(spokeCode);
                 }
                 if (custPOICode != null) {
                     proofMastEntityPOICode = leadsService.findBykey(custPOICode);
@@ -587,88 +589,98 @@ public class RestWebController {
                     proofMastEntityPOACode = leadsService.findBykey(custPOACode);
                 }
                 ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("ACC");
-                if (StringUtils.isNotBlank(customerid)) {
 
-                    DataentryEntity dataentryEntity = new DataentryEntity();
-                    //  dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
-                    dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
-                    //  dataentryEntity.setRejectionResion("ACC");
-                    dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
-                    dataentryEntity.setCusPOACode(custPOACode);
-                    dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
-                    dataentryEntity.setCusPoiCode(custPOICode);
-                    dataentryEntity.setCusAdd(address);
-                    dataentryEntity.setCusArea("");
-                    dataentryEntity.setCusCity(city);
-                    dataentryEntity.setCusEmailId("");
-                    dataentryEntity.setCusName(custName);
-                    dataentryEntity.setCusPincode(pincode);
-                    //dataentryEntity.setCusPoaNumber(custPOANumber);
-                    // dataentryEntity.setCusPoiNumber(custPOINumber);
-                    dataentryEntity.setCusState(state);
-                    dataentryEntity.setCustomerPhone(phoneNumber);
-                    dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
-                    dataentryEntity.setDocStatus(coStatus);
-                    dataentryEntity.setEntryBy(agentCode);
-                    dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
-                    //dataentryEntity.setGender(gender);
-                    dataentryEntity.setCustomerId(cust_uid);
-                    dataentryEntity.setSim_no(Simno);
-                    dataentryEntity.setFolder_name(folderName);
-                    dataentryEntity.setPage_count(pages);
-                    dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
-                    dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
-                    result = dataEntryService.saveDataEntry(dataentryEntity);
+                if (allocationMastEntity.getKycCollected().toString().equalsIgnoreCase("p")) {
 
-                    if (!result.equals("err") && cust_uid != 0) {
-                        TblScan scanresult = new TblScan();
-                        AuditStatusEntity auditStatusEntity = qcservices.getAuditStatusEntity(1);
-                        scanresult.setPaytmcustomerDataEntity(paytmcustomerDataEntity);
-                        scanresult.setAuditStatusEntity(auditStatusEntity);
-                        scanresult.setSimNo(Simno);
-                        scanresult.setCreatedBy("System");
-                        scanresult.setCreatedOn(new Timestamp(new Date().getTime()));
-                        scanresult.setCustomerNumber(phoneNumber);
-                        scanresult.setImagePath("");
-                        scanresult.setCircleMastEntity(circleMastEntity);
-                        scanresult.setPageNo(pages);
-                        scanresult.setSpokeMastEntity(spokeMastEntity);
-                        scanresult.setDataDate(new Timestamp(new Date().getTime()));
-                        scanresult.setAssignedStatus("U");
-                        scanresult.setAoAssignedstatus("U");
-                        scanresult.setFormRecievingStatus("P");
+                        dataentryEntity1 = dataEntryService.getdataByUserCustid(cust_uid);
+                        if (dataentryEntity1 == null) {
 
-                        result = qcservices.SaveScanimages(scanresult);
+                            DataentryEntity dataentryEntity = new DataentryEntity();
+                            //  dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
+                            dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
+                            //  dataentryEntity.setRejectionResion("ACC");
+                            dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
+                            dataentryEntity.setCusPOACode(custPOACode);
+                            dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
+                            dataentryEntity.setCusPoiCode(custPOICode);
+                            dataentryEntity.setCusAdd(address);
+                            dataentryEntity.setCusArea("");
+                            dataentryEntity.setCusCity(city);
+                            dataentryEntity.setCusEmailId("");
+                            dataentryEntity.setCusName(custName);
+                            dataentryEntity.setCusPincode(pincode);
+                            //dataentryEntity.setCusPoaNumber(custPOANumber);
+                            // dataentryEntity.setCusPoiNumber(custPOINumber);
+                            dataentryEntity.setCusState(state);
+                            dataentryEntity.setCustomerPhone(phoneNumber);
+                            dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
+                            dataentryEntity.setDocStatus(coStatus);
+                            dataentryEntity.setEntryBy(agentCode);
+                            dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
+                            //dataentryEntity.setGender(gender);
+                            dataentryEntity.setCustomerId(cust_uid);
+                            dataentryEntity.setSim_no(Simno);
+                            dataentryEntity.setFolder_name(folderName);
+                            dataentryEntity.setPage_count(pages);
+                            dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
+                            dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
+                            result = dataEntryService.saveDataEntry(dataentryEntity);
 
+                            if (!result.equals("err") && cust_uid != 0) {
+                                TblScan scanresult = new TblScan();
+                                AuditStatusEntity auditStatusEntity = qcservices.getAuditStatusEntity(1);
+                                scanresult.setPaytmcustomerDataEntity(paytmcustomerDataEntity);
+                                scanresult.setAuditStatusEntity(auditStatusEntity);
+                                scanresult.setSimNo(Simno);
+                                scanresult.setCreatedBy("System");
+                                scanresult.setCreatedOn(new Timestamp(new Date().getTime()));
+                                scanresult.setCustomerNumber(phoneNumber);
+                                scanresult.setImagePath("");
+                                scanresult.setCircleMastEntity(circleMastEntity);
+                                scanresult.setPageNo(pages);
+                                scanresult.setSpokeMastEntity(spokeMastEntity);
+                                scanresult.setDataDate(new Timestamp(new Date().getTime()));
+                                scanresult.setAssignedStatus("U");
+                                scanresult.setAoAssignedstatus("U");
+                                scanresult.setFormRecievingStatus("P");
+
+                                result = qcservices.SaveScanimages(scanresult);
+
+                            }
+                            if (!result.equals("err") && cust_uid != 0) {
+                                TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
+                                tblcustDocDetails.setCust_uid(cust_uid);
+                                tblcustDocDetails.setcPOA(poa);
+                                tblcustDocDetails.setcPOI(poi);
+                                tblcustDocDetails.setOrigPoi(originalpoi);
+                                tblcustDocDetails.setOrigPoa(originalpoa);
+                                tblcustDocDetails.setSRF(srf);
+                                tblcustDocDetails.setPhoto(originalphoto);
+                                tblcustDocDetails.setPoiPc(ipoipc);
+                                tblcustDocDetails.setPoaPc(ipoapc);
+                                tblcustDocDetails.setOrigpoiPc(originalopipc);
+                                tblcustDocDetails.setOrigpoaPc(originalopoapc);
+                                tblcustDocDetails.setSrfPc(originalsrfpc);
+                                tblcustDocDetails.setPhotoPc(originalphotoPC);
+                                result = qcservices.savetbldocdetails(tblcustDocDetails);
+                            }
+                            if (result.equalsIgnoreCase("done")) {
+                                updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+                                //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
+                                result = "done";
+
+                            } else {
+                                result = "Not found";
+                            }
+
+                        }
+                    else{
+                            result="customerid already exist";
+                        }
                     }
-                    if (!result.equals("err") && cust_uid != 0) {
-                        TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
-                        tblcustDocDetails.setCust_uid(cust_uid);
-                        tblcustDocDetails.setcPOA(poa);
-                        tblcustDocDetails.setcPOI(poi);
-                        tblcustDocDetails.setOrigPoi(originalpoi);
-                        tblcustDocDetails.setOrigPoa(originalpoa);
-                        tblcustDocDetails.setSRF(srf);
-                        tblcustDocDetails.setPhoto(originalphoto);
-                        tblcustDocDetails.setPoiPc(ipoipc);
-                        tblcustDocDetails.setPoaPc(ipoapc);
-                        tblcustDocDetails.setOrigpoiPc(originalopipc);
-                        tblcustDocDetails.setOrigpoaPc(originalopoapc);
-                        tblcustDocDetails.setSrfPc(originalsrfpc);
-                        tblcustDocDetails.setPhotoPc(originalphotoPC);
-                        result = qcservices.savetbldocdetails(tblcustDocDetails);
-                    }
-                    if (result.equalsIgnoreCase("done")) {
-                        updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
-                        //   allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
-                        result = "done";
 
-                    } else {
-                        result = "Not found";
-                    }
-
-                } else {
-                    result = "CustomerID Not Found ";
+            else {
+                    result="kyc entry already exist";
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -696,6 +708,8 @@ public class RestWebController {
         ProofMastEntity proofMastEntityPOACode = null;
         PaytmMastEntity paytmMastData = null;
         String phonenumber = null;
+        DataentryEntity dataentryEntity1=null;
+
         int pages = 0;
         int cust_uid = 0;
         int originalsrfpc = 0;
@@ -794,56 +808,68 @@ public class RestWebController {
             }
 
             ReasonMastEntity reasonMastEntity = leadsService.findByprimaryKey("REJECT");
-            DataentryEntity dataentryEntity = new DataentryEntity();
-            dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
-            //  dataentryEntity.setRejectionResion("ACC");
-            dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
-            dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
-            dataentryEntity.setCusAdd(address);
-            dataentryEntity.setCusArea("");
-            dataentryEntity.setCusCity(city);
-            dataentryEntity.setCusEmailId("");
-            dataentryEntity.setCusName(custName);
-            dataentryEntity.setCusPincode(pincode);
-            //dataentryEntity.setCusPoaNumber(custPOANumber);
-            // dataentryEntity.setCusPoiNumber(custPOINumber);
-            dataentryEntity.setCusState(state);
-            dataentryEntity.setCustomerPhone(phonenumber);
-            dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
-            dataentryEntity.setDocStatus(coStatus);
-            dataentryEntity.setEntryBy(agentCode);
-            dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
-            //dataentryEntity.setGender(gender);
-            dataentryEntity.setCustomerId(cust_uid);
-            dataentryEntity.setSim_no(Simno);
-            dataentryEntity.setFolder_name(folderName);
-            dataentryEntity.setPage_count(pages);
-            dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
-            dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
-            result = dataEntryService.saveDataEntry(dataentryEntity);
 
-            if (!result.equals("err")) {
-                TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
-                tblcustDocDetails.setCust_uid(cust_uid);
-                tblcustDocDetails.setcPOA(poa);
-                tblcustDocDetails.setcPOI(poi);
-                tblcustDocDetails.setOrigPoi(originalpoi);
-                tblcustDocDetails.setOrigPoa(originalpoa);
-                tblcustDocDetails.setSRF(srf);
-                tblcustDocDetails.setPhoto(originalphoto);
-                tblcustDocDetails.setPoiPc(ipoipc);
-                tblcustDocDetails.setPoaPc(ipoapc);
-                tblcustDocDetails.setOrigpoiPc(originalopipc);
-                tblcustDocDetails.setOrigpoaPc(originalopoapc);
-                tblcustDocDetails.setSrfPc(originalsrfpc);
-                tblcustDocDetails.setPhotoPc(originalphotoPC);
+            if (allocationMastEntity.getKycCollected().toString().equalsIgnoreCase("p")) {
+
+                dataentryEntity1 = dataEntryService.getdataByUserCustid(cust_uid);
+                if (dataentryEntity1 == null) {
+
+                    DataentryEntity dataentryEntity = new DataentryEntity();
+                    dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
+                    //  dataentryEntity.setRejectionResion("ACC");
+                    dataentryEntity.setProofMastByCcusPOACode(proofMastEntityPOACode);
+                    dataentryEntity.setProofMastByCusPoiCode(proofMastEntityPOICode);
+                    dataentryEntity.setCusAdd(address);
+                    dataentryEntity.setCusArea("");
+                    dataentryEntity.setCusCity(city);
+                    dataentryEntity.setCusEmailId("");
+                    dataentryEntity.setCusName(custName);
+                    dataentryEntity.setCusPincode(pincode);
+                    //dataentryEntity.setCusPoaNumber(custPOANumber);
+                    // dataentryEntity.setCusPoiNumber(custPOINumber);
+                    dataentryEntity.setCusState(state);
+                    dataentryEntity.setCustomerPhone(phonenumber);
+                    dataentryEntity.setDateOfCollection(new Timestamp(new Date().getTime()));
+                    dataentryEntity.setDocStatus(coStatus);
+                    dataentryEntity.setEntryBy(agentCode);
+                    dataentryEntity.setEntryDateTime(new Timestamp(new Date().getTime()));
+                    //dataentryEntity.setGender(gender);
+                    dataentryEntity.setCustomerId(cust_uid);
+                    dataentryEntity.setSim_no(Simno);
+                    dataentryEntity.setFolder_name(folderName);
+                    dataentryEntity.setPage_count(pages);
+                    dataentryEntity.setAllocationMastByAllocationId(allocationMastEntity);
+                    dataentryEntity.setPaytmagententryByAgentCode(paytmagententryEntity);
+                    result = dataEntryService.saveDataEntry(dataentryEntity);
+
+                    if (!result.equals("err")) {
+                        TblcustDocDetails tblcustDocDetails = new TblcustDocDetails();
+                        tblcustDocDetails.setCust_uid(cust_uid);
+                        tblcustDocDetails.setcPOA(poa);
+                        tblcustDocDetails.setcPOI(poi);
+                        tblcustDocDetails.setOrigPoi(originalpoi);
+                        tblcustDocDetails.setOrigPoa(originalpoa);
+                        tblcustDocDetails.setSRF(srf);
+                        tblcustDocDetails.setPhoto(originalphoto);
+                        tblcustDocDetails.setPoiPc(ipoipc);
+                        tblcustDocDetails.setPoaPc(ipoapc);
+                        tblcustDocDetails.setOrigpoiPc(originalopipc);
+                        tblcustDocDetails.setOrigpoaPc(originalopoapc);
+                        tblcustDocDetails.setSrfPc(originalsrfpc);
+                        tblcustDocDetails.setPhotoPc(originalphotoPC);
 
 
-                result = qcservices.savetbldocdetails(tblcustDocDetails);
+                        result = qcservices.savetbldocdetails(tblcustDocDetails);
+                    }
+                    result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
+                    //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
+                } else {
+                    result = "customerId already exist";
+                }
             }
-            result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
-            //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
-
+            else{
+                    result="kyc already rejected";
+                }
         } else {
             result = "Authentication failed due to unauthorised login from another device";
         }

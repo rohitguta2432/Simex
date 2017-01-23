@@ -4,7 +4,7 @@
             <div class="navbar-header pull-left">
                 <a href="#" class="navbar-brand">
                     <small>
-                        <img src="../simex/resources/img/simex-logo.png" alt="simex"/>
+                        <img src="../simex/resources/img/paytm-logo.png" alt="simex"/>
                     </small>
                 </a>
             </div>
@@ -28,16 +28,16 @@
 
     <img src="../simex/resources/img/login_bg.png" alt=""
          style="position:absolute; top:-111px; left:50px; z-index:9999; width:200px;"/>
-<form name="myform" ng-controller="AuthCtrl" ng-submit="loginData()" novalidate>
+<form name="myform" ng-controller="AuthCtrl" ng-submit="loginData()" method="get" novalidate>
     <div class="loginbox bg-white" style="margin-bottom:20px;">
         <div class="loginbox-title"><i class="menu-icon fa fa-user"></i>&nbsp;Login</div>
         <label id="show1" ng-show="show1" style="color: red;margin-left: 40px;">Please check username and password</label>
         <label id="show2" ng-show="show2" style="color: red;margin-left: 40px;">Password Expired Please Reset</label>
         <div class="loginbox-textbox">
-            <input id="ssoId" name="ssoId" type="text" class="form-control" ng-model="user" placeholder="Employee Code"/>
+            <input type="text" class="form-control" ng-model="user" placeholder="Employee Code"/>
         </div>
         <div class="loginbox-textbox">
-            <input id="password" name="password" type="password" class="form-control" ng-model="pass" placeholder="Password"/>
+            <input type="password" class="form-control" ng-model="pass" placeholder="Password"/>
         </div>
         <div class="loginbox-forgot">
         </div>
