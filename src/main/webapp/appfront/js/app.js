@@ -1481,9 +1481,12 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
         var data = 'status=' + $scope.status.csmCode + '&mobileNo=' + $scope.codes.customerPhone+ '&customerID='+$scope.codes.cust_uid +'&coStatus='+$scope.codes.coStatus;
         if($scope.status.csmCode == '2-CB')
         {
+            var scope=$rootScope.$new();
+            scope.datecallback = $scope.datecallback;
             var modalInstance = $modal.open({
+                scope:scope,
                 templateUrl: 'Telecalling/EnterDateTime.html',
-                controller: 'telecalling',
+                controller: 'telecalling'
             });
 
         } else if($scope.status.csmCode == 'CON')
@@ -1495,7 +1498,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
             alert(" We are connecting you another number of the Customer ");
 
             var data2 = 'customer_number=' + $scope.codes.alternatePhone2 + '&cust_uid='+$scope.codes.cust_uid;
-            /*alert(data);*/
+            alert(data);
             $scope.callStatus = '2';
             $http.get(domain+'/customerCalling?'+ data2)
                 /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
@@ -1771,6 +1774,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
         var data = 'customer_number=' + $scope.codes.alternatePhone1 + '&cust_uid='+$scope.codes.cust_uid;
        /*alert(data);*/
         $http.get(domain+'/customerCalling?'+ data)
+
             /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
             .success(function(data, status, headers, config) {
                 // alert(data);

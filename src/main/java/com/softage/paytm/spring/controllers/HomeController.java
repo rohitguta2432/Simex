@@ -1001,7 +1001,7 @@ class HomeController {
                 jsonObject.put("statusList", statusList);
                 jsonObject.put("dateList", dateListReject);
                 jsonObject.put("dateList1", dateList);
-                jsonObject.put("paytmmastjson", json);
+                jsonObject.put("paytmmastjson",json);
             }else {
                 jsonObject.put("authentication","failed");
             }
@@ -1249,29 +1249,17 @@ jsonObject.put("authentication","failed");
         }
         try {
             if (userName != null) {
-                customerId = request.getParameter("cust_uid");
-                cust_uid=Integer.parseInt(customerId);
-                PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmmasterServiceDate(cust_uid);
-             if(StringUtils.isNotBlank(paytmMastEntity.getAlternatePhone1())) {
-                 alternatephone1 = paytmMastEntity.getAlternatePhone1().toString();
-             }if(StringUtils.isNotBlank(paytmMastEntity.getAlternatePhone2())) {
-                    alternatephone2 = paytmMastEntity.getAlternatePhone2().toString();
-                }
-            if(StringUtils.isNotBlank(paytmMastEntity.getCustomerPhone())){
-                customerphone = paytmMastEntity.getCustomerPhone();
-            }
+                String alternatenumber=request.getParameter("customer_number");
+                String phonenumber=request.getParameter("mobileNo");
 
-                if (StringUtils.isNotBlank(alternatephone1)) {
-                    result = customerCalling(alternatephone1, agentNo);
-                } else {
+                if(StringUtils.isNotBlank(phonenumber)){
+                    result=customerCalling(phonenumber,agentNo);
+                }
 
-                    result = customerCalling(alternatephone2, agentNo);
+                if(StringUtils.isNotBlank(alternatenumber)) {
+                result=customerCalling(alternatenumber, agentNo);
                 }
-                if (StringUtils.isNotBlank(alternatephone2)) {
-                    result = customerCalling(alternatephone2, agentNo);
-                } else {
-                    result = customerCalling(customerphone, agentNo);
-                }
+
                 if (result.equalsIgnoreCase("done")) {
                     returnString = "connected to Customer...";
                 } else {
