@@ -2404,6 +2404,7 @@ class HomeController {
         String result = "";
         JSONObject jsonObject = new JSONObject();
         String scanid_string = (String) request.getParameter("scanId");
+        String empcode = (String) session.getAttribute("name");
         int scanid = Integer.parseInt(scanid_string);
         int audit_status = 0;
         String name_mathched = (String) request.getParameter("nameMatched");
@@ -2420,6 +2421,8 @@ class HomeController {
         }
         AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
         TblScan tblScan = qcStatusService.getScanTableEntity(scanid);
+        String assignedToResult = qcStatusService.checkAssignedTo(tblScan, empcode);
+        if (assignedToResult.equalsIgnoreCase("assigned")){
         CircleAuditEntity circleAuditEntity = new CircleAuditEntity();
         circleAuditEntity.setNameMatched(name_mathched);
         circleAuditEntity.setPhotoMatched(photo_matched);
@@ -2440,6 +2443,9 @@ class HomeController {
             } else {
                 jsonObject.put("message", "Unable to update the audit status");
             }
+        }
+    }else{
+            jsonObject.put("message","This image has been assigned to another user");
         }
         //String message = qcStatusService.updateQcStatus(mobileNo, status, rejectedPage, remarks);
         //JSONObject mobileNum=qcStatusService.getMobileNumber();
@@ -2651,6 +2657,10 @@ class HomeController {
     @RequestMapping(value = "/aoAuditStatus", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public JSONObject aoAuditQcStatus(HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        String empcode = (String) session.getAttribute("name");
+
         String result = "";
         JSONObject jsonObject = new JSONObject();
         String scanid_string = (String) request.getParameter("scanId");
@@ -2671,6 +2681,8 @@ class HomeController {
         }
         AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
         TblScan tblScan = qcStatusService.getScanTableEntity(scanid);
+        String assignmentstatus=aoAuditService.checkAoAssignedTo(tblScan,empcode);
+        if(assignmentstatus.equalsIgnoreCase("assigned")){
         AoAuditEntity aoAuditEntity = new AoAuditEntity();
         aoAuditEntity.setPhotoMatched(photo_matched);
         aoAuditEntity.setNameMatched(name_mathched);
@@ -2702,6 +2714,10 @@ class HomeController {
             } else {
                 jsonObject.put("message", "Unable to update the audit status");
             }
+        }
+    }else{
+            jsonObject.put("message","This image has been assigned to another user");
+
         }
         return jsonObject;
     }

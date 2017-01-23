@@ -1067,8 +1067,9 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$document','$
                 //     $scope.url1= data.url;
 
                 console.log("dataa" +$scope.url1);
-                location.reload();
+
                 alert(data.message);
+                location.reload();
                 /*if(data.status == 'error'){
                     // alert('Agent Already Registered');
                     $scope.status = '';
@@ -1129,8 +1130,9 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$document','$
 
                 console.log("dataa" +$scope.url1);
 
-                location.reload();
+
                 alert(data.message);
+                location.reload();
                 /*if(data.status == 'error'){
                     // alert('Agent Already Registered');
                     $scope.status = '';
@@ -1372,8 +1374,9 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$loca
                 //     $scope.url1= data.url;
 
                 console.log("dataa" +$scope.url1);
-                location.reload();
+
                 alert(data.message);
+                location.reload();
 
             })
             .error(function (data, status, headers, config) {
@@ -1418,8 +1421,9 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$loca
 
                 console.log("dataa" +$scope.url1);
 
-                location.reload();
+
                 alert(data.message);
+                location.reload();
 
             })
             .error(function (data, status, headers, config) {
@@ -1446,7 +1450,7 @@ routerApp.controller('FormRecieving',['$scope', '$http','$q','$log','$location',
 //$scope.mobFlag=false;
 $scope.cust_number='';
     $scope.auditFlag=true;
-    $scope.searchDetails=function(){
+    $scope.searchDetails=function(e){
     if($scope.cust_number.length==10){
        // $scope.mobFlag=true;
         var data='mobNo='+$scope.cust_number;

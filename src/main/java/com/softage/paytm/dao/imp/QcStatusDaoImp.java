@@ -11,7 +11,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -402,6 +405,34 @@ public class QcStatusDaoImp implements QcStatusDao {
             }
         }
         return jsonObject;
+    }
+
+    @Override
+    public String checkAssignedTo(TblScan tblScan, String empcode) {
+        EntityManager entityManager=null;
+        Query query=null;
+        String result=null;
+        //DateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            Integer scanID=tblScan.getScanid();
+            //String assignedTo=tblScan.getAssignedTo();
+            //String assignedTime=df.format(tblScan.getAssignedDatetime());
+            query=entityManager.createNativeQuery("{call usp_checkCircleAssignment(?,?)}");
+            query.setParameter(1,scanID);
+            query.setParameter(2,empcode);
+            //query.setParameter(3,assignedTime);
+            result=(String)query.getSingleResult();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return result;
     }
 
     @Override

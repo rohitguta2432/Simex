@@ -2,6 +2,7 @@ package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.AoAuditDao;
 import com.softage.paytm.models.AoAuditEntity;
+import com.softage.paytm.models.TblScan;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -164,5 +165,28 @@ public class AoAuditDaoImp implements AoAuditDao {
             }
         }
         return jsonObject;
+    }
+
+    @Override
+    public String checkAoAssignedTo(TblScan tblScan, String empcode) {
+        EntityManager entityManager=null;
+        Query query=null;
+        String result=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            Integer scanid=tblScan.getScanid();
+            query=entityManager.createNativeQuery("{call  usp_checkAoAssignedTo(?,?)}");
+            query.setParameter(1,scanid);
+            query.setParameter(2,empcode);
+            result=(String)query.getSingleResult();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return result;
     }
 }

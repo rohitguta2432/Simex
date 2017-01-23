@@ -2,6 +2,7 @@ package com.softage.paytm.service.imp;
 
 import com.softage.paytm.dao.AoAuditDao;
 import com.softage.paytm.models.AoAuditEntity;
+import com.softage.paytm.models.TblScan;
 import com.softage.paytm.service.AoAuditService;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,10 @@ public class AoAuditServiceImp implements AoAuditService {
     @Override
     public JSONObject getFormRecievingDetails(String mobile_number,String spokecode) {
         return aoAuditDao.getFormRecievingDetails(mobile_number,spokecode);
+    }
+
+    @Override
+    public String checkAoAssignedTo(TblScan tblScan, String empcode) {
+        return aoAuditDao.checkAoAssignedTo(tblScan,empcode);
     }
 }

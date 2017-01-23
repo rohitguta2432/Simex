@@ -25,13 +25,14 @@
                 <div class="widget-body">
                     <div id="horizontal-form">
 
-                        <form class="form-horizontal" name="myForm" role="form" ng-submit="formSubmit()"  novalidate>
+                        <form class="form-horizontal" name="myFormRecieving" role="form" ng-submit="formSubmit()"  novalidate>
                             <div  >
                                 <div style="clear: both; height: 20px;"></div>
                                 <div  class="form-group col-sm-6" >
                                     <label class="col-sm-3 control-label no-padding-right">Mobile Number</label>
                                     <div  class="col-sm-9"  >
-                                        <input ng-change="searchDetails()" type="text" ng-model="cust_number"  name="cust_number"  class="form-control"  />
+                                        <input name="cust_number" ng-change="searchDetails($event)" type="text" ng-model="cust_number"  name="cust_number"   maxlength="10" class="form-control"  />
+                                        <!--<code>{{myFormRecieving.cust_number.$valid}}</code>-->
                                     </div>
                                 </div>
                             </div>
@@ -43,7 +44,7 @@
                                 <th>Name</th>
                                 <th>Bucket</th>
                                 <th>Status</th>
-                                <th ng-if="circleauditstatus+'' =='Rejected' && bucketvalue !='Circle Audit'">Circle Status</th>
+                                <th ng-if="circleauditstatus =='Rejected' && bucketvalue !='Circle Audit'">Circle Status</th>
                                 </thead>
                                 <tbody>
 
@@ -53,7 +54,7 @@
                                     <td ng-disabled="true">{{username}}</td>
                                     <td ng-disabled="true">{{bucketvalue}}</td>
                                     <td ng-disabled="true">{{statusvalue}}</td>
-                                    <td ng-disabled="true" ng-if="circleauditstatus+'' =='Rejected' && bucketvalue !='Circle Audit'">{{circleauditstatus}}</td>
+                                    <td ng-disabled="true" ng-if="circleauditstatus =='Rejected' && bucketvalue !='Circle Audit'">{{circleauditstatus}}</td>
                                 </tr>
                                 </tbody>
                             </table>

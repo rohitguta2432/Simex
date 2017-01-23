@@ -30,4 +30,6 @@ public interface QcStatusDao {
 
     public JSONObject getFTPDetailsForUser(int circlecode);
 
+    public  String checkAssignedTo(TblScan tblScan,String empcode);
+
 }

@@ -33,6 +33,8 @@ public interface QcStatusService {
 
     public JSONObject getFTPDetailsForUser(int circlecode);
 
+    public String checkAssignedTo(TblScan tblScan,String empcode);
+
 
 
 }
