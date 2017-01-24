@@ -3,6 +3,7 @@ package com.softage.paytm.models;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 
@@ -38,6 +39,7 @@ public class TblScan {
     private Date lastAssignedTimeAo;
     private String assignedToAo;
     private String aoAssignedstatus;
+    private Timestamp documentRecieveDatetime;
 
     @Id
     @GeneratedValue
@@ -284,5 +286,15 @@ public class TblScan {
 
     public void setAoAssignedstatus(String aoAssignedstatus) {
         this.aoAssignedstatus = aoAssignedstatus;
+    }
+
+    @Basic
+    @Column(name = "document_uploadtime",nullable = true,insertable = true,updatable = true)
+    public Timestamp getDocumentRecieveDatetime() {
+        return documentRecieveDatetime;
+    }
+
+    public void setDocumentRecieveDatetime(Timestamp documentRecieveDatetime) {
+        this.documentRecieveDatetime = documentRecieveDatetime;
     }
 }

@@ -2660,13 +2660,18 @@ class HomeController {
 
         HttpSession session = request.getSession();
         String empcode = (String) session.getAttribute("name");
-
+        int custuid=0;
         String result = "";
         JSONObject jsonObject = new JSONObject();
         String scanid_string = (String) request.getParameter("scanId");
         int scanid = Integer.parseInt(scanid_string);
         int audit_status = 0;
         String custUid = (String) request.getParameter("custUID");
+
+        if (custUid!=null){
+             custuid=Integer.parseInt(custUid);
+
+        }
         String name_mathched = (String) request.getParameter("nameMatched");
         String photo_matched = (String) request.getParameter("photoMatched");
         String sign_matched = (String) request.getParameter("signMatched");
@@ -2796,6 +2801,7 @@ class HomeController {
 /*        AuditStatusEntity auditStatusEntity=qcStatusService.getAuditStatusEntity(6);
         scanEntity.setAuditStatusEntity(auditStatusEntity);*/
         scanEntity.setFormRecievingStatus("R");
+        scanEntity.setDocumentRecieveDatetime(new Timestamp(new Date().getTime()));
         String message = qcStatusService.updateTblSacnEntity(scanEntity);
         if (message.equalsIgnoreCase("success")) {
             jsonObject.put("result", "Successfully Updated");
