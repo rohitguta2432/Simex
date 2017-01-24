@@ -13,17 +13,20 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import sun.misc.BASE64Decoder;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -61,12 +64,39 @@ public class RestWebController {
     @RequestMapping(value = "/getTest", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONObject test(HttpServletRequest request, HttpServletResponse response) {
         JSONObject jsonObject = new JSONObject();
-        /*Properties properties =System.getProperties();
-        Enumeration<Object> enumeration = properties.keys();
-        for (int i = 0; i < properties.size(); i++) {
-            Object obj = enumeration.nextElement();
-            System.out.println("Key: "+obj+"\tOutPut= "+System.getProperty(obj.toString()));
-        }*/
+        String password= "jkhjkhj#kghhjgjvhjfghfyfh^jfy==ju-@fyu";
+        Cipher cipher=null;
+        SecretKeySpec key=null;
+        AlgorithmParameterSpec spec=null;
+        byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
+
+        String cryptedText="a9WX9xEuFVsNT1IcRcOGnw==";
+
+
+        try {
+          //  cryptedText = request.getParameter("cryptedText");
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(password.getBytes("UTF-8"));
+            byte[] keyBytes = new byte[32];
+            System.arraycopy(digest.digest(), 0, keyBytes, 0, keyBytes.length);
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            key = new SecretKeySpec(keyBytes, "AES");
+            spec = new IvParameterSpec(iv);
+
+
+            cipher.init(Cipher.DECRYPT_MODE, key, spec);
+          //  byte[] bytes = Base64.decode(cryptedText, Base64.DEFAULT);
+            Base64.Decoder decoder =Base64.getDecoder();
+            byte[] bytes= decoder.decode(cryptedText);
+            byte[] decrypted = cipher.doFinal(bytes);
+            String decryptedText = new String(decrypted, "UTF-8");
+
+            System.out.println(decryptedText);
+
+        }catch (Exception e){
+            logger.error("",e);
+             e.printStackTrace();
+        }
 
 
         EmplogintableEntity emplogintableEntity = userService.getUserByToken("[B@503d88d8");
@@ -125,129 +155,136 @@ public class RestWebController {
         String password = request.getParameter("password");
         String dbUser = null;
         String token = null;
+        Integer attamptCount=null;
         try {
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             //         String hashedPassword = passwordEncoder.encode(password);
             if (emplogintableEntity != null) {
-
-                Timestamp expireDate = emplogintableEntity.getExpireDate();
-                Integer attamptCount = emplogintableEntity.getAttamptCount();
-                if (attamptCount == null) {
-                    attamptCount = 0;
-                }
-                Timestamp currentDate = new Timestamp(new Date().getTime());
-                Timestamp lockedDate = emplogintableEntity.getLockedDate();
-
-                if (attamptCount != 5) {
+                if(emplogintableEntity.getRoleCode().equalsIgnoreCase("A1")) {
 
 
-                    //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
-                    if (expireDate == null) {
+                    Timestamp expireDate = emplogintableEntity.getExpireDate();
+                     attamptCount = emplogintableEntity.getAttamptCount();
+                    if (attamptCount == null) {
+                        attamptCount = 0;
+                    }
+                    Timestamp currentDate = new Timestamp(new Date().getTime());
+                    Timestamp lockedDate = emplogintableEntity.getLockedDate();
 
-                        Date currentdate1 = new Date();
-                        long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
-                        currentdate1.setTime(currentdate1.getTime() + expireTime);
-
-                        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-                        emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
-                        //    emplogintableEntity.setEmpPassword(hashedPassword);
+                    if (attamptCount != 5) {
 
 
-                        if (password.equals(emplogintableEntity.getEmpPassword())) {
+                        //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
+                        if (expireDate == null) {
+
+                            Date currentdate1 = new Date();
+                            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                            currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                            emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                            //    emplogintableEntity.setEmpPassword(hashedPassword);
+
+
+                            if (password.equals(emplogintableEntity.getEmpPassword())) {
+                                SecureRandom random = new SecureRandom();
+                                byte bytes[] = new byte[20];
+                                random.nextBytes(bytes);
+                                token = bytes.toString();
+                                dbUser = emplogintableEntity.getEmpCode();
+                                result = "success";
+                                emplogintableEntity.setToken(token);
+                                emplogintableEntity.setAttamptCount(0);
+                                emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                            }
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
+
+                        } else if (currentDate.getTime() > expireDate.getTime()) {
+                            result = "Password Expired";
+
+                        } else if (password.equals(emplogintableEntity.getEmpPassword())) {
+                            dbUser = emplogintableEntity.getEmpCode();
                             SecureRandom random = new SecureRandom();
                             byte bytes[] = new byte[20];
                             random.nextBytes(bytes);
                             token = bytes.toString();
-                            dbUser = emplogintableEntity.getEmpCode();
-                            result = "success";
                             emplogintableEntity.setToken(token);
-                            emplogintableEntity.setAttamptCount(0);
                             emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
-                        }
-                        agentPaytmService.updatePassword(emplogintableEntity, null);
-
-                    } else if (currentDate.getTime() > expireDate.getTime()) {
-                        result = "Password Expired";
-
-                    } else if (password.equals(emplogintableEntity.getEmpPassword())) {
-                        dbUser = emplogintableEntity.getEmpCode();
-                        SecureRandom random = new SecureRandom();
-                        byte bytes[] = new byte[20];
-                        random.nextBytes(bytes);
-                        token = bytes.toString();
-                        emplogintableEntity.setToken(token);
-                        emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
-                        emplogintableEntity.setAttamptCount(0);
-                        agentPaytmService.updatePassword(emplogintableEntity, null);
-                        result = "success";
-                    } else {
-                        int attamtCount = emplogintableEntity.getAttamptCount();
-                        if (attamtCount == 4) {
-                            Timestamp timestamp = new Timestamp(new Date().getTime());
-                            timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
-                            emplogintableEntity.setLockedDate(timestamp);
-                            emplogintableEntity.setAttamptCount(attamtCount + 1);
+                            emplogintableEntity.setAttamptCount(0);
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
+                            result = "success";
                         } else {
-                            emplogintableEntity.setAttamptCount(attamtCount + 1);
+
+
+                            if (attamptCount == 4) {
+                                Timestamp timestamp = new Timestamp(new Date().getTime());
+                                timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
+                                emplogintableEntity.setLockedDate(timestamp);
+                                emplogintableEntity.setAttamptCount(attamptCount + 1);
+                            } else {
+                                emplogintableEntity.setAttamptCount(attamptCount + 1);
+                            }
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
                         }
-                        agentPaytmService.updatePassword(emplogintableEntity, null);
-                    }
-                } else if (lockedDate.getTime() > currentDate.getTime()) {
-                    result = "Your Account has locked! Try after 1 Hour";
-                } else {
-                    if (expireDate == null) {
+                    } else if (lockedDate.getTime() > currentDate.getTime()) {
+                        result = "Your Account has locked! Try after 1 Hour";
+                    } else {
+                        if (expireDate == null) {
 
-                        Date currentdate1 = new Date();
-                        long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
-                        currentdate1.setTime(currentdate1.getTime() + expireTime);
+                            Date currentdate1 = new Date();
+                            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                            currentdate1.setTime(currentdate1.getTime() + expireTime);
 
-                        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-                        emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
-                        //    emplogintableEntity.setEmpPassword(hashedPassword);
+                            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                            emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                            //    emplogintableEntity.setEmpPassword(hashedPassword);
 
 
-                        if (password.equals(emplogintableEntity.getEmpPassword())) {
+                            if (password.equals(emplogintableEntity.getEmpPassword())) {
+                                SecureRandom random = new SecureRandom();
+                                byte bytes[] = new byte[20];
+                                random.nextBytes(bytes);
+                                token = bytes.toString();
+                                dbUser = emplogintableEntity.getEmpCode();
+                                result = "success";
+                                emplogintableEntity.setToken(token);
+                                emplogintableEntity.setAttamptCount(0);
+                                emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                            }
+                            userService.updateAttaptStatus(emplogintableEntity);
+
+                        } else if (currentDate.getTime() > expireDate.getTime()) {
+                            result = "Password Expired";
+
+                        } else if (password.equals(emplogintableEntity.getEmpPassword())) {
+                            dbUser = emplogintableEntity.getEmpCode();
                             SecureRandom random = new SecureRandom();
                             byte bytes[] = new byte[20];
                             random.nextBytes(bytes);
                             token = bytes.toString();
-                            dbUser = emplogintableEntity.getEmpCode();
-                            result = "success";
                             emplogintableEntity.setToken(token);
-                            emplogintableEntity.setAttamptCount(0);
                             emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
-                        }
-                        userService.updateAttaptStatus(emplogintableEntity);
-
-                    } else if (currentDate.getTime() > expireDate.getTime()) {
-                        result = "Password Expired";
-
-                    } else if (password.equals(emplogintableEntity.getEmpPassword())) {
-                        dbUser = emplogintableEntity.getEmpCode();
-                        SecureRandom random = new SecureRandom();
-                        byte bytes[] = new byte[20];
-                        random.nextBytes(bytes);
-                        token = bytes.toString();
-                        emplogintableEntity.setToken(token);
-                        emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
-                        emplogintableEntity.setAttamptCount(0);
-                        agentPaytmService.updatePassword(emplogintableEntity, null);
-                        result = "success";
-                    } else {
-                        int attamtCount = emplogintableEntity.getAttamptCount();
-                        if (attamtCount == 5) {
-                            Timestamp timestamp = new Timestamp(new Date().getTime());
-                            timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
-                            emplogintableEntity.setLockedDate(timestamp);
+                            emplogintableEntity.setAttamptCount(0);
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
+                            result = "success";
                         } else {
-                            emplogintableEntity.setAttamptCount(attamtCount + 1);
+                            int attamtCount = emplogintableEntity.getAttamptCount();
+                            if (attamtCount == 5) {
+                                Timestamp timestamp = new Timestamp(new Date().getTime());
+                                timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
+                                emplogintableEntity.setLockedDate(timestamp);
+                            } else {
+                                emplogintableEntity.setAttamptCount(attamtCount + 1);
+                            }
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
                         }
-                        agentPaytmService.updatePassword(emplogintableEntity, null);
                     }
+                }else{
+                    result = "User not Authorised";
                 }
             } else {
-                result = "Invalid Password";
+                result = "Invalid Credentials";
             }
         } catch (Exception e) {
             result = "error";
@@ -388,6 +425,7 @@ public class RestWebController {
 
 
             } catch (Exception e) {
+
                 logger.error("", e);
             }
         } else {
@@ -566,17 +604,28 @@ public class RestWebController {
                 String originalpoa = request.getParameter("OrigPOA");
                 String originalphoto = request.getParameter("OrigPhoto");
                 String srfpc = request.getParameter("SRFPC");
-                int originalsrfpc = Integer.parseInt(srfpc);
-                String poipc = request.getParameter("POIPC");
-                int ipoipc = Integer.parseInt(poipc);
-                String poapc = request.getParameter("POAPC");
-                int ipoapc = Integer.parseInt(poapc);
-                String opoipc = request.getParameter("OPOIPC");
-                int originalopipc = Integer.parseInt(opoipc);
-                String opoapc = request.getParameter("OPOAPC");
-                int originalopoapc = Integer.parseInt(opoapc);
-                String photoPC = request.getParameter("PhotoPC");
-                int originalphotoPC = Integer.parseInt(photoPC);
+                int originalsrfpc=0;
+                int ipoipc =0;
+                int ipoapc =0;
+                int originalopipc=0;
+                int originalopoapc=0;
+                int originalphotoPC=0;
+
+                if(StringUtils.isNotBlank(srfpc))
+                {
+                    originalsrfpc = Integer.parseInt(srfpc);
+                     String poipc = request.getParameter("POIPC");
+                     ipoipc = Integer.parseInt(poipc);
+                    String poapc = request.getParameter("POAPC");
+                     ipoapc = Integer.parseInt(poapc);
+                    String opoipc = request.getParameter("OPOIPC");
+                     originalopipc = Integer.parseInt(opoipc);
+                    String opoapc = request.getParameter("OPOAPC");
+                     originalopoapc = Integer.parseInt(opoapc);
+                    String photoPC = request.getParameter("PhotoPC");
+                     originalphotoPC = Integer.parseInt(photoPC);
+                }
+
                 if (!StringUtils.isEmpty(agentCode)) {
 
                     paytmagententryEntity = agentPaytmService.findByPrimaryKey(agentCode);
@@ -727,8 +776,6 @@ public class RestWebController {
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
         if (emplogintableEntity != null) {
-
-
             String agentCode = request.getParameter("AgentCode");
             String jobid = request.getParameter("Jobid");
             int jobID = Integer.parseInt(jobid);
@@ -866,6 +913,10 @@ public class RestWebController {
                         result = qcservices.savetbldocdetails(tblcustDocDetails);
                     }
                     result = updateRemarkStatus(agentCode, jobid, statusCode, "N");
+
+
+                    paytmMastData.setFinalStatus("close");
+                    paytmMasterService.updatePaytmMast(paytmMastData);
                     //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
                 } else {
                     result = "customerId already exist";

@@ -37,7 +37,7 @@
   <script src="/simex/appfront/components/version/version.js"></script>
   <script src="/simex/appfront/components/version/version-directive.js"></script>
   <script src="/simex/appfront/components/version/interpolate-filter.js"></script>
-  <title>Paytm - {{title}}</title>
+  <title>Simex - {{title}}</title>
   <base href="/paytm/">
 </head>
 <body>

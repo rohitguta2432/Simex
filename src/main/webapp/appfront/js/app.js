@@ -183,10 +183,6 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
             // alert('Agent Code is not valid');
             ev.preventDefault();
         }
-        else if( $scope.employee.length == 0 ||  $scope.employee == undefined){
-            //  alert('Enter the name Employee');
-            ev.preventDefault();
-        }
         else if($scope.phone.length == 0 || $scope.phone == undefined){
             // alert('Enter the Phone Number');
             ev.preventDefault();
@@ -211,15 +207,8 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
             ev.preventDefault();
         }
         else {
-           //
-            // alert('fdsfsd');
 
-            var pin = $scope.multi_pin;
-            if(pin == undefined || pin == 'N')
-            {
-                pin = 'N';
-            }
-            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&employee=' + $scope.employee + '&phone=' + $scope.phone + '&circle_office=' + $scope.circleofiice + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code + '&multi_pin=' + pin + '&email=' + $scope.email;
+            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&phone=' + $scope.phone + '&circle_office=' + $scope.circleofiice + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code +  '&email=' + $scope.email;
 
 
             console.log(data);
@@ -302,6 +291,10 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
     $scope.emp_code='';
     $scope.phone='';
     $scope.emp_Type='';
+
+    $scope.empTypeSelected = function(empType){
+
+    }
 /*
     $scope.offices = [{id: 1, officet:"Delhi"}];
     $scope.codes = [{id: 1, code:"ANESH11"}];*/
@@ -350,7 +343,7 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
             //alert('Agent Name is not valid');
             ev.preventDefault();
         }
-        else if($scope.emp_code.length == 0 || $scope.emp_code == undefined){
+        else if(($scope.emp_code.length == 0 || $scope.emp_code == undefined) && $scope.emp_Type!='DULD'){
             // alert('Agent Code is not valid');
             ev.preventDefault();
         }
@@ -1923,6 +1916,7 @@ routerApp.directive("datepicker1", function () {
     return {
         restrict: "A",
         require: "ngModel",
+        scope:{format:"@"},
         link: function (scope, elem, attrs, ngModelCtrl) {
             var updateModel = function (dateText) {
                 // call $apply to bring stuff to angular model
@@ -1931,14 +1925,18 @@ routerApp.directive("datepicker1", function () {
                 });
             };
 
+            var formatDate = scope.format!='undefined'?scope.format:"dd/mm/yy";
+
             var options = {
-                dateFormat: "dd/mm/yy",
+                dateFormat: formatDate,
+                maxDate:new Date(),
                 // handle jquery date change
                 onSelect: function (dateText) {
                     updateModel(dateText);
                 }
 
             };
+            elem.attr({"placeholder":formatDate});
             elem.datepicker(options);
         }
     }
@@ -2399,7 +2397,7 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
         $scope.errMessage = '';
         var curDate = new Date();
 
-        if(new Date($scope.date) > new Date($scope.date1)){
+        if(Date.parse($scope.date) > Date.parse($scope.date1)){
             alert("End Date should be greater than start date ");
           //  $scope.errMessage = 'End Date should be greater than start date';
             return false;
@@ -2428,6 +2426,11 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
             var data = 'from=' + $scope.date + '&to=' + $scope.date1 + '&type=' + $scope.report1.reportName;
             ExportService.SendData(data).then(function(result){
                 $scope.message = result.data;
+                if(angular.equals({},$scope.message)){
+                    return false;
+                }
+
+
                 if($scope.report1.reportName == 'KycMis')    ////////////function for kycMic
                 {
                     console.log('KycMis '+ $scope.report1.reportName);

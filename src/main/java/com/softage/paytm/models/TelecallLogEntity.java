@@ -85,7 +85,7 @@ public class TelecallLogEntity {
     private String tcCustomerphone;
 
     @Basic
-    @Column(name = "TC_Customerphone", nullable = true, insertable = false, updatable = false, length = 10)
+    @Column(name = "TC_Customerphone", nullable = true, insertable = true, updatable = true, length = 10)
     public String getTcCustomerphone() {
         return tcCustomerphone;
     }

@@ -115,7 +115,16 @@ public class QcStatusServiceImp implements QcStatusService {
     }
     @Override
     public String updateTblSacnEntity(TblScan tblScan) {
-        return qcStatusDao.updateTblScanEntity(tblScan);
+      String result = qcStatusDao.updateTblScanEntity(tblScan);
+        if(result.equalsIgnoreCase("error")){
+            for (int i=1; i<=4; ++i) {
+                result = qcStatusDao.updateTblScanEntity(tblScan);
+                if(result.equalsIgnoreCase("success")){
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     @Override

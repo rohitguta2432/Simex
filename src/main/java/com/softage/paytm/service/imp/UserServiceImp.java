@@ -74,6 +74,22 @@ public class UserServiceImp implements UserService {
         return userDao.updateAttaptStatus(emplogintableEntity);
     }
 
+    @Override
+    public String getClientCode(String UserType) {
+        String clientCode="c";
+        EmplogintableEntity emplogintableEntity=userDao.getClientCode(UserType);
+
+        if(emplogintableEntity!=null){
+            String empCode =emplogintableEntity.getEmpCode();
+            int empCode1 =Integer.parseInt(empCode.substring(1,6))+1;
+            clientCode=clientCode+empCode1;
+        }else {
+            clientCode=clientCode+10001;
+        }
+
+        return clientCode;
+    }
+
 }
 
 

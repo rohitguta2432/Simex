@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,6 +27,7 @@ import com.jcraft.jsch.Session;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
 import jdk.internal.org.objectweb.asm.tree.TryCatchBlockNode;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.net.ftp.FTP;
@@ -43,6 +46,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.keygen.KeyGenerators;
+import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -143,6 +148,194 @@ class HomeController {
 
 
     // this code use for password encryption
+
+
+
+
+
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
+        //logger.info("Welcome home! The client locale is {}.", locale);
+
+        String result = "Invalid Credentials";
+        JSONObject jsonObject = new JSONObject();
+        String user = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String dbUser = null;
+        String token = null;
+        Integer attamptCount=null;
+        try {
+            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            //         String hashedPassword = passwordEncoder.encode(password);
+            if (emplogintableEntity != null) {
+                if(!emplogintableEntity.getRoleCode().equalsIgnoreCase("A1")) {
+
+
+                    Timestamp expireDate = emplogintableEntity.getExpireDate();
+                    attamptCount = emplogintableEntity.getAttamptCount();
+                    if (attamptCount == null) {
+                        attamptCount = 0;
+                    }
+                    Timestamp currentDate = new Timestamp(new Date().getTime());
+                    Timestamp lockedDate = emplogintableEntity.getLockedDate();
+
+                    if (attamptCount != 5) {
+
+
+                        //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
+                        if (expireDate == null) {
+
+                            Date currentdate1 = new Date();
+                            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                            currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                            emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                            //    emplogintableEntity.setEmpPassword(hashedPassword);
+
+
+                            if (password.equals(emplogintableEntity.getEmpPassword())) {
+                                SecureRandom random = new SecureRandom();
+                                byte bytes[] = new byte[20];
+                                random.nextBytes(bytes);
+                                token = bytes.toString();
+                                dbUser = emplogintableEntity.getEmpCode();
+                                emplogintableEntity.setToken(token);
+                                emplogintableEntity.setAttamptCount(0);
+                                emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                                dbUser = emplogintableEntity.getEmpCode();
+                                HttpSession session = request.getSession();
+                                session.setAttribute("name", user);
+                                session.setAttribute("role", emplogintableEntity.getRoleCode());
+                                session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                                session.setAttribute("spoke_code", emplogintableEntity.getSpoke_code());
+                                result = "success";
+                            }
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
+
+                        } else if (currentDate.getTime() > expireDate.getTime()) {
+                            result = "expirePassword";
+
+                        } else if (password.equals(emplogintableEntity.getEmpPassword())) {
+                            dbUser = emplogintableEntity.getEmpCode();
+                            SecureRandom random = new SecureRandom();
+                            byte bytes[] = new byte[20];
+                            random.nextBytes(bytes);
+                            token = bytes.toString();
+                            emplogintableEntity.setToken(token);
+                            emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                            emplogintableEntity.setAttamptCount(0);
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
+                            dbUser = emplogintableEntity.getEmpCode();
+                            HttpSession session = request.getSession();
+                            session.setAttribute("name", user);
+                            session.setAttribute("role", emplogintableEntity.getRoleCode());
+                            session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                            session.setAttribute("spoke_code", emplogintableEntity.getSpoke_code());
+                            result = "success";
+                        } else {
+
+
+                            if (attamptCount == 4) {
+                                Timestamp timestamp = new Timestamp(new Date().getTime());
+                                timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
+                                emplogintableEntity.setLockedDate(timestamp);
+                                emplogintableEntity.setAttamptCount(attamptCount + 1);
+                            } else {
+                                emplogintableEntity.setAttamptCount(attamptCount + 1);
+                            }
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
+                        }
+                    } else if (lockedDate.getTime() > currentDate.getTime()) {
+                        result = "Your Account has locked! Try after 1 Hour";
+                    } else {
+                        if (expireDate == null) {
+
+                            Date currentdate1 = new Date();
+                            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                            currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                            emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                            //    emplogintableEntity.setEmpPassword(hashedPassword);
+
+
+                            if (password.equals(emplogintableEntity.getEmpPassword())) {
+                                SecureRandom random = new SecureRandom();
+                                byte bytes[] = new byte[20];
+                                random.nextBytes(bytes);
+                                token = bytes.toString();
+                                dbUser = emplogintableEntity.getEmpCode();
+                                emplogintableEntity.setToken(token);
+                                emplogintableEntity.setAttamptCount(0);
+                                emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                                dbUser = emplogintableEntity.getEmpCode();
+                                HttpSession session = request.getSession();
+                                session.setAttribute("name", user);
+                                session.setAttribute("role", emplogintableEntity.getRoleCode());
+                                session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                                session.setAttribute("spoke_code", emplogintableEntity.getSpoke_code());
+                                result = "success";
+                            }
+                            userService.updateAttaptStatus(emplogintableEntity);
+
+                        } else if (currentDate.getTime() > expireDate.getTime()) {
+                            result = "expirePassword";
+
+                        } else if (password.equals(emplogintableEntity.getEmpPassword())) {
+                            dbUser = emplogintableEntity.getEmpCode();
+                            SecureRandom random = new SecureRandom();
+                            byte bytes[] = new byte[20];
+                            random.nextBytes(bytes);
+                            token = bytes.toString();
+                            emplogintableEntity.setToken(token);
+                            emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                            emplogintableEntity.setAttamptCount(0);
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
+                            dbUser = emplogintableEntity.getEmpCode();
+                            HttpSession session = request.getSession();
+                            session.setAttribute("name", user);
+                            session.setAttribute("role", emplogintableEntity.getRoleCode());
+                            session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                            session.setAttribute("spoke_code", emplogintableEntity.getSpoke_code());
+                            result = "success";
+                        } else {
+                            int attamtCount = emplogintableEntity.getAttamptCount();
+                            if (attamtCount == 5) {
+                                Timestamp timestamp = new Timestamp(new Date().getTime());
+                                timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
+                                emplogintableEntity.setLockedDate(timestamp);
+                            } else {
+                                emplogintableEntity.setAttamptCount(attamtCount + 1);
+                            }
+                            agentPaytmService.updatePassword(emplogintableEntity, null);
+                        }
+                    }
+                }else{
+                    result = "User not Authorised";
+                }
+            } else {
+                result = "Invalid Credentials";
+            }
+        } catch (Exception e) {
+            result = "error";
+            logger.error("", e);
+        }
+        if (result.equalsIgnoreCase("success")) {
+            jsonObject.put("token", token);
+        }
+        jsonObject.put("status", result);
+        jsonObject.put("user", dbUser);
+        return jsonObject;
+    }
+
+
+
+/*
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
@@ -217,6 +410,7 @@ class HomeController {
         jsonObject.put("user", dbUser);
         return jsonObject;
     }
+*/
 
    /*
     // this code use for password encryption
@@ -295,6 +489,7 @@ class HomeController {
         try {
             String user = request.getParameter("userName");
             String password = request.getParameter("password");
+            String oldpassword=request.getParameter("oldpassword");
             Date expireDate = new Date();
             System.out.println("Current Date   " + expireDate);
             long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
@@ -304,17 +499,24 @@ class HomeController {
 
 
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String hashedPassword = passwordEncoder.encode(password);
-            emplogintableEntity.setEmpPassword(password);
-            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+            if(emplogintableEntity!=null) {
+                 if(emplogintableEntity.getEmpPassword().equals(oldpassword)) {
+                     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                     String hashedPassword = passwordEncoder.encode(password);
+                     emplogintableEntity.setEmpPassword(password);
+                     emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 
-            emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
-            result = agentPaytmService.updatePassword(emplogintableEntity, password);
-            if (result.equalsIgnoreCase("done")) {
-                result = "success";
+                     emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+                     result = agentPaytmService.updatePassword(emplogintableEntity, password);
+                     if (result.equalsIgnoreCase("done")) {
+                         result = "success";
+                     }
+                 }else{
+                     result="Old Password not valid";
+                 }
+            }else{
+                result="Old Password not valid";
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -393,6 +595,18 @@ class HomeController {
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
+
+
+                File[] files=   dir.listFiles();
+                for (File file : files) {
+
+                    long diff = new Date().getTime() - file.lastModified();
+
+                    if (diff > 24 * 60 * 60 * 1000) {
+                        file.delete();
+                    }
+                }
+
            /* if (!dir1.exists()) {
                 dir1.mkdirs();
             }*/
@@ -775,9 +989,9 @@ class HomeController {
 
     public static String copyFtpToLocal(UserService userService, String localPath, String fptPath, String mobileNumber, int circle) {
 
-        String ftpHost = "122.15.90.140";
-        String username = "administrator";
-        String password = "softage@tchad";
+        String ftpHost = "";
+        String username = "";
+        String password = "";
         FTPClient ftpClient = new FTPClient();
         FileOutputStream fos = null;
         String result = null;
@@ -1033,13 +1247,13 @@ class HomeController {
 
                 String agentName = request.getParameter("agent_name");
                 String agentCode = request.getParameter("agent_code");
-                String empCode = request.getParameter("employee");
+                String empCode = "";
                 String mobileNo = request.getParameter("phone");
                 String circleOffice = request.getParameter("circle_office");
                 String spokeCode = request.getParameter("spoke_code");
                 String avalTime = request.getParameter("avl_time");
                 String pincode = request.getParameter("pin_code");
-                String multipin = request.getParameter("multi_pin");
+                String multipin = "M";
                 String email = request.getParameter("email");
                 PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
                 paytmagententryEntity.setAfullname(agentName);
@@ -1079,13 +1293,6 @@ class HomeController {
 
             }*/
 
-                if (multipin.equals("N") && paytmagententryEntity1 != null) {
-                    msg = "Agent Already Available if you want to Insert select Multiple pin option";
-                    jsonObject.put("msg", msg);
-                    jsonObject.put("status", "error");
-                    return jsonObject;
-
-                }
                 if (paytmagententryEntity1 != null) {
                     String result = agentPaytmService.saveAgentPinMaster1(paytmagententryEntity);
                     if (result.equals("done")) {
@@ -1152,11 +1359,16 @@ class HomeController {
                 String empcode = request.getParameter("empcode");
                 String mobileNo = request.getParameter("phone");
                 String circlecode1 = request.getParameter("circle_office");
-                String empType = request.getParameter("empType");
+                String role = request.getParameter("empType");
                 String spokeCode = request.getParameter("spoke_code");
                 String password1 = request.getParameter("password");
 
                 circleCode = Integer.parseInt(circlecode1);
+
+                if(role.equalsIgnoreCase("DULD")){
+                    empcode=userService.getClientCode(role);
+
+                }
                 if (circleCode != 0) {
                     circleMastEntity = circleService.findByPrimaryKey(circleCode);
                 }
@@ -1168,14 +1380,19 @@ class HomeController {
 
                 Random randomGenerator = new Random();
                 int randomInt = randomGenerator.nextInt(10000);
-
-                password = empcode.substring(0, 4) + "@" + randomInt;
+                String alphaPassCaps = RandomStringUtils.random(1,"ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+                String alphaPassSpec = RandomStringUtils.random(1,"!@#$%^&");
+                String alphaPassNum = RandomStringUtils.randomNumeric(4);
+                String alphaPassLower = RandomStringUtils.random(2, "abcdefghijklmnopqrstuvwxyz");
+                password = alphaPassCaps + alphaPassLower + alphaPassSpec + alphaPassNum ;
+                logger.info(password);
+                /*password = empcode.substring(0, 4) + "@" + randomInt;*/
                 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 String hashedPassword = passwordEncoder.encode(password);
 
                 emplogintableEntity.setEmpPassword(password);
                 emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
-                emplogintableEntity.setRoleCode(empType);
+                emplogintableEntity.setRoleCode(role);
                 emplogintableEntity.setEmpStatus(1);
                 emplogintableEntity.setImportBy(userName);
                 emplogintableEntity.setSpoke_code(spokeCode);
@@ -1189,7 +1406,7 @@ class HomeController {
 
                 emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
 
-                //  emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+                 emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
 
                 msg = agentPaytmService.saveEmployee(emplogintableEntity, password);
 
@@ -1285,6 +1502,9 @@ class HomeController {
         int successCount = 0;
         int rejectCount = 0;
         FileInputStream file = null;
+        boolean flag=false;
+        boolean flag1=true;
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         try {
 
@@ -1418,7 +1638,7 @@ class HomeController {
                         request_date = request_date.trim() + " 00:00:00";
                     } else if (row.getCell(18).getCellType() == Cell.CELL_TYPE_NUMERIC) {
                         //request_date=NumberToTextConverter.toText(row.getCell(18).getNumericCellValue()).trim();
-                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
                         request_date = df.format(reqDate).trim();
                     }
                     String lot_no = row.getCell(19).getStringCellValue().trim();
@@ -1429,13 +1649,23 @@ class HomeController {
                         String requestDate=df.format(request_date);*/
                         paytmMastEntity = paytmMasterService.getPaytmMasterByDate(mobileNumber, request_date);
                         //paytmMastEntity=paytmMasterService.getPaytmMasterByDate(mobileNumber,newReqDate);
+                        if(paytmMastEntity!=null){
+                            Date date1=paytmMastEntity.getRequestDate();
+                            Date date2=df.parse(request_date);
+                            flag=date1.getTime()==date2.getTime();
+                            if(paytmMastEntity.getFinalStatus()!=null) {
+                                flag1 = paytmMastEntity.getFinalStatus().equalsIgnoreCase("close");
+                            }
+                        }
+
+
                     }
                     if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
                         int pincode1 = Integer.parseInt(pincode);
                         paytmPinMaster = pinMasterService.getByPincode(pincode1);
 
                     }
-                    if (paytmMastEntity == null && (pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                    if (!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1)) {
                         map.put("customerID", customerId);
                         map.put("name", name);
                         map.put("mobileNumber", mobileNumber);
@@ -1461,7 +1691,7 @@ class HomeController {
                             json.put("Resion", "This Customer Pincode not match with Softage Circles PinCode .");
                             json1.put("rejectedRecord" + count, json);
                         }
-                    } else if (paytmMastEntity != null) {
+                    } else if (flag) {
                         json.put("CustomerID", customerId);
                         json.put("Resion", "Duplicate Customers");
                         json1.put("rejectedRecord" + count, json);
@@ -1486,10 +1716,10 @@ class HomeController {
             jsonObject.put("status", "success");
             result = paytmMasterService.savePaytmMasterExcel(list);
             if ("done".equalsIgnoreCase(result)) {
-                result = "Successfully Uploded Customer  = " + successCount + " Reopen Customer  = " + "" + " Rejected Customer  =" + rejectCount;
+                result = "Successfully Uploaded Customer  = " + successCount + " , Rejected Customer  =" + rejectCount;
             }
         } catch (Exception e) {
-            result = "Pincode and Mobile Nubmber Should be Text Format";
+            result = "Technical error in uploading";
             e.printStackTrace();
 
         } finally {
@@ -2011,7 +2241,8 @@ class HomeController {
 
                 Date today = new Date();
                 Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.HOUR, 2);
+                int hourOfDay = (cal.getTime().getMinutes()>40)? 3 : 2;
+                cal.add(Calendar.HOUR_OF_DAY, hourOfDay);
                 System.out.println("Today Date is " + new Date(cal.getTimeInMillis()).getHours());
                 int currenttime = new Date(cal.getTimeInMillis()).getHours();
                 String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(today.getTime());
@@ -2102,7 +2333,8 @@ class HomeController {
                 if (todaytime.equals(datefetch)) {
                     Date today = new Date();
                     Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.HOUR, 2);
+                    int hourOfDay = (cal.getTime().getMinutes()>40)? 3 : 2;
+                    cal.add(Calendar.HOUR_OF_DAY, hourOfDay);
                     System.out.println("Today Date is " + new Date(cal.getTimeInMillis()).getHours());
                     int currenttime = new Date(cal.getTimeInMillis()).getHours();
                     for (Integer i = currenttime; i <= 18; i = i + timediff) {
@@ -2391,8 +2623,8 @@ class HomeController {
         String from = request.getParameter("from");
         String to = request.getParameter("to");
         String type = request.getParameter("type");
-        from = from.substring(6, 10) + "-" + from.substring(3, 5) + "-" + from.substring(0, 2);
-        to = to.substring(6, 10) + "-" + to.substring(3, 5) + "-" + to.substring(0, 2);
+        /*from = from.substring(6, 10) + "-" + from.substring(3, 5) + "-" + from.substring(0, 2);
+        to = to.substring(6, 10) + "-" + to.substring(3, 5) + "-" + to.substring(0, 2);*/
         jsonObject = reportService.getReports(from, to, type);
 
         return jsonObject;
@@ -2652,6 +2884,7 @@ class HomeController {
     @ResponseBody
     public JSONObject aoAuditQcStatus(HttpServletRequest request) {
 
+        int cust_uid=0;
         HttpSession session = request.getSession();
         String empcode = (String) session.getAttribute("name");
         int custuid=0;
@@ -2678,6 +2911,7 @@ class HomeController {
         } else {
             audit_status = 4;
         }
+
         AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
         TblScan tblScan = qcStatusService.getScanTableEntity(scanid);
         String assignmentstatus=aoAuditService.checkAoAssignedTo(tblScan,empcode);
@@ -2707,7 +2941,19 @@ class HomeController {
         } else {
             tblScan.setAuditStatusEntity(auditStatusEntity);
             updateStatusMessage = qcStatusService.updateTblSacnEntity(tblScan);
+
+
+
             if (updateStatusMessage.equalsIgnoreCase("success")) {
+                if(custUid!=null){
+                    cust_uid = Integer.parseInt(custUid);
+                    PaytmMastEntity paytmMastEntity =paytmMasterService.getPaytmMastDatas(cust_uid);
+                    paytmMastEntity.setFinalStatus("close");
+                    paytmMasterService.updatePaytmMast(paytmMastEntity);
+
+
+                }
+
 
                 jsonObject.put("message", "Successfully updated audit status");
             } else {

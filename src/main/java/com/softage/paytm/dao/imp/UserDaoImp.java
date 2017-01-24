@@ -32,19 +32,21 @@ public class UserDaoImp implements UserDao {
         EntityManager entityManager = null;
         Query query = null;
         EmplogintableEntity emplogintableEntity = null;
+        EntityTransaction transaction = null;
         try {
             entityManager = entityManagerFactory.createEntityManager();
+            transaction=entityManager.getTransaction();
+            transaction.begin();
             String strQuery = "select emp from EmplogintableEntity emp where emp.empCode=:empCode";
             query = entityManager.createQuery(strQuery);
             query.setParameter("empCode", empCode);
             emplogintableEntity = (EmplogintableEntity) query.getSingleResult();
+            transaction.commit();
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (entityManager != null && entityManager.isOpen()) {
-               /* entityManager.flush();
-                entityManager.clear();*/
                 entityManager.close();
             }
         }
@@ -260,6 +262,33 @@ public class UserDaoImp implements UserDao {
             }
         }
         return result;
+    }
+
+    @Override
+    public EmplogintableEntity getClientCode(String role) {
+        EntityManager entityManager = null;
+        Query query = null;
+        EmplogintableEntity emplogintableEntity = null;
+        EntityTransaction transaction = null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction=entityManager.getTransaction();
+            transaction.begin();
+            String strQuery = "select emp from EmplogintableEntity emp where emp.roleCode=:role order by emp.importDate desc";
+            query = entityManager.createQuery(strQuery);
+            query.setParameter("role", role);
+            query.setMaxResults(1);
+            emplogintableEntity = (EmplogintableEntity) query.getSingleResult();
+            transaction.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return emplogintableEntity;
     }
 }
 

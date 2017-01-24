@@ -45,7 +45,7 @@ public class TelecallMastEntity {
 
 
     @Basic
-    @Column(name = "TM_CustomerPhone", nullable = false, insertable = false, updatable = false, length = 10)
+    @Column(name = "TM_CustomerPhone", nullable = false, insertable =true, updatable = true, length = 10)
     public String getTmCustomerPhone() {
         return tmCustomerPhone;
     }

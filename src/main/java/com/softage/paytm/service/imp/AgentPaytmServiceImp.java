@@ -6,6 +6,7 @@ import com.softage.paytm.dao.PostCallingDao;
 import com.softage.paytm.dao.UserDao;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.AgentPaytmService;
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -252,7 +253,12 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
 
             Random randomGenerator = new Random();
             int randomInt = randomGenerator.nextInt(10000);
-            password = paytmagententryEntity.getAcode().substring(0, 4) + "@" + randomInt;
+         //   password = paytmagententryEntity.getAcode().substring(0, 4) + "@" + randomInt;
+            String alphaPassCaps = RandomStringUtils.random(1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            String alphaPassSpec = RandomStringUtils.random(1,"!@#$%^&");
+            String alphaPassNum = RandomStringUtils.randomNumeric(4);
+            String alphaPassLower = RandomStringUtils.random(2, "abcdefghijklmnopqrstuvwxyz");
+            password = alphaPassCaps + alphaPassLower + alphaPassSpec + alphaPassNum ;
             //  password = paytmagententryEntity.getAcode().substring(0, 4) +"@"+paytmagententryEntity.getAphone().substring(0, 4);
 
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

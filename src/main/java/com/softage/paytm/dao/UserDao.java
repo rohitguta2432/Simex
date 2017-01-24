@@ -16,4 +16,5 @@ public interface UserDao {
     public EmplogintableEntity getUserByOldPassword(String oldpassword,String user);
     public String UpdateLastThreePassword(EmplogintableEntity emplogintableEntity,String updatedpassword);
     public String updateAttaptStatus(EmplogintableEntity emplogintableEntity);
+    public EmplogintableEntity getClientCode(String UserType);
 }

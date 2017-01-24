@@ -15,4 +15,5 @@ public interface UserService {
     public EmplogintableEntity getUserByOldPassword(String OldPassword,String user);
     public String UpdateLastThreePassword(EmplogintableEntity emplogintableEntity,String updatedpassword);
     public String updateAttaptStatus(EmplogintableEntity emplogintableEntity);
+    public String getClientCode(String UserType);
 }

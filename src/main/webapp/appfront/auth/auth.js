@@ -11,6 +11,8 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
     .controller('AuthCtrl', ['$scope','$http','$window',function($scope, $http, $window) {
 
         $scope.show1 = false;
+        $scope.result="";
+        $scope.result1="";
         $scope.loginData = function()
         {
             //alert('Login.');
@@ -25,8 +27,10 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
                    $window.location.href = '/simex/appfront/portal.jsp';
                } else if(data.status == 'expirePassword'){
                    $scope.show2 = true;
+                   $scope.result = "Password Expired Please Reset";
                } else
                {
+                   $scope.result=data.status;
                    //alert('Invalid Username and Password.');
                    $scope.show1 = true;
                }
@@ -40,11 +44,11 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
 
             if($scope.pass==undefined){
                 alert(" password length should be 8 to 10 with atlest 1 charecter  numeric, spacial,small alphabet,capital alphabet ");
-                ev.preventDefault();
+                return false;
             }
             else if($scope.pass!=$scope.pass1){
              alert("Password mismatch Please try again");
-                ev.preventDefault();
+                return false;
             }else {
 
                 var daata = 'userName=' + $scope.user + '&password=' + $scope.pass +'&oldpassword='+$scope.oldpass;
@@ -57,6 +61,8 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
                     if (data.status == 'success') {
                         $scope.show2 = false;
                         $window.location.href = '/simex/appfront/app.jsp';
+                    }else{
+                        $scope.result1=data.status;
                     }
                 }).error(function () {
 

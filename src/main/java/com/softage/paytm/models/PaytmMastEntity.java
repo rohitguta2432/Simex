@@ -47,6 +47,8 @@ public class PaytmMastEntity {
     private String simPlanDesc;
     private String lotNo;
     private String remarks;
+    private String finalStatus;
+
     private Collection<TelecallLogEntity> telecallLogEntity;
     private CallTimeDetailsEntity callTimeDetailsEntity;
 
@@ -61,6 +63,9 @@ public class PaytmMastEntity {
     public void setCust_uid(Integer cust_uid) {
         this.cust_uid = cust_uid;
     }
+
+
+
 
    @Basic
    @Column(name = "CustomerPhone", nullable = false, insertable = true, updatable = true, length = 10)
@@ -94,6 +99,15 @@ public class PaytmMastEntity {
         this.address = address;
     }
 
+    @Basic
+    @Column(name = "final_status", nullable = true, insertable = true, updatable = true, length =5)
+    public String getFinalStatus() {
+        return finalStatus;
+    }
+
+    public void setFinalStatus(String finalStatus) {
+        this.finalStatus = finalStatus;
+    }
 
     @Basic
     @Column(name = "alternatePhone1", nullable = true, insertable = true, updatable = true, length = 15)

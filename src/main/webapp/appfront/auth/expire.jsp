@@ -47,10 +47,10 @@
 
 
 <div class="login-container animated fadeInDown">
-  <h1>Reset Password</h1>
+  <h1 style="padding-left: 16%; padding-right: 16%; color: blue;">Reset Password</h1>
   <form name="myform" ng-controller="AuthCtrl" ng-submit="expire()" method="get" novalidate>
     <div class="loginbox bg-white" style="margin-bottom:20px;">
-      <%--<label id="show3" ng-show="show3" style="color: red;margin-left: 40px;">Password mismatch please enter again</label>--%>
+      <label id="show1" ng-show="true" style="color: red;margin-left: 40px;">{{result1}}</label>
         <div class="loginbox-textbox">
           <input type="password"  class="form-control" ng-model="oldpass" placeholder="Old Password" required/>
         </div>

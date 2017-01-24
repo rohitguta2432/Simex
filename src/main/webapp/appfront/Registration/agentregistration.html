@@ -30,20 +30,20 @@
                                         </div>
 
                                         <div class="form-group col-sm-6">
-                                            <label for="agent_code" class="col-sm-3 control-label no-padding-right">Agent Code</label>
+                                            <label for="agent_code" class="col-sm-3 control-label no-padding-right">Employee Code</label>
                                             <div class="col-sm-9">
                                                 <!--<input type="text" class="form-control" ng-pattern="^[a-zA-Z].*" minlength="6" maxlength="12" name="agent_code" ng-model="agent_code" id="agent_code" placeholder="Agent Code"  validation="alpha|min_len:4|required" required/>-->
                                                 <input type="text" class="form-control" ng-pattern="/^[a-zA-Z].*/i" minlength="6" maxlength="12" name="agent_code" ng-model="agent_code" id="agent_code" placeholder="Agent Code" required/>
                                             </div>
                                         </div>
-                                        <div class="form-group col-sm-6">
+                                       <!-- <div class="form-group col-sm-6" ng-show="false">
                                             <label for="agent_code" class="col-sm-3 control-label no-padding-right">
                                                 SoftAge Employee
                                             </label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" ng-pattern="/^[a-zA-Z].*/i" minlength="6" maxlength="6" name="employee" ng-model="employee" placeholder="SoftAge Employee" allow-pattern="[a-z_ ]" required/>
+                                                <input type="text" class="form-control"  name="employee" ng-model="employee" placeholder="SoftAge Employee" />
                                             </div>
-                                        </div>
+                                        </div>-->
 
 
                                         <div class="form-group col-sm-6">
@@ -134,7 +134,7 @@
                                             </div>
                                         </div>-->
 
-                                        <div class="form-group col-sm-6">
+            <!--                            <div class="form-group col-sm-6">
                                             <label  class="col-sm-3 control-label no-padding-right">Mulitple Pin</label>
                                             <div class="radio col-sm-3">
                                                 <label>
@@ -146,11 +146,11 @@
                                             <div class="radio col-sm-3">
                                                 <label>
                                                     <input type="radio" value="N" ng-model="multi_pin" name="PinMultiple" ng-checked="true" />
-                                                    <!--<input type="radio" value="Y"  ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='N'"/>-->
+                                                    &lt;!&ndash;<input type="radio" value="Y"  ng-model="multi_pin" name="PinMultiple" ng-checked="multi_pin='N'"/>&ndash;&gt;
                                                     <span class="text" >No</span>
                                                 </label>
                                             </div>
-                                        </div>
+                                        </div-->
                                         <div class="form-group col-sm-6">
                                             <label  class="col-sm-3 control-label no-padding-right">Email</label>
                                             <div class="col-sm-9">

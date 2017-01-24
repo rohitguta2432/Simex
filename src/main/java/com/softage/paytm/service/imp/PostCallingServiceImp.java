@@ -104,7 +104,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 checkVisitDate = new java.sql.Date(calendar.getTimeInMillis());
             }
             if ("CON".equals(status) && visitDate.getTime() > checkVisitDate.getTime()) {
-                byte s = 9;
+                byte s = 4;
                 tcStatus = "R";
                 telecallMastEntity.setTmAttempts(s);
                 telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
@@ -132,6 +132,17 @@ public class PostCallingServiceImp implements PostCallingService {
             byte s = (byte) (telecallMastEntity.getTmAttempts() + 1);
             //   TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
             //     telecallMastEntity.setTmCustomerPhone(map.get("number"));
+
+            if(!"CON".equalsIgnoreCase(status) && s==4){
+
+                PaytmMastEntity paytmMastData  =paytmMasterDao.getPaytmMasterData(custId);
+                paytmMastEntity.setFinalStatus("close");
+                paytmMasterDao.updatePaytmMast(paytmMastEntity);
+
+
+            }
+
+
             if ("done".equalsIgnoreCase(result1)) {
                 telecallMastEntity.setTmAttempts(s);
                 telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
@@ -147,6 +158,9 @@ public class PostCallingServiceImp implements PostCallingService {
                 telecallMastEntity.setTmTeleCallStatus("NA");
                 telecallMastEntity.setTmLastCallStatus(map.get("status"));
                 postCallingDao.updateTeleCall(telecallMastEntity);
+                PaytmMastEntity paytmMastData  =paytmMasterDao.getPaytmMasterData(custId);
+                paytmMastEntity.setFinalStatus("close");
+                paytmMasterDao.updatePaytmMast(paytmMastEntity);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -439,12 +453,18 @@ public class PostCallingServiceImp implements PostCallingService {
                 if (loginId != null) {
                     String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
                     String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
-                    //     String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
-                    String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
+                    if(paytmMastEntity.getAlternatePhone1()==null || paytmMastEntity.getAlternatePhone1()==""){
+                        String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                    }
+                    String res4 =  saveSmsSendLog(paytmMastEntity.getAlternatePhone1(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                  //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
                 } else {
                     String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
-                    //   String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
-                    String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
+                    if(paytmMastEntity.getAlternatePhone1()==null || paytmMastEntity.getAlternatePhone1()==""){
+                        String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                    }
+                    String res4 =  saveSmsSendLog(paytmMastEntity.getAlternatePhone1(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                  //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
                 }
 
                 result = "JOB ALLOCATED";

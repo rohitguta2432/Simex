@@ -28,6 +28,20 @@
                             <!-- <div align="center">
                                  <label style="color:green;margin-top: 0;">{{successTextAlert}}</label>
                              </div>-->
+                            <div class="form-group col-sm-6">
+                                <label for="Text3" class="col-sm-3 control-label no-padding-right">Emp Type</label>
+                                <div class="col-sm-9">
+                                    <!-- <input type="text" class="form-control" id="Text3"  ng-minlength="3" ng-maxlength="15" name="pin_code" ng-model="user.pin_code" placeholder="Pin Codes" allow-pattern="^\d{5}(?:[-\s]\d{4})?$" required/>-->
+                                    <select id="Text3" name="emp_Type"  class="form-control" required ng-model="emp_Type" ng-change="empTypeSelected(emp_Type)" >
+                                        <option value="HR">HR</option>
+                                        <option value="Tlec">Telecaller</option>
+                                        <option value="ADM">Admin</option>
+                                        <option value="CAQC">Circle Auditor</option>
+                                        <option value="AOQC">AO Auditor</option>
+                                        <option value="DULD">Client</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="form-group col-sm-6" >
                                 <label  class="col-sm-3 control-label no-padding-right" >Name</label>
                                 <div class="col-sm-9">
@@ -36,7 +50,7 @@
 
                             </div>
 
-                            <div class="form-group col-sm-6">
+                            <div ng-hide="emp_Type=='DULD'" class="form-group col-sm-6">
                                 <label for="Text1" class="col-sm-3 control-label no-padding-right">Emp Code</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" ng-pattern="/^[a-zA-Z].*/i" minlength="6" maxlength="6" name="emp_code" ng-model="emp_code" id="Text1" placeholder="Employee Code"  validation="alpha|min_len:4|required" required/>
@@ -73,25 +87,6 @@
 
                                 </div>
                             </div>
-
-
-                            <div class="form-group col-sm-6">
-                                <label for="Text3" class="col-sm-3 control-label no-padding-right">Emp Type</label>
-                                <div class="col-sm-9">
-                                    <!-- <input type="text" class="form-control" id="Text3"  ng-minlength="3" ng-maxlength="15" name="pin_code" ng-model="user.pin_code" placeholder="Pin Codes" allow-pattern="^\d{5}(?:[-\s]\d{4})?$" required/>-->
-                                    <select id="Text3" name="emp_Type"  class="form-control" required ng-model="emp_Type" >
-                                        <option value="HR">HR</option>
-                                        <option value="Tlec">Telecaller</option>
-                                        <option value="ADM">Admin</option>
-                                        <option value="CAQC">Circle Auditor</option>
-                                        <option value="AOQC">AO Auditor</option>
-                                        <option value="DULD">Client</option>
-                                    </select>
-
-
-                                </div>
-                            </div>
-
 
                             <div class="form-group">
                                 <div class="col-sm-offset-5 col-sm-10">

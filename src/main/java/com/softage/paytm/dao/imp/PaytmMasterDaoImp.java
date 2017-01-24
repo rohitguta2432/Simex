@@ -124,9 +124,10 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             entityManager = entityManagerFactory.createEntityManager();
             transaction = entityManager.getTransaction();
             transaction.begin();
-            String hql = "select paytmMast from PaytmMastEntity paytmMast where paytmMast.customerPhone=:phone and paytmMast.requestDate='"+date+"'";
+            String hql = "select paytmMast from PaytmMastEntity paytmMast where paytmMast.customerPhone=:phone order by paytmMast.importDate desc ";
             query = entityManager.createQuery(hql);
             query.setParameter("phone", mobile);
+            query.setMaxResults(1);
             //query.setParameter("req_date", date);
             paytmMastEntity = (PaytmMastEntity) query.getSingleResult();
         }catch (Exception e){
@@ -450,6 +451,32 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         return  allocationMastEntity;
 
 
+    }
+
+    @Override
+    public String updatePaytmMast(PaytmMastEntity paytmMastEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg=null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.merge(paytmMastEntity);
+            transaction.commit();
+            msg="done";
+        } catch (Exception e) {
+            msg="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  msg;
     }
 
     @Override

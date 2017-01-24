@@ -147,6 +147,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 //paytmMastEntity.setOtp(new Integer(randomInt).toString());
                 //paytmMastEntity.setRefCode(randomInt);
                 paytmMastEntity.setImportBy(map.get("importBy"));
+                paytmMastEntity.setFinalStatus("open");
                 custList.add(paytmMastEntity);
                 i++;
             }
@@ -204,6 +205,11 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     @Override
     public AllocationMastEntity getallocationMastEntity(String custid, int jobid) {
         return paytmMasterDao.getAllocationentity(custid,jobid);
+    }
+
+    @Override
+    public String updatePaytmMast(PaytmMastEntity paytmMastEntity) {
+        return paytmMasterDao.updatePaytmMast(paytmMastEntity);
     }
 
     @Override
