@@ -11,10 +11,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by SS0085 on 08-01-2016.
@@ -367,6 +366,7 @@ public class ReportDaoImp implements ReportDao {
         List list = new ArrayList<>();
         Query query = null;
         JSONObject jsonObject = new JSONObject();
+        DateFormat df=new SimpleDateFormat("yyyy-MM-dd");
         try{
             entityManager = entityManagerFactory.createEntityManager();
             query = entityManager.createNativeQuery("{call usp_callingReport(?,?)}");
@@ -389,7 +389,7 @@ public class ReportDaoImp implements ReportDao {
                     json.put("city", objects[7]);
                     json.put("zipcode", objects[8]);
                     json.put("alternatenum", objects[9]);
-                    json.put("requestdate", objects[10]);
+                    json.put("requestdate", df.format(((Date)objects[10])));
                     json.put("lotno", objects[11]);
                     json.put("first_calltime", objects[12]);
                     json.put("first_status", objects[13]);
@@ -428,6 +428,7 @@ public class ReportDaoImp implements ReportDao {
         List list = new ArrayList<>();
         Query query = null;
         JSONObject jsonObject = new JSONObject();
+        DateFormat df=new SimpleDateFormat("yyyy-MM-dd");
         try{
             entityManager = entityManagerFactory.createEntityManager();
             query = entityManager.createNativeQuery("{call usp_processReport(?,?)}");
@@ -450,7 +451,7 @@ public class ReportDaoImp implements ReportDao {
                     json.put("city", objects[7]);
                     json.put("zipcode", objects[8]);
                     json.put("alternatenum", objects[9]);
-                    json.put("requestdate", objects[10]);
+                    json.put("requestdate", df.format(((Date) objects[10])));
                     json.put("lotno", objects[11]);
                     json.put("final_calltime", objects[12]);
                     json.put("call_status", objects[13]);

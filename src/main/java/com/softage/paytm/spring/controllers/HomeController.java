@@ -2422,16 +2422,26 @@ class HomeController {
         AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
         TblScan tblScan = qcStatusService.getScanTableEntity(scanid);
         String assignedToResult = qcStatusService.checkAssignedTo(tblScan, empcode);
-        if (assignedToResult.equalsIgnoreCase("assigned")){
-        CircleAuditEntity circleAuditEntity = new CircleAuditEntity();
-        circleAuditEntity.setNameMatched(name_mathched);
-        circleAuditEntity.setPhotoMatched(photo_matched);
-        circleAuditEntity.setSignMatched(sign_matched);
-        circleAuditEntity.setDobMatched(dob_matched);
-        circleAuditEntity.setOtherReason(other_reason);
-        circleAuditEntity.setTblScan(tblScan);
-        circleAuditEntity.setAuditStatus(audit_status);
-        String msg = qcStatusService.saveCircleAuditEntity(circleAuditEntity);
+        if (assignedToResult.equalsIgnoreCase("assigned")) {
+            CircleAuditEntity circleAuditEntity = new CircleAuditEntity();
+            circleAuditEntity.setNameMatched(name_mathched);
+            circleAuditEntity.setPhotoMatched(photo_matched);
+            circleAuditEntity.setSignMatched(sign_matched);
+            circleAuditEntity.setDobMatched(dob_matched);
+            circleAuditEntity.setOtherReason(other_reason);
+            circleAuditEntity.setTblScan(tblScan);
+            circleAuditEntity.setAuditStatus(audit_status);
+            String msg=qcStatusService.insertCircleAuditValues(dob_matched,name_mathched,other_reason,photo_matched,sign_matched,scanid,audit_status);
+        if(msg.equalsIgnoreCase("success")){
+            jsonObject.put("message","Successfully updated audit status");
+        }else if (msg.equalsIgnoreCase("exists")){
+            jsonObject.put("message","This image has already been audited");
+        }
+        else{
+            jsonObject.put("message","Unable to update the audit status");
+        }
+        }
+        /*String msg = qcStatusService.saveCircleAuditEntity(circleAuditEntity);
         if (msg.equalsIgnoreCase("error")) {
             updateStatusMessage = "Unable to insert the audit values";
         } else {
@@ -2444,35 +2454,9 @@ class HomeController {
                 jsonObject.put("message", "Unable to update the audit status");
             }
         }
-    }else{
+    }*/else{
             jsonObject.put("message","This image has been assigned to another user");
         }
-        //String message = qcStatusService.updateQcStatus(mobileNo, status, rejectedPage, remarks);
-        //JSONObject mobileNum=qcStatusService.getMobileNumber();
-        // String mobileNumber= (String) mobileNum.get("mobile");
-        //  JSONObject imgPath=qcStatusService.qcCustomerDetails(mobileNumber);
-        //  String img=(String)imgPath.get(1);
-
-      /*  String message1 = qcStatusService.saveQcStatus(mobileNo, status, rejectedPage, remarks);
-        if (message.equals("done") && status.equals("A")) {
-            result = "QC status successfully inserted successfully";
-            jsonObject.put("result", result);
-            jsonObject.put("mobile", mobileNo);
-            //   jsonObject.put("imagePath",img);
-            logger.info(" Result   " + result);
-        } else if (message.equals("done") && status.equals("R")) {
-            result = "QC status successfully rejected successfully";
-            jsonObject.put("result", result);
-            jsonObject.put("mobile", mobileNo);
-            //      jsonObject.put("imagePath",img);
-            logger.info(" Result   " + result);
-        } else {
-            result = "Unable to insert data";
-            jsonObject.put("result", result);
-            jsonObject.put("mobile", mobileNo);
-            // jsonObject.put("imagePath",img);
-            logger.info(" Result   " + result);
-        }*/
         return jsonObject;
 
     }
@@ -2687,30 +2671,30 @@ class HomeController {
         AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
         TblScan tblScan = qcStatusService.getScanTableEntity(scanid);
         String assignmentstatus=aoAuditService.checkAoAssignedTo(tblScan,empcode);
-        if(assignmentstatus.equalsIgnoreCase("assigned")){
-        AoAuditEntity aoAuditEntity = new AoAuditEntity();
-        aoAuditEntity.setPhotoMatched(photo_matched);
-        aoAuditEntity.setNameMatched(name_mathched);
-        aoAuditEntity.setDobMatched(dob_matched);
-        aoAuditEntity.setSignMatched(sign_matched);
-        aoAuditEntity.setOtherReason(other_reason);
-        aoAuditEntity.setTblScan(tblScan);
-        aoAuditEntity.setAuditStatus(audit_status);
-        String msg = aoAuditService.saveAuditEntity(aoAuditEntity);
-        if (msg.equalsIgnoreCase("error")) {
+        if(assignmentstatus.equalsIgnoreCase("assigned")) {
+            AoAuditEntity aoAuditEntity = new AoAuditEntity();
+            aoAuditEntity.setPhotoMatched(photo_matched);
+            aoAuditEntity.setNameMatched(name_mathched);
+            aoAuditEntity.setDobMatched(dob_matched);
+            aoAuditEntity.setSignMatched(sign_matched);
+            aoAuditEntity.setOtherReason(other_reason);
+            aoAuditEntity.setTblScan(tblScan);
+            aoAuditEntity.setAuditStatus(audit_status);
+            String msg=aoAuditService.insertAoAuditValues(dob_matched,name_mathched,other_reason,photo_matched,sign_matched,scanid,audit_status);
+            if(msg.equalsIgnoreCase("success")){
+                jsonObject.put("message","Successfully updated audit status");
+            }else if(msg.equalsIgnoreCase("exists")){
+                jsonObject.put("message","This image has already been audited");
+            }
+            else{
+                jsonObject.put("message","Unable to update the audit status");
+            }
+
+            //String msg = aoAuditService.saveAuditEntity(aoAuditEntity);
+        }
+        /*if (msg.equalsIgnoreCase("error")) {
             updateStatusMessage = "Unable to insert the audit values";
         } else {
-           /* String filepath=request.getServletContext().getRealPath("/");
-            String folderPath=filepath+"/resources/ftpimages/" + custUid;
-            File file=new File(folderPath);
-            if (file.isDirectory()){
-                String[] ftpimagesfiles=file.list();
-                for(String imagefile : ftpimagesfiles){
-                    File ftpfile=new File(file.getPath(),imagefile);
-                    ftpfile.delete();
-                }
-                file.delete();
-            }*/
             tblScan.setAuditStatusEntity(auditStatusEntity);
             updateStatusMessage = qcStatusService.updateTblSacnEntity(tblScan);
             if (updateStatusMessage.equalsIgnoreCase("success")) {
@@ -2719,8 +2703,8 @@ class HomeController {
             } else {
                 jsonObject.put("message", "Unable to update the audit status");
             }
-        }
-    }else{
+        }*/
+    else{
             jsonObject.put("message","This image has been assigned to another user");
 
         }

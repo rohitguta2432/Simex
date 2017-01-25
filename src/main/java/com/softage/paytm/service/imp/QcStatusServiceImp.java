@@ -146,6 +146,11 @@ public class QcStatusServiceImp implements QcStatusService {
     }
 
     @Override
+    public String insertCircleAuditValues(String dob, String name, String otherReason, String photo, String sign, Integer scanid, Integer auditStatus) {
+        return qcStatusDao.insertCircleAuditValues(dob,name,otherReason,photo,sign,scanid,auditStatus);
+    }
+
+    @Override
     public TblScan getUserScanDetails(int cust_uid) {
         return qcStatusDao.getScanDetails(cust_uid);
     }

@@ -436,6 +436,39 @@ public class QcStatusDaoImp implements QcStatusDao {
     }
 
     @Override
+    public String insertCircleAuditValues(String dob, String name, String otherReason, String photo, String sign, Integer scanid, Integer auditStatus) {
+        EntityManager entityManager=null;
+        EntityTransaction transaction=null;
+        Query query=null;
+        String result=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            transaction=entityManager.getTransaction();
+            transaction.begin();
+            query=entityManager.createNativeQuery("{call usp_insertCircleAudit(?,?,?,?,?,?,?)}");
+            query.setParameter(1,dob);
+            query.setParameter(2,name);
+            query.setParameter(3,otherReason);
+            query.setParameter(4,photo);
+            query.setParameter(5,sign);
+            query.setParameter(6,scanid);
+            query.setParameter(7,auditStatus);
+            result=(String)query.getSingleResult();
+            transaction.commit();
+        }catch (Exception e){
+            result="error";
+           // transaction.rollback();
+            e.printStackTrace();
+        }finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return result;
+    }
+
+    @Override
     public TblScan getScanDetails(int cust_uid) {
 
         EntityManager entityManager = null;

@@ -36,4 +36,9 @@ public class AoAuditServiceImp implements AoAuditService {
     public String checkAoAssignedTo(TblScan tblScan, String empcode) {
         return aoAuditDao.checkAoAssignedTo(tblScan,empcode);
     }
+
+    @Override
+    public String insertAoAuditValues(String dob, String name, String otherReason, String photo, String sign, Integer scanid, Integer auditStatus) {
+        return aoAuditDao.insertAoAuditValues(dob,name,otherReason,photo,sign,scanid,auditStatus);
+    }
 }

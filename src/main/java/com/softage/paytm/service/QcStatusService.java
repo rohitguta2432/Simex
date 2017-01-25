@@ -35,6 +35,8 @@ public interface QcStatusService {
 
     public String checkAssignedTo(TblScan tblScan,String empcode);
 
+    public String insertCircleAuditValues(String dob,String name,String otherReason,String photo,String sign,Integer scanid,Integer auditStatus);
+
 
 
 }
