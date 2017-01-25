@@ -2600,11 +2600,20 @@ class HomeController {
         String empcode = (String) session.getAttribute("name");
         List<String> filepathList = new ArrayList<String>();
         JSONObject detailJson = aoAuditService.getAoAuditDetails(spokecode, empcode);
+        String cirStatus=null;
         String status = (String) detailJson.get("status");
+        Integer circleStatus=(Integer)detailJson.get("circleStatus");
+
         if (status.equals("Unavailable")) {
             jsonObject.put("auditStatus", "No Images To Audit");
         } else {
             jsonObject.put("auditStatus", "Available");
+
+            if (circleStatus==2){
+                cirStatus="Rejected";
+            }else{
+                cirStatus="Accepted";
+            }
 
             // String imagePath = (String) detailJson.get("imagePath");
             Integer custUID = (Integer) detailJson.get("custUID");
@@ -2634,6 +2643,7 @@ class HomeController {
             jsonObject.put("filePathList", filepathList);
             //jsonObject.put("circleRemarks",circleRemarks);
             jsonObject.put("custuid", custUID);
+            jsonObject.put("cirStatus",cirStatus);
         }
         return jsonObject;
     }

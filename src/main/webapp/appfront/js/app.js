@@ -1308,7 +1308,7 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$loca
                     $scope.actual_img_count=data.actualCount;
                     $scope.image_source=$scope.pathList[index];
                     $scope.custUID=data.custuid;
-
+                    $scope.circleStatus=data.cirStatus;
                 }
             })
             .error(function(data,status,headers,config){

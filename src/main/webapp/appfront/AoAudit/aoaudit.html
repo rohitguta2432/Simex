@@ -82,6 +82,15 @@
                                     <div class="col-sm-8">
                                         <input type="text" class="form-control"   name="cust_address" ng-model="cust_address" ng-readonly="true" />
                                     </div>
+
+                                    <div style="clear:both; height:5px;"></div>
+
+                                    <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important"  ng-if="circleStatus=='Rejected'">Circle Status</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control"   name="circleStatus" ng-model="circleStatus"  ng-if="circleStatus=='Rejected'" ng-readonly="true" />
+                                    </div>
+
+
                                     <div style="clear:both; height:5px;"></div>
 
                                     <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Name Matched</label>

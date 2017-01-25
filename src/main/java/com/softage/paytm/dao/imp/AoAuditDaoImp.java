@@ -37,6 +37,7 @@ public class AoAuditDaoImp implements AoAuditDao {
         Integer cust_uid = null;
         Integer imageCount = null;
         Integer actualImageCount = 0;
+        Integer circleStatus=null;
         String retStatus = "pending";
         String circleRemarks=null;
         while (retStatus.equalsIgnoreCase("pending")){
@@ -69,6 +70,7 @@ public class AoAuditDaoImp implements AoAuditDao {
                     cust_uid = (Integer) auditedObj[7];
                     imageCount = (Integer) auditedObj[8];
                     actualImageCount = ((BigInteger) auditedObj[9]).intValue();
+                    circleStatus=((BigInteger)auditedObj[10]).intValue();
                     //circleRemarks=(String)auditedObj[10];
                     jsonObject.put("mobile", customerNumber);
                     jsonObject.put("scanID", scanid);
@@ -80,6 +82,7 @@ public class AoAuditDaoImp implements AoAuditDao {
                     jsonObject.put("imgCount", imageCount);
                     jsonObject.put("status", "Available");
                     jsonObject.put("actualCount", actualImageCount);
+                    jsonObject.put("circleStatus",circleStatus);
                   //  jsonObject.put("circleRemarks",circleRemarks);
                     retStatus="available";
                 }
