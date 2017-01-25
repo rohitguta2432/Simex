@@ -375,6 +375,164 @@
 
                             </div>
 
+                            <div id="exportableCallReport" style="display:none">
+                                <table align="center" border="1" >
+                                    <tr>
+                                        <th>Customer Code</th>
+                                        <th>CO ID</th>
+                                        <th>CO Status</th>
+                                        <th>SIM Type</th>
+                                        <th>Customer Phone</th>
+                                        <th>Customer Name</th>
+                                        <th>Address</th>
+                                        <th>City</th>
+                                        <th>ZIP Code</th>
+                                        <th>Alternate Number</th>
+                                        <th>Request Date</th>
+                                        <th>Lot No</th>
+                                        <th>First CallTime</th>
+                                        <th>First Call Status</th>
+                                        <th>First Call By</th>
+                                        <th>Call Number</th>
+                                        <th>Second CallTime</th>
+                                        <th>Second Call Status</th>
+                                        <th>Second Call By</th>
+                                        <th>Called Number</th>
+                                        <th>Third CallTime</th>
+                                        <th>Third Call Status</th>
+                                        <th>Third Call By</th>
+                                        <th>Called Number</th>
+                                        <th>Fourth CallTIme</th>
+                                        <th>Fourth Call Status</th>
+                                        <th>Fourth Call By</th>
+                                        <th>Called Number</th>
+
+
+                                    </tr>
+                                    <tr ng-repeat="x in message">
+                                        <td>{{ x.customerid }}</td>
+                                        <td>{{ x.coid }}</td>
+                                        <td>{{ x.costatus }}</td>
+                                        <td>{{ x.simtype }}</td>
+                                        <td>{{ x.customerphone }}</td>
+                                        <td>{{ x.customername }}</td>
+                                        <td>{{ x.customeraddress }}</td>
+                                        <td>{{ x.city }}</td>
+                                        <td>{{ x.zipcode }}</td>
+                                        <td>{{ x.alternatenum }}</td>
+                                        <td>{{ x.requestdate }}</td>
+                                        <td>{{ x.lotno }}</td>
+                                        <td>{{ x.first_calltime }}</td>
+                                        <td>{{ x.first_status }}</td>
+                                        <td>{{ x.first_callby }}</td>
+                                        <td>{{ x.first_called_num }}</td>
+                                        <td>{{ x.second_calltime }}</td>
+                                        <td>{{ x.second_status }}</td>
+                                        <td>{{ x.second_callby }}</td>
+                                        <td>{{ x.sec_called_num }}</td>
+                                        <td>{{ x.third_calltime }}</td>
+                                        <td>{{ x.third_status }}</td>
+                                        <td>{{ x.third_callby }}</td>
+                                        <td>{{ x.third_called_num }}</td>
+                                        <td>{{ x.fourth_calltime }}</td>
+                                        <td>{{ x.fourth_status }}</td>
+                                        <td>{{ x.fourth_callby }}</td>
+                                        <td>{{ x.fourth_called_num }}</td>
+
+                                    </tr>
+                                </table>
+
+                            </div>
+
+
+                            <div id="exportableProcessReport" style="display:none">
+                                <table align="center" border="1" >
+                                    <tr>
+                                        <th>Customer Code</th>
+                                        <th>CO ID</th>
+                                        <th>CO Status</th>
+                                        <th>SIM Type</th>
+                                        <th>Customer Phone</th>
+                                        <th>Customer Name</th>
+                                        <th>Address</th>
+                                        <th>City</th>
+                                        <th>ZIP Code</th>
+                                        <th>Alternate Number</th>
+                                        <th>Request Date</th>
+                                        <th>Lot No</th>
+                                        <th>Final CallTime</th>
+                                        <th>Call Status</th>
+                                        <th>Appointment Date</th>
+                                        <th>Appointment Time</th>
+                                        <th>MR Name</th>
+                                        <th>Visit DateTime</th>
+                                        <th>Longitude</th>
+                                        <th>Latitude</th>
+                                        <th>MR Reach Address</th>
+                                        <th>MR Remarks</th>
+                                        <th>Document Upload Datetime</th>
+                                        <th>Circle Audit Datetime</th>
+                                        <th>Photo Matched</th>
+                                        <th>Name Mathched</th>
+                                        <th>Signature Matched</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                        <th>Ao Audit Datetime</th>
+                                        <th>Ao Audit Status</th>
+                                        <th>Remarks</th>
+                                        <th>Form Status</th>
+                                        <th>Document Recieved Datetime</th>
+
+
+
+
+                                    </tr>
+                                    <tr ng-repeat="x in message">
+                                        <td>{{ x.customerid }}</td>
+                                        <td>{{ x.coid }}</td>
+                                        <td>{{ x.costatus }}</td>
+                                        <td>{{ x.simtype }}</td>
+                                        <td>{{ x.customerphone }}</td>
+                                        <td>{{ x.customername }}</td>
+                                        <td>{{ x.customeraddress }}</td>
+                                        <td>{{ x.city }}</td>
+                                        <td>{{ x.zipcode }}</td>
+                                        <td>{{ x.alternatenum }}</td>
+                                        <td>{{ x.requestdate }}</td>
+                                        <td>{{ x.lotno }}</td>
+                                        <td>{{ x.final_calltime }}</td>
+                                        <td>{{ x.call_status }}</td>
+                                        <td>{{ x.appointment_date }}</td>
+                                        <td>{{ x.apoointment_time }}</td>
+                                        <td>{{ x.mr_name }}</td>
+                                        <td>{{ x.visitdatetime }}</td>
+                                        <td>{{ x.longitude }}</td>
+                                        <td>{{ x.latitude }}</td>
+                                        <td>{{ x.mr_reachaddress }}</td>
+                                        <td>{{ x.mr_remarks }}</td>
+                                        <td>{{ x.docUploadDatetime }}</td>
+                                        <td>{{ x.circle_auditDatetime }}</td>
+                                        <td>{{ x.photo_matched }}</td>
+                                        <td>{{ x.Name_Matched }}</td>
+                                        <td>{{ x.signedMatched }}</td>
+                                        <td>{{ x.status }}</td>
+                                        <td>{{ x.remarks }}</td>
+                                        <td>{{ x.ao_audit_datetime }}</td>
+                                        <td>{{ x.ao_audit_status }}</td>
+                                        <td>{{ x.remarks }}</td>
+                                        <td>{{ x.form_status }}</td>
+                                        <td>{{ x.document_RecievedDatetime }}</td>
+
+
+
+
+
+                                    </tr>
+                                </table>
+
+                            </div>
+
+
                             <div class="form-group">
                                 <div class="col-sm-offset-5 col-sm-10">
                                     <button class="btn btn-azure shiny" ng-click="send($event)"

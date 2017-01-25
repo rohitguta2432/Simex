@@ -13,4 +13,6 @@ public interface ReportDao {
     public JSONObject getReportData(String from,String to,String type);
     public JSONObject getReportMis(String from,String to,String type);
     public JSONObject getReOpenCalling(String from,String to,JSONObject jsonObject);
+    public JSONObject getReportCalling(String from,String to,String type);
+    public JSONObject getRpeortProcess(String from,String to,String type);
 }

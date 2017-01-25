@@ -2476,6 +2476,24 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
 
                     }, 3000);
 
+                }else if($scope.report1.reportName == 'Call Report'){                                          ////////////function for Tellicalling
+
+                    window.setTimeout(function(){
+                        console.log($scope.message);
+                        $scope.exportToCallExcel();
+                        location.reload();
+
+                    }, 3000);
+
+                }else if($scope.report1.reportName == 'Process Report'){                                          ////////////function for Tellicalling
+
+                    window.setTimeout(function(){
+                        console.log($scope.message);
+                        $scope.exportToExcelProcessReport();
+                        location.reload();
+
+                    }, 3000);
+
                 }
                 // $scope.successTextAlert = 'Data Submit Successfully ';
             }, function(err){
@@ -2492,6 +2510,12 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
             })
 
         };
+    }
+    $scope.exportToExcelProcessReport=function(){// ex: '#my-table'    ///////////////////report for KycMis
+        var blob = new Blob([document.getElementById('exportableProcessReport').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        saveAs(blob, "Report.xls");
     }
     $scope.exportToExcel=function(){// ex: '#my-table'    ///////////////////report for telecalling
         var blob = new Blob([document.getElementById('exportable').innerHTML], {
@@ -2518,7 +2542,7 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
         saveAs(blob, "Report.xls");
     }
     $scope.exportToCallExcel=function(){// ex: '#my-table'    ///////////////////report for KycMis
-        var blob = new Blob([document.getElementById('exportableCallSatus').innerHTML], {
+        var blob = new Blob([document.getElementById('exportableCallReport').innerHTML], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
         });
         saveAs(blob, "Report.xls");

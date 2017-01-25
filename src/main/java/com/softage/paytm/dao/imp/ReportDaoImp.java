@@ -361,6 +361,134 @@ public class ReportDaoImp implements ReportDao {
         return jsonObject;
     }
 
+    @Override
+    public JSONObject getReportCalling(String from, String to, String type) {
+        EntityManager entityManager = null;
+        List list = new ArrayList<>();
+        Query query = null;
+        JSONObject jsonObject = new JSONObject();
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            query = entityManager.createNativeQuery("{call usp_callingReport(?,?)}");
+            query.setParameter(1, from);
+            query.setParameter(2, to);
+            List<Object[]> resultList = query.getResultList();
+            int i = 1;
+            for (Object[] objects : resultList) {
+                String status = "Open";
+                if (objects.length > 0) {
+
+                    JSONObject json = new JSONObject();
+                    json.put("customerid", objects[0]);
+                    json.put("coid", objects[1]);
+                    json.put("costatus", objects[2]);
+                    json.put("simtype", objects[3]);
+                    json.put("customerphone", objects[4]);
+                    json.put("customername", objects[5]);
+                    json.put("customeraddress", objects[6]);
+                    json.put("city", objects[7]);
+                    json.put("zipcode", objects[8]);
+                    json.put("alternatenum", objects[9]);
+                    json.put("requestdate", objects[10]);
+                    json.put("lotno", objects[11]);
+                    json.put("first_calltime", objects[12]);
+                    json.put("first_status", objects[13]);
+                    json.put("first_callby", objects[14]);
+                    json.put("first_called_num", objects[15]);
+                    json.put("second_calltime", objects[16]);
+                    json.put("second_status", objects[17]);
+                    json.put("second_callby", objects[18]);
+                    json.put("sec_called_num", objects[19]);
+                    json.put("third_calltime", objects[20]);
+                    json.put("third_status", objects[21]);
+                    json.put("third_callby", objects[22]);
+                    json.put("third_called_num", objects[23]);
+                    json.put("fourth_calltime", objects[24]);
+                    json.put("fourth_status", objects[25]);
+                    json.put("fourth_callby", objects[26]);
+                    json.put("fourth_called_num", objects[27]);
+                    jsonObject.put("record-" + i, json);
+                }
+                i++;
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject getRpeortProcess(String from, String to, String type) {
+        EntityManager entityManager = null;
+        List list = new ArrayList<>();
+        Query query = null;
+        JSONObject jsonObject = new JSONObject();
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            query = entityManager.createNativeQuery("{call usp_processReport(?,?)}");
+            query.setParameter(1, from);
+            query.setParameter(2, to);
+            List<Object[]> resultList = query.getResultList();
+            int i = 1;
+            for (Object[] objects : resultList) {
+                String status = "Open";
+                if (objects.length > 0) {
+
+                    JSONObject json = new JSONObject();
+                    json.put("customerid", objects[0]);
+                    json.put("coid", objects[1]);
+                    json.put("costatus", objects[2]);
+                    json.put("simtype", objects[3]);
+                    json.put("customerphone", objects[4]);
+                    json.put("customername", objects[5]);
+                    json.put("customeraddress", objects[6]);
+                    json.put("city", objects[7]);
+                    json.put("zipcode", objects[8]);
+                    json.put("alternatenum", objects[9]);
+                    json.put("requestdate", objects[10]);
+                    json.put("lotno", objects[11]);
+                    json.put("final_calltime", objects[12]);
+                    json.put("call_status", objects[13]);
+                    json.put("appointment_date", objects[14]);
+                    json.put("apoointment_time", objects[15]);
+                    json.put("mr_name", objects[16]);
+                    json.put("visitdatetime", objects[17]);
+                    json.put("longitude", objects[18]);
+                    json.put("latitude", objects[19]);
+                    json.put("mr_reachaddress", objects[20]);
+                    json.put("mr_remarks", objects[21]);
+                    json.put("docUploadDatetime", objects[22]);
+                    json.put("circle_auditDatetime", objects[23]);
+                    json.put("photo_matched", objects[24]);
+                    json.put("Name_Matched", objects[25]);
+                    json.put("signedMatched", objects[26]);
+                    json.put("status", objects[27]);
+                    json.put("remarks", objects[28]);
+                    json.put("ao_audit_datetime", objects[29]);
+                    json.put("ao_audit_status", objects[30]);
+                    json.put("remarks", objects[31]);
+                    json.put("form_status", objects[32]);
+                    json.put("document_RecievedDatetime", objects[33]);
+                    jsonObject.put("record-" + i, json);
+                }
+                i++;
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return jsonObject;
+    }
+
     public static String getlocation(String lati,String longi){
       Context context=null;
 
