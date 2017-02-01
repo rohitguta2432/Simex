@@ -1,6 +1,7 @@
 package com.softage.paytm.models;
 
         import javax.persistence.*;
+        import java.sql.Timestamp;
 
 /**
  * Created by SS0090 on 1/4/2017.
@@ -17,6 +18,7 @@ public class CircleAuditEntity {
     private String otherReason;
     private Integer auditStatus;
     private TblScan tblScan;
+    private Timestamp circleauditdatetime;
 
     @Id
     @GeneratedValue
@@ -98,5 +100,15 @@ public class CircleAuditEntity {
 
     public void setAuditStatus(Integer auditStatus) {
         this.auditStatus = auditStatus;
+    }
+
+    @Basic
+    @Column(name = "circleauditdatetime",nullable = true,insertable = true,updatable = true)
+    public Timestamp getCircleauditdatetime() {
+        return circleauditdatetime;
+    }
+
+    public void setCircleauditdatetime(Timestamp circleauditdatetime) {
+        this.circleauditdatetime = circleauditdatetime;
     }
 }

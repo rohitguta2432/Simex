@@ -1,6 +1,7 @@
 package com.softage.paytm.models;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by SS0090 on 1/4/2017.
@@ -17,6 +18,7 @@ public class AoAuditEntity {
     private String otherReason;
     private Integer auditStatus;
     private TblScan tblScan;
+    private Timestamp aoauditdatetime;
 
     @Id
     @GeneratedValue
@@ -97,5 +99,15 @@ public class AoAuditEntity {
 
     public void setAuditStatus(Integer auditStatus) {
         this.auditStatus = auditStatus;
+    }
+
+    @Basic
+    @Column(name = "aoauditdatetime",nullable = true,insertable = true,updatable = true)
+    public Timestamp getAoauditdatetime() {
+        return aoauditdatetime;
+    }
+
+    public void setAoauditdatetime(Timestamp aoauditdatetime) {
+        this.aoauditdatetime = aoauditdatetime;
     }
 }

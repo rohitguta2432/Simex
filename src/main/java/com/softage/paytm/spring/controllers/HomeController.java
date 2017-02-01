@@ -2736,8 +2736,8 @@ class HomeController {
                                 File imgpath = new File(imgFolder.getPath(), image);
                                 imgpath.delete();
                             }
+                            imgFolder.delete();
                         }
-                        imgFolder.delete();
                     }
                 }
             }

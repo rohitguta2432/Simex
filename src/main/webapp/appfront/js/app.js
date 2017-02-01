@@ -1507,6 +1507,14 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
     $scope.statuscode;
     $scope.status1;
     $scope.callStatus="1";
+
+    $scope.changeLocation=function(){
+        var modalInstance=$modal.open({
+            templateUrl: 'Telecalling/changeLocationModal.html',
+            controller : 'telecalling'
+        });
+    }
+
     /* Function for get Telecalling Screen */
     $scope.getscreen = function(){
 
