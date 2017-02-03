@@ -668,7 +668,7 @@ class HomeController {
                                 paytmPinMaster = pinMasterService.getByPincode(pincode);
 
                             }
-                            if (!StringUtils.isEmpty(customerData[1]) && (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) && telecallMastEntity == null && paytmMastEntity == null) {
+                            if (!StringUtils.isEmpty(customerData[1]) && (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) && telecallMastEntity == null && paytmMastEntity == null ) {
                                 System.out.println(customerData[0]);
                                 map.put("kycRequestId", customerData[0]);
                                 map.put("CustomerID", customerData[1]);
@@ -1665,7 +1665,7 @@ class HomeController {
                         paytmPinMaster = pinMasterService.getByPincode(pincode1);
 
                     }
-                    if (!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1)) {
+                    if (!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1 && !StringUtils.isBlank(sim_type))) {
                         map.put("customerID", customerId);
                         map.put("name", name);
                         map.put("mobileNumber", mobileNumber);
@@ -1691,6 +1691,10 @@ class HomeController {
                             json.put("Resion", "This Customer Pincode not match with Softage Circles PinCode .");
                             json1.put("rejectedRecord" + count, json);
                         }
+                    }else if(!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1 && StringUtils.isBlank(sim_type))){
+                        json.put("CustomerID", customerId);
+                        json.put("Resion", "Sim Type is blank");
+                        json1.put("rejectedRecord" + count, json);
                     } else if (flag) {
                         json.put("CustomerID", customerId);
                         json.put("Resion", "Duplicate Customers");
