@@ -59,6 +59,7 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
                     $scope.msg = data;
                     // console.log(data.status);
                     if (data.status == 'success') {
+                        alert("Password Change Successfully   ");
                         $scope.show2 = false;
                         $window.location.href = '/simex/appfront/app.jsp';
                     }else{

@@ -20,6 +20,11 @@ public class CircleServiceImp implements CircleService {
         return circleMastDao.getReporttypes();
     }
 
+    @Override
+    public List<String> getBySpokeCode(String spokecode) {
+        return circleMastDao.getBySpokeCode(spokecode);
+    }
+
     @Autowired
     public CircleMastDao circleMastDao;
     @Override

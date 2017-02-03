@@ -7,6 +7,7 @@ import com.softage.paytm.models.AllocationMastEntity;
  */
 public interface AllocationService {
     public AllocationMastEntity findByPrimaryKey(int id);
+    public AllocationMastEntity findByCustUid(int cust_uid);
     public AllocationMastEntity findById(String agentCode, String jobid);
     public String updateAllocationMastEntity(AllocationMastEntity allocationMastEntity);
     public String updateKycAllocation(String AgentCode,String JobId, String remarksCode, String kycStatus);

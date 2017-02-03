@@ -15,5 +15,6 @@ public interface SmsSendLogDao {
     public String updateSmsLogData(SmsSendlogEntity smsSendlogEntity);
     public ProcessMastEntity  getByPrimarykey(int processCode);
     public ReceiverMastEntity getbyPrimaryKey(int reciverId);
+    public SmsSendlogEntity getByMobileNumber(String mobileNumber);
 
 }

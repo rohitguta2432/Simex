@@ -92,4 +92,25 @@ public class SmsSendLogDaoImp implements SmsSendLogDao {
     public ReceiverMastEntity getbyPrimaryKey(int reciverId) {
         return null;
     }
+
+    @Override
+    public SmsSendlogEntity getByMobileNumber(String mobileNumber) {
+        EntityManager entityManager = null;
+        SmsSendlogEntity smsSendlogEntity = null;
+        Query query = null;
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select smslog from SmsSendlogEntity smslog where smslog.mobileNumber=:mobileNumber";
+            query = entityManager.createQuery(strQuery);
+            query.setParameter("mobileNumber", mobileNumber);
+            smsSendlogEntity = (SmsSendlogEntity) query.getSingleResult();
+        } catch (Exception e) {
+            logger.error("getting SMS Data ",e);
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return smsSendlogEntity;
+    }
 }

@@ -163,7 +163,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 paytmMasterDao.updatePaytmMast(paytmMastEntity);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           logger.error("job allocate error",e);
         }
         return result;
     }
@@ -241,7 +241,7 @@ public class PostCallingServiceImp implements PostCallingService {
                     flag = true;
                 }*/
             } catch (Exception e) {
-                e.printStackTrace();
+               logger.error("available slot",e);
             }
 
 
@@ -266,11 +266,15 @@ public class PostCallingServiceImp implements PostCallingService {
         // String url="http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=8882905998&text= hello this is test mesg";
         //String url = "http://www.mysmsapp.in/api/push?apikey=56274f9a48b66&route=trans5&sender=SPAYTM&mobileno=" + mobileno + "&text=" + text;
         //   String url = "http://www.mysmsapp.in/api/push";
+        // 5732df1bc7011
+        //new BasicNameValuePair("apikey", "56274f9a48b66")
+        //new BasicNameValuePair("sender", "SPAYTM")
+
         String url = "http://www.mysmsapp.in/api/push.json";
         try (CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build()) {
             try (CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(RequestBuilder.post(url)
-                    .addParameter(new BasicNameValuePair("apikey", "56274f9a48b66"))
-                    .addParameter(new BasicNameValuePair("sender", "SPAYTM"))
+                    .addParameter(new BasicNameValuePair("apikey", "5732df1bc7011"))
+                    .addParameter(new BasicNameValuePair("sender", "VODAFN"))
                     .addParameter(new BasicNameValuePair("mobileno", mobileno))
                     .addParameter(new BasicNameValuePair("text", text)).build())) {
                 InputStream is = closeableHttpResponse.getEntity().getContent();
@@ -283,34 +287,17 @@ public class PostCallingServiceImp implements PostCallingService {
 
                 }
                 result = response.toString();
+
+                logger.info("sent sms  mobile Number =  "+mobileno);
             } catch (IOException io) {
-                io.printStackTrace();
+                logger.error("send sms ",io);
                 result = "err";
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("send sms ",e);
             result = "err";
         }
-         /*  URL obj = new URL(url);
-            con = (HttpURLConnection) obj.openConnection();
-            con.setReadTimeout(15 * 1000);
-     //       con.connect();
-            con.setRequestMethod("POST");
-            int responseCode = con.getResponseCode();
-            logger.info("\nSending 'POST' request to URL : " + url);
-            System.out.println("Response Code :" + responseCode);
-            logger.info("Response Code :" + responseCode);
-           in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        //    in = new BufferedReader(new InputStreamReader(is);
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            result = response.toString();*/
-
 
         return result;
 
@@ -409,6 +396,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
             if(agentCode!=null) {
                 paytmagententryEntity =agentPaytmDao.findByPrimaryKey(agentCode);
+                agentMobileNumber=paytmagententryEntity.getAphone();
                 allocation_map.put("appointmentID", appoinmentId);
                 allocation_map.put("agentcode", agentCode);
                 allocation_map.put("custUID", map.get("custId"));
@@ -439,11 +427,11 @@ public class PostCallingServiceImp implements PostCallingService {
                 String text = "Dear Agent Job No- " + jobNumber + "" +
                         " , Your visit is fixed at " + pcdvisitTime
                         + " " + visitTime + " with " + name + " Address- " +
-                        "" + address + " " + pincode + " Contact no- " +
-                        "" + number + " Please See Leads in App ";
-                String custext = "Dear Customer  Your CustomerId- " + custId+ "" +
-                        ",   Agent visit dateTime " + pcdvisitTime
-                        + " " + visitTime + " Please Available with ...... ";
+                        "" + address + " " + pincode + " Contact nos- " +
+                        "" + paytmMastEntity.getAlternatePhone1() +" , "+number+" Please See Leads in App ";
+                String custext = "Dear Customer  Your CustomerId - " + custId+ " with Request Number " + paytmMastEntity.getCustomerPhone()
+                       + " ,   Agent visit date " + pcdvisitTime
+                        + "  Time " + visitTime + " Please Available with all documents";
 
                 PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
                 if (paytmdeviceidinfoEntity != null) {
@@ -455,19 +443,22 @@ public class PostCallingServiceImp implements PostCallingService {
                     String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
                     if(paytmMastEntity.getAlternatePhone1()==null || paytmMastEntity.getAlternatePhone1()==""){
                         String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                    } else {
+                        String res4 = saveSmsSendLog(paytmMastEntity.getAlternatePhone1(), paytmMastEntity.getCustomerId(), custext, "1", "4");
                     }
-                    String res4 =  saveSmsSendLog(paytmMastEntity.getAlternatePhone1(),paytmMastEntity.getCustomerId(),custext,"1","4");
                   //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
                 } else {
                     String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
                     if(paytmMastEntity.getAlternatePhone1()==null || paytmMastEntity.getAlternatePhone1()==""){
                         String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                    } else {
+                        String res4 = saveSmsSendLog(paytmMastEntity.getAlternatePhone1(), paytmMastEntity.getCustomerId(), custext, "1", "4");
                     }
-                    String res4 =  saveSmsSendLog(paytmMastEntity.getAlternatePhone1(),paytmMastEntity.getCustomerId(),custext,"1","4");
                   //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
                 }
 
                 result = "JOB ALLOCATED";
+                logger.info("Job Allocated to AgentCode  "+agentCode);
 
 
             }else{
@@ -475,7 +466,7 @@ public class PostCallingServiceImp implements PostCallingService {
             }
 
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error("Job Allocated error",e);
             result="err";
         }
 
@@ -484,23 +475,6 @@ public class PostCallingServiceImp implements PostCallingService {
         return result;
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -530,8 +504,7 @@ public class PostCallingServiceImp implements PostCallingService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("error to save Appointmantdata");
+            logger.error("error to save Appointmantdata",e);
         }
         return result;
     }
@@ -662,7 +635,7 @@ public class PostCallingServiceImp implements PostCallingService {
 
                     result = "JOB ALLOCATED";
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("job allocated error ",e);
                 }
             } else {
                 result = "NO AGENT AVAILABLE";
@@ -714,6 +687,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 }
             }
         } catch (Exception e) {
+            logger.error("Save Allocation ",e);
             result = "err";
 
         }

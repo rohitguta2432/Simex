@@ -19,6 +19,11 @@ public class AllocationServiceImp implements AllocationService {
     }
 
     @Override
+    public AllocationMastEntity findByCustUid(int cust_uid) {
+        return allocationDao.findByCustUid(cust_uid);
+    }
+
+    @Override
     public AllocationMastEntity findById(String agentCode, String jobid) {
         return allocationDao.findById(agentCode,jobid);
     }

@@ -479,8 +479,95 @@ class HomeController {
         return jsonObject;
     }
 */
+   @RequestMapping(value = "/resetPassword", method = RequestMethod.GET)
+   @ResponseBody
+   public JSONObject resetPassword(HttpServletRequest request, HttpServletResponse response) {
 
-    @RequestMapping(value = "/resetPassword", method = RequestMethod.GET)
+       // JSONObject jsonObject = new JSONObject();
+       String result = null;
+       String useroldpassword = null;
+       String finalpass = null;
+       String passCsv="";
+       JSONObject jsonObject=new JSONObject();
+       try {
+           String user = request.getParameter("userName");
+           String oldpassword = request.getParameter("oldpassword");
+           String newpassword = request.getParameter("password");
+
+
+           Date expireDate = new Date();
+           System.out.println("Current Date   " + expireDate);
+           long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+           expireDate.setTime(expireDate.getTime() + expireTime);
+           System.out.println("Date After 30 Days  " + expireDate);
+
+           EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+           if (emplogintableEntity != null) {
+               if (oldpassword.equals(emplogintableEntity.getEmpPassword())) {
+                   String lastThrePassword = emplogintableEntity.getLastThreePassword();
+                   lastThrePassword = (lastThrePassword!=null)?lastThrePassword:"";
+                   String[] lastPassArr  = lastThrePassword.split(",");
+                    /*for(String pass:lastPassArr){
+
+                    }
+                    *///Arrays.asList(lastPassArr).contains(newpassword)
+                   if (!Arrays.asList(lastPassArr).contains(newpassword) && (!oldpassword.equals(newpassword))) {
+                       //Old password mismatch
+                       String lastThreePassword = emplogintableEntity.getLastThreePassword();
+                       if(lastThreePassword!=null) {
+                           String[] arr = lastThreePassword.split(",");
+
+                           if (arr.length == 3) {
+                               arr[0] = arr[1];
+                               arr[1] = arr[2];
+                               arr[2] = newpassword;
+                               passCsv = StringUtils.join(arr, ',');
+                           } else {
+                               passCsv = StringUtils.isNotBlank(lastThreePassword)
+                                       ? lastThreePassword + "," + newpassword : newpassword;
+                           }
+                       }else{
+                           passCsv=newpassword;
+                       }
+                       BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                       String hashedPassword = passwordEncoder.encode(newpassword);
+                       emplogintableEntity.setEmpPassword(newpassword);
+                       emplogintableEntity.setLastThreePassword(passCsv);
+                       emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                       emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+                       result = agentPaytmService.updatePassword(emplogintableEntity, newpassword);
+                       if (result.equalsIgnoreCase("done")) {
+                           result = "success";
+                       }
+
+                   } else {
+                       result = "New Password can't be last 3 password";
+                   }
+               } else {
+                   result = "old password is not valid";
+               }
+           } else {
+               result = "Invalid User";
+           }
+       } catch (Exception e) {
+           logger.error("reset Password error ",e);
+           result = "Technical Error";
+
+       }
+       jsonObject.put("status", result);
+
+       return jsonObject;
+
+   }
+
+
+
+
+
+
+
+
+   /* @RequestMapping(value = "/resetPassword", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject resetPassword(HttpServletRequest request, HttpServletResponse response) {
         //logger.info("Welcome home! The client locale is {}.", locale);
@@ -525,7 +612,7 @@ class HomeController {
         jsonObject.put("status", result);
 
         return jsonObject;
-    }
+    }*/
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     @ResponseBody
@@ -734,10 +821,8 @@ class HomeController {
 
         } catch (FileNotFoundException e) {
             logger.error("File Not Found ", e);
-            e.printStackTrace();
             result = "File not Uploaded";
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error(" ", e);
             result = "File not Uploaded";
         } finally
@@ -836,10 +921,10 @@ class HomeController {
             }
         } catch (FileNotFoundException e) {
             logger.error("File Not Found ", e);
-            e.printStackTrace();
+
             result = "File not Uploaded";
         } catch (Exception e) {
-            e.printStackTrace();
+
             logger.error(" ", e);
             result = "File not Uploaded";
         } finally
@@ -898,7 +983,7 @@ class HomeController {
 
             jsonObject = qcStatusService.downloadList(mobilenumber, to, from);
         } catch (Exception e) {
-            e.printStackTrace();
+           logger.error("",e);
         }
         return jsonObject;
 
@@ -1169,6 +1254,7 @@ class HomeController {
         int cirCode = 0;
         JSONObject json = new JSONObject();
         JSONObject jsonObject = new JSONObject();
+
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
@@ -1179,6 +1265,7 @@ class HomeController {
                 }
             }
             if (userName != null) {
+
                 JSONObject teleJson = paytmMasterService.telecallingScreen(userName, cirCode);
                 List<StateMasterEntity> stateList = paytmMasterService.getStateList();
                 List<CallStatusMasterEntity> statusList = paytmMasterService.getStatusList();
@@ -1325,7 +1412,7 @@ class HomeController {
                 jsonObject.put("authentication", "failed");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("registration error ",e);
             msg = "Agent not Registered ";
             jsonObject.put("msg", msg);
             jsonObject.put("status", "error");
@@ -1336,6 +1423,108 @@ class HomeController {
 
         return jsonObject;
     }
+
+    @RequestMapping(value = "/agentRegistration1", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject agentRegistration1(HttpServletRequest request) {
+        String msg = "";
+        JSONObject jsonObject = new JSONObject();
+        PaytmPinMaster paytmPinMaster = null;
+        int circleCode = 0;
+        CircleMastEntity circleMastEntity = null;
+        try {
+
+            String userName = "system";
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                userName = (String) session.getAttribute("name");
+                circleCode = (Integer) session.getAttribute("cirCode");
+                if (circleCode != 0) {
+                    circleMastEntity = circleService.findByPrimaryKey(circleCode);
+                }
+            }
+
+            if (userName != null) {
+
+                String agentName = request.getParameter("agent_name");
+                String agentCode = request.getParameter("agent_code");
+                String empCode = "";
+                String mobileNo = request.getParameter("phone");
+                String circleOffice = request.getParameter("circle_office");
+                String spokeCode = request.getParameter("spoke_code");
+                String avalTime = request.getParameter("avl_time");
+             //   String pincode = request.getParameter("pin_code");
+                String multipin = "M";
+                String email = request.getParameter("email");
+                PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
+                paytmagententryEntity.setAfullname(agentName);
+                paytmagententryEntity.setAcode(agentCode);
+                paytmagententryEntity.setEmpcode(empCode);
+                paytmagententryEntity.setAphone(mobileNo);
+                paytmagententryEntity.setAspokecode(spokeCode);
+                paytmagententryEntity.setAavailslot(avalTime);
+
+                paytmagententryEntity.setMulitplePin(multipin);
+                paytmagententryEntity.setAemailId(email);
+                paytmagententryEntity.setImportby(userName);
+                paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
+                List<String> pincodeList=circleService.getBySpokeCode(spokeCode);
+                int count=0;
+                for(String agentPincode:pincodeList){
+                    count++;
+                    paytmagententryEntity.setApincode(agentPincode);
+
+                    PaytmagententryEntity paytmagententryEntity1 = agentPaytmService.findByPrimaryKey(agentCode);
+
+                    if (paytmagententryEntity1 != null) {
+                        String result = agentPaytmService.saveAgentPinMaster1(paytmagententryEntity);
+                        if (result.equals("done")) {
+                            count++;
+                            msg = "Agent Succesfully Registered with Number of Pincode = "+count;
+                            jsonObject.put("msg", msg);
+                            jsonObject.put("status", "success");
+
+
+                        } else {
+                            msg = "Agent Already Registred with Same Pincodes";
+                            jsonObject.put("msg", msg);
+                            jsonObject.put("status", "success");
+                        }
+
+                    } else {
+                        msg = agentPaytmService.saveAgent(paytmagententryEntity, circleMastEntity);
+                        if ("done".equalsIgnoreCase(msg)) {
+                            msg = "Agent Succesfully Registered";
+                            jsonObject.put("msg", msg);
+                            jsonObject.put("status", "success");
+                            count++;
+                        } else {
+                            msg = "Agent not Registered Try Again ";
+                            jsonObject.put("msg", msg);
+                            jsonObject.put("status", "error");
+                        }
+                    }
+
+                }
+
+            } else {
+                jsonObject.put("authentication", "failed");
+            }
+        } catch (Exception e) {
+            logger.error("registration error ",e);
+            msg = "Agent not Registered ";
+            jsonObject.put("msg", msg);
+            jsonObject.put("status", "error");
+
+
+        }
+
+
+        return jsonObject;
+    }
+
+
+
 
 
     @RequestMapping(value = "/registration", method = {RequestMethod.GET, RequestMethod.POST})
@@ -1391,6 +1580,7 @@ class HomeController {
                 String hashedPassword = passwordEncoder.encode(password);
 
                 emplogintableEntity.setEmpPassword(password);
+                emplogintableEntity.setLastThreePassword(password);
                 emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
                 emplogintableEntity.setRoleCode(role);
                 emplogintableEntity.setEmpStatus(1);
@@ -1485,10 +1675,61 @@ class HomeController {
                 returnObj.put("authentication", "failed");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         }
         return returnObj;
     }
+
+
+    @RequestMapping(value = "/updateAddress", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject updateAddress(HttpServletRequest request,HttpServletResponse response) {
+
+        JSONObject returnObj = new JSONObject();
+        String userName = "system";
+        String changePincode="";
+        String changeAddress="";
+        String result="";
+
+        int cust_uid = 0;
+        HttpSession session = request.getSession(false);
+        logger.info("calling to customer>>>>> wait");
+        if (session != null) {
+            userName = (String) session.getAttribute("name");
+        }
+        try {
+            if (userName != null) {
+                changePincode=request.getParameter("zipcode");
+                changeAddress=request.getParameter("changeAddress");
+                cust_uid=  Integer.parseInt(request.getParameter("cust_uid"));
+                PaytmMastEntity paytmMastEntity=paytmMasterService.getPaytmMastDatas(cust_uid);
+                if(paytmMastEntity!=null){
+                    String lastAddress=paytmMastEntity.getAddress();
+                    String lastpincode=paytmMastEntity.getPincode();
+                    paytmMastEntity.setLastAddress(lastAddress);
+                    paytmMastEntity.setLastPincode(lastpincode);
+                    paytmMastEntity.setAddressStatus("U");
+                    paytmMastEntity.setAddress(changeAddress);
+                    paytmMastEntity.setPincode(changePincode);
+                    result =paytmMasterService.updatePaytmMast(paytmMastEntity);
+                    if(result.equalsIgnoreCase("done")){
+                        result="success";
+                    }
+                }
+
+
+            } else {
+                returnObj.put("authentication", "authentication failed");
+            }
+        } catch (Exception e) {
+            returnObj.put("authentication", "Technical error");
+            logger.error("", e);
+        }
+        returnObj.put("status",result);
+        return returnObj;
+    }
+
+
 
     public static JSONObject uploadExcel(File path, String importBy, PaytmMasterService paytmMasterService, PaytmPinMasterService pinMasterService) {
         Row row = null;
@@ -1724,14 +1965,14 @@ class HomeController {
             }
         } catch (Exception e) {
             result = "Technical error in uploading";
-            e.printStackTrace();
+            logger.error("Customer Uploading", e);
 
         } finally {
             try {
                 file.close();
 
             } catch (Exception e) {
-
+                logger.error("",e);
             }
         }
         jsonObject.put("Message", result);
@@ -1770,12 +2011,12 @@ class HomeController {
                 String agentName = row.getCell(0).getStringCellValue().trim();
                 String agentCode = row.getCell(1).getStringCellValue().trim();
                 String mobileNo = row.getCell(2).getStringCellValue().trim();
-                String pinCode = row.getCell(3).getStringCellValue().trim();
-                String circle = row.getCell(4).getStringCellValue().trim();
+              //  String pinCode = row.getCell(3).getStringCellValue().trim();
+                String circle = row.getCell(3).getStringCellValue().trim();
 
-                String spoke = row.getCell(5).getStringCellValue().trim();
+                String spoke = row.getCell(4).getStringCellValue().trim();
 
-                String avialableSlot = row.getCell(6).getStringCellValue().trim();
+                String avialableSlot = row.getCell(5).getStringCellValue().trim();
 
 
             }
@@ -1800,16 +2041,16 @@ class HomeController {
                     } else {
                         mobileNo = NumberToTextConverter.toText(row.getCell(2).getNumericCellValue());
                     }
-                    if (row.getCell(3).getCellType() == Cell.CELL_TYPE_STRING) {
+                  /*  if (row.getCell(3).getCellType() == Cell.CELL_TYPE_STRING) {
                         pincode = row.getCell(3).getStringCellValue().trim();
 
                     } else {
                         pincode = NumberToTextConverter.toText(row.getCell(3).getNumericCellValue());
-                    }
-                    String circle = row.getCell(4).getStringCellValue().trim();
-                    String spoke = row.getCell(5).getStringCellValue().trim();
-                    String avialableSlot = row.getCell(6).getStringCellValue().trim();
-                    if ((pincode.length() == 6 && StringUtils.isNumeric(pincode)) && ((mobileNo.length() == 10 && StringUtils.isNumeric(mobileNo)))) {
+                    }*/
+                    String circle = row.getCell(3).getStringCellValue().trim();
+                    String spoke = row.getCell(4).getStringCellValue().trim();
+                    String avialableSlot = row.getCell(5).getStringCellValue().trim();
+                    if (((mobileNo.length() == 10 && StringUtils.isNumeric(mobileNo)))) {
                         map.put("agentName", agentName);
                         map.put("agentCode", agentCode);
                         map.put("mobileNo", mobileNo);
@@ -1849,7 +2090,7 @@ class HomeController {
             }
         } catch (Exception e) {
             result = "File Not Uploaded";
-            e.printStackTrace();
+            logger.error("Agent Uploading", e);
 
         } finally {
             try {
@@ -1999,7 +2240,7 @@ class HomeController {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         }
         return null;
     }
@@ -2089,7 +2330,7 @@ class HomeController {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
             status = false;
 
         } finally {
@@ -2105,7 +2346,7 @@ class HomeController {
                     ftpClient.disconnect();
 
                 } catch (IOException f) {
-                    // do nothing as file is already saved to server
+                    logger.error("",f);
                 }
             }
 
@@ -2145,7 +2386,7 @@ class HomeController {
             msg = response.toString();
         } catch (Exception e) {
             result = "error";
-            e.printStackTrace();
+            logger.error("calling", e);
         } finally {
             try {
                 in.close();
@@ -2802,26 +3043,28 @@ class HomeController {
             List<ChannelSftp.LsEntry> listOfImages = channelSftp.ls(directory);
             for (ChannelSftp.LsEntry lsEntry : listOfImages) {
                 String filename = lsEntry.getFilename();
-                byte[] buffer = new byte[1024];
-                BufferedInputStream bis = new BufferedInputStream(channelSftp.get(filename));
-                File file = new File(localpath);
-                if (!file.isDirectory()) {
-                    file.mkdir();
-                }
-                File fileToBeDownloaded = new File(localpath + "//" + filename);
-                OutputStream os = new FileOutputStream(fileToBeDownloaded);
-                BufferedOutputStream bos = new BufferedOutputStream(os);
-                int readCount;
-                while ((readCount = bis.read(buffer)) > 0) {
-                    System.out.println("Writing...");
-                    bos.write(buffer, 0, readCount);
-                }
-                bis.close();
-                bos.close();
+                if (filename.contains(".jpg")) {
+                    byte[] buffer = new byte[1024];
+                    BufferedInputStream bis = new BufferedInputStream(channelSftp.get(filename));
+                    File file = new File(localpath);
+                    if (!file.isDirectory()) {
+                        file.mkdir();
+                    }
+                    File fileToBeDownloaded = new File(localpath + "//" + filename);
+                    OutputStream os = new FileOutputStream(fileToBeDownloaded);
+                    BufferedOutputStream bos = new BufferedOutputStream(os);
+                    int readCount;
+                    while ((readCount = bis.read(buffer)) > 0) {
+                        System.out.println("Writing...");
+                        bos.write(buffer, 0, readCount);
+                    }
+                    bis.close();
+                    bos.close();
 
+                }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("",e);
         }
 
     }
@@ -3075,7 +3318,7 @@ class HomeController {
             String getinwardfrom = batchService.getinwardfrom(cirCode);
             json.put("inWordFrom", getinwardfrom);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         }
         return json;
     }
@@ -3107,7 +3350,7 @@ class HomeController {
                 jsonObject.put("authentication", "failed");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
             logger.error("", e);
         }
 
@@ -3136,7 +3379,7 @@ class HomeController {
                 jsonObject.put("authentication", "failed");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
             logger.error("", e);
         }
 
@@ -3167,7 +3410,7 @@ class HomeController {
                 jsonObject.put("authentication", "failed");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
             logger.error("", e);
         }
 

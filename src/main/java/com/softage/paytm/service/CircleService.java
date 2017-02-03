@@ -14,5 +14,6 @@ public interface CircleService {
     public CircleMastEntity findByPrimaryKey(int circleCode);
     List<String> getSpokeList(String circleName);
     public List<ReportMastEntity> getReporttypes();
+    public List<String> getBySpokeCode(String spokecode);
 
 }

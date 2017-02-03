@@ -100,7 +100,7 @@ public class AllocationDaoImp implements AllocationDao {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error("find by id allocationMast",e);
         }
         finally {
             if (entityManager != null && entityManager.isOpen())
@@ -206,6 +206,34 @@ public class AllocationDaoImp implements AllocationDao {
             String strQuery = " select al from AllocationMastEntity al where al.id=:id";
             query=entityManager.createQuery(strQuery);
             query.setParameter("id",id);
+            allocationMastEntity = (AllocationMastEntity)query.getSingleResult();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+
+            }
+        }
+        return  allocationMastEntity;
+    }
+
+    @Override
+    public AllocationMastEntity findByCustUid(int cust_uid) {
+        EntityManager entityManager = null;
+        AllocationMastEntity allocationMastEntity=null;
+        Query query=null;
+        try
+        {
+
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = " select al from AllocationMastEntity al where al.paytmcustomerDataByCustomerPhone.cust_uid=:cust_uid";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("cust_uid",cust_uid);
             allocationMastEntity = (AllocationMastEntity)query.getSingleResult();
         }
         catch (Exception e)

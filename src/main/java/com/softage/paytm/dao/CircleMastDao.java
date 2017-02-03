@@ -15,5 +15,7 @@ public interface CircleMastDao {
     public List<CircleMastEntity> getCircleList();
     List<String> getSpokeList(String circleName);
     List<ReportMastEntity> getReporttypes();
+    public List<String> getBySpokeCode(String spokecode);
+
 
 }

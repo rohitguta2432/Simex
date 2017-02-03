@@ -48,6 +48,9 @@ public class PaytmMastEntity {
     private String lotNo;
     private String remarks;
     private String finalStatus;
+    private String lastAddress;
+    private String lastPincode;
+    private String addressStatus;
 
     private Collection<TelecallLogEntity> telecallLogEntity;
     private CallTimeDetailsEntity callTimeDetailsEntity;
@@ -90,7 +93,7 @@ public class PaytmMastEntity {
 
 
     @Basic
-    @Column(name = "Address", nullable = true, insertable = true, updatable = true, length = 500)
+    @Column(name = "Address", nullable = true, insertable = true, updatable = true, length = 300)
     public String getAddress() {
         return address;
     }
@@ -107,6 +110,33 @@ public class PaytmMastEntity {
 
     public void setFinalStatus(String finalStatus) {
         this.finalStatus = finalStatus;
+    }
+    @Basic
+    @Column(name = "last_address", nullable = true, insertable = true, updatable = true, length =300)
+    public String getLastAddress() {
+        return lastAddress;
+    }
+
+    public void setLastAddress(String lastAddress) {
+        this.lastAddress = lastAddress;
+    }
+    @Basic
+    @Column(name = "last_pincode", nullable = true, insertable = true, updatable = true, length =6)
+    public String getLastPincode() {
+        return lastPincode;
+    }
+
+    public void setLastPincode(String lastPincode) {
+        this.lastPincode = lastPincode;
+    }
+    @Basic
+    @Column(name = "address_status", nullable = true, insertable = true, updatable = true, length =4)
+    public String getAddressStatus() {
+        return addressStatus;
+    }
+
+    public void setAddressStatus(String addressStatus) {
+        this.addressStatus = addressStatus;
     }
 
     @Basic

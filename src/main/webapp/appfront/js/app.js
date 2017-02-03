@@ -171,6 +171,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
     $scope.submit = function(ev) {
 
+
       var phone1=  $scope.phone;
         var firstphone=phone1.substring(0,1);
         // $scope.submit = function($event) {
@@ -191,28 +192,24 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
              alert('Enter the Valid Phone Number');
             ev.preventDefault();
         }
-       /* else if($scope.circle_office.length == 0 || $scope.circle_office == undefined){
-            // alert('Select Circle Office');
-            ev.preventDefault();
-        }*/
         else if($scope.spoke_code.length == 0 || $scope.spoke_code == undefined){
-            //  alert('Select Spoke Code');
             ev.preventDefault();
         }
-        else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
+       /* else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
             // alert('Enter Pin Number');
             ev.preventDefault();
         }else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
             // alert('Enter Pin Number');
             ev.preventDefault();
-        }
+        }*/
         else {
 
-            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&phone=' + $scope.phone + '&circle_office=' + $scope.circleofiice + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code +  '&email=' + $scope.email;
+        //    var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&phone=' + $scope.phone + '&circle_office=' + $scope.circleofiice + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code +  '&email=' + $scope.email;
+            var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&phone=' + $scope.phone + '&circle_office=' + $scope.circleofiice + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number +'&email=' + $scope.email;
 
 
             console.log(data);
-            $http.get(domain+'/agentRegistration?' + data)
+            $http.get(domain+'/agentRegistration1?' + data)
                 /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
                 .success(function (data, status, headers, config) {
                     $scope.message = data;
@@ -970,6 +967,8 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$document','$
        }
     });
 
+
+
     $scope.auditInit=function(){
         $http.get(domain+'/getCustomer')
             .success(function(data,status,headers,config){
@@ -1507,18 +1506,10 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
     $scope.statuscode;
     $scope.status1;
     $scope.callStatus="1";
-
-    $scope.changeLocation=function(){
-        var modalInstance=$modal.open({
-            templateUrl: 'Telecalling/changeLocationModal.html',
-            controller : 'telecalling'
-        });
-    }
-
+    $scope.zipcode="";
+    $scope.changeAddress="";
     /* Function for get Telecalling Screen */
     $scope.getscreen = function(){
-
-
 
         var dfr = $q.defer();
         $http.get(domain+'/telecallingScreen').
@@ -1528,9 +1519,54 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                 //$scope.statuses = data.statusList;
                 //console.log( $scope.statuses);
                 dfr.resolve(data);
+
             }).error(function(error){dfr.reject("Failed");});
         return dfr.promise;
     };
+
+
+
+    $scope.pinValidation=function(e){
+
+        if(!((e.keyCode >= 48 && e.keyCode <=57) || (e.keyCode >= 96 && e.keyCode <=105) || e.keyCode==8)) {
+            e.preventDefault();
+        }
+
+    }
+
+
+
+    $scope.changeLocation=function(){
+        var scope=$rootScope.$new();
+        scope.custUID=$scope.codes.cust_uid;
+        var modalInstance=$modal.open({
+            scope:scope,
+            templateUrl: 'Telecalling/changeLocationModal.html',
+            controller : 'telecalling'
+        });
+    }
+
+    $scope.submitNewLocation=function(custuid){
+
+        var data='zipcode='+$scope.changedZipcode+'&changeAddress='+$scope.changedAddress+'&cust_uid='+custuid;
+
+        $http.get(domain+'/updateAddress?' + data)
+            .success(function (data, status, headers, config) {
+
+                if(data.status == 'success'){
+                    location.reload();
+                }else{
+                    alert(data.authentication);
+                }
+
+            })
+            .error(function (data, status, headers, config) {
+            });
+
+
+
+
+    }
 
     var GetScreen = function() {
         $scope.getscreen().then(function (data) {
@@ -1543,6 +1579,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                 $scope.codes = data.paytmmastjson;
                 $scope.mob = data.teleData;
                 agentslot();
+
             }, function (reason) {
             });
     }
@@ -1558,6 +1595,16 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
 
     }
 
+
+    $scope.callingScreen1=function(){
+
+        /*alert("zip code  "+$scope.changedZipcode +"  change Address  "+$scope.changedAddress);
+
+        $scope.zipcode=$scope.changedZipcode;
+        $scope.changeAddress=$scope.changedAddress;
+        location.reload();*/
+
+    }
 
     $scope.changestatus = function(){
 

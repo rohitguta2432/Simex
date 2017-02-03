@@ -67,7 +67,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
                 String agentCode = map.get("agentCode");
                 String mobileNo = map.get("mobileNo");
                 String circle = map.get("circle");
-                String pincode = map.get("pincode");
+           //     String pincode = map.get("pincode");
                 String spokeCode = map.get("spoke");
                 String avalTime = map.get("avialableSlot");
                 String importBy = map.get("importBy");
@@ -83,14 +83,24 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
                 paytmagententryEntity.setAphone(mobileNo);
                 paytmagententryEntity.setAspokecode(spokeCode);
                 paytmagententryEntity.setAavailslot(avalTime);
-                paytmagententryEntity.setApincode(pincode);
+             //   paytmagententryEntity.setApincode(pincode);
                 paytmagententryEntity.setMulitplePin("Y");
                 paytmagententryEntity.setAemailId("");
                 paytmagententryEntity.setImportby(importBy);
                 paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
-                int pincode1 = Integer.parseInt(pincode);
+              //  int pincode1 = Integer.parseInt(pincode);
 
-                result = saveAgent(paytmagententryEntity, circleMastEntity);
+
+                List<String> pincodeList= circleMastDao.getBySpokeCode(spokeCode);
+
+                for(String zipcode: pincodeList){
+                    paytmagententryEntity.setApincode(zipcode);
+                    result = saveAgent(paytmagententryEntity, circleMastEntity);
+
+                }
+
+
+
 
             }catch (Exception e){
                 result = "File Not Uploaded";
@@ -147,8 +157,9 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
     public String saveAgent(PaytmagententryEntity paytmagententryEntity,CircleMastEntity circleMastEntity) {
         EmplogintableEntity emplogintableEntity=null;
 
-        String msg = agentPaytmDao.saveAgent(paytmagententryEntity);
-        if(msg.equalsIgnoreCase("err"))
+        String msg ="";
+        PaytmagententryEntity paytmagententryEntity1 = agentPaytmDao.findByPrimaryKey(paytmagententryEntity.getAcode());
+        if(paytmagententryEntity1==null)
         {
             for(int i=1; i<=2; i++) {
                 msg = agentPaytmDao.saveAgent(paytmagententryEntity);
@@ -226,7 +237,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
         if(agentpinmasterEntity1==null){
              result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
             if ("err".equalsIgnoreCase(result)) {
-                for (int i = 0; i <=7; i++) {
+                for (int i = 0; i <=3; i++) {
                     result = agentPaytmDao.saveAgentPinMaster(agentpinmasterEntity);
                     if ("done".equalsIgnoreCase(result)) {
                         break;
@@ -234,6 +245,9 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
                 }
 
             }
+        }else {
+
+            result="alreadyExist";
         }
 
 
@@ -273,6 +287,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
 
 
             emplogintableEntity.setEmpPassword(password);
+            emplogintableEntity.setLastThreePassword(password);
             emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
             emplogintableEntity.setRoleCode("A1");
             emplogintableEntity.setEmpStatus(1);

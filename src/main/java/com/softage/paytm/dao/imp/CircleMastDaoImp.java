@@ -4,6 +4,7 @@ import com.softage.paytm.dao.CircleMastDao;
 import com.softage.paytm.models.CircleMastEntity;
 import com.softage.paytm.models.ReportMastEntity;
 import com.softage.paytm.models.SpokeMastEntity;
+import com.softage.paytm.models.SpokePinMast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,5 +154,31 @@ public class CircleMastDaoImp implements CircleMastDao {
             }
         }
         return getReportTypes;
+    }
+
+    @Override
+    public List<String> getBySpokeCode(String spokecode) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<String> spokePinList=null;
+        SpokePinMast SpokePinMast=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select spokepin.pincode from SpokePinMast spokepin where spokepin.spokeCode=:spokecode";
+            System.out.println("query>>>>>    "+strQuery);
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("spokecode",spokecode);
+            spokePinList=query.getResultList();
+
+        }catch (Exception e){
+          logger.error("",e);
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return spokePinList;
     }
 }

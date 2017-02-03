@@ -18,6 +18,7 @@ public interface AllocationDao extends CrudRepository<AllocationMastEntity ,Inte
     public AllocationMastEntity findByAllocationTime(String agentCode, Timestamp dateTime);
     public String findByAllocationTime(String agentCode, String dateTime);
     public AllocationMastEntity findByPrimaryKey(int id);
+    public AllocationMastEntity findByCustUid(int cust_uid);
     public String allocationMastEntityUpdate(String jobId,String agentCode,String response);
     public String updateKycAllocation(String AgentCode,String JobId, String remarksCode, String kycStatus);
 }

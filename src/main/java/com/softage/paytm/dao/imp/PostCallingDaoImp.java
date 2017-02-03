@@ -622,7 +622,8 @@ public class PostCallingDaoImp implements PostCallingDao {
         String pincode=map.get("pinCode");
         String state=map.get("state");
         String pcdvisitTime=map.get("visitDate");
-        String visitTime=map.get("visitTime");
+        String visitTime1=map.get("visitTime");
+        String visitTime=visitTime1+":00:00";
         try{
             entityManager = entityManagerFactory.createEntityManager();
             entityTransaction=entityManager.getTransaction();
