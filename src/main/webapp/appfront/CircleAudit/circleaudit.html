@@ -86,7 +86,7 @@
 
                                     <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Name Matched</label>
                                     <div class="col-sm-8">
-                                        <select  name="name_matched" ng-model="name_matched"  class="form-control"  required>
+                                        <select  name="name_matched"  ng-model="name_matched" ng-change="disableAccept(name_matched)" class="form-control"  required>
                                             <option value="" selected="selected">Select</option>
                                             <option value="Yes">Yes</option>
                                             <option value="No">No</option>
@@ -96,7 +96,7 @@
 
                                     <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Photo Matched</label>
                                     <div class="col-sm-8">
-                                        <select  name="photo_matched" ng-model="photo_matched"  class="form-control"  required>
+                                        <select  name="photo_matched" ng-model="photo_matched" ng-change="disableAccept(photo_matched)" class="form-control"  required>
                                             <option value="" selected="selected">Select</option>
                                             <option value="Yes">Yes</option>
                                             <option value="No">No</option>
@@ -106,7 +106,7 @@
 
                                     <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Sign Matched</label>
                                     <div class="col-sm-8">
-                                        <select  name="sign_matched" ng-model="sign_matched"  class="form-control"  required>
+                                        <select  name="sign_matched" ng-model="sign_matched" ng-change="disableAccept(sign_matched)" class="form-control"  required>
                                             <option value="" selected="selected">Select</option>
                                             <option value="Yes">Yes</option>
                                             <option value="No">No</option>
@@ -116,7 +116,7 @@
 
                                     <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">DOB Matched</label>
                                     <div class="col-sm-8">
-                                        <select  name="dob_matched" ng-model="dob_matched"  class="form-control"  required>
+                                        <select  name="dob_matched" ng-model="dob_matched" ng-change="disableAccept(dob_matched)" class="form-control"  required>
                                             <option value="" selected="selected">Select</option>
                                             <option value="Yes">Yes</option>
                                             <option value="No">No</option>

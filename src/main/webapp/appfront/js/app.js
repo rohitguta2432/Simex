@@ -961,6 +961,20 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$document','$
     $scope.errormessage = '';
 
 
+    $scope.disableAccept=function(dropdownValue){
+       if($scope.cust_number!=undefined && $scope.sim_number!=undefined){
+        if(dropdownValue=='No'){
+            $scope.acceptFlag=true;
+        }else if(dropdownValue=='Yes'){
+            if($scope.name_matched=='No' ||$scope.photo_matched=='No' || $scope.sign_matched=='No' || $scope.dob_matched=='No'){
+                $scope.acceptFlag=true;
+            }else{
+                $scope.acceptFlag=false;
+            }
+        }
+       }
+    }
+
     $document.on('keydown',function(e){
        if(e.which===8 && e.target.nodeName !== "INPUT"){
            e.preventDefault();
@@ -1277,6 +1291,21 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$loca
             e.preventDefault();
         }
     });
+
+
+    $scope.disableAccept=function(dropdownValue){
+        if($scope.cust_number!=undefined && $scope.sim_number!=undefined){
+            if(dropdownValue=='No'){
+                $scope.acceptFlag=true;
+            }else if(dropdownValue=='Yes'){
+                if($scope.name_matched=='No' ||$scope.photo_matched=='No' || $scope.sign_matched=='No' || $scope.dob_matched=='No'){
+                    $scope.acceptFlag=true;
+                }else{
+                    $scope.acceptFlag=false;
+                }
+            }
+        }
+    }
 
     $scope.AoAuditInit=function(){
         $http.get(domain+'/getCustomerDetailsForAoAudit')
