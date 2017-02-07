@@ -27,6 +27,7 @@ public class EmplogintableEntity {
     private CircleMastEntity circleMastByCirCode;
     private String roleCode;
     private String lastThreePassword;
+    private String empLeftStatus="N";
 
 
     @Basic
@@ -107,6 +108,16 @@ public class EmplogintableEntity {
 
     public void setImportBy(String importBy) {
         this.importBy = importBy;
+    }
+
+    @Basic
+    @Column(name = "emp_left_status", nullable = false, insertable = true, updatable = true, length = 10)
+    public String getEmpLeftStatus() {
+        return empLeftStatus;
+    }
+
+    public void setEmpLeftStatus(String empLeftStatus) {
+        this.empLeftStatus = empLeftStatus;
     }
 
     @Basic

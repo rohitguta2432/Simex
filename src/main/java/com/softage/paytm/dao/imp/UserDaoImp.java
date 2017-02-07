@@ -1,6 +1,7 @@
 package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.UserDao;
+import com.softage.paytm.models.ActivateLogEntity;
 import com.softage.paytm.models.CircleMastEntity;
 import com.softage.paytm.models.EmplogintableEntity;
 import com.softage.paytm.models.PaytmagententryEntity;
@@ -289,6 +290,30 @@ public class UserDaoImp implements UserDao {
             }
         }
         return emplogintableEntity;
+    }
+
+    @Override
+    public String saveActivateEntity(ActivateLogEntity activateLogEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg = null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(activateLogEntity);
+            transaction.commit();
+            msg = "done";
+        } catch (Exception e) {
+            msg = "err";
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return msg;
     }
 }
 

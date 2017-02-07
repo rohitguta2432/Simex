@@ -222,8 +222,6 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
 
         return result;
 
-
-
     }
 
     public String savePinmaster(PaytmagententryEntity paytmagententryEntity) {
@@ -269,7 +267,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
             int randomInt = randomGenerator.nextInt(10000);
          //   password = paytmagententryEntity.getAcode().substring(0, 4) + "@" + randomInt;
             String alphaPassCaps = RandomStringUtils.random(1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            String alphaPassSpec = RandomStringUtils.random(1,"!@#$%^&");
+            String alphaPassSpec = RandomStringUtils.random(1,"!@$%^&");
             String alphaPassNum = RandomStringUtils.randomNumeric(4);
             String alphaPassLower = RandomStringUtils.random(2, "abcdefghijklmnopqrstuvwxyz");
             password = alphaPassCaps + alphaPassLower + alphaPassSpec + alphaPassNum ;
@@ -291,6 +289,7 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
             emplogintableEntity.setCircleMastByCirCode(circleMastEntity);
             emplogintableEntity.setRoleCode("A1");
             emplogintableEntity.setEmpStatus(1);
+            emplogintableEntity.setEmpLeftStatus("N");
             emplogintableEntity.setSpoke_code(paytmagententryEntity.getAspokecode());
             emplogintableEntity.setImportBy(paytmagententryEntity.getImportby());
             emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));

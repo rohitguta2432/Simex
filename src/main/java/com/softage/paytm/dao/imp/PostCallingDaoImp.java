@@ -279,16 +279,17 @@ public class PostCallingDaoImp implements PostCallingDao {
         EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
-            entityTransaction=entityManager.getTransaction();
-            entityTransaction.begin();
+         //   entityTransaction=entityManager.getTransaction();
+     //       entityTransaction.begin();
             query = entityManager.createNativeQuery("{call sp_AllocateAgentNew(?,?,?)}");
             query.setParameter(1, pinCode);
             query.setParameter(2, date.toString());
             query.setParameter(3, visitDateTime);
             agentCode1 = (String)query.getSingleResult();
-            entityTransaction.commit();
+       //     entityTransaction.commit();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Agent Allocate error ",e);
+
         } finally {
             if (entityManager != null && entityManager.isOpen()) {
                 entityManager.close();
@@ -297,49 +298,6 @@ public class PostCallingDaoImp implements PostCallingDao {
         return agentCode1;
 
 
-
-
-       /* EntityManager entityManager=null;
-        Query query=null;
-        AllocationMastEntity allocationMastEntity=null;
-        String agentCode1=null;
-        String strQuery=null;
-        try{
-            entityManager = entityManagerFactory.createEntityManager();
-
-            if("0".equals(agentCode)) {
-
-                strQuery="select A.APM_Acode from agentpinmaster A join paytmagententry P on " +
-                        " A.APM_Acode=P.acode where  A.APM_APincode=? and  (select count(am.Agent_Code) from allocation_mast am where am.Agent_Code=A.APM_Acode and am.Allocation_datetime>=? and am.Allocation_datetime<?)<=?";
-
-            }else {
-
-
-            }
-          query=entityManager.createNativeQuery(strQuery);
-             if(!"0".equals(agentCode)){
-                query.setParameter(1,agentCode);
-                query.setParameter(2,pinCode);
-                query.setParameter(3,date);
-                query.setParameter(4,date1);
-            }
-            query.setParameter(1,pinCode);
-            query.setParameter(2,date);
-            query.setParameter(3,date1);
-            query.setParameter(4,maxAllocation);
-            agentCode1=(String)query.getSingleResult();
-
-        }catch (Exception e){
-            e.printStackTrace();;
-        }
-        finally {
-            if (entityManager != null && entityManager.isOpen())
-            {
-                entityManager.close();
-            }
-        }
-
-        return agentCode1;*/
     }
 
     @Override
@@ -627,7 +585,7 @@ public class PostCallingDaoImp implements PostCallingDao {
         try{
             entityManager = entityManagerFactory.createEntityManager();
             entityTransaction=entityManager.getTransaction();
-            entityTransaction.begin();
+        //    entityTransaction.begin();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
             Query query1= entityManager.createNativeQuery("{call usp_insertPaytmCustomerData(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             query1.setParameter(1,custId);
@@ -646,16 +604,12 @@ public class PostCallingDaoImp implements PostCallingDao {
             query1.setParameter(14,visitTime);
             query1.setParameter(15,simType);
             query1.setParameter(16,co_status);
-             appointmentID=((BigInteger)query1.getSingleResult()).intValue();
-            //String s = (String)query1.getSingleResult();
-            entityTransaction.commit();
-          /*  if (s.length>0) {
-               *//* json.put("mobileNo", s[0]);
-                json.put("customerName", s[1]);*//*
-                result=(String)s[0];
-            }*/
+            appointmentID=((BigInteger)query1.getSingleResult()).intValue();
+            result=appointmentID.toString();
+
         }catch (Exception e){
-            e.printStackTrace();
+            result="error";
+            logger.error("error to appointment data  ",e);
         }
         finally {
             if (entityManager != null && entityManager.isOpen())
@@ -663,7 +617,7 @@ public class PostCallingDaoImp implements PostCallingDao {
                 entityManager.close();
             }
         }
-        return appointmentID.toString();
+        return result;
     }
 
     @Override
@@ -694,7 +648,6 @@ public class PostCallingDaoImp implements PostCallingDao {
         try{
             entityManager = entityManagerFactory.createEntityManager();
             entityTransaction=entityManager.getTransaction();
-            entityTransaction.begin();
             StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
             Query query1= entityManager.createNativeQuery("{call usp_insertAllocationData(?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             query1.setParameter(1,agent_code);
@@ -711,15 +664,10 @@ public class PostCallingDaoImp implements PostCallingDao {
             query1.setParameter(12,visitDatetiem);
             query1.setParameter(13,custUID);
             allocationID=(Integer)query1.getSingleResult();
-            //String s = (String)query1.getSingleResult();
-            entityTransaction.commit();
-          /*  if (s.length>0) {
-               *//* json.put("mobileNo", s[0]);
-                json.put("customerName", s[1]);*//*
-                result=(String)s[0];
-            }*/
+            result=  allocationID.toString();
         }catch (Exception e){
-            e.printStackTrace();
+            result="error";
+            logger.error("allocate job error",e);
         }
         finally {
             if (entityManager != null && entityManager.isOpen())
@@ -727,7 +675,7 @@ public class PostCallingDaoImp implements PostCallingDao {
                 entityManager.close();
             }
         }
-        return allocationID.toString();
+        return result;
     }
 
 

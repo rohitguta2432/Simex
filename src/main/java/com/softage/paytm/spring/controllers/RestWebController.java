@@ -195,134 +195,147 @@ public class RestWebController {
         String dbUser = null;
         String token = null;
         Integer attamptCount = null;
+        String leftStatus=null;
         try {
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             //         String hashedPassword = passwordEncoder.encode(password);
             if (emplogintableEntity != null) {
-                if (emplogintableEntity.getRoleCode().equalsIgnoreCase("A1")) {
+                if (!"Y".equalsIgnoreCase(emplogintableEntity.getEmpLeftStatus()))
+                {
+
+                    if (emplogintableEntity.getRoleCode().equalsIgnoreCase("A1")) {
 
 
-                    Timestamp expireDate = emplogintableEntity.getExpireDate();
-                    attamptCount = emplogintableEntity.getAttamptCount();
-                    if (attamptCount == null) {
-                        attamptCount = 0;
-                    }
-                    Timestamp currentDate = new Timestamp(new Date().getTime());
-                    Timestamp lockedDate = emplogintableEntity.getLockedDate();
+                        Timestamp expireDate = emplogintableEntity.getExpireDate();
+                        attamptCount = emplogintableEntity.getAttamptCount();
+                        if (attamptCount == null) {
+                            attamptCount = 0;
+                        }
+                        Timestamp currentDate = new Timestamp(new Date().getTime());
+                        Timestamp lockedDate = emplogintableEntity.getLockedDate();
 
-                    if (attamptCount != 5) {
-
-
-                        //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
-                        if (expireDate == null) {
-
-                            Date currentdate1 = new Date();
-                            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
-                            currentdate1.setTime(currentdate1.getTime() + expireTime);
-
-                            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-                            emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
-                            //    emplogintableEntity.setEmpPassword(hashedPassword);
+                        if (attamptCount != 5) {
 
 
-                            if (password.equals(emplogintableEntity.getEmpPassword())) {
+                            //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
+                            if (expireDate == null) {
+
+                                Date currentdate1 = new Date();
+                                long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                                currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                                emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                                emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                                //    emplogintableEntity.setEmpPassword(hashedPassword);
+
+
+                                if (password.equals(emplogintableEntity.getEmpPassword())) {
+                                    SecureRandom random = new SecureRandom();
+                                    byte bytes[] = new byte[20];
+                                    random.nextBytes(bytes);
+                                    token = bytes.toString();
+                                    dbUser = emplogintableEntity.getEmpCode();
+                                    result = "success";
+                                    emplogintableEntity.setToken(token);
+                                    emplogintableEntity.setAttamptCount(0);
+                                    emplogintableEntity.setEmpStatus(1);
+                                    emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                                }
+                                agentPaytmService.updatePassword(emplogintableEntity, null);
+
+                            } else if (currentDate.getTime() > expireDate.getTime()) {
+                                result = "Password Expired";
+
+                            } else if (password.equals(emplogintableEntity.getEmpPassword())) {
+                                dbUser = emplogintableEntity.getEmpCode();
                                 SecureRandom random = new SecureRandom();
                                 byte bytes[] = new byte[20];
                                 random.nextBytes(bytes);
                                 token = bytes.toString();
-                                dbUser = emplogintableEntity.getEmpCode();
-                                result = "success";
                                 emplogintableEntity.setToken(token);
-                                emplogintableEntity.setAttamptCount(0);
                                 emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
-                            }
-                            agentPaytmService.updatePassword(emplogintableEntity, null);
-
-                        } else if (currentDate.getTime() > expireDate.getTime()) {
-                            result = "Password Expired";
-
-                        } else if (password.equals(emplogintableEntity.getEmpPassword())) {
-                            dbUser = emplogintableEntity.getEmpCode();
-                            SecureRandom random = new SecureRandom();
-                            byte bytes[] = new byte[20];
-                            random.nextBytes(bytes);
-                            token = bytes.toString();
-                            emplogintableEntity.setToken(token);
-                            emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
-                            emplogintableEntity.setAttamptCount(0);
-                            agentPaytmService.updatePassword(emplogintableEntity, null);
-                            result = "success";
-                        } else {
-
-
-                            if (attamptCount == 4) {
-                                Timestamp timestamp = new Timestamp(new Date().getTime());
-                                timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
-                                emplogintableEntity.setLockedDate(timestamp);
-                                emplogintableEntity.setAttamptCount(attamptCount + 1);
+                                emplogintableEntity.setAttamptCount(0);
+                                emplogintableEntity.setEmpStatus(1);
+                                agentPaytmService.updatePassword(emplogintableEntity, null);
+                                result = "success";
                             } else {
-                                emplogintableEntity.setAttamptCount(attamptCount + 1);
+
+
+                                if (attamptCount == 4) {
+                                    Timestamp timestamp = new Timestamp(new Date().getTime());
+                                    timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
+                                    emplogintableEntity.setLockedDate(timestamp);
+                                    emplogintableEntity.setAttamptCount(attamptCount + 1);
+                                } else {
+                                    emplogintableEntity.setAttamptCount(attamptCount + 1);
+                                }
+                                agentPaytmService.updatePassword(emplogintableEntity, null);
                             }
-                            agentPaytmService.updatePassword(emplogintableEntity, null);
+                        } else if (lockedDate.getTime() > currentDate.getTime()) {
+                            result = "Your Account has locked! Try after 1 Hour";
+                        } else {
+                            if (expireDate == null) {
+
+                                Date currentdate1 = new Date();
+                                long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                                currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                                emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                                emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                                //    emplogintableEntity.setEmpPassword(hashedPassword);
+
+
+                                if (password.equals(emplogintableEntity.getEmpPassword())) {
+                                    SecureRandom random = new SecureRandom();
+                                    byte bytes[] = new byte[20];
+                                    random.nextBytes(bytes);
+                                    token = bytes.toString();
+                                    dbUser = emplogintableEntity.getEmpCode();
+                                    result = "success";
+                                    emplogintableEntity.setToken(token);
+                                    emplogintableEntity.setAttamptCount(0);
+                                    emplogintableEntity.setEmpStatus(1);
+                                    emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                                }
+                                userService.updateAttaptStatus(emplogintableEntity);
+
+                            } else if (currentDate.getTime() > expireDate.getTime()) {
+                                result = "Password Expired";
+
+                            } else if (password.equals(emplogintableEntity.getEmpPassword())) {
+                                dbUser = emplogintableEntity.getEmpCode();
+                                SecureRandom random = new SecureRandom();
+                                byte bytes[] = new byte[20];
+                                random.nextBytes(bytes);
+                                token = bytes.toString();
+                                emplogintableEntity.setToken(token);
+                                emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
+                                emplogintableEntity.setAttamptCount(0);
+                                emplogintableEntity.setEmpStatus(1);
+                                agentPaytmService.updatePassword(emplogintableEntity, null);
+                                result = "success";
+                            } else {
+                                int attamtCount = emplogintableEntity.getAttamptCount();
+                                if (attamtCount == 5) {
+                                    Timestamp timestamp = new Timestamp(new Date().getTime());
+                                    timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
+                                    emplogintableEntity.setLockedDate(timestamp);
+                                } else {
+                                    emplogintableEntity.setAttamptCount(attamtCount + 1);
+                                }
+                                agentPaytmService.updatePassword(emplogintableEntity, null);
+                            }
                         }
-                    } else if (lockedDate.getTime() > currentDate.getTime()) {
-                        result = "Your Account has locked! Try after 1 Hour";
                     } else {
-                        if (expireDate == null) {
-
-                            Date currentdate1 = new Date();
-                            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
-                            currentdate1.setTime(currentdate1.getTime() + expireTime);
-
-                            emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-                            emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
-                            //    emplogintableEntity.setEmpPassword(hashedPassword);
-
-
-                            if (password.equals(emplogintableEntity.getEmpPassword())) {
-                                SecureRandom random = new SecureRandom();
-                                byte bytes[] = new byte[20];
-                                random.nextBytes(bytes);
-                                token = bytes.toString();
-                                dbUser = emplogintableEntity.getEmpCode();
-                                result = "success";
-                                emplogintableEntity.setToken(token);
-                                emplogintableEntity.setAttamptCount(0);
-                                emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
-                            }
-                            userService.updateAttaptStatus(emplogintableEntity);
-
-                        } else if (currentDate.getTime() > expireDate.getTime()) {
-                            result = "Password Expired";
-
-                        } else if (password.equals(emplogintableEntity.getEmpPassword())) {
-                            dbUser = emplogintableEntity.getEmpCode();
-                            SecureRandom random = new SecureRandom();
-                            byte bytes[] = new byte[20];
-                            random.nextBytes(bytes);
-                            token = bytes.toString();
-                            emplogintableEntity.setToken(token);
-                            emplogintableEntity.setLastLoginDate(new Timestamp(new Date().getTime()));
-                            emplogintableEntity.setAttamptCount(0);
-                            agentPaytmService.updatePassword(emplogintableEntity, null);
-                            result = "success";
-                        } else {
-                            int attamtCount = emplogintableEntity.getAttamptCount();
-                            if (attamtCount == 5) {
-                                Timestamp timestamp = new Timestamp(new Date().getTime());
-                                timestamp.setTime(timestamp.getTime() + 60 * 60 * 1000);
-                                emplogintableEntity.setLockedDate(timestamp);
-                            } else {
-                                emplogintableEntity.setAttamptCount(attamtCount + 1);
-                            }
-                            agentPaytmService.updatePassword(emplogintableEntity, null);
-                        }
+                        result = "User not Authorised";
                     }
-                } else {
-                    result = "User not Authorised";
-                }
-            } else {
+            }else {
+                    result = "User Left ";
+            }
+            }
+            else {
                 result = "Invalid Credentials";
             }
         } catch (Exception e) {
@@ -417,7 +430,8 @@ public class RestWebController {
                     String leaddate = request.getParameter("leaddate");
                     Date today = new Date();
                     String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(today.getTime());
-                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
+                  //  arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
+                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, "2017-02-09");
                     array.addAll(arrayList);
 
                 } catch (Exception e) {
@@ -888,13 +902,7 @@ public class RestWebController {
         }
         return result;
 
-
     }
-
-
-
-
-
 
     @RequestMapping(value = "/RejectedEntry", method = {RequestMethod.GET, RequestMethod.POST})
     public String rejectedEntry(HttpServletRequest request) {
@@ -1424,10 +1432,20 @@ public class RestWebController {
                     if (status.equals("active")) {
                         emplogintableEntity.setEmpStatus(1);
                         emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                        ActivateLogEntity activateLogEntity  =new ActivateLogEntity();
+                        activateLogEntity.setAction("active");
+                        activateLogEntity.setUserId(agentcode);
+                        activateLogEntity.setDateTime(new Timestamp(new Date().getTime()));
+                        userService.saveActivateEntity(activateLogEntity);
                     }
                     if (status.equalsIgnoreCase("deactive")) {
                         emplogintableEntity.setEmpStatus(0);
                         emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                        ActivateLogEntity activateLogEntity  =new ActivateLogEntity();
+                        activateLogEntity.setAction("deactive");
+                        activateLogEntity.setUserId(agentcode);
+                        activateLogEntity.setDateTime(new Timestamp(new Date().getTime()));
+                        userService.saveActivateEntity(activateLogEntity);
                     }
                     System.out.println(emplogintableEntity.getEmpStatus());
                     result = userService.updateAgentStatus(emplogintableEntity);
@@ -1628,7 +1646,6 @@ public class RestWebController {
     @ResponseBody
     public String resetPassword(HttpServletRequest request, HttpServletResponse response) {
 
-        // JSONObject jsonObject = new JSONObject();
         String result = null;
         String useroldpassword = null;
         String finalpass = null;
@@ -1649,10 +1666,7 @@ public class RestWebController {
                     String lastThrePassword = emplogintableEntity.getLastThreePassword();
                     lastThrePassword = (lastThrePassword != null) ? lastThrePassword : "";
                     String[] lastPassArr = lastThrePassword.split(",");
-                    /*for(String pass:lastPassArr){
 
-                    }
-                    *///Arrays.asList(lastPassArr).contains(newpassword)
                     if (!Arrays.asList(lastPassArr).contains(newpassword)) {
                         //Old password mismatch
                         String lastThreePassword = emplogintableEntity.getLastThreePassword();
@@ -1692,7 +1706,6 @@ public class RestWebController {
             result = "Technical Error";
             e.printStackTrace();
         }
-        //  jsonObject.put("status", result);
         return result;
     }
 

@@ -1,5 +1,6 @@
 package com.softage.paytm.dao;
 
+import com.softage.paytm.models.ActivateLogEntity;
 import com.softage.paytm.models.EmplogintableEntity;
 import org.json.simple.JSONObject;
 
@@ -17,4 +18,5 @@ public interface UserDao {
     public String UpdateLastThreePassword(EmplogintableEntity emplogintableEntity,String updatedpassword);
     public String updateAttaptStatus(EmplogintableEntity emplogintableEntity);
     public EmplogintableEntity getClientCode(String UserType);
+    public String saveActivateEntity(ActivateLogEntity activateLogEntity);
 }

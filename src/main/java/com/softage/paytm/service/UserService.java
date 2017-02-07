@@ -1,5 +1,6 @@
 package com.softage.paytm.service;
 
+import com.softage.paytm.models.ActivateLogEntity;
 import com.softage.paytm.models.EmplogintableEntity;
 import org.json.simple.JSONObject;
 
@@ -16,4 +17,5 @@ public interface UserService {
     public String UpdateLastThreePassword(EmplogintableEntity emplogintableEntity,String updatedpassword);
     public String updateAttaptStatus(EmplogintableEntity emplogintableEntity);
     public String getClientCode(String UserType);
+    public String saveActivateEntity(ActivateLogEntity activateLogEntity);
 }

@@ -126,7 +126,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 if ("err".equalsIgnoreCase(result)) {
                     result = "Record not Submited try again";
                     result1 = "error";
-                    tcStatus = "U";
+                    tcStatus = "W";
                 }
             }
             byte s = (byte) (telecallMastEntity.getTmAttempts() + 1);
@@ -151,6 +151,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 telecallMastEntity.setTmLastCallStatus(map.get("status"));
                 postCallingDao.updateTeleCall(telecallMastEntity);
             }
+
             if ("NoAgent".equalsIgnoreCase(result1)) {
                 telecallMastEntity.setTmAttempts(s);
                 telecallMastEntity.setTmLastAttemptBy(map.get("importby"));
@@ -349,6 +350,7 @@ public class PostCallingServiceImp implements PostCallingService {
     public String saveCustomerData(Map<String,String> map){
         Map<String,String> allocation_map=new HashMap<String,String>();
         String agentCode=null;
+        String appoinmentId=null;
         String confirmationAllowed="";
         String finalconfirmation="";
 
@@ -362,6 +364,7 @@ public class PostCallingServiceImp implements PostCallingService {
         String customerAlternativeNo="";
         String agentMobileNumber="";
         String result="";
+        String jobNumber="";
         try {
             custId = Integer.parseInt(map.get("custId"));
             PaytmMastEntity paytmMastEntity= paytmMasterDao.getPaytmMasterData(custId);
@@ -386,7 +389,18 @@ public class PostCallingServiceImp implements PostCallingService {
             map.put("visitDate",sqltDate.toString());
             String visitTime = map.get("visitTime");
 
-            String appoinmentId=postCallingDao.callJobAllocatedProcedure(map);
+            appoinmentId=postCallingDao.callJobAllocatedProcedure(map);
+
+
+            if(appoinmentId.equalsIgnoreCase("error")){
+                for(int i=0; i<3; i++){
+                    appoinmentId = postCallingDao.callJobAllocatedProcedure(map);
+                    if(!"error".equalsIgnoreCase(jobNumber)){
+                        break;
+                    }
+                }
+
+            }
 
             String allocationDate1 = sqltDate + " " + visitTime;
             agentCode = postCallingDao.getAgentCode(pincode, sqltDate, allocationDate1, 0, "0");
@@ -394,7 +408,7 @@ public class PostCallingServiceImp implements PostCallingService {
             confirmationAllowed = "Y";
             finalconfirmation = "W";
 
-            if(agentCode!=null) {
+            if(agentCode!=null && !(agentCode.equalsIgnoreCase("null"))) {
                 paytmagententryEntity =agentPaytmDao.findByPrimaryKey(agentCode);
                 agentMobileNumber=paytmagententryEntity.getAphone();
                 allocation_map.put("appointmentID", appoinmentId);
@@ -413,7 +427,16 @@ public class PostCallingServiceImp implements PostCallingService {
                 allocation_map.put("kycCollected", "P");
                 allocation_map.put("remarkCode", "U");
                 allocation_map.put("spokeCode", paytmagententryEntity.getAspokecode());
-                String jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
+                jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
+                if(jobNumber.equalsIgnoreCase("error")){
+                   for(int i=0; i<3; i++){
+                       jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
+                       if(!"error".equalsIgnoreCase(jobNumber)){
+                           break;
+                       }
+                   }
+
+                }
 
 
 
@@ -429,9 +452,19 @@ public class PostCallingServiceImp implements PostCallingService {
                         + " " + visitTime + " with " + name + " Address- " +
                         "" + address + " " + pincode + " Contact nos- " +
                         "" + paytmMastEntity.getAlternatePhone1() +" , "+number+" Please See Leads in App ";
-                String custext = "Dear Customer  Your CustomerId - " + custId+ " with Request Number " + paytmMastEntity.getCustomerPhone()
+               /* String custext = "Dear Customer  Your CustomerId - " + custId+ " with Request Number " + paytmMastEntity.getCustomerPhone()
                        + " ,   Agent visit date " + pcdvisitTime
                         + "  Time " + visitTime + " Please Available with all documents";
+
+                        'Dear Customer, your request for sim replacement of mobile no.966366666 has
+                         been confirmed. Your ref. id is 1012100000 and our agent will reach on 07/02/2017 15:00 hrs.
+              kindly be ready with your photo ID & address proof.
+
+*/
+                String custext="Dear Customer, your request for SIM replacement for Mobile no "
+                        +paytmMastEntity.getCustomerPhone()+" has been confirmed. Your Reference ID id "+custId+ " Our Agent will be visiting on "+
+                        pcdvisitTime+" "+visitTime+":00 hrs, kindly be ready with your photo ID & address proof ";
+
 
                 PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
                 if (paytmdeviceidinfoEntity != null) {
@@ -616,6 +649,8 @@ public class PostCallingServiceImp implements PostCallingService {
                     String custext = "Dear Customer  Your CustomerId-" + paytmMastEntity.getCust_uid() + "" +
                             ",   Agent visit dateTime " + date
                             + " " + time + " Please Available with ...... ";
+
+
 
                     PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
                     if (paytmdeviceidinfoEntity != null) {

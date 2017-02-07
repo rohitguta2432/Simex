@@ -87,9 +87,16 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
             entityManager = entityManagerFactory.createEntityManager();
             transaction=entityManager.getTransaction();
             transaction.begin();
-            String strQuery = "select agents.apmAcode from AgentpinmasterEntity agents where agents.apmAPincode=:pincode";
+           // String strQuery = "select agentpin.apmAcode from AgentpinmasterEntity agentpin inner join EmplogintableEntity emp on emp.empCode=agentpin.apmAcode  where agentpin.apmAPincode=:pincode and emp.empStatus=1";
+           // String strQuery = "select agents.apmAcode from AgentpinmasterEntity agents where agents.apmAPincode=:pincode";
+            String strQuery="SELECT ap.APM_Acode " +
+                    " FROM agentpinmaster ap " +
+                    "join emplogintable em" +
+                    " on ap.APM_Acode=em.Emp_Code  where ap.APM_APincode=:pincode and em.Emp_Status=1";
+
             System.out.println("query>>>>>    "+strQuery);
-            query=entityManager.createQuery(strQuery);
+            query=entityManager.createNativeQuery(strQuery);
+        //    query=entityManager.createQuery(strQuery);
             query.setParameter("pincode",pincode);
             agentList=query.getResultList();
             transaction.commit();

@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.softage.paytm.dao.UserDao;
+import com.softage.paytm.models.ActivateLogEntity;
 import com.softage.paytm.models.EmplogintableEntity;
 import com.softage.paytm.service.UserService;
 import org.json.simple.JSONObject;
@@ -88,6 +89,11 @@ public class UserServiceImp implements UserService {
         }
 
         return clientCode;
+    }
+
+    @Override
+    public String saveActivateEntity(ActivateLogEntity activateLogEntity) {
+        return userDao.saveActivateEntity(activateLogEntity);
     }
 
 }
