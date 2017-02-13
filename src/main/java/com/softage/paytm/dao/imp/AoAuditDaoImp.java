@@ -4,6 +4,8 @@ import com.softage.paytm.dao.AoAuditDao;
 import com.softage.paytm.models.AoAuditEntity;
 import com.softage.paytm.models.TblScan;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +21,8 @@ import java.util.List;
  */
 @Repository
 public class AoAuditDaoImp implements AoAuditDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(AoAuditDaoImp.class);
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -58,6 +62,11 @@ public class AoAuditDaoImp implements AoAuditDao {
                     jsonObject.put("status","Unavailable");
                     retStatus="pending";
 
+                }else if(returnedResult.equalsIgnoreCase("error")){
+                    String errormsg=(String)auditedObj[1];
+                    logger.info(">>>>>>>> error message in getting ao audit details in sp : "+errormsg);
+                    retStatus="unavailable";
+                    jsonObject.put("status", "Unavailable");
                 }
                 else {
 
@@ -196,13 +205,14 @@ public class AoAuditDaoImp implements AoAuditDao {
     @Override
     public String insertAoAuditValues(String dob, String name, String otherReason, String photo, String sign, Integer scanid, Integer auditStatus) {
         EntityManager entityManager=null;
-        EntityTransaction transaction=null;
+        //EntityTransaction transaction=null;
         Query query=null;
         String result=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            transaction=entityManager.getTransaction();
-  //          transaction.begin();
+           // transaction=entityManager.getTransaction();
+            //transaction.begin();
+
             query=entityManager.createNativeQuery("{call usp_insertAoAudit(?,?,?,?,?,?,?)}");
             query.setParameter(1,dob);
             query.setParameter(2,name);
@@ -212,7 +222,8 @@ public class AoAuditDaoImp implements AoAuditDao {
             query.setParameter(6,scanid);
             query.setParameter(7,auditStatus);
             result=(String)query.getSingleResult();
-    //        transaction.commit();
+            logger.info(">>>>>>>>> result of inserting in ao audit : "+result);
+           //transaction.commit();
         }catch (Exception e){
             result="error";
             e.printStackTrace();

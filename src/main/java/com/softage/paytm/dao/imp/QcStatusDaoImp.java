@@ -3,6 +3,8 @@ package com.softage.paytm.dao.imp;
 import com.softage.paytm.dao.QcStatusDao;
 import com.softage.paytm.models.*;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,8 @@ import java.util.List;
  */
 @Repository
 public class QcStatusDaoImp implements QcStatusDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(QcStatusDaoImp.class);
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -116,6 +120,11 @@ public class QcStatusDaoImp implements QcStatusDao {
             else if(returned.equalsIgnoreCase("pending")){
                 jsonObject.put("status","Unavailable");
                 retStatus="pending";
+            }else if(returned.equalsIgnoreCase("error")){ //added to facilitate the changes in transaction in sp,will show no image
+                String errormsg=(String)scanObj[1];
+                logger.info(">>>>>>>>>> error in getting circle audit values in sp : "+errormsg);
+                retStatus="unavailable";
+                jsonObject.put("status","Unavailable");
             }
             else {
                 customerNumber = (String) scanObj[1];
@@ -463,13 +472,14 @@ public class QcStatusDaoImp implements QcStatusDao {
     @Override
     public String insertCircleAuditValues(String dob, String name, String otherReason, String photo, String sign, Integer scanid, Integer auditStatus) {
         EntityManager entityManager=null;
-        EntityTransaction transaction=null;
+        //EntityTransaction transaction=null;
         Query query=null;
         String result=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-           /* transaction=entityManager.getTransaction();
-            transaction.begin();*/
+            //transaction=entityManager.getTransaction();
+            //transaction.begin();
+
             query=entityManager.createNativeQuery("{call usp_insertCircleAudit(?,?,?,?,?,?,?)}");
             query.setParameter(1,dob);
             query.setParameter(2,name);
@@ -479,7 +489,8 @@ public class QcStatusDaoImp implements QcStatusDao {
             query.setParameter(6,scanid);
             query.setParameter(7,auditStatus);
             result=(String)query.getSingleResult();
-          //  transaction.commit();
+            logger.info(">>>>>>>> result of inserting in circle audit : "+result);
+           // transaction.commit();
         }catch (Exception e){
             result="error";
            // transaction.rollback();
