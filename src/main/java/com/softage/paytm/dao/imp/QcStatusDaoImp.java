@@ -5,6 +5,7 @@ import com.softage.paytm.models.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -290,7 +291,6 @@ public class QcStatusDaoImp implements QcStatusDao {
             transaction.commit();
             message="success";
         }catch (Exception e){
-            transaction.rollback();
             message="error";
             e.printStackTrace();
         }
@@ -408,6 +408,31 @@ public class QcStatusDaoImp implements QcStatusDao {
     }
 
     @Override
+    public String saveImages(String imagePath, String agentcode, int cust_uid) {
+        EntityManager entityManager=null;
+        Query query=null;
+        String result=null;
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+            query=entityManager.createNativeQuery("{call usp_insertScannedImages(?,?,?)}");
+            query.setParameter(1,imagePath);
+            query.setParameter(2,agentcode);
+            query.setParameter(3,cust_uid);
+            //query.setParameter(3,assignedTime);
+            result=(String)query.getSingleResult();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return result;
+    }
+
+    @Override
     public String checkAssignedTo(TblScan tblScan, String empcode) {
         EntityManager entityManager=null;
         Query query=null;
@@ -443,8 +468,8 @@ public class QcStatusDaoImp implements QcStatusDao {
         String result=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            transaction=entityManager.getTransaction();
-            transaction.begin();
+           /* transaction=entityManager.getTransaction();
+            transaction.begin();*/
             query=entityManager.createNativeQuery("{call usp_insertCircleAudit(?,?,?,?,?,?,?)}");
             query.setParameter(1,dob);
             query.setParameter(2,name);
@@ -454,7 +479,7 @@ public class QcStatusDaoImp implements QcStatusDao {
             query.setParameter(6,scanid);
             query.setParameter(7,auditStatus);
             result=(String)query.getSingleResult();
-            transaction.commit();
+          //  transaction.commit();
         }catch (Exception e){
             result="error";
            // transaction.rollback();
@@ -462,6 +487,7 @@ public class QcStatusDaoImp implements QcStatusDao {
         }finally {
             if (entityManager != null && entityManager.isOpen())
             {
+
                 entityManager.close();
             }
         }
@@ -469,21 +495,26 @@ public class QcStatusDaoImp implements QcStatusDao {
     }
 
     @Override
+    @Transactional
     public TblScan getScanDetails(int cust_uid) {
 
         EntityManager entityManager = null;
         TblScan tblScan=null;
         Query query=null;
+        EntityTransaction transaction=null;
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
+         //   transaction=entityManager.getTransaction();
             String strQuery = " select cust from TblScan cust where cust.paytmcustomerDataEntity.cust_uid=:cust_uid";
             query=entityManager.createQuery(strQuery);
             query.setParameter("cust_uid",cust_uid);
             tblScan = (TblScan)query.getSingleResult();
+         //   transaction.commit();
         }
         catch (Exception e)
         {
+
             e.printStackTrace();
         }
         finally {

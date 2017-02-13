@@ -113,6 +113,12 @@ public class QcStatusServiceImp implements QcStatusService {
     public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity) {
         return qcStatusDao.saveCircleAuditEntity(circleAuditEntity);
     }
+
+    @Override
+    public String saveImages(String imagePath, String agentcode, int cust_uid) {
+        return qcStatusDao.saveImages(imagePath,agentcode,cust_uid);
+    }
+
     @Override
     public String updateTblSacnEntity(TblScan tblScan) {
       String result = qcStatusDao.updateTblScanEntity(tblScan);
@@ -161,7 +167,20 @@ public class QcStatusServiceImp implements QcStatusService {
 
     @Override
     public TblScan getUserScanDetails(int cust_uid) {
-        return qcStatusDao.getScanDetails(cust_uid);
+
+        TblScan tblScan=qcStatusDao.getScanDetails(cust_uid);
+
+        if(tblScan==null){
+            for(int i=0; i<=2; i++){
+                tblScan=qcStatusDao.getScanDetails(cust_uid);
+                if(tblScan!=null){
+                    break;
+                }
+            }
+
+        }
+
+        return tblScan;
     }
 
 

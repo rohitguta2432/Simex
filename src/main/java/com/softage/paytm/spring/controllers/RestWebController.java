@@ -183,7 +183,7 @@ public class RestWebController {
         }
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/login", method = {RequestMethod.GET,RequestMethod.POST})
     @ResponseBody
     public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
         //logger.info("Welcome home! The client locale is {}.", locale);
@@ -430,8 +430,8 @@ public class RestWebController {
                     String leaddate = request.getParameter("leaddate");
                     Date today = new Date();
                     String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(today.getTime());
-                  //  arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
-                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, "2017-02-09");
+                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
+                 //   arrayList = leadsService.getAgentLeads(agentCode, timedeff, "2017-02-10");
                     array.addAll(arrayList);
 
                 } catch (Exception e) {
@@ -889,10 +889,7 @@ public class RestWebController {
 
                     result = "done";
 
-                } else {
-                    result = "Not found";
                 }
-
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1091,8 +1088,9 @@ public class RestWebController {
         return result;
     }
 
-    @RequestMapping(value = "/ftpdetails", method = {RequestMethod.GET, RequestMethod.POST})
-    public String ftpDetails(HttpServletRequest request) {
+
+    @RequestMapping(value = "/ftpdetails1", method = {RequestMethod.GET, RequestMethod.POST})
+    public String ftpDetails1(HttpServletRequest request) {
         String result = "";
         TblScan tblScan = null;
         int cust_uid = 0;
@@ -1155,6 +1153,44 @@ public class RestWebController {
             }
 
         } else {
+            result = "Authentication failed due to unauthorised login from another device";
+        }
+        return result;
+    }
+
+
+
+    @RequestMapping(value = "/ftpdetails", method = {RequestMethod.GET, RequestMethod.POST})
+    public String ftpDetails(HttpServletRequest request) {
+        String result = "";
+        TblScan tblScan = null;
+        int cust_uid = 0;
+        AllocationMastEntity allocationMastEntity = null;
+        System.out.println("Service done ");
+        // String customer_number = request.getParameter("customer_no");
+        String token = request.getParameter("agentToken");
+        EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
+        if (emplogintableEntity != null) {
+
+            String image_path = request.getParameter("image_path");
+            int page_number = Integer.parseInt(request.getParameter("page_number"));
+            String created_on = request.getParameter("created_on");
+            String created_by = request.getParameter("created_by");
+            int qc_status = Integer.parseInt(request.getParameter("qc_status"));
+            cust_uid = Integer.parseInt(request.getParameter("customer_no"));
+
+             result=qcservices.saveImages(image_path,created_by,cust_uid);
+                    if (result.equals("done")) {
+                        result = "success";
+                        logger.info(" Result   " + result);
+                    } else {
+                        result = "Fail";
+                        logger.info(" Result   " + result);
+                    }
+                }
+
+
+         else {
             result = "Authentication failed due to unauthorised login from another device";
         }
         return result;
@@ -1642,7 +1678,7 @@ public class RestWebController {
     }
 
 
-    @RequestMapping(value = "/UpdatePassword", method = RequestMethod.GET)
+    @RequestMapping(value = "/UpdatePassword", method = {RequestMethod.GET,RequestMethod.POST})
     @ResponseBody
     public String resetPassword(HttpServletRequest request, HttpServletResponse response) {
 

@@ -24,6 +24,8 @@ public interface QcStatusService {
     public TblScan getScanTableEntity(int scanID);
     public String saveCircleAuditEntity(CircleAuditEntity circleAuditEntity);
 
+
+    public String saveImages(String imagePath,String agentcode,int cust_uid);
     public TblScan getUserScanDetails(int cust_uid);
     public String updateTblSacnEntity(TblScan tblScan);
     public String SaveScanimages(TblScan scantbl);

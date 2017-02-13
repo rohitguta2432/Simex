@@ -100,9 +100,10 @@ public class SmsSendLogDaoImp implements SmsSendLogDao {
         Query query = null;
         try {
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = " select smslog from SmsSendlogEntity smslog where smslog.mobileNumber=:mobileNumber";
+            String strQuery = " select smslog from SmsSendlogEntity smslog where smslog.mobileNumber=:mobileNumber order by smslog.importDate desc";
             query = entityManager.createQuery(strQuery);
             query.setParameter("mobileNumber", mobileNumber);
+            query.setMaxResults(1);
             smsSendlogEntity = (SmsSendlogEntity) query.getSingleResult();
         } catch (Exception e) {
             logger.error("getting SMS Data ",e);

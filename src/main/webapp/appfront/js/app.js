@@ -171,11 +171,12 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
     $scope.submit = function(ev) {
 
+          alert($scope.phone);
 
       var phone1=  $scope.phone;
+
         var firstphone=phone1.substring(0,1);
-        // $scope.submit = function($event) {
-        //alert('fdsfsd');
+
         if($scope.name.length == 0 || $scope.name == undefined){
             //alert('Agent Name is not valid');
             ev.preventDefault();
@@ -195,13 +196,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
         else if($scope.spoke_code.length == 0 || $scope.spoke_code == undefined){
             ev.preventDefault();
         }
-       /* else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
-            // alert('Enter Pin Number');
-            ev.preventDefault();
-        }else if($scope.pin_code.length == 0 ||$scope.pin_code == undefined){
-            // alert('Enter Pin Number');
-            ev.preventDefault();
-        }*/
+
         else {
 
         //    var data = 'agent_name=' + $scope.name + '&agent_code=' + $scope.agent_code + '&phone=' + $scope.phone + '&circle_office=' + $scope.circleofiice + '&spoke_code=' + $scope.spoke_code + '&avl_time=' + $scope.avl_time + '&altr_number=' + $scope.altr_number + '&pin_code=' + $scope.pin_code +  '&email=' + $scope.email;
@@ -209,6 +204,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
 
             console.log(data);
+
             $http.get(domain+'/agentRegistration1?' + data)
                 /*$http.post('http://localhost:8080/paytm/agentRegistration', dataObject)*/
                 .success(function (data, status, headers, config) {
@@ -2511,6 +2507,7 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
             ExportService.SendData(data).then(function(result){
                 $scope.message = result.data;
                 if(angular.equals({},$scope.message)){
+                    alert("Data not found  ");
                     return false;
                 }
 

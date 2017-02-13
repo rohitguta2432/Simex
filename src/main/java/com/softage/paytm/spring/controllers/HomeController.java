@@ -2368,6 +2368,7 @@ class HomeController {
         BufferedReader in = null;
         String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91" + mobileNo + "&agent_number=+91" + agentNumber;
         try {
+
             URL obj = new URL(url);
 
 

@@ -29,6 +29,7 @@ public interface QcStatusDao {
     public boolean getAoAuditStatus(String foldername);
 
     public JSONObject getFTPDetailsForUser(int circlecode);
+    public String saveImages(String imagePath,String agentcode,int cust_uid);
 
     public  String checkAssignedTo(TblScan tblScan,String empcode);
 

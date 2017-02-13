@@ -26,14 +26,13 @@ public class AcceptedEntryDaoImpl implements AcceptedEntryDao {
 
 
     @Override
-    @Transactional
     public String saveAcceptedEntryData(String setEntryBy, String setCusPOACode, String setCusPoaNumber, String setCusPoiCode, String setCusPoiNumber, int setCustomerId, String setDocStatus, String setFolder_name, int setPage_count, String setSim_no, String setImagePath, String setSRF, String setcPOA, String setcPOI, String OrigPoa, String OrigPoi, int origPoaPc, int origPoiPc, String photo, int PhotoPc, int poaPc, int poiPc, int SrfPc) {
         EntityManager entityManager=null;
         EntityTransaction transaction=null;
         String result="";
         try{
             entityManager=entityManagerFactory.createEntityManager();
-          //  entityManager.getTransaction().begin();
+
             Query query=entityManager.createNativeQuery("{call usp_insertAcceptEntryData(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             query.setParameter(1,setEntryBy);
             query.setParameter(2,setCusPOACode);
@@ -59,7 +58,6 @@ public class AcceptedEntryDaoImpl implements AcceptedEntryDao {
             query.setParameter(22,poiPc);
             query.setParameter(23,SrfPc);
             result=(String)query.getSingleResult();
-          //  entityManager.getTransaction().commit();
 
 
 

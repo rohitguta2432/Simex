@@ -454,6 +454,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+  //  @Transactional
     public String updatePaytmMast(PaytmMastEntity paytmMastEntity) {
         EntityManager entityManager = null;
         EntityTransaction transaction = null;
@@ -464,7 +465,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.merge(paytmMastEntity);
-            transaction.commit();
+
             msg="done";
         } catch (Exception e) {
             msg="err";
@@ -473,6 +474,7 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         finally {
             if (entityManager != null && entityManager.isOpen())
             {
+                transaction.commit();
                 entityManager.close();
             }
         }

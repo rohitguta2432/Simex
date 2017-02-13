@@ -202,7 +202,7 @@ public class AoAuditDaoImp implements AoAuditDao {
         try{
             entityManager=entityManagerFactory.createEntityManager();
             transaction=entityManager.getTransaction();
-            transaction.begin();
+  //          transaction.begin();
             query=entityManager.createNativeQuery("{call usp_insertAoAudit(?,?,?,?,?,?,?)}");
             query.setParameter(1,dob);
             query.setParameter(2,name);
@@ -212,7 +212,7 @@ public class AoAuditDaoImp implements AoAuditDao {
             query.setParameter(6,scanid);
             query.setParameter(7,auditStatus);
             result=(String)query.getSingleResult();
-            transaction.commit();
+    //        transaction.commit();
         }catch (Exception e){
             result="error";
             e.printStackTrace();

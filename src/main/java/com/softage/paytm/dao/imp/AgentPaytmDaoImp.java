@@ -85,8 +85,8 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
         EntityTransaction transaction = null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
-            transaction=entityManager.getTransaction();
-            transaction.begin();
+        //    transaction=entityManager.getTransaction();
+         //   transaction.begin();
            // String strQuery = "select agentpin.apmAcode from AgentpinmasterEntity agentpin inner join EmplogintableEntity emp on emp.empCode=agentpin.apmAcode  where agentpin.apmAPincode=:pincode and emp.empStatus=1";
            // String strQuery = "select agents.apmAcode from AgentpinmasterEntity agents where agents.apmAPincode=:pincode";
             String strQuery="SELECT ap.APM_Acode " +
@@ -96,10 +96,10 @@ public class AgentPaytmDaoImp implements AgentPaytmDao {
 
             System.out.println("query>>>>>    "+strQuery);
             query=entityManager.createNativeQuery(strQuery);
-        //    query=entityManager.createQuery(strQuery);
+
             query.setParameter("pincode",pincode);
             agentList=query.getResultList();
-            transaction.commit();
+
 
 
         }catch (Exception e){

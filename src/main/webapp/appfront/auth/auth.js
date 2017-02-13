@@ -16,7 +16,7 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
         $scope.loginData = function()
         {
             //alert('Login.');
-            var daata = 'userName='+$scope.user+'&password='+$scope.pass;
+            var daata = 'userName='+$scope.user+'&password='+encodeURIComponent($scope.pass) ;
            /* $http.get('http://172.25.38.49:8080/simex/login?'+daata).success(function(data, status, headers, config){*/
 
                 $http.get('/simex/login?'+daata).success(function(data, status, headers, config){
@@ -51,7 +51,7 @@ angular.module('PaytmAuth.auth', ['ngRoute'])
                 return false;
             }else {
 
-                var daata = 'userName=' + $scope.user + '&password=' + $scope.pass +'&oldpassword='+$scope.oldpass;
+                var daata = 'userName=' + $scope.user + '&password=' + encodeURIComponent($scope.pass) +'&oldpassword='+encodeURIComponent($scope.oldpass);
                 /* $http.get('http://172.25.38.49:8080/simex/login?'+daata).success(function(data, status, headers, config){*/
 
                 $http.get('/simex/resetPassword?' + daata).success(function (data, status, headers, config) {
