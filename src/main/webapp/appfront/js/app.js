@@ -96,7 +96,12 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
         .state('projectRegistration', {
             url: '/projectRegistration',
             templateUrl: 'projectRegistration/projectRegistration.html',
-            controller:'projectRegistration'
+            controller: 'projectRegistration'
+        })
+                .state('manual',{
+                    url:'/manual',
+                    templateUrl:'Manual/Manual.html',
+                    controller:'manualController'
 
         });
 

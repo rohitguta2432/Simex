@@ -47,6 +47,8 @@
   <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
   <script src="libs/filesaver/FileSaver.js"></script>
   <script src="js/app.js"></script>
+    <script src="Manual/manual.js"></script>
+    <script src="Manual/manualFilter.js"></script>
   <!--Beyond styles-->
   <link href="assets/css/beyond.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/animate.min.css" rel="stylesheet" />
@@ -211,13 +213,9 @@
                        Agent Registration </span></a>
         </li>
 
-       <%-- <li><a ui-sref="companyRegistration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
-                       Company Registration</span></a>
-          </li>
-
-        <li><a ui-sref="projectRegistration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
-                       Project Registration</span></a>
-          </li>--%>
+            <li><a ui-sref="manual"><i class="menu-icon fa fa-user"></i><span class="menu-text">
+                        Manual Lead Allocation </span></a>
+            </li>
 
          <li><a ui-sref="uploadAgent"><i class="menu-icon fa fa-upload"></i><span class="menu-text">
                         Agent Upload </span></a></li>
@@ -235,14 +233,6 @@
             <li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                            Circle Audit </span></a></li>
 
-           <%--    <li><a ui-sref="downloaddocuments"><i class="menu-icon fa fa-download"></i><span class="menu-text">
-                                 Download Documents </span></a></li>
-                 <li><a ui-sref="createBatch"><i class="menu-icon fa fa-file"></i><span class="menu-text">
-                                Create Batch </span></a></li>
-                 <li><a ui-sref="batchIndexing"><i class="menu-icon fa fa-align-justify"></i><span class="menu-text">
-                                Batch Indexing </span></a></li>
-                     <li><a ui-sref="searchBatch"><i class="menu-icon fa fa-search"></i><span class="menu-text">
-                                Search Batch </span></a></li>--%>
         <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
         <%
@@ -259,10 +249,7 @@
           <li><a ui-sref="registration"><i class="menu-icon fa fa-user"></i><span class="menu-text">
                        Agent Registration </span></a>
           </li>
-         <%--<li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
-                        Circle Audit </span></a></li>--%>
-          <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">
-                           Data Entry </span></a></li>--%>
+
           <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
           <%
@@ -323,7 +310,8 @@
                            Data Entry </span></a></li>--%>
           <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
-          <%
+
+            <%
 
             }
           %>
@@ -343,12 +331,6 @@
 
                 }
             %>
-
-
-
-
-
-
 
       </ul>
       <!-- /Sidebar Menu -->

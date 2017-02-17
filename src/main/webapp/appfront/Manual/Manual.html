@@ -1,0 +1,66 @@
+<div ng-controller="manualController as manualCtrl">
+<div class="page-body" style="padding: 2px 5px 24px;">
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="widget">
+                <div class="widget-header bordered-bottom bordered-themeprimary">
+                    <span class="widget-caption">Manual Lead Allocation</span>
+                    <div class="widget-buttons">
+                        <div class="input-group" style="margin-top: 3px;">
+                            <span class="input-group-addon">Search Agents</span>
+                            <input type="text" name="searchText" id="searchText" placeholder="search agents" ng-model="manualCtrl.searchEngine" ng-change="manualCtrl.searchFields()"   class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th  style="width:10%">S.No</th>
+                                    <th  style="width:10%">Customer Name</th>
+                                    <th  style="width:10%">Job Id</th>
+                                    <th  style="width:10%">Agent Code</th>
+                                    <th  style="width:10%">Agent Name</th>
+                                    <th  style="width:10%">Customer No</th>
+                                    <th  style="width:10%">Address</th>
+                                    <th  style="width:10%">Assignment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr  ng-repeat="lead in manualCtrl.manual |filter: manualCtrl.searchEngine">
+                                    <td>{{$index+1}}</td>
+                                    <td>{{lead.customername}}</td>
+                                    <td>{{lead.jobid}}</td>
+                                    <td>{{lead.agentCode}}</td>
+                                    <td>{{lead.agentname}}</td>
+                                    <td>{{lead.PhoneNumber}}</td>
+                                    <td>{{lead.customeraddress}}</td>
+                                    <td><button  class="btn btn-azure shiny"
+                                  ng-disable="status=='yes'" ng-class="{blue: isSelected}" ng-click="changeAgent(lead.agentCode,lead.customerid)">
+                                        {{do}}</button></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+<!-- /Page Body -->
+<!--
+</div>
+&lt;!&ndash; /Page Content &ndash;&gt;
+</div>
+&lt;!&ndash; /Page Content &ndash;&gt;
+</div>
+&lt;!&ndash; Main Container &ndash;&gt;
+</div>-->

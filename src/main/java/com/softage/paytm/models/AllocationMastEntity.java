@@ -28,6 +28,7 @@ public class AllocationMastEntity {
     private String remarksCode;
     private Long appointmentId;
     private String spokeCode;
+    private String LastAssignedTo;
     private PaytmagententryEntity paytmagententryByAgentCode;
     private PaytmcustomerDataEntity paytmcustomerDataByCustomerPhone;
     private RemarkMastEntity remarkMastByRemarksCode;
@@ -42,6 +43,16 @@ public class AllocationMastEntity {
     }
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name="LastAssignedTo",nullable=true,insertable=true,updatable =true)
+    public String getLastAssignedTo() {
+        return LastAssignedTo;
+    }
+
+    public void setLastAssignedTo(String lastAssignedTo) {
+        LastAssignedTo = lastAssignedTo;
     }
 
     @Basic
