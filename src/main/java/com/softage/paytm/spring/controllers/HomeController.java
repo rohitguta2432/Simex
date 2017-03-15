@@ -650,7 +650,6 @@ class HomeController {
         int rejectCount = 0;
         int reopenCount = 0;
         String importBy = "System";
-
         TelecallMastEntity telecallMastEntity = null;
         PaytmMastEntity paytmMastEntity = null;
         String cvsSplitBy = "\\|";
@@ -669,6 +668,7 @@ class HomeController {
             if (session != null) {
                 importBy = (String) session.getAttribute("name");
             }
+            int circlecode=(Integer)session.getAttribute("cirCode");
             if (importBy != null) {
 
                 byte[] bytes = mpf.getBytes();
@@ -814,10 +814,14 @@ class HomeController {
                     }
                     jsonObject.put("status", "success");
                 } else {
-
-                    jsonObject = uploadExcel(serverFile, importBy, paytmMasterService, pinMasterService);
-                    return jsonObject;
-
+                    if(circlecode==4) {
+                        jsonObject = uploadExcel(serverFile, importBy, paytmMasterService, pinMasterService);
+                        return jsonObject;
+                    }
+                    if(circlecode==13 || circlecode==14){
+                        jsonObject = uploadExcelUP(serverFile, importBy, paytmMasterService, pinMasterService);
+                        return jsonObject;
+                    }
                 }
             } else {
                 jsonObject.put("authencation", "failed");
@@ -1984,6 +1988,283 @@ class HomeController {
         return jsonObject;
     }
 
+    public static JSONObject uploadExcelUP(File path, String importBy, PaytmMasterService paytmMasterService, PaytmPinMasterService pinMasterService) {
+        Row row = null;
+        PaytmMastEntity paytmMastEntity = null;
+        PaytmPinMaster paytmPinMaster = null;
+        JSONObject jsonObject = new JSONObject();
+        String result = "File Not Uploaded";
+
+        JSONObject json1 = new JSONObject();
+        int count = 0;
+        int successCount = 0;
+        int rejectCount = 0;
+        FileInputStream file = null;
+        boolean flag=false;
+        boolean flag1=true;
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        try {
+
+
+            file = new FileInputStream(path);
+            ArrayList<Map<String, String>> list = new ArrayList();
+
+            //Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+
+            //Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 0; i < 1; i++) {
+
+                row = sheet.getRow(i);
+                String BILLCYCLE= row.getCell(0).getStringCellValue().trim();
+                String SIM = row.getCell(1).getStringCellValue().trim();
+                String MSISDN = row.getCell(2).getStringCellValue().trim();
+                String TMCODE_DESC = row.getCell(3).getStringCellValue().trim();
+                String TITLE = row.getCell(4).getStringCellValue().trim();
+                String FIRST_NAME = row.getCell(5).getStringCellValue().trim();
+                String MIDDLE_NAME = row.getCell(6).getStringCellValue().trim();
+                String LAST_NAME = row.getCell(7).getStringCellValue().trim();
+                String ADDRESS1 = row.getCell(8).getStringCellValue().trim();
+                String ADDRESS2 = row.getCell(9).getStringCellValue().trim();
+                String ADDRESS3 = row.getCell(10).getStringCellValue().trim();
+                String CITY = row.getCell(11).getStringCellValue().trim();
+                String ZIP = row.getCell(12).getStringCellValue().trim();
+                String STATE = row.getCell(13).getStringCellValue().trim();
+                String CONTACT_NO_2 = row.getCell(14).getStringCellValue().trim();
+                String PRGDESC = row.getCell(15).getStringCellValue().trim();
+            }
+
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                JSONObject json = new JSONObject();
+                System.out.println("row start");
+                row = sheet.getRow(i);
+                System.out.println("get row start");
+                if (row != null && row.getCell(0) != null) {
+                    String pincode = null;
+                    String mobileNumber = null;
+                    String customerId = null;
+                    String co_id = null;
+                    String alternateNumber = null;
+                    String alternateNumber1 = null;
+                    String alternateNumber2 = null;
+                    String request_date = null;
+                    String sim_type="Normal";
+                    customerId="";
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    HashMap<String, String> map1 = new HashMap<String, String>();
+                    System.out.println(i);
+
+                    if (row.getCell(2).getCellType() == Cell.CELL_TYPE_STRING) {
+                        mobileNumber = row.getCell(2).getStringCellValue().trim();
+
+                    } else {
+                        mobileNumber = NumberToTextConverter.toText(row.getCell(2).getNumericCellValue()).trim();
+                    }
+                    String sim_plan_desc = row.getCell(3).getStringCellValue().trim();
+                    String firstname=null;
+                    String midname=null;
+                    String lastname=null;
+                    if(row.getCell(5).getCellType()==Cell.CELL_TYPE_NUMERIC){
+                        firstname= NumberToTextConverter.toText(row.getCell(5).getNumericCellValue()).trim();
+                    }else{
+                        firstname=row.getCell(5).getStringCellValue().trim();
+                    }
+                    if(row.getCell(6)!=null) {
+                        if (row.getCell(6).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            midname = NumberToTextConverter.toText(row.getCell(6).getNumericCellValue()).trim();
+                        }else{
+                            midname=row.getCell(6).getStringCellValue().trim();
+                        }
+                    }else{
+                        midname="";
+                    }
+                    if(row.getCell(7)!=null) {
+                        if (row.getCell(7).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            lastname = NumberToTextConverter.toText(row.getCell(7).getNumericCellValue()).trim();
+                        }else{
+                            lastname =row.getCell(7).getStringCellValue().trim();
+                        }
+                    }else{
+                        lastname="";
+                    }
+                    String name = firstname+midname+lastname;
+
+                    String address1=null;
+                    String address2=null;
+                    String address3=null;
+                    if(row.getCell(8)!=null){
+                        if(row.getCell(8).getCellType()==Cell.CELL_TYPE_STRING){
+                            address1= row.getCell(8).getStringCellValue().trim();
+                        }
+                        else{
+                            address1=NumberToTextConverter.toText(row.getCell(8).getNumericCellValue()).trim();
+                        }
+                    }else{
+                        address1="";
+                    }
+
+                    if(row.getCell(9)!=null){
+                        if(row.getCell(9).getCellType()==Cell.CELL_TYPE_STRING){
+                            address2= row.getCell(9).getStringCellValue().trim();
+                        }
+                        else{
+                            address2=NumberToTextConverter.toText(row.getCell(9).getNumericCellValue()).trim();
+                        }
+                    }else{
+                        address2="";
+                    }
+
+                    if(row.getCell(10)!=null){
+                        if(row.getCell(10).getCellType()==Cell.CELL_TYPE_STRING){
+                            address3= row.getCell(10).getStringCellValue().trim();
+                        }
+                        else{
+                            address3=NumberToTextConverter.toText(row.getCell(10).getNumericCellValue()).trim();
+                        }
+                    }else{
+                        address3="";
+                    }
+
+                    String address =address1+address2+address3;
+                    String city = row.getCell(11).getStringCellValue().trim();
+
+                    //String leadStage = row.getCell(6).getStringCellValue().trim();
+
+                    //String leadSubStage = row.getCell(7).getStringCellValue().trim();
+
+                    //  String pincode = row.getCell(8).getStringCellValue().trim();
+
+
+                    if (row.getCell(12).getCellType() == Cell.CELL_TYPE_STRING) {
+                        pincode = row.getCell(12).getStringCellValue().trim();
+
+                    } else {
+                        pincode = NumberToTextConverter.toText(row.getCell(12).getNumericCellValue()).trim();
+                    }
+                    if(row.getCell(14)!=null) {
+                        if (row.getCell(14).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            alternateNumber = NumberToTextConverter.toText(row.getCell(14).getNumericCellValue()).trim();
+                            //alternateNumber=row.getCell(16).getStringCellValue().trim();
+                        } else {
+                            alternateNumber = row.getCell(14).getStringCellValue().trim();
+                        }
+                    }else{
+                        alternateNumber="";
+                    }
+                    //String remarks = row.getCell(17).getStringCellValue().trim();
+                    //Date reqDate = row.getCell(18).getDateCellValue();
+                    Date reqDate =new Date();
+                    request_date=df.format(reqDate);
+                  /*  if (row.getCell(18).getCellType() == Cell.CELL_TYPE_STRING) {
+                        request_date = row.getCell(18).getStringCellValue().trim();
+                        request_date = request_date.trim() + " 00:00:00";
+                    } else if (row.getCell(18).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                        //request_date=NumberToTextConverter.toText(row.getCell(18).getNumericCellValue()).trim();
+
+                        request_date = df.format(reqDate).trim();
+                    }
+                    String lot_no = row.getCell(19).getStringCellValue().trim();*/
+
+                    if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
+                        // paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
+                        /*DateFormat df=new SimpleDateFormat("yyyy/MM/dd");
+                        String requestDate=df.format(request_date);*/
+                        paytmMastEntity = paytmMasterService.getPaytmMasterByDate(mobileNumber, request_date);
+                        //paytmMastEntity=paytmMasterService.getPaytmMasterByDate(mobileNumber,newReqDate);
+                        if(paytmMastEntity!=null){
+                            Date date1=paytmMastEntity.getRequestDate();
+                            Date date2=df.parse(request_date);
+                            flag=date1.getTime()==date2.getTime();
+                            if(paytmMastEntity.getFinalStatus()!=null) {
+                                flag1 = paytmMastEntity.getFinalStatus().equalsIgnoreCase("close");
+                            }
+                        }
+
+
+                    }
+                    if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                        int pincode1 = Integer.parseInt(pincode);
+                        paytmPinMaster = pinMasterService.getByPincode(pincode1);
+
+                    }
+                    if (!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1 && !StringUtils.isBlank(sim_type))) {
+                        map.put("customerID", customerId);
+                        map.put("name", name);
+                        map.put("mobileNumber", mobileNumber);
+                        map.put("address", address);
+                        map.put("pincode", pincode);
+                        map.put("city", city);
+                        map.put("importBy", importBy);
+                        map.put("co_id", "");
+                        map.put("co_status", "A");
+                        map.put("ch_reason_desc", "");
+                        map.put("sim_type",sim_type );
+                        map.put("sim_plan_desc", sim_plan_desc);
+                        map.put("alternateNumber1", alternateNumber);
+                        map.put("alternateNumber2", "");
+                        map.put("remarks", "ASIM");
+                        map.put("request_date", request_date);
+                        map.put("lot_no", "A");
+                        list.add(map);
+                        successCount++;
+
+                        if (paytmPinMaster == null) {
+                            //json.put("CustomerID", customerId);
+                            json.put("CustomerID", mobileNumber);
+                            json.put("Resion", "This Customer Pincode not match with Softage Circles PinCode .");
+                            json1.put("rejectedRecord" + count, json);
+                        }
+                    }else if(!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1 && StringUtils.isBlank(sim_type))){
+                        json.put("CustomerID", customerId);
+                        json.put("Resion", "Sim Type is blank");
+                        json1.put("rejectedRecord" + count, json);
+                    } else if (flag) {
+                        json.put("CustomerID", customerId);
+                        json.put("Resion", "Duplicate Customers");
+                        json1.put("rejectedRecord" + count, json);
+
+                    } else if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                        json.put("CustomerID", customerId);
+                        json.put("Resion", "PinCode not valid so please check It.");
+                        json1.put("rejectedRecord" + count, json);
+
+                    }
+
+
+                }
+                count++;
+            }
+
+
+            jsonObject.put("rejectedRecord", json1);
+            System.out.println("list   " + list);
+            rejectCount = count - successCount;
+
+            jsonObject.put("status", "success");
+            result = paytmMasterService.savePaytmMasterExcel(list);
+            if ("done".equalsIgnoreCase(result)) {
+                result = "Successfully Uploaded Customer  = " + successCount + " , Rejected Customer  =" + rejectCount;
+            }
+        } catch (Exception e) {
+            result = "Technical error in uploading";
+            System.out.println("count is : "+count);
+            logger.error("Customer Uploading", e);
+
+        } finally {
+            try {
+                file.close();
+
+            } catch (Exception e) {
+                logger.error("",e);
+            }
+        }
+        jsonObject.put("Message", result);
+        return jsonObject;
+    }
+
     public static JSONObject uploadAgent(File path, String importBy, AgentPaytmService agentPaytmService, int circleCode) {
 
         Row row = null;
@@ -2109,6 +2390,14 @@ class HomeController {
         return jsonObject;
     }
 
+    @RequestMapping(value = "/getCircle",method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getCircle(HttpServletRequest request,HttpSession session){
+        JSONObject jsonObject=new JSONObject();
+        Integer circle=(Integer)session.getAttribute("cirCode");
+        jsonObject.put("circlecode",circle);
+        return jsonObject;
+    }
 
     @RequestMapping(value = "/getPdfUrl", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
@@ -2911,7 +3200,7 @@ class HomeController {
         } else {
             audit_status = 2;
         }
-        AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
+        //AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
         TblScan tblScan = qcStatusService.getScanTableEntity(scanid);
         String assignedToResult = qcStatusService.checkAssignedTo(tblScan, empcode);
         if (assignedToResult.equalsIgnoreCase("assigned")) {

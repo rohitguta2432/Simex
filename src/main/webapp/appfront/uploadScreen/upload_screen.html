@@ -23,7 +23,7 @@
                 </div>
 
 
-                <div class="widget-body" ng-controller="myCtrl" >
+                <div class="widget-body" ng-controller="myCtrl" ng-init="getCircle()">
                     <div id="horizontal-form">
 
                         <form  novalidate name="f1" ng-submit="SaveFile1($event)" class="form form-horizontal" style="margin-bottom: 0;" accept-charset="UTF-8" enctype="multipart/form-data">
@@ -43,8 +43,12 @@
                                     <input type="submit" class="btn btn-azure shiny" value="Upload" ng-click="showConfirm($event)" value="upload" style="float:left;"/>
                                 </div>
 
-                                <div class="col-sm-2 pull-right" style="margin-top:10px;">
+                                <div class="col-sm-2 pull-right" style="margin-top:10px;" ng-show="circleCode==4">
                                     <a href="assets/img/sample.xlsx" class="btn btn-azure shiny" >Download Sample File</a>
+                                </div>
+
+                                <div class="col-sm-2 pull-right" style="margin-top:10px;" ng-show="circleCode==13 || circleCode==14">
+                                    <a href="assets/img/sampleUP.xlsx" class="btn btn-azure shiny" >Download Sample File</a>
                                 </div>
 
                                 <div style="align-items: center">

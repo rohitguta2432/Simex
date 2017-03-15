@@ -2084,6 +2084,14 @@ routerApp.controller('myCtrl', ['$scope', '$http', 'FileProductUploadService1','
     $scope.IsFileValid = false;
     $scope.IsFormValid = false;
     $scope.selectedProduct = {};
+
+    $scope.getCircle=function(){
+        $http.get(domain+'/getCircle')
+            .success(function(data,status,headers,config){
+                $scope.circleCode=data.circlecode;
+            })
+    }
+
     $scope.$watch("f1.$valid", function (isValid) {
         $scope.IsFormValid = isValid;
 
