@@ -11,6 +11,6 @@ public interface AoAuditService {
     public JSONObject getAoAuditDetails(String spokecode,String empcode);
     public String saveAuditEntity(AoAuditEntity aoAuditEntity);
     public JSONObject getFormRecievingDetails(String mobile_number,String spokecode);
-    public String checkAoAssignedTo(TblScan tblScan,String empcode);
+    public String checkAoAssignedTo(int tblScan,String empcode);
     public String insertAoAuditValues(String dob,String name,String otherReason,String photo,String sign,Integer scanid,Integer auditStatus);
 }

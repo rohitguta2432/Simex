@@ -176,7 +176,7 @@ routerApp.controller('agentCtrl',['$scope', '$http','$q','$log','$location','$md
 
     $scope.submit = function(ev) {
 
-          alert($scope.phone);
+          //alert($scope.phone);
 
       var phone1=  $scope.phone;
 

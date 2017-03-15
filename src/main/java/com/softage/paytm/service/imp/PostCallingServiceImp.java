@@ -71,10 +71,10 @@ public class PostCallingServiceImp implements PostCallingService {
         java.sql.Date visitDate = null;
         String result1 = null;
         DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
-        PaytmMastEntity paytmMastEntity=null;
+        PaytmMastEntity paytmMastEntity = null;
         try {
-            int custId=Integer.parseInt(map.get("custId"));
-            paytmMastEntity=  paytmMasterDao.getPaytmMasterData(custId);
+            int custId = Integer.parseInt(map.get("custId"));
+            paytmMastEntity = paytmMasterDao.getPaytmMasterData(custId);
             TelecallMastEntity telecallMastEntity = postCallingDao.getByReferenceId(custId);
             if (telecallMastEntity == null) {
                 for (int i = 1; i <= 5; i++) {
@@ -115,8 +115,8 @@ public class PostCallingServiceImp implements PostCallingService {
                 result = "Customer Rejected because Appointment Date more then 3 days ";
             } else if ("CON".equals(status)) {
                 tcStatus = "D";
-              // result = saveCustomer(map);
-               result=saveCustomerData(map);
+                // result = saveCustomer(map);
+                result = saveCustomerData(map);
                 if ("JOB ALLOCATED".equalsIgnoreCase(result)) {
                     result1 = "done";
                 }
@@ -133,9 +133,9 @@ public class PostCallingServiceImp implements PostCallingService {
             //   TelecallMastEntity telecallMastEntity1=new TelecallMastEntity();
             //     telecallMastEntity.setTmCustomerPhone(map.get("number"));
 
-            if(!"CON".equalsIgnoreCase(status) && s==4){
+            if (!"CON".equalsIgnoreCase(status) && s == 4) {
 
-                PaytmMastEntity paytmMastData  =paytmMasterDao.getPaytmMasterData(custId);
+                PaytmMastEntity paytmMastData = paytmMasterDao.getPaytmMasterData(custId);
                 paytmMastEntity.setFinalStatus("close");
                 paytmMasterDao.updatePaytmMast(paytmMastEntity);
 
@@ -159,12 +159,12 @@ public class PostCallingServiceImp implements PostCallingService {
                 telecallMastEntity.setTmTeleCallStatus("NA");
                 telecallMastEntity.setTmLastCallStatus(map.get("status"));
                 postCallingDao.updateTeleCall(telecallMastEntity);
-                PaytmMastEntity paytmMastData  =paytmMasterDao.getPaytmMasterData(custId);
+                PaytmMastEntity paytmMastData = paytmMasterDao.getPaytmMasterData(custId);
                 paytmMastEntity.setFinalStatus("close");
                 paytmMasterDao.updatePaytmMast(paytmMastEntity);
             }
         } catch (Exception e) {
-           logger.error("job allocate error",e);
+            logger.error("job allocate error", e);
         }
         return result;
     }
@@ -221,19 +221,19 @@ public class PostCallingServiceImp implements PostCallingService {
     }
 
     @Override
-    public JSONObject getAvailableslot(String date, Set<String> agents, String time,String keydate) {
+    public JSONObject getAvailableslot(String date, Set<String> agents, String time, String keydate) {
 
         String result = "Booked";
         boolean flag = false;
-        JSONObject returnObj=new JSONObject();
+        JSONObject returnObj = new JSONObject();
         for (String agent : agents) {
             try {
-                String dateTime = date +" "+ time+":00:00";
+                String dateTime = date + " " + time + ":00:00";
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date convertedDate = dateFormat.parse(dateTime);
                 Timestamp datetime = new Timestamp(convertedDate.getTime());
-                String  result1= allocationDao.findByAllocationTime(agent,dateTime);
-                if(result1.equalsIgnoreCase("Navl")){
+                String result1 = allocationDao.findByAllocationTime(agent, dateTime);
+                if (result1.equalsIgnoreCase("Navl")) {
                     flag = true;
                 }
 
@@ -242,15 +242,15 @@ public class PostCallingServiceImp implements PostCallingService {
                     flag = true;
                 }*/
             } catch (Exception e) {
-               logger.error("available slot",e);
+                logger.error("available slot", e);
             }
 
 
         }
         if (flag) {
-           result="Available";
+            result = "Available";
         }
-        returnObj.put(keydate,result);
+        returnObj.put(keydate, result);
 
 
         return returnObj;
@@ -289,14 +289,14 @@ public class PostCallingServiceImp implements PostCallingService {
                 }
                 result = response.toString();
 
-                logger.info("sent sms  mobile Number =  "+mobileno);
+                logger.info("sent sms  mobile Number =  " + mobileno);
             } catch (IOException io) {
-                logger.error("send sms ",io);
+                logger.error("send sms ", io);
                 result = "err";
 
             }
         } catch (Exception e) {
-            logger.error("send sms ",e);
+            logger.error("send sms ", e);
             result = "err";
         }
 
@@ -310,7 +310,7 @@ public class PostCallingServiceImp implements PostCallingService {
         String result = null;
         DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
         try {
-            int custId=Integer.parseInt(map.get("custId"));
+            int custId = Integer.parseInt(map.get("custId"));
             PaytmcustomerDataEntity paytmcustomerDataEntity = new PaytmcustomerDataEntity();
             paytmcustomerDataEntity.setCust_uid(custId);
             paytmcustomerDataEntity.setPcdCustomerPhone(map.get("number"));
@@ -346,28 +346,28 @@ public class PostCallingServiceImp implements PostCallingService {
     }
 
 
+    public String saveCustomerData(Map<String, String> map) {
+        Map<String, String> allocation_map = new HashMap<String, String>();
+        String agentCode = null;
+        String appoinmentId = null;
+        String confirmationAllowed = "";
+        String finalconfirmation = "";
+        String custext="";
 
-    public String saveCustomerData(Map<String,String> map){
-        Map<String,String> allocation_map=new HashMap<String,String>();
-        String agentCode=null;
-        String appoinmentId=null;
-        String confirmationAllowed="";
-        String finalconfirmation="";
+        PaytmagententryEntity paytmagententryEntity = null;
+        String loginId = "";
+        int custId = 0;
 
-        PaytmagententryEntity paytmagententryEntity=null;
-        String loginId="";
-        int custId=0;
-
-        String allocationId=null;
+        String allocationId = null;
 
         DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
-        String customerAlternativeNo="";
-        String agentMobileNumber="";
-        String result="";
-        String jobNumber="";
+        String customerAlternativeNo = "";
+        String agentMobileNumber = "";
+        String result = "";
+        String jobNumber = "";
         try {
             custId = Integer.parseInt(map.get("custId"));
-            PaytmMastEntity paytmMastEntity= paytmMasterDao.getPaytmMasterData(custId);
+            PaytmMastEntity paytmMastEntity = paytmMasterDao.getPaytmMasterData(custId);
 
 
             String number = map.get("number");
@@ -386,16 +386,16 @@ public class PostCallingServiceImp implements PostCallingService {
             String pcdvisitTime = map.get("visitDate");
             java.util.Date parsedUtilDate = formater.parse(map.get("visitDate"));
             java.sql.Date sqltDate = new java.sql.Date(parsedUtilDate.getTime());
-            map.put("visitDate",sqltDate.toString());
+            map.put("visitDate", sqltDate.toString());
             String visitTime = map.get("visitTime");
 
-            appoinmentId=postCallingDao.callJobAllocatedProcedure(map);
+            appoinmentId = postCallingDao.callJobAllocatedProcedure(map);
 
 
-            if(appoinmentId.equalsIgnoreCase("error")){
-                for(int i=0; i<3; i++){
+            if (appoinmentId.equalsIgnoreCase("error")) {
+                for (int i = 0; i < 3; i++) {
                     appoinmentId = postCallingDao.callJobAllocatedProcedure(map);
-                    if(!"error".equalsIgnoreCase(jobNumber)){
+                    if (!"error".equalsIgnoreCase(jobNumber)) {
                         break;
                     }
                 }
@@ -408,9 +408,9 @@ public class PostCallingServiceImp implements PostCallingService {
             confirmationAllowed = "Y";
             finalconfirmation = "W";
 
-            if(agentCode!=null && !(agentCode.equalsIgnoreCase("null"))) {
-                paytmagententryEntity =agentPaytmDao.findByPrimaryKey(agentCode);
-                agentMobileNumber=paytmagententryEntity.getAphone();
+            if (agentCode != null && !(agentCode.equalsIgnoreCase("null"))) {
+                paytmagententryEntity = agentPaytmDao.findByPrimaryKey(agentCode);
+                agentMobileNumber = paytmagententryEntity.getAphone();
                 allocation_map.put("appointmentID", appoinmentId);
                 allocation_map.put("agentcode", agentCode);
                 allocation_map.put("custUID", map.get("custId"));
@@ -428,22 +428,21 @@ public class PostCallingServiceImp implements PostCallingService {
                 allocation_map.put("remarkCode", "U");
                 allocation_map.put("spokeCode", paytmagententryEntity.getAspokecode());
                 jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
-                if(jobNumber.equalsIgnoreCase("error")){
-                   for(int i=0; i<3; i++){
-                       jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
-                       if(!"error".equalsIgnoreCase(jobNumber)){
-                           break;
-                       }
-                   }
+                if (jobNumber.equalsIgnoreCase("error")) {
+                    for (int i = 0; i < 3; i++) {
+                        jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
+                        if (!"error".equalsIgnoreCase(jobNumber)) {
+                            break;
+                        }
+                    }
 
                 }
 
 
-
-                if(paytmMastEntity!=null){
-                    customerAlternativeNo =paytmMastEntity.getAlternatePhone1();
-                    if(customerAlternativeNo!=null && !customerAlternativeNo.equalsIgnoreCase("")){
-                        number=customerAlternativeNo;
+                if (paytmMastEntity != null) {
+                    customerAlternativeNo = paytmMastEntity.getAlternatePhone1();
+                    if (customerAlternativeNo != null && !customerAlternativeNo.equalsIgnoreCase("")) {
+                        number = customerAlternativeNo;
                     }
                 }
 
@@ -451,7 +450,7 @@ public class PostCallingServiceImp implements PostCallingService {
                         " , Your visit is fixed at " + pcdvisitTime
                         + " " + visitTime + " with " + name + " Address- " +
                         "" + address + " " + pincode + " Contact nos- " +
-                        "" + paytmMastEntity.getAlternatePhone1() +" , "+number+" Please See Leads in App ";
+                        "" + paytmMastEntity.getAlternatePhone1() + " , " + number + " Please See Leads in App ";
                /* String custext = "Dear Customer  Your CustomerId - " + custId+ " with Request Number " + paytmMastEntity.getCustomerPhone()
                        + " ,   Agent visit date " + pcdvisitTime
                         + "  Time " + visitTime + " Please Available with all documents";
@@ -461,54 +460,76 @@ public class PostCallingServiceImp implements PostCallingService {
               kindly be ready with your photo ID & address proof.
 
 */
-                String custext="Dear Customer, your request for SIM replacement for Mobile no "
-                        +paytmMastEntity.getCustomerPhone()+" has been confirmed. Your Reference ID id "+custId+ " Our Agent will be visiting on "+
-                        pcdvisitTime+" "+visitTime+":00 hrs, kindly be ready with your photo ID & address proof ";
+               /* String custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                        + paytmMastEntity.getCustomerPhone() + " has been confirmed. Your Reference ID id " + custId + " Our Agent will be visiting on " +
+                        pcdvisitTime + " " + visitTime + ":00 hrs, kindly be ready with your photo ID & address proof ";*/
 
+/*
+                String custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                        + paytmMastEntity.getCustomerPhone() + " has been confirmed. Your Reference ID id " + custId + " Our Agent will be visiting on " +
+                        pcdvisitTime + " " + visitTime + ":00 hrs, kindly Available";*/
 
                 PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
                 if (paytmdeviceidinfoEntity != null) {
                     loginId = paytmdeviceidinfoEntity.getLoginId();
                 }
 
+
                 if (loginId != null) {
                     String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
                     String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
-                    if(paytmMastEntity.getAlternatePhone1()==null || paytmMastEntity.getAlternatePhone1()==""){
-                        String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                    if (paytmMastEntity.getCirCode() == 13 || paytmMastEntity.getCirCode() == 14) {
+                        String res3 = saveSmsSendLog(paytmMastEntity.getCustomerPhone(), paytmMastEntity.getCustomerId(), custext, "1", "4");
+
                     } else {
-                        String res4 = saveSmsSendLog(paytmMastEntity.getAlternatePhone1(), paytmMastEntity.getCustomerId(), custext, "1", "4");
+                        if (paytmMastEntity.getAlternatePhone1() == null || paytmMastEntity.getAlternatePhone1() == "") {
+                            String res3 = saveSmsSendLog(paytmMastEntity.getCustomerPhone(), paytmMastEntity.getCustomerId(), custext, "1", "4");
+                        } else {
+                            String res4 = saveSmsSendLog(paytmMastEntity.getAlternatePhone1(), paytmMastEntity.getCustomerId(), custext, "1", "4");
+                        }
                     }
-                  //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
+
+                    //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
                 } else {
                     String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
-                    if(paytmMastEntity.getAlternatePhone1()==null || paytmMastEntity.getAlternatePhone1()==""){
-                        String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                    if (paytmMastEntity.getCirCode() == 13 || paytmMastEntity.getCirCode() == 14) {
+                       custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                                + paytmMastEntity.getCustomerPhone() + " has been confirmed. Your Reference ID id " + custId + " Our Agent will be visiting on " +
+                                pcdvisitTime + " " + visitTime + ":00 hrs, kindly Available";
+
+                            String res3 = saveSmsSendLog(paytmMastEntity.getCustomerPhone(), paytmMastEntity.getCustomerId(), custext, "1", "4");
                     } else {
-                        String res4 = saveSmsSendLog(paytmMastEntity.getAlternatePhone1(), paytmMastEntity.getCustomerId(), custext, "1", "4");
+                     custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                                + paytmMastEntity.getCustomerPhone() + " has been confirmed. Your Reference ID id " + custId + " Our Agent will be visiting on " +
+                                pcdvisitTime + " " + visitTime + ":00 hrs, kindly be ready with your photo ID & address proof ";
+                        if (paytmMastEntity.getAlternatePhone1() == null || paytmMastEntity.getAlternatePhone1() == "") {
+                            String res3 = saveSmsSendLog(paytmMastEntity.getCustomerPhone(), paytmMastEntity.getCustomerId(), custext, "1", "4");
+                        } else {
+                            String res4 = saveSmsSendLog(paytmMastEntity.getAlternatePhone1(), paytmMastEntity.getCustomerId(), custext, "1", "4");
+                        }
                     }
-                  //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
+
+
+                    //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
                 }
 
                 result = "JOB ALLOCATED";
-                logger.info("Job Allocated to AgentCode  "+agentCode);
+                logger.info("Job Allocated to AgentCode  " + agentCode);
 
 
-            }else{
+            } else {
                 result = "NO AGENT AVAILABLE";
             }
 
-        }catch (Exception e){
-            logger.error("Job Allocated error",e);
-            result="err";
+        } catch (Exception e) {
+            logger.error("Job Allocated error", e);
+            result = "err";
         }
-
 
 
         return result;
 
     }
-
 
 
     public String saveAppoinment(Map<String, String> map, PaytmcustomerDataEntity paytmcustomerDataEntity) {
@@ -537,7 +558,7 @@ public class PostCallingServiceImp implements PostCallingService {
             }
 
         } catch (Exception e) {
-            logger.error("error to save Appointmantdata",e);
+            logger.error("error to save Appointmantdata", e);
         }
         return result;
     }
@@ -557,7 +578,7 @@ public class PostCallingServiceImp implements PostCallingService {
         String finalconfirmation = "";
 
         int maxAllocation = 15;
-        int custid=0;
+        int custid = 0;
         String loginId = null;
         String customerNo = "";
         long appointmentId = 0;
@@ -651,7 +672,6 @@ public class PostCallingServiceImp implements PostCallingService {
                             + " " + time + " Please Available with ...... ";
 
 
-
                     PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
                     if (paytmdeviceidinfoEntity != null) {
                         loginId = paytmdeviceidinfoEntity.getLoginId();
@@ -660,17 +680,17 @@ public class PostCallingServiceImp implements PostCallingService {
                     if (loginId != null) {
                         String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
                         String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
-                //     String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
-                       String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
+                        //     String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                        String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
                     } else {
                         String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
-                     //   String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
+                        //   String res3 =  saveSmsSendLog(paytmMastEntity.getCustomerPhone(),paytmMastEntity.getCustomerId(),custext,"1","4");
                         String res3 = saveSmsSendLog("8588998890", paytmMastEntity.getCustomerId(), custext, "1", "4");
                     }
 
                     result = "JOB ALLOCATED";
                 } catch (Exception e) {
-                    logger.error("job allocated error ",e);
+                    logger.error("job allocated error ", e);
                 }
             } else {
                 result = "NO AGENT AVAILABLE";
@@ -722,7 +742,7 @@ public class PostCallingServiceImp implements PostCallingService {
                 }
             }
         } catch (Exception e) {
-            logger.error("Save Allocation ",e);
+            logger.error("Save Allocation ", e);
             result = "err";
 
         }

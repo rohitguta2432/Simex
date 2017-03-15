@@ -9,4 +9,5 @@ public interface DataEntryService {
     public String saveDataEntry(DataentryEntity dataentryEntity);
 
     public DataentryEntity getdataByUserCustid(int cust_uid);
+    public String deleteExistEntry(int cust_uid);
 }

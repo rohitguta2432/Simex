@@ -26,7 +26,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.softage.paytm.models.*;
 import com.softage.paytm.service.*;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import jdk.internal.org.objectweb.asm.tree.TryCatchBlockNode;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
@@ -54,7 +53,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.*;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -97,8 +95,6 @@ class HomeController {
 
     @Autowired
     private AoAuditService aoAuditService;
-    @Inject
-    private ManualLeadService manualLeadService;
 
     /**
      * Simply selects the home view to render by returning its name.
@@ -154,6 +150,10 @@ class HomeController {
     // this code use for password encryption
 
 
+
+
+
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject login(HttpServletRequest request, HttpServletResponse response) {
@@ -165,7 +165,7 @@ class HomeController {
         String password = request.getParameter("password");
         String dbUser = null;
         String token = null;
-        Integer attamptCount = null;
+        Integer attamptCount=null;
         try {
             EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -321,7 +321,7 @@ class HomeController {
                 } else {
                     result = "User Left";
                 }
-            } else {
+            }else {
                 result = "Invalid Credentials";
             }
         } catch (Exception e) {
@@ -416,153 +416,153 @@ class HomeController {
     }
 */
 
-    /*
-     // this code use for password encryption
-     @RequestMapping(value = "/login1", method = RequestMethod.GET)
-     @ResponseBody
-     public JSONObject login1(HttpServletRequest request, HttpServletResponse response) {
-         //logger.info("Welcome home! The client locale is {}.", locale);
-         String result = null;
-         JSONObject jsonObject = new JSONObject();
-         String user = request.getParameter("userName");
-         String password = request.getParameter("password");
-         String dbUser = null;
-         EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
-
-         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-         String hashedPassword = passwordEncoder.encode(password);
-         String session1 = (String) request.getAttribute(user);
-         if (session1 != null) {
-             HttpSession session = request.getSession();
-             if (session != null) {
-                 session.invalidate();
-             }
-         }
-         if (emplogintableEntity != null) {
-
-             Timestamp expireDate = emplogintableEntity.getExpireDate();
-             Timestamp currentDate = new Timestamp(new Date().getTime());
-             //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
-             if (expireDate == null ) {
-
-                 Date currentdate1= new Date();
-                 long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
-                 currentdate1.setTime(currentdate1.getTime() + expireTime);
-
-                 emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-                 emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
-                 emplogintableEntity.setEmpPassword(hashedPassword);
-                 agentPaytmService.updatePassword(emplogintableEntity,null);
-
-                 if(passwordEncoder.matches(password, emplogintableEntity.getEmpPassword()) || password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
-                     dbUser = emplogintableEntity.getEmpCode();
-                     HttpSession session = request.getSession();
-                     session.setAttribute("name", user);
-                     session.setAttribute("role", emplogintableEntity.getRoleCode());
-                     session.setAttribute("cirCode", emplogintableEntity.getCirCode());
-                     result = "success";
-                 }
-
-
-             } else if(currentDate.getTime()>expireDate.getTime()){
-                 result = "expirePassword";
-
-             } else if(passwordEncoder.matches(password, emplogintableEntity.getEmpPassword()) || password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
-                 dbUser = emplogintableEntity.getEmpCode();
-                 HttpSession session = request.getSession();
-                 session.setAttribute("name", user);
-                 session.setAttribute("role", emplogintableEntity.getRoleCode());
-                 session.setAttribute("cirCode", emplogintableEntity.getCirCode());
-                 result = "success";
-             }
-         } else {
-             result = "error";
-         }
-         jsonObject.put("status", result);
-         jsonObject.put("user", dbUser);
-         return jsonObject;
-     }
- */
-    @RequestMapping(value = "/resetPassword", method = RequestMethod.GET)
+   /*
+    // this code use for password encryption
+    @RequestMapping(value = "/login1", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject resetPassword(HttpServletRequest request, HttpServletResponse response) {
-
-        // JSONObject jsonObject = new JSONObject();
+    public JSONObject login1(HttpServletRequest request, HttpServletResponse response) {
+        //logger.info("Welcome home! The client locale is {}.", locale);
         String result = null;
-        String useroldpassword = null;
-        String finalpass = null;
-        String passCsv = "";
         JSONObject jsonObject = new JSONObject();
-        try {
-            String user = request.getParameter("userName");
-            String oldpassword = request.getParameter("oldpassword");
-            String newpassword = request.getParameter("password");
+        String user = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String dbUser = null;
+        EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
+        String session1 = (String) request.getAttribute(user);
+        if (session1 != null) {
+            HttpSession session = request.getSession();
+            if (session != null) {
+                session.invalidate();
+            }
+        }
+        if (emplogintableEntity != null) {
+
+            Timestamp expireDate = emplogintableEntity.getExpireDate();
+            Timestamp currentDate = new Timestamp(new Date().getTime());
+            //    if(expireDate==null && currentDate.getTime()>expireDate.getTime()){
+            if (expireDate == null ) {
+
+                Date currentdate1= new Date();
+                long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+                currentdate1.setTime(currentdate1.getTime() + expireTime);
+
+                emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                emplogintableEntity.setExpireDate(new Timestamp(currentdate1.getTime()));
+                emplogintableEntity.setEmpPassword(hashedPassword);
+                agentPaytmService.updatePassword(emplogintableEntity,null);
+
+                if(passwordEncoder.matches(password, emplogintableEntity.getEmpPassword()) || password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                    dbUser = emplogintableEntity.getEmpCode();
+                    HttpSession session = request.getSession();
+                    session.setAttribute("name", user);
+                    session.setAttribute("role", emplogintableEntity.getRoleCode());
+                    session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                    result = "success";
+                }
 
 
-            Date expireDate = new Date();
-            System.out.println("Current Date   " + expireDate);
-            long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
-            expireDate.setTime(expireDate.getTime() + expireTime);
-            System.out.println("Date After 30 Days  " + expireDate);
+            } else if(currentDate.getTime()>expireDate.getTime()){
+                result = "expirePassword";
 
-            EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
-            if (emplogintableEntity != null) {
-                if (oldpassword.equals(emplogintableEntity.getEmpPassword())) {
-                    String lastThrePassword = emplogintableEntity.getLastThreePassword();
-                    lastThrePassword = (lastThrePassword != null) ? lastThrePassword : "";
-                    String[] lastPassArr = lastThrePassword.split(",");
+            } else if(passwordEncoder.matches(password, emplogintableEntity.getEmpPassword()) || password.equalsIgnoreCase(emplogintableEntity.getEmpPassword())) {
+                dbUser = emplogintableEntity.getEmpCode();
+                HttpSession session = request.getSession();
+                session.setAttribute("name", user);
+                session.setAttribute("role", emplogintableEntity.getRoleCode());
+                session.setAttribute("cirCode", emplogintableEntity.getCirCode());
+                result = "success";
+            }
+        } else {
+            result = "error";
+        }
+        jsonObject.put("status", result);
+        jsonObject.put("user", dbUser);
+        return jsonObject;
+    }
+*/
+   @RequestMapping(value = "/resetPassword", method = RequestMethod.GET)
+   @ResponseBody
+   public JSONObject resetPassword(HttpServletRequest request, HttpServletResponse response) {
+
+       // JSONObject jsonObject = new JSONObject();
+       String result = null;
+       String useroldpassword = null;
+       String finalpass = null;
+       String passCsv="";
+       JSONObject jsonObject=new JSONObject();
+       try {
+           String user = request.getParameter("userName");
+           String oldpassword = request.getParameter("oldpassword");
+           String newpassword = request.getParameter("password");
+
+
+           Date expireDate = new Date();
+           System.out.println("Current Date   " + expireDate);
+           long expireTime = (long) 30 * 1000 * 60 * 60 * 24;
+           expireDate.setTime(expireDate.getTime() + expireTime);
+           System.out.println("Date After 30 Days  " + expireDate);
+
+           EmplogintableEntity emplogintableEntity = userService.getUserByEmpcode(user);
+           if (emplogintableEntity != null) {
+               if (oldpassword.equals(emplogintableEntity.getEmpPassword())) {
+                   String lastThrePassword = emplogintableEntity.getLastThreePassword();
+                   lastThrePassword = (lastThrePassword!=null)?lastThrePassword:"";
+                   String[] lastPassArr  = lastThrePassword.split(",");
                     /*for(String pass:lastPassArr){
 
                     }
                     *///Arrays.asList(lastPassArr).contains(newpassword)
-                    if (!Arrays.asList(lastPassArr).contains(newpassword) && (!oldpassword.equals(newpassword))) {
-                        //Old password mismatch
-                        String lastThreePassword = emplogintableEntity.getLastThreePassword();
-                        if (lastThreePassword != null) {
-                            String[] arr = lastThreePassword.split(",");
+                   if (!Arrays.asList(lastPassArr).contains(newpassword) && (!oldpassword.equals(newpassword))) {
+                       //Old password mismatch
+                       String lastThreePassword = emplogintableEntity.getLastThreePassword();
+                       if(lastThreePassword!=null) {
+                           String[] arr = lastThreePassword.split(",");
 
-                            if (arr.length == 3) {
-                                arr[0] = arr[1];
-                                arr[1] = arr[2];
-                                arr[2] = newpassword;
-                                passCsv = StringUtils.join(arr, ',');
-                            } else {
-                                passCsv = StringUtils.isNotBlank(lastThreePassword)
-                                        ? lastThreePassword + "," + newpassword : newpassword;
-                            }
-                        } else {
-                            passCsv = newpassword;
-                        }
-                        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                        String hashedPassword = passwordEncoder.encode(newpassword);
-                        emplogintableEntity.setEmpPassword(newpassword);
-                        emplogintableEntity.setLastThreePassword(passCsv);
-                        emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
-                        emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
-                        result = agentPaytmService.updatePassword(emplogintableEntity, newpassword);
-                        if (result.equalsIgnoreCase("done")) {
-                            result = "success";
-                        }
+                           if (arr.length == 3) {
+                               arr[0] = arr[1];
+                               arr[1] = arr[2];
+                               arr[2] = newpassword;
+                               passCsv = StringUtils.join(arr, ',');
+                           } else {
+                               passCsv = StringUtils.isNotBlank(lastThreePassword)
+                                       ? lastThreePassword + "," + newpassword : newpassword;
+                           }
+                       }else{
+                           passCsv=newpassword;
+                       }
+                       BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                       String hashedPassword = passwordEncoder.encode(newpassword);
+                       emplogintableEntity.setEmpPassword(newpassword);
+                       emplogintableEntity.setLastThreePassword(passCsv);
+                       emplogintableEntity.setImportDate(new Timestamp(new Date().getTime()));
+                       emplogintableEntity.setExpireDate(new Timestamp(expireDate.getTime()));
+                       result = agentPaytmService.updatePassword(emplogintableEntity, newpassword);
+                       if (result.equalsIgnoreCase("done")) {
+                           result = "success";
+                       }
 
-                    } else {
-                        result = "New Password can't be last 3 password";
-                    }
-                } else {
-                    result = "old password is not valid";
-                }
-            } else {
-                result = "Invalid User";
-            }
-        } catch (Exception e) {
-            logger.error("reset Password error ", e);
-            result = "Technical Error";
+                   } else {
+                       result = "New Password can't be last 3 password";
+                   }
+               } else {
+                   result = "old password is not valid";
+               }
+           } else {
+               result = "Invalid User";
+           }
+       } catch (Exception e) {
+           logger.error("reset Password error ",e);
+           result = "Technical Error";
 
-        }
-        jsonObject.put("status", result);
+       }
+       jsonObject.put("status", result);
 
-        return jsonObject;
+       return jsonObject;
 
-    }
+   }
 
 
 
@@ -688,7 +688,7 @@ class HomeController {
                 }
 
 
-                File[] files = dir.listFiles();
+                File[] files=   dir.listFiles();
                 for (File file : files) {
 
                     long diff = new Date().getTime() - file.lastModified();
@@ -759,7 +759,7 @@ class HomeController {
                                 paytmPinMaster = pinMasterService.getByPincode(pincode);
 
                             }
-                            if (!StringUtils.isEmpty(customerData[1]) && (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) && telecallMastEntity == null && paytmMastEntity == null) {
+                            if (!StringUtils.isEmpty(customerData[1]) && (customerData[3].length() == 10 && StringUtils.isNumeric(customerData[3])) && telecallMastEntity == null && paytmMastEntity == null ) {
                                 System.out.println(customerData[0]);
                                 map.put("kycRequestId", customerData[0]);
                                 map.put("CustomerID", customerData[1]);
@@ -991,7 +991,7 @@ class HomeController {
 
             jsonObject = qcStatusService.downloadList(mobilenumber, to, from);
         } catch (Exception e) {
-            logger.error("", e);
+           logger.error("",e);
         }
         return jsonObject;
 
@@ -1420,7 +1420,7 @@ class HomeController {
                 jsonObject.put("authentication", "failed");
             }
         } catch (Exception e) {
-            logger.error("registration error ", e);
+            logger.error("registration error ",e);
             msg = "Agent not Registered ";
             jsonObject.put("msg", msg);
             jsonObject.put("status", "error");
@@ -1461,7 +1461,7 @@ class HomeController {
                 String circleOffice = request.getParameter("circle_office");
                 String spokeCode = request.getParameter("spoke_code");
                 String avalTime = request.getParameter("avl_time");
-                //   String pincode = request.getParameter("pin_code");
+             //   String pincode = request.getParameter("pin_code");
                 String multipin = "M";
                 String email = request.getParameter("email");
                 PaytmagententryEntity paytmagententryEntity = new PaytmagententryEntity();
@@ -1476,50 +1476,55 @@ class HomeController {
                 paytmagententryEntity.setAemailId(email);
                 paytmagententryEntity.setImportby(userName);
                 paytmagententryEntity.setImportdate(new Timestamp(new Date().getTime()));
-                List<String> pincodeList = circleService.getBySpokeCode(spokeCode);
-                int count = 0;
-                for (String agentPincode : pincodeList) {
-                    count++;
-                    paytmagententryEntity.setApincode(agentPincode);
+                List<String> pincodeList=circleService.getBySpokeCode(spokeCode);
+                int count=0;
+                if(pincodeList.size()>0) {
+                    for (String agentPincode : pincodeList) {
+                        count++;
+                        paytmagententryEntity.setApincode(agentPincode);
 
-                    PaytmagententryEntity paytmagententryEntity1 = agentPaytmService.findByPrimaryKey(agentCode);
+                        PaytmagententryEntity paytmagententryEntity1 = agentPaytmService.findByPrimaryKey(agentCode);
 
-                    if (paytmagententryEntity1 != null) {
-                        String result = agentPaytmService.saveAgentPinMaster1(paytmagententryEntity);
-                        if (result.equals("done")) {
-                            count++;
-                            msg = "Agent Succesfully Registered with Number of Pincode = " + count;
-                            jsonObject.put("msg", msg);
-                            jsonObject.put("status", "success");
+                        if (paytmagententryEntity1 != null) {
+                            String result = agentPaytmService.saveAgentPinMaster1(paytmagententryEntity);
+                            if (result.equals("done")) {
+                                count++;
+                                msg = "Agent Succesfully Registered with Number of Pincode = " + count;
+                                jsonObject.put("msg", msg);
+                                jsonObject.put("status", "success");
 
+
+                            } else {
+                                msg = "Agent Already Registred with Same Pincodes";
+                                jsonObject.put("msg", msg);
+                                jsonObject.put("status", "success");
+                            }
 
                         } else {
-                            msg = "Agent Already Registred with Same Pincodes";
-                            jsonObject.put("msg", msg);
-                            jsonObject.put("status", "success");
+                            msg = agentPaytmService.saveAgent(paytmagententryEntity, circleMastEntity);
+                            if ("done".equalsIgnoreCase(msg)) {
+                                msg = "Agent Succesfully Registered";
+                                jsonObject.put("msg", msg);
+                                jsonObject.put("status", "success");
+                                count++;
+                            } else {
+                                msg = "Agent not Registered Try Again ";
+                                jsonObject.put("msg", msg);
+                                jsonObject.put("status", "error");
+                            }
                         }
 
-                    } else {
-                        msg = agentPaytmService.saveAgent(paytmagententryEntity, circleMastEntity);
-                        if ("done".equalsIgnoreCase(msg)) {
-                            msg = "Agent Succesfully Registered";
-                            jsonObject.put("msg", msg);
-                            jsonObject.put("status", "success");
-                            count++;
-                        } else {
-                            msg = "Agent not Registered Try Again ";
-                            jsonObject.put("msg", msg);
-                            jsonObject.put("status", "error");
-                        }
                     }
-
+                }else{
+                    msg = "No Pincode Registered on this spoke";
+                    jsonObject.put("msg", msg);
+                    jsonObject.put("status", "error");
                 }
-
             } else {
                 jsonObject.put("authentication", "failed");
             }
         } catch (Exception e) {
-            logger.error("registration error ", e);
+            logger.error("registration error ",e);
             msg = "Agent not Registered ";
             jsonObject.put("msg", msg);
             jsonObject.put("status", "error");
@@ -1567,6 +1572,9 @@ class HomeController {
                     circleMastEntity = circleService.findByPrimaryKey(circleCode);
                 }
 
+                EmplogintableEntity emplogintableEntity1 = userService.getUserByEmpcode(empcode);
+               if(emplogintableEntity1==null){
+
                 EmplogintableEntity emplogintableEntity = new EmplogintableEntity();
                 emplogintableEntity.setEmpCode(empcode);
                 emplogintableEntity.setEmpName(empName);
@@ -1611,10 +1619,15 @@ class HomeController {
                     jsonObject.put("msg", msg);
                     jsonObject.put("status", "success");
                 } else {
-                    msg = "Not Registered Try Again ";
+                    msg = "Not Registered, Number Already Exist ";
                     jsonObject.put("msg", msg);
                     jsonObject.put("status", "error");
                 }
+            }else {
+                   msg = "User Already Exist ";
+                   jsonObject.put("msg", msg);
+                   jsonObject.put("status", "error");
+            }
             } else {
                 jsonObject.put("authentication", "failed");
             }
@@ -1645,6 +1658,7 @@ class HomeController {
         String alternateresult2 = "";
         String customerphone = "";
         int cust_uid = 0;
+        Integer cir_Code=4;
         HttpSession session = request.getSession(false);
         logger.info("calling to customer>>>>> wait");
         if (session != null) {
@@ -1655,18 +1669,17 @@ class HomeController {
             if (userName != null) {
                 String phonenumber = request.getParameter("customer_number");
                 String custUid = request.getParameter("cust_uid");
-                cust_uid = Integer.parseInt(request.getParameter("cust_uid"));
-                PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMastDatas(cust_uid);
+                cust_uid=  Integer.parseInt(request.getParameter("cust_uid"));
+                PaytmMastEntity paytmMastEntity=paytmMasterService.getPaytmMastDatas(cust_uid);
 
-
-                if (StringUtils.isNotBlank(phonenumber) && phonenumber != null) {
-                    result = customerCalling(phonenumber, agentNo);
-                } else {
-                    if (paytmMastEntity != null) {
-                        customerphone = paytmMastEntity.getCustomerPhone();
+                    if (StringUtils.isNotBlank(phonenumber) && phonenumber != null) {
+                        result = customerCalling(phonenumber, agentNo);
+                    } else {
+                        if (paytmMastEntity != null) {
+                            customerphone = paytmMastEntity.getCustomerPhone();
+                        }
+                       result = customerCalling(customerphone, agentNo);
                     }
-                    result = customerCalling(customerphone, agentNo);
-                }
 
 
 //2017-01-24
@@ -1688,13 +1701,13 @@ class HomeController {
 
     @RequestMapping(value = "/updateAddress", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public JSONObject updateAddress(HttpServletRequest request, HttpServletResponse response) {
+    public JSONObject updateAddress(HttpServletRequest request,HttpServletResponse response) {
 
         JSONObject returnObj = new JSONObject();
         String userName = "system";
-        String changePincode = "";
-        String changeAddress = "";
-        String result = "";
+        String changePincode="";
+        String changeAddress="";
+        String result="";
 
         int cust_uid = 0;
         HttpSession session = request.getSession(false);
@@ -1704,21 +1717,21 @@ class HomeController {
         }
         try {
             if (userName != null) {
-                changePincode = request.getParameter("zipcode");
-                changeAddress = request.getParameter("changeAddress");
-                cust_uid = Integer.parseInt(request.getParameter("cust_uid"));
-                PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMastDatas(cust_uid);
-                if (paytmMastEntity != null) {
-                    String lastAddress = paytmMastEntity.getAddress();
-                    String lastpincode = paytmMastEntity.getPincode();
+                changePincode=request.getParameter("zipcode");
+                changeAddress=request.getParameter("changeAddress");
+                cust_uid=  Integer.parseInt(request.getParameter("cust_uid"));
+                PaytmMastEntity paytmMastEntity=paytmMasterService.getPaytmMastDatas(cust_uid);
+                if(paytmMastEntity!=null){
+                    String lastAddress=paytmMastEntity.getAddress();
+                    String lastpincode=paytmMastEntity.getPincode();
                     paytmMastEntity.setLastAddress(lastAddress);
                     paytmMastEntity.setLastPincode(lastpincode);
                     paytmMastEntity.setAddressStatus("U");
                     paytmMastEntity.setAddress(changeAddress);
                     paytmMastEntity.setPincode(changePincode);
-                    result = paytmMasterService.updatePaytmMast(paytmMastEntity);
-                    if (result.equalsIgnoreCase("done")) {
-                        result = "success";
+                    result =paytmMasterService.updatePaytmMast(paytmMastEntity);
+                    if(result.equalsIgnoreCase("done")){
+                        result="success";
                     }
                 }
 
@@ -1730,9 +1743,10 @@ class HomeController {
             returnObj.put("authentication", "Technical error");
             logger.error("", e);
         }
-        returnObj.put("status", result);
+        returnObj.put("status",result);
         return returnObj;
     }
+
 
 
     public static JSONObject uploadExcel(File path, String importBy, PaytmMasterService paytmMasterService, PaytmPinMasterService pinMasterService) {
@@ -1747,8 +1761,8 @@ class HomeController {
         int successCount = 0;
         int rejectCount = 0;
         FileInputStream file = null;
-        boolean flag = false;
-        boolean flag1 = true;
+        boolean flag=false;
+        boolean flag1=true;
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         try {
@@ -1857,7 +1871,7 @@ class HomeController {
                     } else {
                         alternateNumber = row.getCell(16).getStringCellValue().trim();
                     }
-                    if (StringUtils.isNotBlank(alternateNumber)) {
+                    if(StringUtils.isNotBlank(alternateNumber)) {
                         String altNum = alternateNumber.replace("'", "");
                         String altNumbers = altNum.replace("-", " ");
                         String[] alternateNumbers = altNumbers.split("\\s+");
@@ -1894,11 +1908,11 @@ class HomeController {
                         String requestDate=df.format(request_date);*/
                         paytmMastEntity = paytmMasterService.getPaytmMasterByDate(mobileNumber, request_date);
                         //paytmMastEntity=paytmMasterService.getPaytmMasterByDate(mobileNumber,newReqDate);
-                        if (paytmMastEntity != null) {
-                            Date date1 = paytmMastEntity.getRequestDate();
-                            Date date2 = df.parse(request_date);
-                            flag = date1.getTime() == date2.getTime();
-                            if (paytmMastEntity.getFinalStatus() != null) {
+                        if(paytmMastEntity!=null){
+                            Date date1=paytmMastEntity.getRequestDate();
+                            Date date2=df.parse(request_date);
+                            flag=date1.getTime()==date2.getTime();
+                            if(paytmMastEntity.getFinalStatus()!=null) {
                                 flag1 = paytmMastEntity.getFinalStatus().equalsIgnoreCase("close");
                             }
                         }
@@ -1936,7 +1950,7 @@ class HomeController {
                             json.put("Resion", "This Customer Pincode not match with Softage Circles PinCode .");
                             json1.put("rejectedRecord" + count, json);
                         }
-                    } else if (!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1 && StringUtils.isBlank(sim_type))) {
+                    }else if(!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1 && StringUtils.isBlank(sim_type))){
                         json.put("CustomerID", customerId);
                         json.put("Resion", "Sim Type is blank");
                         json1.put("rejectedRecord" + count, json);
@@ -1945,7 +1959,7 @@ class HomeController {
                         json.put("Resion", "Duplicate Customers");
                         json1.put("rejectedRecord" + count, json);
 
-                    } else if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
+                    } else if ((pincode.length() != 6 && !StringUtils.isNumeric(pincode))) {
                         json.put("CustomerID", customerId);
                         json.put("Resion", "PinCode not valid so please check It.");
                         json1.put("rejectedRecord" + count, json);
@@ -1976,7 +1990,7 @@ class HomeController {
                 file.close();
 
             } catch (Exception e) {
-                logger.error("", e);
+                logger.error("",e);
             }
         }
         jsonObject.put("Message", result);
@@ -2085,7 +2099,7 @@ class HomeController {
                     }else{
                         lastname="";
                     }
-                    String name = firstname+midname+lastname;
+                    String name = firstname+" "+midname+" "+lastname;
 
                     String address1=null;
                     String address2=null;
@@ -2123,7 +2137,7 @@ class HomeController {
                         address3="";
                     }
 
-                    String address =address1+address2+address3;
+                    String address =address1+" "+address2+" "+address3;
                     String city = row.getCell(11).getStringCellValue().trim();
 
                     //String leadStage = row.getCell(6).getStringCellValue().trim();
@@ -2213,16 +2227,16 @@ class HomeController {
                             json1.put("rejectedRecord" + count, json);
                         }
                     }else if(!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1 && StringUtils.isBlank(sim_type))){
-                        json.put("CustomerID", customerId);
+                        json.put("CustomerID", mobileNumber);
                         json.put("Resion", "Sim Type is blank");
                         json1.put("rejectedRecord" + count, json);
-                    } else if (flag) {
-                        json.put("CustomerID", customerId);
+                    } else if (flag || !flag1) {
+                        json.put("CustomerID", mobileNumber);
                         json.put("Resion", "Duplicate Customers");
                         json1.put("rejectedRecord" + count, json);
 
-                    } else if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
-                        json.put("CustomerID", customerId);
+                    } else if ((pincode.length() != 6 && !StringUtils.isNumeric(pincode))) {
+                        json.put("CustomerID", mobileNumber);
                         json.put("Resion", "PinCode not valid so please check It.");
                         json1.put("rejectedRecord" + count, json);
 
@@ -2292,7 +2306,7 @@ class HomeController {
                 String agentName = row.getCell(0).getStringCellValue().trim();
                 String agentCode = row.getCell(1).getStringCellValue().trim();
                 String mobileNo = row.getCell(2).getStringCellValue().trim();
-                //  String pinCode = row.getCell(3).getStringCellValue().trim();
+              //  String pinCode = row.getCell(3).getStringCellValue().trim();
                 String circle = row.getCell(3).getStringCellValue().trim();
 
                 String spoke = row.getCell(4).getStringCellValue().trim();
@@ -2357,7 +2371,7 @@ class HomeController {
             jsonObject.put("rejectedRecord", json1);
 
             System.out.println("list   " + list);
-            rejectCount = count - successCount;
+            rejectCount = count  - successCount;
 
             jsonObject.put("status", "success");
 
@@ -2365,8 +2379,8 @@ class HomeController {
 
 
             if ("done".equalsIgnoreCase(result)) {
-                result = "Successfully Uploded Agent  = " + successCount + " Rejected Agent  =" + rejectCount;
-            } else {
+                result = "Successfully Uploded Agent  = " + successCount  + " Rejected Agent  =" + rejectCount;
+            }else{
                 result = "Agent Already Exist ";
             }
         } catch (Exception e) {
@@ -2635,7 +2649,7 @@ class HomeController {
                     ftpClient.disconnect();
 
                 } catch (IOException f) {
-                    logger.error("", f);
+                    logger.error("",f);
                 }
             }
 
@@ -2766,8 +2780,10 @@ class HomeController {
                 List<String> dateListReject = new ArrayList<String>();
 
 
+
+
                 for (int i = 0; i < 3; i++) {
-                    if (i > 0) {
+                    if(i>0) {
                         date.add(Calendar.DATE, 1);
                     }
 
@@ -2783,7 +2799,7 @@ class HomeController {
 
                 Date today = new Date();
                 Calendar cal = Calendar.getInstance();
-                int hourOfDay = (cal.getTime().getMinutes() > 40) ? 3 : 2;
+                int hourOfDay = (cal.getTime().getMinutes()>40)? 3 : 2;
                 cal.add(Calendar.HOUR_OF_DAY, hourOfDay);
                 System.out.println("Today Date is " + new Date(cal.getTimeInMillis()).getHours());
                 int currenttime = new Date(cal.getTimeInMillis()).getHours();
@@ -2875,7 +2891,7 @@ class HomeController {
                 if (todaytime.equals(datefetch)) {
                     Date today = new Date();
                     Calendar cal = Calendar.getInstance();
-                    int hourOfDay = (cal.getTime().getMinutes() > 40) ? 3 : 2;
+                    int hourOfDay = (cal.getTime().getMinutes()>40)? 3 : 2;
                     cal.add(Calendar.HOUR_OF_DAY, hourOfDay);
                     System.out.println("Today Date is " + new Date(cal.getTimeInMillis()).getHours());
                     int currenttime = new Date(cal.getTimeInMillis()).getHours();
@@ -3056,7 +3072,7 @@ class HomeController {
                 String callingTime = request.getParameter("visit_time");
                 String dateTime = callingDate.substring(6, 10) + "-" + callingDate.substring(3, 5) + "-" + callingDate.substring(0, 2) + " " + callingTime + ":00";
 
-                //    result = callTimeService.insertCallTimeDetails(mobileNo, dateTime, cirCode, importby);
+            //    result = callTimeService.insertCallTimeDetails(mobileNo, dateTime, cirCode, importby);
 
                 if (result.equals("done")) {
                     message = "success";
@@ -3087,9 +3103,9 @@ class HomeController {
         String importType = "Admin";
         int cirCode = 0;
         String role = null;
-        int cust_uid = 0;
-        String callingTime = "";
-        String callingDate = "";
+        int cust_uid=0;
+        String callingTime="";
+        String callingDate="";
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
@@ -3114,12 +3130,12 @@ class HomeController {
                 callingDate = request.getParameter("visit_date");
                 callingTime = request.getParameter("visit_time");
                 String cust_uid1 = request.getParameter("customerID");
-                cust_uid = Integer.parseInt(cust_uid1);
+                cust_uid=Integer.parseInt(cust_uid1);
 
 
                 if (status.equals("2-CB")) {
                     String dateTime = callingDate.substring(6, 10) + "-" + callingDate.substring(3, 5) + "-" + callingDate.substring(0, 2) + " " + callingTime.trim() + ":00";
-                    result = callTimeService.insertCallTimeDetails(mobileNo, dateTime, cirCode, importby, cust_uid);
+                    result = callTimeService.insertCallTimeDetails(mobileNo, dateTime, cirCode, importby,cust_uid);
                 }
                 System.out.println("callingTime " + callingDate + "callingTime " + callingTime);
 
@@ -3193,26 +3209,29 @@ class HomeController {
         } else {
             audit_status = 2;
         }
-        //AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
-        TblScan tblScan = qcStatusService.getScanTableEntity(scanid);
-        String assignedToResult = qcStatusService.checkAssignedTo(tblScan, empcode);
+
+        AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
+
+        String assignedToResult = qcStatusService.checkAssignedTo(scanid, empcode);
+
         if (assignedToResult.equalsIgnoreCase("assigned")) {
-            CircleAuditEntity circleAuditEntity = new CircleAuditEntity();
+         /*   CircleAuditEntity circleAuditEntity = new CircleAuditEntity();
             circleAuditEntity.setNameMatched(name_mathched);
             circleAuditEntity.setPhotoMatched(photo_matched);
             circleAuditEntity.setSignMatched(sign_matched);
             circleAuditEntity.setDobMatched(dob_matched);
             circleAuditEntity.setOtherReason(other_reason);
             circleAuditEntity.setTblScan(tblScan);
-            circleAuditEntity.setAuditStatus(audit_status);
-            String msg = qcStatusService.insertCircleAuditValues(dob_matched, name_mathched, other_reason, photo_matched, sign_matched, scanid, audit_status);
-            if (msg.equalsIgnoreCase("success")) {
-                jsonObject.put("message", "Successfully updated audit status");
-            } else if (msg.equalsIgnoreCase("exists")) {
-                jsonObject.put("message", "This image has already been audited");
-            } else {
-                jsonObject.put("message", "Unable to update the audit status");
-            }
+            circleAuditEntity.setAuditStatus(audit_status);*/
+            String msg=qcStatusService.insertCircleAuditValues(dob_matched,name_mathched,other_reason,photo_matched,sign_matched,scanid,audit_status);
+        if(msg.equalsIgnoreCase("success")){
+            jsonObject.put("message","Successfully updated audit status");
+        }else if (msg.equalsIgnoreCase("exists")){
+            jsonObject.put("message","This image has already been audited");
+        }
+        else{
+            jsonObject.put("message","Unable to update the audit status");
+        }
         }
         /*String msg = qcStatusService.saveCircleAuditEntity(circleAuditEntity);
         if (msg.equalsIgnoreCase("error")) {
@@ -3227,9 +3246,8 @@ class HomeController {
                 jsonObject.put("message", "Unable to update the audit status");
             }
         }
-    }*/
-        else {
-            jsonObject.put("message", "This image has been assigned to another user");
+    }*/else{
+            jsonObject.put("message","This image has been assigned to another user");
         }
         return jsonObject;
 
@@ -3361,7 +3379,7 @@ class HomeController {
                 }
             }
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("",e);
         }
 
     }
@@ -3376,19 +3394,19 @@ class HomeController {
         String empcode = (String) session.getAttribute("name");
         List<String> filepathList = new ArrayList<String>();
         JSONObject detailJson = aoAuditService.getAoAuditDetails(spokecode, empcode);
-        String cirStatus = null;
+        String cirStatus=null;
         String status = (String) detailJson.get("status");
-        Integer circleStatus = (Integer) detailJson.get("circleStatus");
+        Integer circleStatus=(Integer)detailJson.get("circleStatus");
 
         if (status.equals("Unavailable")) {
             jsonObject.put("auditStatus", "No Images To Audit");
         } else {
             jsonObject.put("auditStatus", "Available");
 
-            if (circleStatus == 2) {
-                cirStatus = "Rejected";
-            } else {
-                cirStatus = "Accepted";
+            if (circleStatus==2){
+                cirStatus="Rejected";
+            }else{
+                cirStatus="Accepted";
             }
 
             // String imagePath = (String) detailJson.get("imagePath");
@@ -3419,7 +3437,7 @@ class HomeController {
             jsonObject.put("filePathList", filepathList);
             //jsonObject.put("circleRemarks",circleRemarks);
             jsonObject.put("custuid", custUID);
-            jsonObject.put("cirStatus", cirStatus);
+            jsonObject.put("cirStatus",cirStatus);
         }
         return jsonObject;
     }
@@ -3428,10 +3446,10 @@ class HomeController {
     @ResponseBody
     public JSONObject aoAuditQcStatus(HttpServletRequest request) {
 
-        int cust_uid = 0;
+        int cust_uid=0;
         HttpSession session = request.getSession();
         String empcode = (String) session.getAttribute("name");
-        int custuid = 0;
+        int custuid=0;
         String result = "";
         JSONObject jsonObject = new JSONObject();
         String scanid_string = (String) request.getParameter("scanId");
@@ -3439,8 +3457,8 @@ class HomeController {
         int audit_status = 0;
         String custUid = (String) request.getParameter("custUID");
 
-        if (custUid != null) {
-            custuid = Integer.parseInt(custUid);
+        if (custUid!=null){
+             custuid=Integer.parseInt(custUid);
 
         }
         String name_mathched = (String) request.getParameter("nameMatched");
@@ -3456,25 +3474,25 @@ class HomeController {
             audit_status = 4;
         }
 
-        AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
-        TblScan tblScan = qcStatusService.getScanTableEntity(scanid);
-        String assignmentstatus = aoAuditService.checkAoAssignedTo(tblScan, empcode);
-        if (assignmentstatus.equalsIgnoreCase("assigned")) {
-            AoAuditEntity aoAuditEntity = new AoAuditEntity();
+    //    AuditStatusEntity auditStatusEntity = qcStatusService.getAuditStatusEntity(audit_status);
+        String assignmentstatus=aoAuditService.checkAoAssignedTo(scanid,empcode);
+        if(assignmentstatus.equalsIgnoreCase("assigned")) {
+          /*  AoAuditEntity aoAuditEntity = new AoAuditEntity();
             aoAuditEntity.setPhotoMatched(photo_matched);
             aoAuditEntity.setNameMatched(name_mathched);
             aoAuditEntity.setDobMatched(dob_matched);
             aoAuditEntity.setSignMatched(sign_matched);
             aoAuditEntity.setOtherReason(other_reason);
             aoAuditEntity.setTblScan(tblScan);
-            aoAuditEntity.setAuditStatus(audit_status);
-            String msg = aoAuditService.insertAoAuditValues(dob_matched, name_mathched, other_reason, photo_matched, sign_matched, scanid, audit_status);
-            if (msg.equalsIgnoreCase("success")) {
-                jsonObject.put("message", "Successfully updated audit status");
-            } else if (msg.equalsIgnoreCase("exists")) {
-                jsonObject.put("message", "This image has already been audited");
-            } else {
-                jsonObject.put("message", "Unable to update the audit status");
+            aoAuditEntity.setAuditStatus(audit_status);*/
+            String msg=aoAuditService.insertAoAuditValues(dob_matched,name_mathched,other_reason,photo_matched,sign_matched,scanid,audit_status);
+            if(msg.equalsIgnoreCase("success")){
+                jsonObject.put("message","Successfully updated audit status");
+            }else if(msg.equalsIgnoreCase("exists")){
+                jsonObject.put("message","This image has already been audited");
+            }
+            else{
+                jsonObject.put("message","Unable to update the audit status");
             }
 
             //String msg = aoAuditService.saveAuditEntity(aoAuditEntity);
@@ -3503,8 +3521,8 @@ class HomeController {
                 jsonObject.put("message", "Unable to update the audit status");
             }
         }*/
-        else {
-            jsonObject.put("message", "This image has been assigned to another user");
+    else{
+            jsonObject.put("message","This image has been assigned to another user");
 
         }
         return jsonObject;
@@ -3845,42 +3863,5 @@ class HomeController {
         return "";
     }
 
-    @RequestMapping(value = "/leaddetails", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject getAgentLeadDetails() {
-        JSONObject jsonObject=new JSONObject();
 
- List agentdetails= manualLeadService.getAgentLeadDetails();
-        jsonObject.put("agentLeads",agentdetails);
-        /*System.out.println(agentdetails);*/
-
-return  jsonObject;
-    }
-    @RequestMapping(value = "/availableAgents", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject getAvailableAgents(@RequestParam("agentCodes") String AgentCodes) {
-        JSONObject jsonObject=new JSONObject();
-        List<PaytmagententryEntity> availableagentCode= manualLeadService.getAgentCode();
-   List  ListlistCode= new ArrayList();
-        for(PaytmagententryEntity empcode:availableagentCode) {
-            JSONObject listAgent = new JSONObject();
-            if (!empcode.getAcode().equals( AgentCodes)){
-
-                listAgent.put("code", empcode.getAcode());
-                ListlistCode.add(listAgent);
-        }
-
-        }
-        jsonObject.put("agentEmpCode",ListlistCode);
-        return  jsonObject;
-    }
-    @RequestMapping(value = "/UpdateAgentslead", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public JSONObject UpdateAgent(@RequestParam("cust_uid") int cust_uid,@RequestParam("agentscodes") String agentcode,@RequestParam("last_agentCode") String lastAgent ){
-        JSONObject jsonObject=new JSONObject();
-        String result="";
-
-       result=  manualLeadService.updateAgentsBycustUid(cust_uid,agentcode.trim(),lastAgent);
-        return  jsonObject;
-    }
 }

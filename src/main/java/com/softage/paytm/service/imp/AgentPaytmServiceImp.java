@@ -190,9 +190,10 @@ public class AgentPaytmServiceImp implements AgentPaytmService {
       @Override
       public String saveEmployee(EmplogintableEntity emplogintableEntity,String password) {
 
+
         String result = agentPaytmDao.saveEmployee(emplogintableEntity);
         if ("err".equalsIgnoreCase(result)) {
-            for (int i = 0; i <= 5; i++) {
+            for (int i = 0; i <= 2; i++) {
                 result = agentPaytmDao.saveEmployee(emplogintableEntity);
                 if ("done".equalsIgnoreCase(result)) {
                     break;

@@ -156,7 +156,7 @@ public class QcStatusServiceImp implements QcStatusService {
     }
 
     @Override
-    public String checkAssignedTo(TblScan tblScan, String empcode) {
+    public String checkAssignedTo(int tblScan, String empcode) {
         return qcStatusDao.checkAssignedTo(tblScan,empcode);
     }
 

@@ -181,8 +181,6 @@ public class AllocationDaoImp implements AllocationDao {
             query.setParameter(3,allocationMastEntity.getKycCollected());
             query.setParameter(4,allocationMastEntity.getRemarkMastByRemarksCode().getRemarksCode());
             message=(String)query.getSingleResult();
-            entityManager.flush();
-            entityManager.clear();
             entityManager.getTransaction().commit();
         }catch (Exception e){
             e.printStackTrace();

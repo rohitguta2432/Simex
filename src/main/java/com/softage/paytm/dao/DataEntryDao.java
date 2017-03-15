@@ -9,4 +9,5 @@ public interface DataEntryDao {
     public String saveDataEntry(DataentryEntity dataentryEntity);
 
     public DataentryEntity getuserById(int cust_uid);
+    public String deleteExistEntry(int cust_uid);
 }

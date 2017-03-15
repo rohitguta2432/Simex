@@ -442,20 +442,16 @@ public class QcStatusDaoImp implements QcStatusDao {
     }
 
     @Override
-    public String checkAssignedTo(TblScan tblScan, String empcode) {
+    public String checkAssignedTo(int scanID, String empcode) {
         EntityManager entityManager=null;
         Query query=null;
         String result=null;
-        //DateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try{
+              try{
             entityManager=entityManagerFactory.createEntityManager();
-            Integer scanID=tblScan.getScanid();
-            //String assignedTo=tblScan.getAssignedTo();
-            //String assignedTime=df.format(tblScan.getAssignedDatetime());
             query=entityManager.createNativeQuery("{call usp_checkCircleAssignment(?,?)}");
             query.setParameter(1,scanID);
             query.setParameter(2,empcode);
-            //query.setParameter(3,assignedTime);
+
             result=(String)query.getSingleResult();
         }catch(Exception e){
             e.printStackTrace();
@@ -472,13 +468,13 @@ public class QcStatusDaoImp implements QcStatusDao {
     @Override
     public String insertCircleAuditValues(String dob, String name, String otherReason, String photo, String sign, Integer scanid, Integer auditStatus) {
         EntityManager entityManager=null;
-        //EntityTransaction transaction=null;
+        EntityTransaction transaction=null;
         Query query=null;
         String result=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            //transaction=entityManager.getTransaction();
-            //transaction.begin();
+      //     transaction=entityManager.getTransaction();
+      //     transaction.begin();
 
             query=entityManager.createNativeQuery("{call usp_insertCircleAudit(?,?,?,?,?,?,?)}");
             query.setParameter(1,dob);
@@ -490,10 +486,10 @@ public class QcStatusDaoImp implements QcStatusDao {
             query.setParameter(7,auditStatus);
             result=(String)query.getSingleResult();
             logger.info(">>>>>>>> result of inserting in circle audit : "+result);
-           // transaction.commit();
+        //   transaction.commit();
         }catch (Exception e){
             result="error";
-           // transaction.rollback();
+         //   transaction.rollback();
             e.printStackTrace();
         }finally {
             if (entityManager != null && entityManager.isOpen())

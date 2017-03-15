@@ -35,7 +35,7 @@ public interface QcStatusService {
 
     public JSONObject getFTPDetailsForUser(int circlecode);
 
-    public String checkAssignedTo(TblScan tblScan,String empcode);
+    public String checkAssignedTo(int tblScan,String empcode);
 
     public String insertCircleAuditValues(String dob,String name,String otherReason,String photo,String sign,Integer scanid,Integer auditStatus);
 

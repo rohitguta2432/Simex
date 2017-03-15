@@ -29,4 +29,9 @@ public class DataEntryServiceImp implements DataEntryService {
     public DataentryEntity getdataByUserCustid(int cust_uid) {
         return dataEntryDao.getuserById(cust_uid);
     }
+
+    @Override
+    public String deleteExistEntry(int cust_uid) {
+        return dataEntryDao.deleteExistEntry(cust_uid);
+    }
 }

@@ -68,8 +68,6 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             transaction =  entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(paytmMastEntity);
-          /*  entityManager.flush();
-            entityManager.clear();*/
             transaction.commit();
 
             result="done";
@@ -81,7 +79,9 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         finally {
             if (entityManager != null && entityManager.isOpen())
             {
+                transaction.commit();
                 entityManager.close();
+
             }
         }
         return  result;
@@ -153,12 +153,16 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
         try
         {
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "select new map (pm.cust_uid as cust_uid,pm.coStatus as coStatus, pm.customerPhone as customerPhone, pm.username as username,pm.remarks as remarks,pm.address as address,pm.city as city,pm.pincode as pincode,pm.email as email,pm.state as state,pm.simType as simType,pm.alternatePhone1 as alternatePhone1,pm.alternatePhone2 as alternatePhone2) from PaytmMastEntity pm  where pm.cust_uid=:cust_uid";
+            String strQuery = "select new map (pm.cust_uid as cust_uid,pm.coStatus as coStatus, pm.customerPhone as customerPhone, pm.username as username,pm.remarks as remarks,pm.address as address,pm.city as city,pm.pincode as pincode,pm.email as email,pm.state as state,pm.simType as simType,pm.alternatePhone1 as alternatePhone1,pm.alternatePhone2 as alternatePhone2,pm.circleMastByCirCode.cirCode as cir_code) from PaytmMastEntity pm  where pm.cust_uid=:cust_uid";
             query=entityManager.createQuery(strQuery);
             query.setParameter("cust_uid",cust_uid);
 
             HashMap<String,Object> map=(HashMap<String,Object>)query.getSingleResult();
            /* json.put("address1",map.get("address1").toString().replace("#",""));*/
+            Integer circleCode =(Integer) map.get("cir_code");
+
+
+
             json.put("customerPhone",map.get("customerPhone"));
             json.put("username",map.get("username"));
             json.put("remarks",map.get("remarks"));
@@ -171,8 +175,16 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             json.put("state",map.get("state"));
             json.put("simType",map.get("simType"));
             json.put("cust_uid",cust_uid);
-            json.put("alternatePhone1",map.get("alternatePhone1"));
-            json.put("alternatePhone2",map.get("alternatePhone2"));
+            if(circleCode==13||circleCode==14){
+              json.put("alternatePhone1",map.get("customerPhone"));
+              json.put("alternatePhone2",map.get("alternatePhone1"));
+
+            }else {
+                json.put("alternatePhone1", map.get("alternatePhone1"));
+                json.put("alternatePhone2", map.get("alternatePhone2"));
+
+            }
+
             json.put("coStatus",map.get("coStatus"));
 
         }

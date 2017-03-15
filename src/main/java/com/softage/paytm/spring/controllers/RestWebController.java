@@ -50,6 +50,7 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "/REST")
 public class RestWebController {
+
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
     @Autowired
@@ -430,8 +431,8 @@ public class RestWebController {
                     String leaddate = request.getParameter("leaddate");
                     Date today = new Date();
                     String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(today.getTime());
-                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
-                 //   arrayList = leadsService.getAgentLeads(agentCode, timedeff, "2017-02-10");
+                  //  arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
+                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, "2017-03-31");
                     array.addAll(arrayList);
 
                 } catch (Exception e) {
@@ -777,8 +778,9 @@ public class RestWebController {
                             result = qcservices.savetbldocdetails(tblcustDocDetails);
                         }
                         if (result.equalsIgnoreCase("done")) {
-                            //     updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
-                            //    allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
+
+                          //   updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+                          //    allocationService.updateKycAllocation(agentCode,jobid,remarksCode,"Y");
                             result = "done";
 
                         } else {
@@ -885,7 +887,9 @@ public class RestWebController {
 
 
                 if (result.equalsIgnoreCase("done")) {
-                //    updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+
+
+                   updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
 
                     result = "done";
 
@@ -1019,8 +1023,11 @@ public class RestWebController {
 
             if (allocationMastEntity.getKycCollected().toString().equalsIgnoreCase("p")) {
 
-                dataentryEntity1 = dataEntryService.getdataByUserCustid(cust_uid);
-                if (dataentryEntity1 == null) {
+         //       dataentryEntity1 = dataEntryService.getdataByUserCustid(cust_uid);
+             //   if (dataentryEntity1 == null) {
+                   String status =dataEntryService.deleteExistEntry(cust_uid);
+
+                   logger.info("Entry accepted status   "+status);
 
                     DataentryEntity dataentryEntity = new DataentryEntity();
                     dataentryEntity.setReasonMastByRejectionResion(reasonMastEntity);
@@ -1075,9 +1082,9 @@ public class RestWebController {
                     paytmMastData.setFinalStatus("close");
                     paytmMasterService.updatePaytmMast(paytmMastData);
                     //  String result=allocationService.updateKycAllocation(agentCode,jobid,statusCode,"N");
-                } else {
+             /*   } else {
                     result = "customerId already exist";
-                }
+                }*/
             } else {
                 result = "kyc already rejected";
             }
@@ -1095,7 +1102,7 @@ public class RestWebController {
         TblScan tblScan = null;
         int cust_uid = 0;
         AllocationMastEntity allocationMastEntity = null;
-        System.out.println("Service done ");
+
         // String customer_number = request.getParameter("customer_no");
         String token = request.getParameter("agentToken");
         EmplogintableEntity emplogintableEntity = userService.getUserByToken(token);
@@ -1587,19 +1594,30 @@ public class RestWebController {
                 String alternative1 = paytmMastEntity.getAlternatePhone1();
                 String alternative2 = paytmMastEntity.getAlternatePhone2();
                 String customerNumber = paytmMastEntity.getCustomerPhone();
-                customerNumbers.add(alternative1);
-                customerNumbers.add(customerNumber);
-                customerNumbers.add(alternative2);
-
-                if (alternative1 == null || StringUtils.isBlank(alternative1)) {
+                if(paytmMastEntity.getCirCode()==13 || paytmMastEntity.getCirCode()==14){
+                    customerNumbers.add(customerNumber);
+                    customerNumbers.add(alternative1);
                     smsLogEntity = smsSendLogService.getByMobileNumber(customerNumber);
                     smsText = smsLogEntity.getSmsText();
 
-                } else {
 
-                    smsLogEntity = smsSendLogService.getByMobileNumber(alternative1);
-                    smsText = smsLogEntity.getSmsText();
+                } else{
+                    customerNumbers.add(alternative1);
+                    customerNumbers.add(customerNumber);
+                    customerNumbers.add(alternative2);
+                    if (alternative1 == null || StringUtils.isBlank(alternative1)) {
+                        smsLogEntity = smsSendLogService.getByMobileNumber(customerNumber);
+                        smsText = smsLogEntity.getSmsText();
+
+                    } else {
+
+                        smsLogEntity = smsSendLogService.getByMobileNumber(alternative1);
+                        smsText = smsLogEntity.getSmsText();
+                    }
                 }
+
+
+
 
 
                 for (String mobileno : customerNumbers) {

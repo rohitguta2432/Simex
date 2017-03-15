@@ -65,4 +65,32 @@ public class DataEntryDaoImp implements DataEntryDao {
         }
         return dataentryEntity;
     }
+
+    @Override
+    public String deleteExistEntry(int cust_uid) {
+        EntityManager entityManager=null;
+        EntityTransaction transaction=null;
+        String result="";
+        try{
+            entityManager=entityManagerFactory.createEntityManager();
+
+            Query query=entityManager.createNativeQuery("{call usp_deleteAcceptedEntry(?)}");
+            query.setParameter(1,cust_uid);
+            result=(String)query.getSingleResult();
+
+        }catch (Exception e){
+            result="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+
+            }
+        }
+
+
+
+        return result;
+    }
 }

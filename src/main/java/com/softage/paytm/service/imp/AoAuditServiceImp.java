@@ -33,7 +33,7 @@ public class AoAuditServiceImp implements AoAuditService {
     }
 
     @Override
-    public String checkAoAssignedTo(TblScan tblScan, String empcode) {
+    public String checkAoAssignedTo(int tblScan, String empcode) {
         return aoAuditDao.checkAoAssignedTo(tblScan,empcode);
     }
 

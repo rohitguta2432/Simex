@@ -180,15 +180,14 @@ public class AoAuditDaoImp implements AoAuditDao {
     }
 
     @Override
-    public String checkAoAssignedTo(TblScan tblScan, String empcode) {
+    public String checkAoAssignedTo(int tblScan, String empcode) {
         EntityManager entityManager=null;
         Query query=null;
         String result=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            Integer scanid=tblScan.getScanid();
             query=entityManager.createNativeQuery("{call  usp_checkAoAssignedTo(?,?)}");
-            query.setParameter(1,scanid);
+            query.setParameter(1,tblScan);
             query.setParameter(2,empcode);
             result=(String)query.getSingleResult();
         }catch (Exception e){

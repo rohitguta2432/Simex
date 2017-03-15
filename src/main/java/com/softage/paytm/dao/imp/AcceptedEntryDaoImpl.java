@@ -1,6 +1,8 @@
 package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.AcceptedEntryDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.util.Objects;
 
 @Repository
 public class AcceptedEntryDaoImpl implements AcceptedEntryDao {
+    private static final Logger logger = LoggerFactory.getLogger(AcceptedEntryDaoImpl.class);
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -59,7 +62,7 @@ public class AcceptedEntryDaoImpl implements AcceptedEntryDao {
             query.setParameter(23,SrfPc);
             result=(String)query.getSingleResult();
 
-
+          logger.info("save accept Entry>>>>>>  "+result);
 
         }catch (Exception e){
             result="err";
@@ -71,9 +74,6 @@ public class AcceptedEntryDaoImpl implements AcceptedEntryDao {
 
             }
         }
-
-
-
         return result;
     }
 }
