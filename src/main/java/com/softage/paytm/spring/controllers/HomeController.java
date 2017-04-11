@@ -2009,8 +2009,8 @@ class HomeController {
         int successCount = 0;
         int rejectCount = 0;
         FileInputStream file = null;
-        boolean flag=false;
-        boolean flag1=true;
+   /*     boolean flag=false;
+        boolean flag1=true;*/
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         try {
@@ -2047,6 +2047,8 @@ class HomeController {
             }
 
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                boolean flag=false;
+                boolean flag1=true;
                 JSONObject json = new JSONObject();
                 System.out.println("row start");
                 row = sheet.getRow(i);
