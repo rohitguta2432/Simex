@@ -39,6 +39,8 @@ public class TblScan {
     private Date lastAssignedTimeAo;
     private String assignedToAo;
     private String aoAssignedstatus;
+    private String aoSpokeCode;
+
     private Timestamp documentRecieveDatetime;
 
     @Id
@@ -226,6 +228,7 @@ public class TblScan {
         this.assignedStatus = assignedStatus;
     }
 
+
     @Basic
     @Column(name = "assigned_datetime",nullable = true,insertable = true,updatable = true)
     public Date getAssignedDatetime() {
@@ -236,6 +239,15 @@ public class TblScan {
         this.assignedDatetime = assignedDatetime;
     }
 
+    @Basic
+    @Column(name = "ao_spoke_code",insertable = true,updatable = true,nullable = true)
+    public String getAoSpokeCode() {
+        return aoSpokeCode;
+    }
+
+    public void setAoSpokeCode(String aoSpokeCode) {
+        this.aoSpokeCode = aoSpokeCode;
+    }
 
     @Basic
     @Column(name = "assigned_to",nullable = true,updatable = true,insertable = true)

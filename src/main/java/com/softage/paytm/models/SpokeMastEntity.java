@@ -26,6 +26,8 @@ public class SpokeMastEntity {
     private String ssoCategory;
     private String ssoEmail;
     private String zone;
+    private String ao_spoke_code;
+    private String ao_spoke_name;
     private Collection<TblScan> tblScanCollection;
 
     @Id
@@ -182,6 +184,25 @@ public class SpokeMastEntity {
 
     public void setZone(String zone) {
         this.zone = zone;
+    }
+
+    @Basic
+    @Column(name = "ao_spoke_code", nullable = true, insertable = true, updatable = true, length =30)
+    public String getAo_spoke_code() {
+        return ao_spoke_code;
+    }
+
+    public void setAo_spoke_code(String ao_spoke_code) {
+        this.ao_spoke_code = ao_spoke_code;
+    }
+    @Basic
+    @Column(name = "ao_spoke_name", nullable = true, insertable = true, updatable = true, length = 30)
+    public String getAo_spoke_name() {
+        return ao_spoke_name;
+    }
+
+    public void setAo_spoke_name(String ao_spoke_name) {
+        this.ao_spoke_name = ao_spoke_name;
     }
 
     @Override

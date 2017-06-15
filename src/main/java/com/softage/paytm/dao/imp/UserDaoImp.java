@@ -37,12 +37,12 @@ public class UserDaoImp implements UserDao {
         try {
             entityManager = entityManagerFactory.createEntityManager();
             transaction=entityManager.getTransaction();
-            transaction.begin();
+          //  transaction.begin();
             String strQuery = "select emp from EmplogintableEntity emp where emp.empCode=:empCode";
             query = entityManager.createQuery(strQuery);
             query.setParameter("empCode", empCode);
             emplogintableEntity = (EmplogintableEntity) query.getSingleResult();
-            transaction.commit();
+          //  transaction.commit();
 
         } catch (Exception e) {
             e.printStackTrace();

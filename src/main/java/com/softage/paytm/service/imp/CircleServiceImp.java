@@ -15,6 +15,11 @@ import java.util.List;
  */
 @Service
 public class CircleServiceImp implements CircleService {
+
+
+    @Autowired
+    public CircleMastDao circleMastDao;
+
     @Override
     public List<ReportMastEntity> getReporttypes() {
         return circleMastDao.getReporttypes();
@@ -25,8 +30,11 @@ public class CircleServiceImp implements CircleService {
         return circleMastDao.getBySpokeCode(spokecode);
     }
 
-    @Autowired
-    public CircleMastDao circleMastDao;
+    @Override
+    public String getAospokeCode(String spokeCode) {
+        return circleMastDao.getAospokeCode(spokeCode);
+    }
+
     @Override
     public List<String> getCirleList(int circleCode) {
         List<String>  circleList =   new ArrayList<>();
@@ -48,8 +56,8 @@ public class CircleServiceImp implements CircleService {
 
 
     @Override
-    public List<String> getSpokeList(String circleName) {
-       List<String> list= circleMastDao.getSpokeList(circleName);
+    public List<String> getSpokeList(String circleName,String empType) {
+       List<String> list= circleMastDao.getSpokeList(circleName,empType);
         return list;
     }
 }

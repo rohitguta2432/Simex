@@ -1,4 +1,4 @@
-var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap']);
+var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap','LocalStorageModule']);
  //  var domain='http://localhost:8080/paytm';
 var domain='/simex';
 //var domain='http://172.43.44.203:8080/paytm';
@@ -318,7 +318,7 @@ routerApp.controller('HRRegistration',['$scope', '$http','$q','$log','$location'
     $scope.getSpokeByCircle=function(){
 
 
-        $http.get(domain+'/getSpokeByCircle?circleCode='+$scope.circlecode.name).success(function(data,status,headers,config){
+        $http.get(domain+'/getSpokeByCircle?circleCode='+$scope.circlecode.name+'&empType='+$scope.emp_Type).success(function(data,status,headers,config){
 
                     $scope.offices1=data.spokeList;
 
@@ -1525,7 +1525,7 @@ $scope.cust_number='';
 
 
 
-routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal' ,function($rootScope,$scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal){
+routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal', '$window', 'localStorageService' ,function($rootScope,$scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal,$window,localStorageService){
 
     $scope.states= [];
     $scope.times = [];
@@ -1938,8 +1938,22 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
         }
 
     }
-    $scope.calling = function(){            /////for customer calling
-        var data = 'customer_number=' + $scope.codes.alternatePhone1 + '&cust_uid='+$scope.codes.cust_uid;
+    $scope.calling = function(){
+
+
+
+        /////for customer calling
+
+        if(!localStorageService.get('extension')){
+            var number = $window.prompt("Please enter your extension number - ");
+            localStorageService.set('extension',{number:number});
+        }
+
+        $scope.extension = localStorageService.get('extension').number;
+
+        console.log($scope.extension);
+
+        var data = 'customer_number=' + $scope.codes.alternatePhone1 + '&cust_uid='+$scope.codes.cust_uid+'&extension='+ $scope.extension;
        /*alert(data);*/
         $http.get(domain+'/customerCalling?'+ data)
 
@@ -2449,10 +2463,11 @@ routerApp.controller('searchBatch',['$scope', '$http','$q','$log','$location','$
 
 
 
-routerApp.controller('logout', ['$scope','$http','$window', function($scope, $http, $window) {
+routerApp.controller('logout', ['$scope','$http','$window','localStorageService', function($scope, $http, $window,localStorageService) {
     $scope.logout = function () {
         $http.get(domain+'/logout').success(function (data, status, headers, config) {
             // alert('daata');
+            localStorageService.clearAll();
             $scope.msg = data;
             console.log(data);
             if(data.status == 'success') {

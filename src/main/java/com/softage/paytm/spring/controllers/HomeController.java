@@ -41,6 +41,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.joda.time.format.DateTimeFormat;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1659,31 +1660,51 @@ class HomeController {
         String customerphone = "";
         int cust_uid = 0;
         Integer cir_Code=4;
+        String DialerNumber=null;
         HttpSession session = request.getSession(false);
+
+
         logger.info("calling to customer>>>>> wait");
         if (session != null) {
             userName = (String) session.getAttribute("name");
             agentNo = userService.getUserByEmpcode(userName).getEmpPhone();
         }
         try {
+
             if (userName != null) {
                 String phonenumber = request.getParameter("customer_number");
                 String custUid = request.getParameter("cust_uid");
-                cust_uid=  Integer.parseInt(request.getParameter("cust_uid"));
-                PaytmMastEntity paytmMastEntity=paytmMasterService.getPaytmMastDatas(cust_uid);
+                DialerNumber = request.getParameter("extension");
+                if (DialerNumber == null && "".equals(DialerNumber))
+                {
+                    returnString="Please Enter Extension Number";
+                    returnObj.put("msg", returnString);
+                    return returnObj;
 
-                    if (StringUtils.isNotBlank(phonenumber) && phonenumber != null) {
+                }
+                cust_uid = Integer.parseInt(request.getParameter("cust_uid"));
+                PaytmMastEntity paytmMastEntity = paytmMasterService.getPaytmMastDatas(cust_uid);
+
+                /*    if (StringUtils.isNotBlank(phonenumber) && phonenumber != null) {
                         result = customerCalling(phonenumber, agentNo);
                     } else {
                         if (paytmMastEntity != null) {
                             customerphone = paytmMastEntity.getCustomerPhone();
                         }
                        result = customerCalling(customerphone, agentNo);
+                    }*/
+
+
+                if (StringUtils.isNotBlank(phonenumber) && phonenumber != null) {
+                    result = customerCallingDailer(phonenumber, DialerNumber);
+                } else {
+                    if (paytmMastEntity != null) {
+                        customerphone = paytmMastEntity.getCustomerPhone();
                     }
-
-
-//2017-01-24
-                if (result.equalsIgnoreCase("done")) {
+                    result = customerCallingDailer(customerphone, DialerNumber);
+                }
+                //2017-01-24
+                if (result.equalsIgnoreCase("success")) {
                     returnString = "connected to Customer...";
                 } else {
                     returnString = "Unable to connect Customer due to Network Connectivity";
@@ -1761,8 +1782,9 @@ class HomeController {
         int successCount = 0;
         int rejectCount = 0;
         FileInputStream file = null;
-        boolean flag=false;
-        boolean flag1=true;
+         boolean flag=false;
+         boolean flag1=true;
+
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         try {
@@ -1806,6 +1828,8 @@ class HomeController {
             }
 
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                   flag=false;
+                   flag1=true;
                 JSONObject json = new JSONObject();
                 System.out.println("row start");
                 row = sheet.getRow(i);
@@ -1819,9 +1843,19 @@ class HomeController {
                     String alternateNumber1 = null;
                     String alternateNumber2 = null;
                     String request_date = null;
+                    String lot_no="";
+                    String ch_reason_desc="";
+                    String sim_type="";
+                    String sim_plan_desc="";
+                    String name="";
+                    String city="";
                     HashMap<String, String> map = new HashMap<String, String>();
                     HashMap<String, String> map1 = new HashMap<String, String>();
                     System.out.println(i);
+                    String address1="";
+                    String address2="";
+                    String address3="";
+                    String address="";
                     if (row.getCell(0).getCellType() == Cell.CELL_TYPE_STRING) {
                         customerId = row.getCell(0).getStringCellValue().trim();
                     } else {
@@ -1832,9 +1866,13 @@ class HomeController {
                     } else {
                         co_id = NumberToTextConverter.toText(row.getCell(1).getNumericCellValue()).trim();
                     }
-                    String co_status = row.getCell(2).getStringCellValue().trim();
-                    String ch_reason_desc = row.getCell(3).getStringCellValue().trim();
-                    String sim_type = row.getCell(5).getStringCellValue().trim();
+                    String co_status = row.getCell(2).getStringCellValue();
+                    if(row.getCell(3)!=null){
+                         ch_reason_desc = row.getCell(3).getStringCellValue();
+                    }
+                    if(row.getCell(5)!=null){
+                        sim_type = row.getCell(5).getStringCellValue();
+                    }
 
                     //    String appointmantDate = row.getCell(1).getStringCellValue().trim();
                     //  String createdDate = row.getCell(2).getStringCellValue().trim();
@@ -1846,11 +1884,44 @@ class HomeController {
                     } else {
                         mobileNumber = NumberToTextConverter.toText(row.getCell(6).getNumericCellValue()).trim();
                     }
-                    String sim_plan_desc = row.getCell(7).getStringCellValue().trim();
-                    String name = row.getCell(9).getStringCellValue().trim();
 
-                    String address = row.getCell(10).getStringCellValue().trim() + " " + row.getCell(11).getStringCellValue().trim() + " " + row.getCell(12).getStringCellValue().trim();
-                    String city = row.getCell(14).getStringCellValue().trim();
+                    if(row.getCell(7)!=null){
+                        sim_plan_desc = row.getCell(7).getStringCellValue().trim();
+                    }
+
+
+                    if(row.getCell(9)!=null){
+                        name = row.getCell(9).getStringCellValue().trim();
+                    }
+                    if(row.getCell(10)!=null) {
+                        if (row.getCell(10).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            address1 = NumberToTextConverter.toText(row.getCell(10).getNumericCellValue()).trim();
+                        } else {
+                            address1 = row.getCell(10).getStringCellValue().trim();
+                        }
+                    }
+                    if(row.getCell(11)!=null) {
+                        if (row.getCell(11).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            address2 = NumberToTextConverter.toText(row.getCell(11).getNumericCellValue()).trim();
+                        } else {
+                            address2 = row.getCell(11).getStringCellValue().trim();
+                        }
+                    }
+                    if(row.getCell(12)!=null) {
+                        if (row.getCell(12).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            address3 = NumberToTextConverter.toText(row.getCell(12).getNumericCellValue()).trim();
+                        } else {
+                            address3 = row.getCell(12).getStringCellValue().trim();
+                        }
+                    }
+                    address=address1+" "+address2+" "+address3;
+
+                   // address =row.getCell(10)!=null?row.getCell(10).getStringCellValue().trim():"" + " " +row.getCell(11)!=null?row.getCell(11).getStringCellValue().trim():"" + " " +row.getCell(12)!=null? row.getCell(12).getStringCellValue().trim():"";
+
+                    if(row.getCell(14)!=null){
+                        city = row.getCell(14).getStringCellValue().trim();
+                    }
+
 
                     //String leadStage = row.getCell(6).getStringCellValue().trim();
 
@@ -1889,7 +1960,8 @@ class HomeController {
                             alternateNumber2 = finalAltNumList.get(1);
                         }
                     }
-                    String remarks = row.getCell(17).getStringCellValue().trim();
+
+                    String remarks =row.getCell(17)!=null?row.getCell(17).getStringCellValue().trim():"";
                     Date reqDate = row.getCell(18).getDateCellValue();
 
                     if (row.getCell(18).getCellType() == Cell.CELL_TYPE_STRING) {
@@ -1900,7 +1972,20 @@ class HomeController {
 
                         request_date = df.format(reqDate).trim();
                     }
-                    String lot_no = row.getCell(19).getStringCellValue().trim();
+              //      String lot_no = row.getCell(19).getStringCellValue().trim();
+
+
+                    if(row.getCell(19)!=null) {
+
+                        if (row.getCell(19).getCellType() == Cell.CELL_TYPE_STRING) {
+                            lot_no = row.getCell(19).getStringCellValue().trim();
+
+                        } else {
+                            lot_no = NumberToTextConverter.toText(row.getCell(19).getNumericCellValue()).trim();
+                        }
+
+                    }
+
 
                     if (mobileNumber.length() == 10 && StringUtils.isNumeric(mobileNumber)) {
                         // paytmMastEntity = paytmMasterService.getPaytmMaster(mobileNumber);
@@ -1918,12 +2003,14 @@ class HomeController {
                         }
 
 
+
                     }
                     if ((pincode.length() == 6 && StringUtils.isNumeric(pincode))) {
                         int pincode1 = Integer.parseInt(pincode);
                         paytmPinMaster = pinMasterService.getByPincode(pincode1);
 
                     }
+
                     if (!flag && (pincode.length() == 6 && StringUtils.isNumeric(pincode) && flag1 && !StringUtils.isBlank(sim_type))) {
                         map.put("customerID", customerId);
                         map.put("name", name);
@@ -2192,6 +2279,9 @@ class HomeController {
                             if(paytmMastEntity.getFinalStatus()!=null) {
                                 flag1 = paytmMastEntity.getFinalStatus().equalsIgnoreCase("close");
                             }
+                        }
+                        else{
+                           flag1=true;
                         }
 
 
@@ -2704,6 +2794,67 @@ class HomeController {
         return result;
     }
 
+    private String customerCallingDailer(String customerNo, String dailer) {
+        String msg = null;
+        String result = "done";
+        BufferedReader in = null;
+       // String url = "http://etsdom.kapps.in/webapi/softage/api/softage_c2c.py?auth_key=hossoftagepital&customer_number=+91" + mobileNo + "&agent_number=+91" + agentNumber;
+        String url="http://122.15.11.28:5000/ConvoqueAPI/placeACall.jsp?src="+dailer+"&dst="+customerNo+"&callerID="+customerNo;
+        try {
+
+            URL obj = new URL(url);
+
+
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+
+            int responseCode = con.getResponseCode();
+            System.out.println("\nSending 'GET' request to URL : " + url);
+            System.out.println("Response Code : " + responseCode);
+
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            //print result
+            msg = response.toString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(msg);
+            msg= (String)json.get("status");
+
+
+
+
+       //     { "status":"success", "user Status Error":"Unknown database 'dbAPI'", "message":"Call request placed successfully" }
+
+
+
+
+
+            System.out.println("Response >>>>   "+msg);
+        } catch (Exception e) {
+            msg = "error";
+            logger.error("calling", e);
+        } finally {
+            try {
+                in.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                ;
+            }
+        }
+        return msg;
+    }
+
+
+
+
     @RequestMapping(value = "/getCirles", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public JSONObject getCircleName(HttpServletRequest request) {
@@ -2718,7 +2869,7 @@ class HomeController {
 
                 List<String> circles = circleService.getCirleList(circleCode);
                 String circleName = circles.get(0);
-                List<String> spokeList = circleService.getSpokeList(circleName);
+                List<String> spokeList = circleService.getSpokeList(circleName,"");
                 jsonObject.put("circles", circles);
                 jsonObject.put("spokeList", spokeList);
             } else {
@@ -2740,7 +2891,8 @@ class HomeController {
         try {
 
             String circode = request.getParameter("circleCode");
-            List<String> spokeList = circleService.getSpokeList(circode);
+            String empType = request.getParameter("empType");
+            List<String> spokeList = circleService.getSpokeList(circode,"");
             jsonObject.put("spokeList", spokeList);
 
         } catch (Exception e) {
@@ -2978,7 +3130,7 @@ class HomeController {
     @ResponseBody
     public JSONObject getSpokeCode(@RequestParam(value = "circleName") String circleName) {
         JSONObject jsonObject = new JSONObject();
-        List<String> spokeList = circleService.getSpokeList(circleName);
+        List<String> spokeList = circleService.getSpokeList(circleName,"");
         jsonObject.put("spokeList", spokeList);
         return jsonObject;
     }

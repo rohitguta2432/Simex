@@ -68,8 +68,6 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
             transaction =  entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(paytmMastEntity);
-            transaction.commit();
-
             result="done";
         }catch (Exception e) {
 

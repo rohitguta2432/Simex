@@ -82,6 +82,9 @@ public class RestWebController {
     @Autowired
     private AcceptedEntryService acceptedEntryService;
 
+    @Autowired
+    private CircleService circleService;
+
     @RequestMapping(value = "/getTest", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONObject test(HttpServletRequest request, HttpServletResponse response) {
         JSONObject jsonObject = new JSONObject();
@@ -431,8 +434,8 @@ public class RestWebController {
                     String leaddate = request.getParameter("leaddate");
                     Date today = new Date();
                     String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(today.getTime());
-                  //  arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
-                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, "2017-03-31");
+                    arrayList = leadsService.getAgentLeads(agentCode, timedeff, currentDate);
+                  //  arrayList = leadsService.getAgentLeads(agentCode, timedeff, "2017-06-15");
                     array.addAll(arrayList);
 
                 } catch (Exception e) {
@@ -802,6 +805,9 @@ public class RestWebController {
         return result;
     }
 
+
+
+    // currenty its working on live
     @RequestMapping(value = "/AcceptedEntry1", method = {RequestMethod.GET, RequestMethod.POST})
     public String acceptedEntry1(HttpServletRequest request) {
         AllocationMastEntity allocationMastEntity = null;
@@ -889,7 +895,7 @@ public class RestWebController {
                 if (result.equalsIgnoreCase("done")) {
 
 
-                   updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
+               //    updateRemarkStatus(agentCode, jobid, remarksCode, "Y");
 
                     result = "done";
 
@@ -1421,6 +1427,8 @@ public class RestWebController {
         JSONObject jsonObject1 = new JSONObject();
         String status;
         String token = request.getParameter("agentToken");
+        String spoke_code="";
+        String ao_spoke_code="";
         EmplogintableEntity emplogintableEntity1 = userService.getUserByToken(token);
         if (emplogintableEntity1 != null) {
 
@@ -1432,12 +1440,17 @@ public class RestWebController {
                     phoneNumber = emplogintableEntity.getEmpPhone();
                     circleCode = emplogintableEntity.getCirCode();
                     Integer intstatus = emplogintableEntity.getEmpStatus();
+                    spoke_code= emplogintableEntity.getSpoke_code();
+                    ao_spoke_code=circleService.getAospokeCode(spoke_code);
+
+
                     status = intstatus.toString();
                     jsonObject = userService.getEmpFtpDetails(circleCode);
 
                     jsonObject1.put("phoneNumber", phoneNumber);
                     jsonObject1.put("circleCode", circleCode);
                     jsonObject1.put("FtpDetails", jsonObject);
+                    jsonObject1.put("ao_spoke_code",ao_spoke_code);
                     jsonObject1.put("status", status);
 
                 } else {

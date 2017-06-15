@@ -46,6 +46,7 @@
   <%--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>--%>
   <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
   <script src="libs/filesaver/FileSaver.js"></script>
+    <script src="libs/angular-local-storage/dist/angular-local-storage.js"></script>
   <script src="js/app.js"></script>
     <script src="Manual/manual.js"></script>
     <script src="Manual/manualFilter.js"></script>
@@ -230,8 +231,8 @@
 
        <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                         Reports </span></a></li>
-            <li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
-                           Circle Audit </span></a></li>
+           <%-- <li><a ui-sref="CircleAudit"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                           Circle Audit </span></a></li--%>>
 
         <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>

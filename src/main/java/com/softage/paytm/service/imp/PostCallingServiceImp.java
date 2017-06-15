@@ -271,6 +271,10 @@ public class PostCallingServiceImp implements PostCallingService {
         //new BasicNameValuePair("apikey", "56274f9a48b66")
         //new BasicNameValuePair("sender", "SPAYTM")
 
+     //   String url = "http://www.mysmsapp.in/api/push.json?apikey=5732df1bc7011&sender=VODAFN&mobileno=" + mobileno + "&text=" + text;
+
+
+
         String url = "http://www.mysmsapp.in/api/push.json";
         try (CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build()) {
             try (CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(RequestBuilder.post(url)
@@ -478,10 +482,19 @@ public class PostCallingServiceImp implements PostCallingService {
                 if (loginId != null) {
                     String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
                     String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
+
+
                     if (paytmMastEntity.getCirCode() == 13 || paytmMastEntity.getCirCode() == 14) {
+                        custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                                + paytmMastEntity.getCustomerPhone() + " has been confirmed. Your Reference ID id " + custId + " Our Agent will be visiting on " +
+                                pcdvisitTime + " " + visitTime + ":00 hrs, kindly Available";
                         String res3 = saveSmsSendLog(paytmMastEntity.getCustomerPhone(), paytmMastEntity.getCustomerId(), custext, "1", "4");
 
                     } else {
+                        custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                                + paytmMastEntity.getCustomerPhone() + " has been confirmed. Your Reference ID id " + custId + " Our Agent will be visiting on " +
+                                pcdvisitTime + " " + visitTime + ":00 hrs, kindly be ready with your photo ID & address proof ";
+
                         if (paytmMastEntity.getAlternatePhone1() == null || paytmMastEntity.getAlternatePhone1() == "") {
                             String res3 = saveSmsSendLog(paytmMastEntity.getCustomerPhone(), paytmMastEntity.getCustomerId(), custext, "1", "4");
                         } else {

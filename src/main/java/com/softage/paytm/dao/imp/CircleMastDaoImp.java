@@ -106,14 +106,20 @@ public class CircleMastDaoImp implements CircleMastDao {
     }
 
     @Override
-    public List<String> getSpokeList(String circleName) {
+    public List<String> getSpokeList(String circleName,String empType) {
         EntityManager entityManager=null;
         Query query=null;
         List<String> spokeCodeList=null;
         SpokeMastEntity spokeMastEntity=null;
+        String strQuery="";
         try{
             entityManager = entityManagerFactory.createEntityManager();
-            String strQuery = "select spokeList.spokeCode from SpokeMastEntity spokeList where spokeList.circle=:cirle";
+            if("AOQC".equalsIgnoreCase(empType)){
+                strQuery = "select distinct spokeList.ao_spoke_code from SpokeMastEntity spokeList where spokeList.circle=:cirle";
+            }else{
+                strQuery = "select spokeList.spokeCode from SpokeMastEntity spokeList where spokeList.circle=:cirle";
+            }
+
             System.out.println("query>>>>>    "+strQuery);
             query=entityManager.createQuery(strQuery);
             query.setParameter("cirle",circleName);
@@ -180,5 +186,32 @@ public class CircleMastDaoImp implements CircleMastDao {
             }
         }
         return spokePinList;
+    }
+
+    @Override
+    public String getAospokeCode(String spokeCode) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<String> spokePinList=null;
+        SpokePinMast SpokePinMast=null;
+        String ao_spoke_code=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select distinct spokepin.ao_spoke_code from SpokeMastEntity spokepin where spokepin.spokeCode=:spokecode";
+            System.out.println("query>>>>>    "+strQuery);
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("spokecode",spokeCode);
+            ao_spoke_code=(String)query.getSingleResult();
+
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return ao_spoke_code;
     }
 }
