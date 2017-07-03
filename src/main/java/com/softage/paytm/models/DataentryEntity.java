@@ -129,7 +129,7 @@ public void setSim_no(String sim_no) {this.sim_no=sim_no;}
     }
 
     @Basic
-    @Column(name = "CusName", nullable = false, insertable = true, updatable = true, length = 70)
+    @Column(name = "CusName", nullable = false, insertable = true, updatable = true, length = 200)
     public String getCusName() {
         return cusName;
     }

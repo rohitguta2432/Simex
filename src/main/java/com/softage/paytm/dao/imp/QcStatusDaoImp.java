@@ -372,13 +372,13 @@ public class QcStatusDaoImp implements QcStatusDao {
             String sql="Select audit_status from tbl_scan where cust_uid="+foldername;
             Query query=entityManager.createNativeQuery(sql);
             Integer auditStatus=(Integer)query.getSingleResult();
-            if (auditStatus >3){
+            if (auditStatus ==4 || auditStatus==5 ){
                 result=true;
             }else{
                 result=false;
             }
         }catch (Exception e){
-            result=true;
+            result=false;
             //e.printStackTrace();
         }finally {
             if (entityManager != null && entityManager.isOpen())

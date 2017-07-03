@@ -178,7 +178,7 @@ public class PaytmcustomerDataEntity {
     }
 
     @Basic
-    @Column(name = "PCD_Name", nullable = false, insertable = true, updatable = true, length = 50)
+    @Column(name = "PCD_Name", nullable = false, insertable = true, updatable = true, length = 200)
     public String getPcdName() {
         return pcdName;
     }

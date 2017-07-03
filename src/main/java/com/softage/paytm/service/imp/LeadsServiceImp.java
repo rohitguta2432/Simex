@@ -62,12 +62,12 @@ public class LeadsServiceImp implements LeadsService {
                     msg = "1";
                 }
             }
-            if ("Y".equals(status) && appointmentid != 0) {
+         /*   if ("Y".equals(status) && appointmentid != 0) {
                 appointmentMastEntity = postCallingDao.getByAppointmentId(appointmentid);
                 if (appointmentMastEntity != null) {
-                  result = leadsDao.jobConfirmtocustomer(appointmentid, allocationMastEntity.getCustomerPhone(), allocationMastEntity.getAgentCode());
+                 result = leadsDao.jobConfirmtocustomer(appointmentid, allocationMastEntity.getCustomerPhone(), allocationMastEntity.getAgentCode());
                 }
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }

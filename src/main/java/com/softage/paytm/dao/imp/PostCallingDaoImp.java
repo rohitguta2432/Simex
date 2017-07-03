@@ -172,13 +172,10 @@ public class PostCallingDaoImp implements PostCallingDao {
         EntityTransaction entityTransaction=null;
         try{
             entityManager = entityManagerFactory.createEntityManager();
-            entityTransaction=entityManager.getTransaction();
-            entityTransaction.begin();
             String strQuery = "select telemast from TelecallMastEntity telemast where telemast.paytmMastByTmCustomerPhone.cust_uid=:custId";
             query=entityManager.createQuery(strQuery);
             query.setParameter("custId",custId);
             telecallMastEntity= (TelecallMastEntity)query.getSingleResult();
-            entityTransaction.commit();
             //  telecallMastEntity=entityManager.find(CircleMastEntity.class,1);
 
         }catch (Exception e){
@@ -648,7 +645,6 @@ public class PostCallingDaoImp implements PostCallingDao {
         try{
             entityManager = entityManagerFactory.createEntityManager();
             entityTransaction=entityManager.getTransaction();
-            StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("sp_GetTeleData");
             Query query1= entityManager.createNativeQuery("{call usp_insertAllocationData(?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             query1.setParameter(1,agent_code);
             query1.setParameter(2,appointment_ID);

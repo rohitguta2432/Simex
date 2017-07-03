@@ -254,15 +254,12 @@ public class AllocationDaoImp implements AllocationDao {
         String message=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            entityManager.getTransaction().begin();
+
             Query query=entityManager.createNativeQuery("{call usp_updateAllocationMastEntity(?,?,?)}");
             query.setParameter(1,jobId);
             query.setParameter(2,agentCode);
             query.setParameter(3,response);
             message=(String)query.getSingleResult();
-            entityManager.flush();
-            entityManager.clear();
-            entityManager.getTransaction().commit();
         }catch (Exception e){
             e.printStackTrace();
         }finally {

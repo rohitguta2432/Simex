@@ -3431,6 +3431,7 @@ class HomeController {
             Integer custUID = (Integer) detailJson.get("custUID");
             Integer imgCount = (Integer) detailJson.get("imgCount");
             String projectPath = request.getServletContext().getRealPath("/");
+            System.out.println("Server Path   " + projectPath);
             String localPath = projectPath + "/resources/ftpimages/" + custUID;
 /*        String f1="../resources/ftpimages/1000000001/1000000001_1.jpg";
         String f2="../resources/ftpimages/1000000001/1000000001_2.jpg";
@@ -3488,7 +3489,7 @@ class HomeController {
         //String sftpHost="172.25.37.216";
         Integer sftpPort = 22;
         //String sftpUsername="soft";
-        // String sftpPassword="$oFt@ge@123456";
+        // String sftpPassword="$oFt@ge@123456";F
         //imagePath="/soft/home/simex";check how to handle the path
         Session session = null;
         Channel channel = null;
@@ -3543,14 +3544,35 @@ class HomeController {
     public JSONObject getCustomerDetailsForAoAudit(HttpServletRequest request) {
         JSONObject jsonObject = new JSONObject();
         HttpSession session = request.getSession();
+        JSONObject ftpdetailsjson=new JSONObject();
         String spokecode = (String) session.getAttribute("spoke_code");
+        Integer circle_code = (Integer) session.getAttribute("cirCode");
         //String spokecode="DELSOU205"; Currently spoke code set static -JIA Sarai
         String empcode = (String) session.getAttribute("name");
         List<String> filepathList = new ArrayList<String>();
-        JSONObject detailJson = aoAuditService.getAoAuditDetails(spokecode, empcode);
+        // this for ao Audit Spoke Wise
+    //    JSONObject detailJson = aoAuditService.getAoAuditDetails(spokecode, empcode);
+        // this for ao Audit Circle Wise
+        JSONObject detailJson = aoAuditService.getAoAuditDetailsByCircleCode(circle_code,empcode);
         String cirStatus=null;
         String status = (String) detailJson.get("status");
         Integer circleStatus=(Integer)detailJson.get("circleStatus");
+
+
+        //Code added for ao audit images downloading which dont exist after circle audit
+        Integer custUID = (Integer) detailJson.get("custUID");
+        Integer imgCount = (Integer) detailJson.get("imgCount");
+        String imagePath = (String) detailJson.get("imagePath");
+        String projectPath = request.getServletContext().getRealPath("/");
+        String localPath = projectPath + "/resources/ftpimages/" + custUID;
+        String ftpImagespath=projectPath + "/resources/ftpimages/";
+        ftpdetailsjson = qcStatusService.getFTPDetailsForUser(circle_code);
+        File ftpImagesFolder = new File(localPath);
+
+        if(!ftpImagesFolder.exists()){
+            downloadImages(imagePath, localPath, ftpdetailsjson);
+        }
+        //Code ends for ao audit images downloading which dont exist after circle audit
 
         if (status.equals("Unavailable")) {
             jsonObject.put("auditStatus", "No Images To Audit");
@@ -3564,11 +3586,6 @@ class HomeController {
             }
 
             // String imagePath = (String) detailJson.get("imagePath");
-            Integer custUID = (Integer) detailJson.get("custUID");
-            Integer imgCount = (Integer) detailJson.get("imgCount");
-            String projectPath = request.getServletContext().getRealPath("/");
-            String localPath = projectPath + "/resources/ftpimages/" + custUID;
-
 
             for (int i = 0; i < imgCount; i++) {
                 String filepath = "../resources/ftpimages/" + custUID + "/" + custUID + "_" + (i + 1) + ".jpg";

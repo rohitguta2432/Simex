@@ -439,7 +439,7 @@ public class ReportDaoImp implements ReportDao {
             for (Object[] objects : resultList) {
                 String status = "Open";
                 if (objects.length > 0) {
-
+                    String simNo=(String)objects[34];
                     JSONObject json = new JSONObject();
                     json.put("customerid", objects[0]);
                     json.put("coid", objects[1]);
@@ -475,6 +475,7 @@ public class ReportDaoImp implements ReportDao {
                     json.put("remarks", objects[31]);
                     json.put("form_status", objects[32]);
                     json.put("document_RecievedDatetime", objects[33]);
+                    json.put("sim_no", simNo);
                     jsonObject.put("record-" + i, json);
                 }
                 i++;

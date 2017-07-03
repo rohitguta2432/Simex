@@ -23,7 +23,6 @@ public class CallTimeDaoImp implements CallTimeDao {
         String result=null;
         try{
             entityManager=entityManagerFactory.createEntityManager();
-            entityManager.getTransaction().begin();
             Query query=entityManager.createNativeQuery("{call usp_insertCallTimeDetails(?,?,?,?,?)}");
             query.setParameter(1,customer_number);
             query.setParameter(2,callDateTime);
@@ -31,7 +30,6 @@ public class CallTimeDaoImp implements CallTimeDao {
             query.setParameter(4,lastcallby);
             query.setParameter(5,cust_uid);
             result=(String)query.getSingleResult();
-            entityManager.getTransaction().commit();
 
         }catch (Exception e){
             e.printStackTrace();

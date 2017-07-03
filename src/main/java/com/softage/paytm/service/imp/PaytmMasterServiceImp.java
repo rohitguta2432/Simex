@@ -341,7 +341,7 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
                 circleCode = "2";
             } else if ((state.equalsIgnoreCase("BIHAR")) || (state.equalsIgnoreCase("JHARKHAND")) || (pin1 >= 80 && pin1 <= 85) || pin1 == 92) {
                 circleCode = "3";
-            } else if (state.equalsIgnoreCase("DELHI") || (pin1 == 11 || pin2 == 201 || pin2 == 222 || pin2 == 121)) {
+            } else if (state.equalsIgnoreCase("DELHI") || (pin1 == 11 || pin2 == 201 || pin1 == 12 || pin2 == 222 || pin2 == 121)) {
                 circleCode = "4";
             } else if (state.equalsIgnoreCase("HARYANA") || (pin2 > 122 && pin1 >= 12 && pin1 <= 13)) {
                 circleCode = "5";

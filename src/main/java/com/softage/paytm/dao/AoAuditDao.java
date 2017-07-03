@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
  */
 public interface AoAuditDao {
     public JSONObject getAoAuditDetails(String spoke,String empcode);
+    public JSONObject getAoAuditDetailsByCircleCode(int circle_code,String empcode);
     public String saveAoAuditEntity(AoAuditEntity aoAuditEntity);
     public JSONObject getFormRecievingDetails(String mobileNumber,String spokecode);
     public String checkAoAssignedTo(int tblScan,String empcode);
