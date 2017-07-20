@@ -36,6 +36,10 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>--%>
     <%--<link rel="stylesheet" type="text/css" href="libs/jqueryui/jquery-ui.css">--%>
 
+    <!-- Simex Loading bar Libs -->
+    <link rel='stylesheet' href='//cdn.bootcss.com/angular-loading-bar/0.9.0/loading-bar.css' type='text/css' media='all' />
+    <script type='text/javascript' src='//cdn.bootcss.com/angular-loading-bar/0.9.0/loading-bar.js'></script>
+    <script type="text/javascript" src='//urigo.github.io/angular-spinkit/javascripts/angular-spinkit.js'></script>
 
     <!--Loader -->
     <script src="libs/spin.js/spin.js"></script>
@@ -144,6 +148,7 @@
   }
 
 %>
+<simex-loader></simex-loader>
 
 <!-- Navbar -->
 <div class="navbar">

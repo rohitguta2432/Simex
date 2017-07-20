@@ -1,4 +1,5 @@
-var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap','LocalStorageModule']);
+var routerApp = angular.module('routerApp', ['ui.router','ngMaterial','ngLoadingSpinner','ui.bootstrap','LocalStorageModule',
+     'angular-loading-bar', 'cfp.loadingBar', 'angularSpinkit']);
  //  var domain='http://localhost:8080/paytm';
 var domain='/simex';
 //var domain='http://172.43.44.203:8080/paytm';
@@ -7,10 +8,11 @@ var domain='/simex';
 //var domain ='http://182.71.212.110:8080/paytm';
 // var domain ='http://172.16.16.254:8080/paytm';
 //var domain ='http://42.104.108.117:8080/paytm';
-routerApp.config(function($stateProvider, $urlRouterProvider) {
+routerApp.config(function($stateProvider, $urlRouterProvider, cfpLoadingBarProvider) {
    // var domain ='172.25.37.185:8080/paytm';
    //  var domain ='http://localhost:8080/paytm';
-
+    cfpLoadingBarProvider.includeSpinner = false;
+    cfpLoadingBarProvider.includeBar = false;
 
     $urlRouterProvider.otherwise('/index');
 
@@ -1525,7 +1527,7 @@ $scope.cust_number='';
 
 
 
-routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal', '$window', 'localStorageService' ,function($rootScope,$scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal,$window,localStorageService){
+routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','$location','$mdDialog','$mdMedia','$modal', '$window', 'localStorageService',function($rootScope,$scope,$http,$q,$log,$location,$mdDialog,$mdMedia,$modal,$window,localStorageService){
 
     $scope.states= [];
     $scope.times = [];
@@ -1808,13 +1810,37 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                 });
     };
 
+
+  var agentslot=function(){
+        $scope.getAvlAgentChart();
+    }
+    $scope.showchart=function(pincode){
+        $scope.flagcall=false;
+/*alert(pincode)*/
+        var pincode=pincode;
+        var scope=$rootScope.$new();
+         scope.pincode=pincode;
+        scope.params={pincode:pincode}
+            scope.modalInstance = $modal.open({
+                scope: scope,
+                templateUrl: 'Telecalling/availableAgentChart.html',
+                controller: 'telecalling',
+            });
+
+    }
+
+
+
     $scope.selectDateTime=function(time,vstdate,status){
 
-     //   alert(" key "+ key +" value "+value );
-    //    var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&simType=' + $scope.codes.simType + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode +'&customerID='+$scope.codes.cust_uid + '&coStatus='+$scope.codes.coStatus;
+        //   alert(" key "+ key +" value "+value );
+        //    var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&simType=' + $scope.codes.simType + '&visitDate=' + $scope.visit_date + '&visitTime=' + $scope.visit_time + '&status=' + $scope.status.csmCode +'&customerID='+$scope.codes.cust_uid + '&coStatus='+$scope.codes.coStatus;
         var vstdate1=vstdate.replace(/-/g,'/');
         var data = 'mobileNo=' + $scope.codes.customerPhone + '&name=' + $scope.codes.username +'&address=' + $scope.codes.address + '&remarks=' + $scope.codes.remarks + '&emailId=' + $scope.codes.email + '&city=' + $scope.codes.city + '&state=' + $scope.codes.state + '&pincode=' + $scope.codes.pincode + '&landmark=' + $scope.land_mark +'&simType=' + $scope.codes.simType+'&visitDate=' +vstdate1 + '&visitTime=' + time+':00' + '&status=' +status + '&customerID='+$scope.codes.cust_uid+'&coStatus='+$scope.codes.coStatus;
         console.log(data);
+        $scope.modalInstance.close();
+
+        //$modalInstance.close();
         $http.get(domain+'/postCalling?'+ data)
             .success(function(data, status, headers, config) {
                 // alert('jfgkfj');
@@ -1824,21 +1850,21 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                     alert(data.msg);
                     location.reload();
                     $scope.status = '';
-                     $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
-                     $mdDialog.show(
-                     $mdDialog.alert()
-                     .parent(angular.element(document.querySelector('#popupContainer')))
-                     .clickOutsideToClose(true)
-                     .title('')
-                     .textContent(data.msg)
-                     .ariaLabel('Alert Dialog Demo')
-                     .ok('OK')
-                     .targetEvent(ev)
+                    $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+                    $mdDialog.show(
+                        $mdDialog.alert()
+                            .parent(angular.element(document.querySelector('#popupContainer')))
+                            .clickOutsideToClose(true)
+                            .title('')
+                            .textContent(data.msg)
+                            .ariaLabel('Alert Dialog Demo')
+                            .ok('OK')
+                            .targetEvent(ev)
 
-                     );
-                     window.setTimeout(function(){
-                     location.reload();
-                     }, 3000);
+                    );
+                    window.setTimeout(function(){
+                        location.reload();
+                    }, 3000);
 
                     //ClearForm();
 
@@ -1861,22 +1887,6 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
     }
 
 
-  var agentslot=function(){
-        $scope.getAvlAgentChart();
-    }
-    $scope.showchart=function(pincode){
-        $scope.flagcall=false;
-/*alert(pincode)*/
-        var pincode=pincode;
-        var scope=$rootScope.$new();
-         scope.pincode=pincode;
-        scope.params={pincode:pincode}
-            var modalInstance = $modal.open({
-                scope: scope,
-                templateUrl: 'Telecalling/availableAgentChart.html',
-                controller: 'telecalling',
-            });
-    }
     $scope.getTimebyDate=function(){
         var data = 'pincode='+$scope.codes.pincode+'&date='+$scope.visit_date;
         //    alert("pincode "+$scope.codes.pincode);
@@ -2676,4 +2686,22 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
     }
 
     return fac;
+});
+
+routerApp.directive('simexLoader',function($window){
+    return {
+        restrict:'AEC',
+        templateUrl:'SpinnerDirective/SimexSpinner.html',
+        link:function(scope,element,attrs){
+            angular.element(element).css('display','none');
+            angular.element(element).css({'z-index':'3','background':'white','opacity':'0.5','position':'absolute','height':'100%','width':'100%'});
+            scope.$on('cfpLoadingBar:started',function(event,data){
+                angular.element(element).css('display','block');
+            });
+
+            scope.$on('cfpLoadingBar:completed',function(event,data){
+                angular.element(element).css('display','none');
+            });
+        }
+    }
 });
