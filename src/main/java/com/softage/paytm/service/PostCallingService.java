@@ -22,6 +22,7 @@ public interface PostCallingService {
     public RemarkMastEntity getByPrimaryCode(String key);
     public List<RemarkMastEntity> remarkList();
     public JSONObject getAvailableslot(String date,Set<String> agents,String time,String datekey);
+    public String autoLeadAssigement();
 
 
 

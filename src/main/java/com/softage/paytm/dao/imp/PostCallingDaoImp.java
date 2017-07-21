@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -551,6 +552,42 @@ public class PostCallingDaoImp implements PostCallingDao {
             }
         }
         return  msg;
+    }
+
+    @Override
+    public JSONObject getLeadData() {
+        EntityManager entityManager = null;
+           JSONObject jsonObject=new JSONObject();
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            Query query = entityManager.createNativeQuery("{call getAutoLeadInformation()}");
+            Object[] auditedObj = (Object[]) query.getSingleResult();
+            String pincode = (String) auditedObj[0];
+            String address = (String) auditedObj[1];
+            String customerPhone = (String) auditedObj[2];
+            String alternatePhone1 = (String) auditedObj[3];
+            Integer cust_uid = (Integer) auditedObj[4];
+            Date appointment_Date = (Date) auditedObj[5];
+            Time appointment_Time = (Time) auditedObj[6];
+            BigInteger appointment_id = (BigInteger) auditedObj[7];
+            Integer cirCode = (Integer) auditedObj[8];
+            String customerName = (String) auditedObj[9];
+            jsonObject.put("Pincode",pincode);
+            jsonObject.put("Address",address);
+            jsonObject.put("customerPhone",customerPhone);
+            jsonObject.put("alternatePhone1",alternatePhone1);
+            jsonObject.put("cust_uid",cust_uid);
+            jsonObject.put("appointment_Date",appointment_Date);
+            jsonObject.put("appointment_Time",appointment_Time);
+            jsonObject.put("appointment_id",appointment_id);
+            jsonObject.put("cirCode",cirCode);
+            jsonObject.put("customerName",customerName);
+
+        }catch (Exception e){
+
+            logger.error(" error to getting Auto lead data ",e);
+        }
+        return jsonObject;
     }
 
     @Override

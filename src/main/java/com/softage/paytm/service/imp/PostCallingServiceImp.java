@@ -30,14 +30,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 /**
  * Created by SS0085 on 31-12-2015.
@@ -255,6 +256,173 @@ public class PostCallingServiceImp implements PostCallingService {
 
 
         return returnObj;
+    }
+
+    @Override
+    public String autoLeadAssigement() {
+        String agentCode=null;
+        PaytmagententryEntity paytmagententryEntity=null;
+        String agentMobileNumber=null;
+        String jobNumber=null;
+        String loginId="";
+        Integer cirCode=0;
+        String result="";
+           HashMap<String,String> allocation_map=new HashMap<String,String>();
+
+           DateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
+            JSONObject jsonObject = postCallingDao.getLeadData();
+            try {
+                String pincode = (String) jsonObject.get("Pincode");
+                String address = (String) jsonObject.get("Address");
+                String customerPhone = (String) jsonObject.get("customerPhone");
+                String alternatePhone1 = (String) jsonObject.get("alternatePhone1");
+                Integer cust_uid1 = (Integer) jsonObject.get("cust_uid");
+                String cust_uid=cust_uid1.toString();
+
+                java.sql.Date appointment_Date = (java.sql.Date) jsonObject.get("appointment_Date");
+                Time appointment_Time = (Time) jsonObject.get("appointment_Time");
+                BigInteger appointment_id1 = (BigInteger) jsonObject.get("appointment_id");
+                String appointment_id=appointment_id1.toString();
+                 cirCode = (Integer) jsonObject.get("cirCode");
+                String customerName = (String) jsonObject.get("customerName");
+
+
+            //    java.util.Date parsedUtilDate = formater.parse(appointment_Date.toString());
+            //    java.sql.Date sqltDate = new java.sql.Date(parsedUtilDate.getTime());
+
+                String allocationDate1 = appointment_Date + " " + appointment_Time;
+                String custext="";
+
+
+                agentCode = postCallingDao.getAgentCode(pincode, appointment_Date, allocationDate1, 0, "0");
+
+                if (agentCode != null && !(agentCode.equalsIgnoreCase("null"))) {
+                    paytmagententryEntity = agentPaytmDao.findByPrimaryKey(agentCode);
+                    agentMobileNumber = paytmagententryEntity.getAphone();
+                    allocation_map.put("appointmentID", appointment_id);
+                    allocation_map.put("agentcode", agentCode);
+                    allocation_map.put("custUID", cust_uid);
+                    allocation_map.put("mobileNo", customerPhone);
+                    //map.put("allocationTime",);  use now()
+                    allocation_map.put("visitDatetime", allocationDate1);
+                    allocation_map.put("importBy", "AutoSystem");
+                    //map.put("importDatetime") use now()
+                    allocation_map.put("confirmationDatetime", allocationDate1);
+                    // allocation_map.put("sendSMSDatetime",) use now()
+                    allocation_map.put("finalConfirmation", "W");
+                    allocation_map.put("confirmation", "W");
+                    allocation_map.put("confirmationAllowed", "Y");
+                    allocation_map.put("kycCollected", "P");
+                    allocation_map.put("remarkCode", "U");
+                    allocation_map.put("spokeCode", paytmagententryEntity.getAspokecode());
+                    jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
+                    if (jobNumber.equalsIgnoreCase("error")) {
+                        for (int i = 0; i < 3; i++) {
+                            jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
+                            if (!"error".equalsIgnoreCase(jobNumber)) {
+                                break;
+                            }
+                        }
+
+                    }
+                    if (!"error".equalsIgnoreCase(jobNumber)) {
+                        String text = "Dear Agent Job No- " + jobNumber + "" +
+                                " , Your visit is fixed at " + appointment_Date
+                                + " " + appointment_Time + " with " + customerName + " Address- " +
+                                "" + address + " " + pincode + " Contact nos- " +
+                                "" + alternatePhone1 + " , " + alternatePhone1 + " Please See Leads in App ";
+                        PaytmdeviceidinfoEntity paytmdeviceidinfoEntity = paytmDeviceDao.getByloginId(agentCode);
+                        if (paytmdeviceidinfoEntity != null) {
+                            loginId = paytmdeviceidinfoEntity.getLoginId();
+                        }
+
+
+                        if (loginId != null) {
+                            String res2 = saveTblNotificationLogEntity(text, agentCode, paytmdeviceidinfoEntity);
+                            String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
+
+
+                            if (cirCode == 13 || cirCode == 14) {
+                                custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                                        + customerPhone+ " has been confirmed. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
+                                        appointment_Date + " " + appointment_Time + ":00 hrs, kindly Available";
+                                String res3 = saveSmsSendLog(customerPhone,cust_uid, custext, "1", "4");
+
+                            } else {
+                                custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                                        + customerPhone + " has been confirmed. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
+                                        appointment_Date + " " + appointment_Time + ":00 hrs, kindly be ready with your photo ID & address proof ";
+
+                                if (alternatePhone1 == null || alternatePhone1 == "") {
+                                    String res3 = saveSmsSendLog(customerPhone, cust_uid, custext, "1", "4");
+                                } else {
+                                    String res4 = saveSmsSendLog(alternatePhone1, cust_uid, custext, "1", "4");
+                                }
+                            }
+
+                            //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
+                        } else {
+                            String res = saveSmsSendLog(agentMobileNumber, agentCode, text, "2", "2");
+                            if (cirCode == 13 || cirCode == 14) {
+                                custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                                        + customerPhone + " has been confirmed. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
+                                        appointment_Date + " " + appointment_Time + ":00 hrs, kindly Available";
+
+                                String res3 = saveSmsSendLog(customerPhone, cust_uid, custext, "1", "4");
+                            } else {
+                                custext = "Dear Customer, your request for SIM replacement for Mobile no "
+                                        + customerPhone + " has been confirmed. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
+                                        appointment_Date + " " + appointment_Time + ":00 hrs, kindly be ready with your photo ID & address proof ";
+                                if (alternatePhone1 == null || alternatePhone1 == "") {
+                                    String res3 = saveSmsSendLog(customerPhone, cust_uid, custext, "1", "4");
+                                } else {
+                                    String res4 = saveSmsSendLog(alternatePhone1, cust_uid, custext, "1", "4");
+                                }
+                            }
+
+
+                            //  String res3 = saveSmsSendLog("8588998890", map.get("custId"), custext, "1", "4");
+                        }
+
+                        result = "JOB ALLOCATED";
+                        logger.info("Job Allocated to AgentCode  " + agentCode);
+                    } else {
+
+                        result = "Job Allocated issue";
+                        logger.info("job not allocated for this Customer Number  " + customerPhone);
+                    }
+
+                } else {
+                    paytmagententryEntity = agentPaytmDao.findByPrimaryKey("SD0000");
+                    agentMobileNumber = paytmagententryEntity.getAphone();
+                    allocation_map.put("appointmentID", appointment_id);
+                    allocation_map.put("agentcode", paytmagententryEntity.getAcode());
+                    allocation_map.put("custUID", cust_uid);
+                    allocation_map.put("mobileNo", customerPhone);
+                    //map.put("allocationTime",);  use now()
+                    allocation_map.put("visitDatetime", allocationDate1);
+                    allocation_map.put("importBy", "AutoSystem");
+                    //map.put("importDatetime") use now()
+                    allocation_map.put("confirmationDatetime", allocationDate1);
+                    // allocation_map.put("sendSMSDatetime",) use now()
+                    allocation_map.put("finalConfirmation", "W");
+                    allocation_map.put("confirmation", "W");
+                    allocation_map.put("confirmationAllowed", "Y");
+                    allocation_map.put("kycCollected", "P");
+                    allocation_map.put("remarkCode", "U");
+                    allocation_map.put("spokeCode", paytmagententryEntity.getAspokecode());
+                    jobNumber = postCallingDao.JobAllocatedProcedure(allocation_map);
+
+
+
+                    result = "NO AGENT AVAILABLE";
+                }
+            } catch (Exception e) {
+                logger.error("problem to Auto job Allocation >>  ",e);
+
+            }
+
+        return  result;
     }
 
     private String sendSms(String mobileno, String text) {
@@ -539,7 +707,8 @@ public class PostCallingServiceImp implements PostCallingService {
                     result = "NO AGENT AVAILABLE";
                 }
             }else{
-                result = "Job Already Allocated";
+                result = "Job Allocated issue";
+                logger.info("job not allocated for this Customer Number  "+number);
             }
 
         } catch (Exception e) {

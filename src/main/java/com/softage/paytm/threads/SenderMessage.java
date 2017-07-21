@@ -19,6 +19,8 @@ public PostCallingService postCallingService;
         try {
          //postCallingService.sendsmsService();
 
+           postCallingService.autoLeadAssigement();
+
         System.out.println("SMS not Send because sms send code commented....... ");
 
         }catch (Exception e){

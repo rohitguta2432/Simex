@@ -1,6 +1,7 @@
 package com.softage.paytm.dao;
 
 import com.softage.paytm.models.*;
+import org.json.simple.JSONObject;
 
 import java.sql.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ public interface PostCallingDao {
     public ProcessMastEntity getProcessByCode(int code);
     public ReceiverMastEntity getRecivedByCode(int code);
     public String save(ReOpenTaleCallMaster openTaleCallMaster);
+    public JSONObject getLeadData();
 
     public String callJobAllocatedProcedure(Map<String,String> map);
     public String JobAllocatedProcedure(Map<String,String> map);
