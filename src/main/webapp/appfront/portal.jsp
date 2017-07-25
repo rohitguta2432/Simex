@@ -49,7 +49,7 @@
 
   <%--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>--%>
   <script src="libs/angular-ui-router/release/angular-ui-router.min.js"></script>
-  <script src="libs/filesaver/FileSaver.js"></script>
+  <script src="libs/FileSaver/FileSaver.js"></script>
     <script src="libs/angular-local-storage/dist/angular-local-storage.js"></script>
   <script src="js/app.js"></script>
     <script src="Manual/manual.js"></script>
@@ -219,7 +219,9 @@
                        Agent Registration </span></a>
         </li>
 
+
         <li><a ui-sref="manual"><i class="menu-icon fa fa-user"></i><span class="menu-text">
+
                         Manual Lead Allocation </span></a>
         </li>
 

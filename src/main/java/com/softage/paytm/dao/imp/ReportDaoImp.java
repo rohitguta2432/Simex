@@ -2,6 +2,7 @@ package com.softage.paytm.dao.imp;
 
 import com.google.code.geocoder.Geocoder;
 import com.softage.paytm.dao.ReportDao;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -429,6 +431,7 @@ public class ReportDaoImp implements ReportDao {
         Query query = null;
         JSONObject jsonObject = new JSONObject();
         DateFormat df=new SimpleDateFormat("yyyy-MM-dd");
+
         try{
             entityManager = entityManagerFactory.createEntityManager();
             query = entityManager.createNativeQuery("{call usp_processReport(?,?)}");
@@ -437,9 +440,14 @@ public class ReportDaoImp implements ReportDao {
             List<Object[]> resultList = query.getResultList();
             int i = 1;
             for (Object[] objects : resultList) {
+
                 String status = "Open";
                 if (objects.length > 0) {
-                    String simNo=(String)objects[34];
+                    String simNo1=(String)objects[34];
+                    if(StringUtils.isNotBlank(simNo1)){
+                        simNo1="'"+simNo1;
+                    }
+
                     JSONObject json = new JSONObject();
                     json.put("customerid", objects[0]);
                     json.put("coid", objects[1]);
@@ -475,7 +483,7 @@ public class ReportDaoImp implements ReportDao {
                     json.put("remarks", objects[31]);
                     json.put("form_status", objects[32]);
                     json.put("document_RecievedDatetime", objects[33]);
-                    json.put("sim_no", simNo);
+                    json.put("sim_no", simNo1);
                     jsonObject.put("record-" + i, json);
                 }
                 i++;

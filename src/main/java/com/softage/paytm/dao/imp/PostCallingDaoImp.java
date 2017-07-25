@@ -582,10 +582,16 @@ public class PostCallingDaoImp implements PostCallingDao {
             jsonObject.put("appointment_id",appointment_id);
             jsonObject.put("cirCode",cirCode);
             jsonObject.put("customerName",customerName);
+            jsonObject.put("status","Data");
 
         }catch (Exception e){
-
-            logger.error(" error to getting Auto lead data ",e);
+            jsonObject.put("status","NoData");
+            logger.error(" No Data Found  ",e);
+        }finally{
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
         }
         return jsonObject;
     }

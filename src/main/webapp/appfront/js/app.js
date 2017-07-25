@@ -2498,7 +2498,7 @@ routerApp.controller('report',['$scope', '$http','$q','$log', 'ExportService' ,f
         return dfr.promise;
     };
     $scope.getreport().then(function(data){
-        //console.log('data:   '+data);
+        console.log('data:   '+data);
         $scope.reports= data.reportTypes;
         console.log($scope.reports);
     }, function(reason) {
