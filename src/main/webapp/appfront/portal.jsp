@@ -219,9 +219,9 @@
                        Agent Registration </span></a>
         </li>
 
-            <%--<li><a ui-sref="manual"><i class="menu-icon fa fa-user"></i><span class="menu-text">
+        <li><a ui-sref="manual"><i class="menu-icon fa fa-user"></i><span class="menu-text">
                         Manual Lead Allocation </span></a>
-            </li>--%>
+        </li>
 
          <li><a ui-sref="uploadAgent"><i class="menu-icon fa fa-upload"></i><span class="menu-text">
                         Agent Upload </span></a></li>

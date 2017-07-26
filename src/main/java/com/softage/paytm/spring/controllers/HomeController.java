@@ -97,6 +97,9 @@ class HomeController {
     @Autowired
     private AoAuditService aoAuditService;
 
+    @Autowired
+    private ManualLeadService manualLeadService;
+
     /**
      * Simply selects the home view to render by returning its name.
      */
@@ -4034,5 +4037,131 @@ class HomeController {
         return "";
     }
 
+
+    @RequestMapping(value = "/leadDetails", method = {RequestMethod.GET, RequestMethod.POST})
+	@ResponseBody
+	public JSONObject getAgentLeadDetails() {
+		JSONObject jsonObject=new JSONObject();
+
+		List agentdetails= manualLeadService.getAgentLeadDetails();
+		jsonObject.put("agentLeads",agentdetails);
+        //System.out.println(agentdetails);
+
+		return  jsonObject;
+	}
+	@RequestMapping(value = "/availableAgents", method = {RequestMethod.GET, RequestMethod.POST})
+	@ResponseBody
+	public JSONObject getAvailableAgents(
+            @RequestParam("agentCodes") String AgentCodes,
+            @RequestParam("allocatedTime") String allocatedTime,
+            @RequestParam("agentPincode") String agentPincode
+            ) {
+		//JSONObject jsonObject=new JSONObject();
+		JSONObject availableagentCode= manualLeadService.getAgentCode(allocatedTime,agentPincode);
+		return  availableagentCode;
+	}
+	@RequestMapping(value = "/UpdateAgentslead", method = {RequestMethod.GET, RequestMethod.POST})
+	@ResponseBody
+	public JSONObject UpdateAgent(@RequestParam("cust_uid") int cust_uid,@RequestParam("agentscodes") String agentscodes,
+                                  @RequestParam("last_agentCode") String lastAgent, @RequestParam("allocatedDate") String allocatedDate,
+                                  @RequestParam("allocationTime") String allocationTime, HttpServletRequest request,HttpSession session ){
+		JSONObject jsonObject=new JSONObject();
+        session = request.getSession();
+        String userId = (String) session.getAttribute("name");
+		String result="";
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+        try{
+            Date convertAllocateDate = dateFormat2.parse(allocatedDate);
+            String newAllocateDate = dateFormat1.format(convertAllocateDate);
+            String newAllocationDateTime = newAllocateDate +" "+ allocationTime + ":00";
+            result=  manualLeadService.updateAgentsBycustUid(cust_uid,agentscodes.trim(),lastAgent,userId,newAllocationDateTime);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+		return  jsonObject;
+	}
+
+    @RequestMapping(value = "/leadDeAllocation", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject leadDeAllocation(@RequestParam("custId") int custId){
+
+        JSONObject resultJson = manualLeadService.deAllocateLead(custId);
+        return  resultJson;
+    }
+
+    @RequestMapping(value = "/getLeadAllocationDateList", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getLeadAllocationDateList(@RequestParam("custId") int custId){
+
+        //JSONObject resultJson = manualLeadService.getAllocationDateList(custId);
+        JSONObject listjson = new JSONObject();
+        ArrayList<JSONObject> listArray = new ArrayList<JSONObject>();
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy ");
+        try{
+
+            Date date = new Date();
+            String allocationDate = dateFormat1.format(date);
+
+            List<String> dateList = new ArrayList<String>();
+            dateList.add(allocationDate);
+            for(int i = 1;i<3;i++){
+                Calendar c = Calendar.getInstance();
+                c.setTime(dateFormat1.parse(allocationDate));
+                c.add(Calendar.DATE, i);
+                String nextDay = dateFormat1.format(c.getTime());
+                dateList.add(nextDay);
+            }
+            listjson.put("allocationDate", dateList);
+
+
+           // listArray.add(listjson);
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return  listjson;
+    }
+
+    @RequestMapping(value = "/getAllocationTime", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getAllocationTime(@RequestParam("allocatedDate") String allocatedDate){
+
+        Date todayDate = new Date();
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
+        List timeList = new ArrayList<>();
+        JSONObject timeJson = new JSONObject();
+        try{
+
+            String todayDateString = dateFormat1.format(todayDate);
+            Calendar calendar = GregorianCalendar.getInstance();
+
+            int todayHour;
+            if(allocatedDate.equals(todayDateString)){
+                calendar.setTime(todayDate);
+                todayHour= calendar.get(Calendar.HOUR_OF_DAY)+1;
+            }
+            else{
+                calendar.setTime(todayDate);
+                calendar.add(Calendar.DATE, 1);
+                todayHour = 9;
+            }
+            for(int i = 0 ;i<10;i++){
+
+                String hourInfo = todayHour + ":00";
+                if((todayHour <= 18) && (todayHour >=9)){
+                    timeList.add(hourInfo);
+                }
+                todayHour = todayHour + 1;
+
+            }
+            timeJson.put("timeList",timeList);
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return  timeJson;
+    }
 
 }

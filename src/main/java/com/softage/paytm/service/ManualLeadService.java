@@ -12,6 +12,8 @@ import java.util.List;
 public interface ManualLeadService {
 
     public List getAgentLeadDetails();
-    public List<PaytmagententryEntity> getAgentCode();
-    public String updateAgentsBycustUid(int customerId,String AgentCode,String lastAgent);
+    public JSONObject getAgentCode(String allocatedTime, String agentPincode);
+    public String updateAgentsBycustUid(int customerId,String AgentCode,String lastAgent,String userId, String newAllocationDateTime);
+    public JSONObject deAllocateLead(int custId);
+    public JSONObject getAllocationDateList(int custCode);
 }

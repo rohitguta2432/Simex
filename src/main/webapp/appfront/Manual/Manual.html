@@ -26,7 +26,7 @@
                                     <th  style="width:10%">Agent Code</th>
                                     <th  style="width:10%">Agent Name</th>
                                     <th  style="width:10%">Customer No</th>
-                                    <th  style="width:10%">Address</th>
+                                    <th  style="width:10%">Allocated Time</th>
                                     <th  style="width:10%">Assignment</th>
                                 </tr>
                                 </thead>
@@ -38,10 +38,13 @@
                                     <td>{{lead.agentCode}}</td>
                                     <td>{{lead.agentname}}</td>
                                     <td>{{lead.PhoneNumber}}</td>
-                                    <td>{{lead.customeraddress}}</td>
+                                    <td>{{lead.allocatedTime}}</td>
                                     <td><button  class="btn btn-azure shiny"
-                                  ng-disable="status=='yes'" ng-class="{blue: isSelected}" ng-click="changeAgent(lead.agentCode,lead.customerid)">
+                                  ng-disable="status=='yes'" ng-class="{blue: isSelected}" ng-click="changeAgent(lead.agentCode,lead.customerid,lead.allocatedTime,lead.agentPincode)">
                                         {{do}}</button></td>
+                                    <td><button  class="btn btn-azure shiny"
+                                                 ng-disable="status=='yes'" ng-class="{blue: isSelected}" ng-click="deAllocateLead(lead.customerid)">
+                                        De-Allocate</button></td>
                                 </tr>
                                 </tbody>
                             </table>
