@@ -24,6 +24,7 @@ import java.util.List;
  */
 @Repository
 public class ManualLeadDaoImpl implements ManualLeadDao {
+
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
@@ -36,6 +37,7 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
             entityManager = entityManagerFactory.createEntityManager();
             javax.persistence.Query query = entityManager.createNativeQuery("{call sp_ReAssignLeads()}");
             result = query.getResultList();
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,7 +72,6 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
     }
 
     @Override
-    @Transactional
     public List getAllocateDetails(int custId) {
 
         EntityManager entityManager = null;
@@ -78,7 +79,8 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
         try {
 
             entityManager = entityManagerFactory.createEntityManager();
-            javax.persistence.Query query = entityManager.createNativeQuery("{call sp_getAllocateDetails()}");
+            javax.persistence.Query query = entityManager.createNativeQuery("{call sp_getAllocateDetails(?)}");
+            query.setParameter(1, custId);
             result = query.getResultList();
 
         } catch (Exception e) {

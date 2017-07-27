@@ -1,5 +1,6 @@
 package com.softage.paytm.service.imp;
 
+import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 import com.softage.paytm.dao.AgentPaytmDao;
@@ -94,27 +95,32 @@ public class ManualLeadServiceImpl implements ManualLeadService {
     public String updateAgentsBycustUid(int cust_uid, String agentCode, String lastAgent, String userId, String newAllocationDateTime) {
 
         String message = null;
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat dateFormat3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             message = manualLeadDao.updateAgentsByCustUid(cust_uid, agentCode, lastAgent, userId, newAllocationDateTime);
             List<Object[]> allocateList = manualLeadDao.getAllocateDetails(cust_uid);
 
             for (Object[] s : allocateList) {
-                int pincode = (int) s[0];
+                String pincode = (String) s[0];
                 String address = (String) s[1];
                 String customerPhone = (String) s[2];
                 String alternatePhone1 = (String) s[3];
-                String appointment_Date = (String) s[5];
-                String appointment_Time = (String) s[6];
-                //String appointmentId = (String) s[7];
-                int cirCode = (int) s[8];
-                String customerName = (String) s[9];
-                String jobNumber = (String) s[10];
+                Date appointDate = dateFormat3.parse(newAllocationDateTime);
+                //Date appointTime = dateFormat3.parse(newAllocationDateTime);
+                String appointment_Date =  dateFormat1.format(appointDate);
+                String appointment_Time = dateFormat2.format(appointDate);
+                int cirCode = (int) s[4];
+                //int cirCode = Integer.parseInt(circleCode);
+                String customerName = (String) s[5];
+                Integer jobNumber = (int) s[6];
                 String custext = null;
                 PaytmagententryEntity paytmagententryEntity = manualLeadDao.findByPrimaryKey(agentCode);
                 String agentMobileNumber = paytmagententryEntity.getAphone();
                 String loginId = null;
                 String custId = String.valueOf(cust_uid);
-                if (!"error".equalsIgnoreCase(jobNumber)) {
+                if (!(jobNumber.equals(null))) {
                     String text = "Dear Agent Job No- " + jobNumber + "" +
                             " , Your visit is fixed at " + appointment_Date
                             + " " + appointment_Time + " with " + customerName + " Address- " +
@@ -133,14 +139,14 @@ public class ManualLeadServiceImpl implements ManualLeadService {
 
                         if (cirCode == 13 || cirCode == 14) {
                             custext = "Dear Customer, your request for SIM replacement for Mobile no "
-                                    + customerPhone + " has been confirmed. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
-                                    appointment_Date + " " + appointment_Time + ":00 hrs, kindly Available";
+                                    + customerPhone + " has been Rescheduled. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
+                                    appointment_Date + " " + appointment_Time + " hrs, kindly Available";
                             String res3 = saveSmsSendLog(customerPhone, custId, custext, "1", "4");
 
                         } else {
                             custext = "Dear Customer, your request for SIM replacement for Mobile no "
-                                    + customerPhone + " has been confirmed. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
-                                    appointment_Date + " " + appointment_Time + ":00 hrs, kindly be ready with your photo ID & address proof ";
+                                    + customerPhone + " has been Rescheduled. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
+                                    appointment_Date + " " + appointment_Time + " hrs, kindly be ready with your photo ID & address proof ";
 
                             if (alternatePhone1 == null || alternatePhone1 == "") {
                                 String res3 = saveSmsSendLog(customerPhone, custId, custext, "1", "4");
@@ -155,13 +161,13 @@ public class ManualLeadServiceImpl implements ManualLeadService {
                         if (cirCode == 13 || cirCode == 14) {
                             custext = "Dear Customer, your request for SIM replacement for Mobile no "
                                     + customerPhone + " has been confirmed. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
-                                    appointment_Date + " " + appointment_Time + ":00 hrs, kindly Available";
+                                    appointment_Date + " " + appointment_Time + " hrs, kindly Available";
 
                             String res3 = saveSmsSendLog(customerPhone, custId, custext, "1", "4");
                         } else {
                             custext = "Dear Customer, your request for SIM replacement for Mobile no "
                                     + customerPhone + " has been confirmed. Your Reference ID id " + cust_uid + " Our Agent will be visiting on " +
-                                    appointment_Date + " " + appointment_Time + ":00 hrs, kindly be ready with your photo ID & address proof ";
+                                    appointment_Date + " " + appointment_Time + " hrs, kindly be ready with your photo ID & address proof ";
                             if (alternatePhone1 == null || alternatePhone1 == "") {
                                 String res3 = saveSmsSendLog(customerPhone, custId, custext, "1", "4");
                             } else {
