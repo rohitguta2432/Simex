@@ -17,7 +17,6 @@ public interface ManualLeadDao {
     public JSONObject GetAgentsCode(String allocatedTime, String agentPincode);
     public String updateAgentsByCustUid(int CustomerId,String agentCode,String lastAgent,String userId, String newAllocationDateTime);
     public String deAllocateLead(int custId);
-    public List getAllocationDateList(int custCode);
     public String getAgentPincode(String agentCode);
 
 }

@@ -82,7 +82,13 @@ public class ManualLeadServiceImpl implements ManualLeadService {
 
     @Override
     public String updateAgentsBycustUid(int customerId, String AgentCode,String lastAgent,String userId,String newAllocationDateTime) {
-        return manualLeadDao.updateAgentsByCustUid(customerId,AgentCode,lastAgent,userId, newAllocationDateTime);
+        String message = manualLeadDao.updateAgentsByCustUid(customerId,AgentCode,lastAgent,userId, newAllocationDateTime);
+
+
+
+
+
+        return message;
     }
 
     @Override
@@ -94,13 +100,4 @@ public class ManualLeadServiceImpl implements ManualLeadService {
         return resultJson;
     }
 
-
-    @Override
-    public JSONObject getAllocationDateList(int custCode) {
-
-        JSONObject dateJson = new JSONObject();
-        List dateList = manualLeadDao.getAllocationDateList(custCode);
-        dateJson.put("dateList",dateList);
-        return dateJson;
-    }
 }

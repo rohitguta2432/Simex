@@ -93,11 +93,8 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
             query.setParameter(2, agentPincode);
             List<String> agentCodes = query.getResultList();
 
-
             agentJson.put("agentCodes",agentCodes);
-            System.out.println(agentJson);
-
-                    System.out.println("List Fetched ");
+            //System.out.println(agentJson);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -152,48 +149,5 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
         }
         return result;
     }
-
-    @Override
-    public List getAllocationDateList(int custCode) {
-
-        EntityManager entityManager = null;
-        ArrayList<JSONObject> listArray = new ArrayList<JSONObject>();
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy ");
-        try {
-
-            entityManager = entityManagerFactory.createEntityManager();
-            Query query =  entityManager.createNativeQuery("{ call sp_getAllocatedDate(?)}");
-            query.setParameter(1,custCode);
-            Date result = (Date) query.getSingleResult();
-            //String result1 = dateFormat1.parse(result);
-
-                JSONObject listjson = new JSONObject();
-
-                String allocationDate = dateFormat1.format(result);
-
-                List<String> dateList = new ArrayList<String>();
-                dateList.add(allocationDate);
-                for(int i = 1;i<3;i++){
-                    Calendar c = Calendar.getInstance();
-                    c.setTime(dateFormat1.parse(allocationDate));
-                    c.add(Calendar.DATE, i);
-                    String nextDay = dateFormat1.format(c.getTime());
-                    dateList.add(nextDay);
-                }
-                listjson.put("allocationDate", dateList);
-
-                listArray.add(listjson);
-
-        }catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (entityManager != null && entityManager.isOpen()) {
-                entityManager.close();
-            }
-        }
-
-        return listArray;
-    }
-
 
 }

@@ -12,7 +12,7 @@
 
                 <div class="modal-body" style="height: 100px; display: initial;">
 
-                    <form class="form-horizontal" name="myForm" ng-controller="manualController" ng-init="getAgentCode();getAllocatedDate();">
+                    <form class="form-horizontal" name="agentForm" ng-controller="manualController" ng-init="getAgentCode();getAllocatedDate();">
 
 
                         <div class="col-sm-12">
@@ -21,14 +21,28 @@
                         <div class="form-group col-sm-12">
                             <label  class="col-sm-3 control-label no-padding-right"> Agents Code</label>
                             <div class="col-sm-7">
-                                <select name="AgentCode" ng-model="selectedAgentCode" class="form-control">
+                                <select name="AgentCode" ng-model="selectedAgentCode" required class="form-control">
                                     <option value="" selected="selected" >Select Agent</option>
                                     <option ng-repeat="agents in AgentCodelist" value="{{agents}}">{{agents}}</option>
                                 </select>
                             </div>
+                             <span style="color:red" ng-show="agentForm.AgentCode.$dirty && agentForm.AgentCode.$invalid">
+                                <span ng-show="agentForm.AgentCode.$error.required">Agent Code Required.</span>
+                             </span>
+                            </div>
+                            <div class="form-group col-sm-12">
+                                <label  class="col-sm-3 control-label no-padding-right">Visit Date</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" ng-model="params.allocatedTime" readonly placeholder="Visit Date">
+                                </div>
+                                <div class="col-sm-2 pull-right" style="margin-top:1px;">
+                                        <button class="btn btn-azure shiny" type="button"
+                                            ng-click="ShowHide()">Change Date</button>
+                                </div>
                             </div>
 
                             <div style="clear: both; height: 0px;"></div>
+                            <div id="timeDiv" ng-show="IsVisible">
                             <div class="form-group col-sm-12">
                                 <label  class="col-sm-3 control-label no-padding-right">Select Date</label>
                                 <div class="col-sm-7">
@@ -52,12 +66,13 @@
                                         </select>
                                     </div>
                                 </div>
+                            </div>
 
 
                                     <div style="clear: both; height: 0px;"></div>
 
                                 <div class="col-sm-2 pull-right" style="margin-top:1px;">
-                                    <button class="btn btn-azure shiny" type="button"
+                                    <button class="btn btn-azure shiny" type="button" ng-disabled = "agentForm.$invalid"
                                             ng-click="UpdateAgents(selectedAgentCode,allocationDate,assignTime)">Submit</button>
                                 </div>
 

@@ -4064,18 +4064,32 @@ class HomeController {
 	@ResponseBody
 	public JSONObject UpdateAgent(@RequestParam("cust_uid") int cust_uid,@RequestParam("agentscodes") String agentscodes,
                                   @RequestParam("last_agentCode") String lastAgent, @RequestParam("allocatedDate") String allocatedDate,
-                                  @RequestParam("allocationTime") String allocationTime, HttpServletRequest request,HttpSession session ){
+                                  @RequestParam("allocationTime") String allocationTime,@RequestParam("oldAllocationTime") String oldAllocationTime,
+                                  HttpServletRequest request,HttpSession session ){
 		JSONObject jsonObject=new JSONObject();
         session = request.getSession();
         String userId = (String) session.getAttribute("name");
 		String result="";
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat dateFormat3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat4 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         try{
-            Date convertAllocateDate = dateFormat2.parse(allocatedDate);
-            String newAllocateDate = dateFormat1.format(convertAllocateDate);
-            String newAllocationDateTime = newAllocateDate +" "+ allocationTime + ":00";
+            String newAllocationDateTime = null;
+            if((allocationTime.equalsIgnoreCase("undefined") || allocatedDate.equalsIgnoreCase("undefined") ||
+                    allocationTime == null || allocatedDate == null)){
+                Date convertAllocateDate = dateFormat4.parse(oldAllocationTime);
+                String newAllocateDate = dateFormat3.format(convertAllocateDate);
+                newAllocationDateTime = newAllocateDate;
+            }
+            else{
+                Date convertAllocateDate = dateFormat2.parse(allocatedDate);
+                String newAllocateDate = dateFormat1.format(convertAllocateDate);
+                newAllocationDateTime = newAllocateDate +" "+ allocationTime + ":00";
+            }
+
             result=  manualLeadService.updateAgentsBycustUid(cust_uid,agentscodes.trim(),lastAgent,userId,newAllocationDateTime);
+            jsonObject.put("result",result);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -4094,7 +4108,6 @@ class HomeController {
     @ResponseBody
     public JSONObject getLeadAllocationDateList(@RequestParam("custId") int custId){
 
-        //JSONObject resultJson = manualLeadService.getAllocationDateList(custId);
         JSONObject listjson = new JSONObject();
         ArrayList<JSONObject> listArray = new ArrayList<JSONObject>();
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy ");

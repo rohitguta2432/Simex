@@ -15,5 +15,4 @@ public interface ManualLeadService {
     public JSONObject getAgentCode(String allocatedTime, String agentPincode);
     public String updateAgentsBycustUid(int customerId,String AgentCode,String lastAgent,String userId, String newAllocationDateTime);
     public JSONObject deAllocateLead(int custId);
-    public JSONObject getAllocationDateList(int custCode);
 }

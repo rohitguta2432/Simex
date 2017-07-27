@@ -68,6 +68,11 @@ function mainCtrl($http,$modal,$scope,$rootScope,$location,$filter) {
         });
     }
 
+    $scope.IsVisible = false;
+    $scope.ShowHide = function () {
+        $scope.IsVisible = $scope.IsVisible ? false : true;
+    }
+
     $scope.deAllocateLead = function ( customerid) {
         var customerid = customerid;
         $scope.custId = customerid;
@@ -102,17 +107,19 @@ function mainCtrl($http,$modal,$scope,$rootScope,$location,$filter) {
         $scope.AgentCode = $scope.selectedAgentCode;
         $scope.allocatedDate = allocationDate;
         $scope.allocationTime = assignTime;
+        $scope.oldAllocationTime = $scope.params.allocatedTime;
         console.log($scope.selectedAgentCode + $scope.allocatedDate + $scope.allocationTime);
 
         $scope.modalInstance.close();
         var agentCode='agentscodes='+ $scope.AgentCode + '&cust_uid='+$scope.customerid +'&last_agentCode='+$scope.agentCode
-            +'&allocatedDate='+$scope.allocatedDate +'&allocationTime='+$scope.allocationTime;
+            +'&allocatedDate='+$scope.allocatedDate +'&allocationTime='+$scope.allocationTime +'&oldAllocationTime='+$scope.oldAllocationTime;
         $http.get(domain + '/UpdateAgentslead?'+agentCode)
             .success(function (data, status, headers, config) {
                 $scope.isSelected = !$scope.isSelected;
                 $scope.do='Assigned';
               $scope.status='yes';
-                alert('Lead Reassigned Successfully');
+                $scope.resultMessage = data.result;
+                alert($scope.resultMessage);
                 location.reload();
 
             })
