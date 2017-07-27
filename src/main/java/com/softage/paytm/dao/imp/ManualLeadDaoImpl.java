@@ -1,8 +1,7 @@
 package com.softage.paytm.dao.imp;
 
 import com.softage.paytm.dao.ManualLeadDao;
-import com.softage.paytm.models.EmplogintableEntity;
-import com.softage.paytm.models.PaytmagententryEntity;
+import com.softage.paytm.models.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,6 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
     @Override
     public List getAgentDetails() {
         EntityManager entityManager = null;
-        JSONObject jsonresponse = new JSONObject();
-        ArrayList<JSONObject> listArray = new ArrayList<JSONObject>();
         List<Object[]> result = null;
         try {
 
@@ -70,6 +67,29 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
         }
 
         return message;
+    }
+
+    @Override
+    @Transactional
+    public List getAllocateDetails(int custId) {
+
+        EntityManager entityManager = null;
+        List<Object[]> result = null;
+        try {
+
+            entityManager = entityManagerFactory.createEntityManager();
+            javax.persistence.Query query = entityManager.createNativeQuery("{call sp_getAllocateDetails()}");
+            result = query.getResultList();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -146,4 +166,168 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
         return result;
     }
 
+
+    @Override
+    @Transactional
+    public PaytmagententryEntity findByPrimaryKey(String agentCode) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<CircleMastEntity> list=new ArrayList<>();
+        PaytmagententryEntity paytmagententryEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select paytmAgent from PaytmagententryEntity paytmAgent where paytmAgent.acode=:agentCode";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("agentCode",agentCode);
+            paytmagententryEntity= (PaytmagententryEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();;
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return paytmagententryEntity;
+
+    }
+
+
+    @Override
+    public PaytmdeviceidinfoEntity getByloginId(String loginid) {
+        EntityManager entityManager=null;
+        Query query=null;
+        List<CircleMastEntity> list=new ArrayList<>();
+        PaytmdeviceidinfoEntity paytmdeviceidinfoEntity=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            String strQuery = "select paytmDevice from PaytmdeviceidinfoEntity paytmDevice where paytmDevice.loginId=:loginid";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("loginid",loginid);
+            paytmdeviceidinfoEntity= (PaytmdeviceidinfoEntity)query.getSingleResult();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return paytmdeviceidinfoEntity;
+    }
+
+    @Override
+    public ReceiverMastEntity getRecivedByCode(int code) {
+        EntityManager entityManager=null;
+        Query query=null;
+        ReceiverMastEntity receiverMastEntity=null;
+        EntityTransaction entityTransaction=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
+            String strQuery = "select am from ReceiverMastEntity am where am.receiverCode=:code";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("code",code);
+            receiverMastEntity= (ReceiverMastEntity)query.getSingleResult();
+            entityTransaction.commit();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return receiverMastEntity;
+    }
+
+    @Override
+    public ProcessMastEntity getProcessByCode(int code) {
+        EntityManager entityManager=null;
+        Query query=null;
+        ProcessMastEntity processMastEntity=null;
+        EntityTransaction entityTransaction=null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            entityTransaction=entityManager.getTransaction();
+            entityTransaction.begin();
+            String strQuery = "select am from ProcessMastEntity am where am.processCode=:code";
+            query=entityManager.createQuery(strQuery);
+            query.setParameter("code",code);
+            processMastEntity= (ProcessMastEntity)query.getSingleResult();
+            entityTransaction.commit();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return processMastEntity;
+    }
+
+    @Override
+    public String saveSmsSendEntity(SmsSendlogEntity smsSendlogEntity) {
+
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg=null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(smsSendlogEntity);
+            entityManager.flush();
+            transaction.commit();
+            msg="done";
+        } catch (Exception e) {
+            msg="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  msg;
+    }
+
+    @Override
+    public String saveTabNotification(TblNotificationLogEntity tblNotificationLogEntity) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg=null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(tblNotificationLogEntity);
+            transaction.commit();
+            msg="done";
+        } catch (Exception e) {
+            msg="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+        return  msg;
+
+    }
 }

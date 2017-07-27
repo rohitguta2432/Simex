@@ -1,8 +1,6 @@
 package com.softage.paytm.dao;
 
-import com.softage.paytm.models.AllocationMastEntity;
-import com.softage.paytm.models.EmplogintableEntity;
-import com.softage.paytm.models.PaytmagententryEntity;
+import com.softage.paytm.models.*;
 import org.json.simple.JSONObject;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,5 +16,11 @@ public interface ManualLeadDao {
     public String updateAgentsByCustUid(int CustomerId,String agentCode,String lastAgent,String userId, String newAllocationDateTime);
     public String deAllocateLead(int custId);
     public String getAgentPincode(String agentCode);
-
+    public List getAllocateDetails(int custId);
+    public PaytmagententryEntity findByPrimaryKey(String agentCode);
+    public PaytmdeviceidinfoEntity getByloginId(String loginid);
+    public ReceiverMastEntity getRecivedByCode(int code);
+    public ProcessMastEntity getProcessByCode(int code);
+    public String saveSmsSendEntity(SmsSendlogEntity smsSendlogEntity);
+    public String saveTabNotification(TblNotificationLogEntity tblNotificationLogEntity);
 }

@@ -18,7 +18,7 @@ public PostCallingService postCallingService;
     public void demoService(){
         try {
 
-           postCallingService.sendsmsService();
+          // postCallingService.sendsmsService();
 
 
            postCallingService.autoLeadAssigement();
