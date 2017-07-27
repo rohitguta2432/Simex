@@ -5,6 +5,7 @@ import com.softage.paytm.models.EmplogintableEntity;
 import com.softage.paytm.models.PaytmagententryEntity;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +25,10 @@ import java.util.List;
  */
 @Repository
 public class ManualLeadDaoImpl implements ManualLeadDao {
-    @Inject
+    @Autowired
     private EntityManagerFactory entityManagerFactory;
 
     @Override
-    @Transactional
     public List getAgentDetails() {
         EntityManager entityManager = null;
         JSONObject jsonresponse = new JSONObject();
@@ -52,7 +52,6 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
     }
 
     @Override
-    @Transactional
     public String getAgentPincode(String agentCode) {
 
         EntityManager entityManager = null;
@@ -74,7 +73,6 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
     }
 
     @Override
-    @Transactional
     public JSONObject GetAgentsCode(String allocatedTime,String agentPincode) {
         EntityManager entityManager = null;
         List agent = new ArrayList();
@@ -106,7 +104,6 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
     }
 
     @Override
-    @Transactional
     public String updateAgentsByCustUid(int CustomerId, String agentCode, String lastAgent,String userId, String newAllocationDateTime) {
         EntityManager entityManager = null;
         String message = "";
@@ -130,7 +127,6 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
     }
 
     @Override
-    @Transactional
     public String deAllocateLead(int custId){
 
         EntityManager entityManager = null;
