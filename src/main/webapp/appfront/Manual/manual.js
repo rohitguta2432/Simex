@@ -124,7 +124,7 @@ function mainCtrl($http,$modal,$scope,$rootScope,$location,$filter) {
 
             })
             .error(function (data, status, headers, config) {
-               /* alert('Not found Data');*/
+                alert('No Agents found');
             })
     }
 
@@ -148,4 +148,23 @@ function mainCtrl($http,$modal,$scope,$rootScope,$location,$filter) {
 
         $scope.modalInstance.close();
     }
+
+    $scope.getNewAllocationAgents = function (assignTime) {
+        var allocatedDate = $scope.allocationDate;
+        var AgentPinCode = $scope.params.agentPincode;
+       // $scope.modalInstance.close();
+        //console.log('New Allocated Date : '+ allocatedDate + 'assign Time : '+assignTime+' PinCode : '+AgentPinCode);
+       $http.get(domain + '/getNewAvailableAgents?newAllocatedDate='+allocatedDate +'&newAllocatedTime='+assignTime
+           +'&agentPincode='+AgentPinCode )
+            .success(function (data, status, headers, config) {
+
+               $scope.AgentCodelist = data.agentCodes;
+               console.log($scope.AgentCodelist);
+            })
+            .error(function (data, status, headers, config) {
+                alert('Unable To Agents for New Allocated Date');
+            })
+
+    }
+
 }

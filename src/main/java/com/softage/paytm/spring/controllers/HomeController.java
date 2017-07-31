@@ -4057,7 +4057,18 @@ class HomeController {
             @RequestParam("agentPincode") String agentPincode
             ) {
 		//JSONObject jsonObject=new JSONObject();
-		JSONObject availableagentCode= manualLeadService.getAgentCode(allocatedTime,agentPincode);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String convertedAllocatedTime = null;
+        JSONObject availableagentCode = null;
+        try{
+            Date allocatedDate = dateFormat.parse(allocatedTime);
+            convertedAllocatedTime  = dateFormat1.format(allocatedDate);
+            availableagentCode= manualLeadService.getAgentCode(convertedAllocatedTime,agentPincode);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 		return  availableagentCode;
 	}
 	@RequestMapping(value = "/UpdateAgentslead", method = {RequestMethod.GET, RequestMethod.POST})
@@ -4152,7 +4163,7 @@ class HomeController {
             int todayHour;
             if(allocatedDate.equals(todayDateString)){
                 calendar.setTime(todayDate);
-                todayHour= calendar.get(Calendar.HOUR_OF_DAY)+1;
+                todayHour= calendar.get(Calendar.HOUR_OF_DAY)+2;
             }
             else{
                 calendar.setTime(todayDate);
@@ -4175,6 +4186,31 @@ class HomeController {
         }
 
         return  timeJson;
+    }
+
+    @RequestMapping(value = "/getNewAvailableAgents", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject getNewAvailableAgents(
+            @RequestParam("newAllocatedDate") String newAllocatedDate,
+            @RequestParam("newAllocatedTime") String newAllocatedTime,
+            @RequestParam("agentPincode") String agentPincode
+    ) {
+        //JSONObject jsonObject=new JSONObject();
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+
+        String newAllocationDateTime = null;
+        JSONObject availableagentCode = null;
+        try{
+            Date convertAllocateDate = dateFormat2.parse(newAllocatedDate);
+            String newAllocateDate = dateFormat1.format(convertAllocateDate);
+            newAllocationDateTime = newAllocateDate +" "+ newAllocatedTime + ":00";
+            availableagentCode= manualLeadService.getAgentCode(newAllocationDateTime,agentPincode);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return  availableagentCode;
     }
 
 }

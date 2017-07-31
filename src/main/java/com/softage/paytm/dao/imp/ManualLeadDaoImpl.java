@@ -99,17 +99,17 @@ public class ManualLeadDaoImpl implements ManualLeadDao {
         EntityManager entityManager = null;
         List agent = new ArrayList();
         List<PaytmagententryEntity> ListAgentcode = null;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        //SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         JSONObject agentJson = new JSONObject();
         try {
 
-            Date allocatedDate = dateFormat.parse(allocatedTime);
-            String convertedAllocatedTime  = dateFormat1.format(allocatedDate);
+            //Date allocatedDate = dateFormat.parse(allocatedTime);
+            //String convertedAllocatedTime  = dateFormat1.format(allocatedDate);
 
             entityManager = entityManagerFactory.createEntityManager();
             javax.persistence.Query query = entityManager.createNativeQuery("{call usp_getReasignAgents(?,?)}");
-            query.setParameter(1, convertedAllocatedTime);
+            query.setParameter(1, allocatedTime);
             query.setParameter(2, agentPincode);
             List<String> agentCodes = query.getResultList();
 
