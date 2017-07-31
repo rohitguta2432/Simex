@@ -213,6 +213,11 @@ public class PaytmMasterServiceImp implements PaytmMasterService {
     }
 
     @Override
+    public String updateAddress(int cust_uid, String changeAddress, String changePincode, String userName) {
+        return paytmMasterDao.updateAddress(cust_uid, changeAddress, changePincode, userName);
+    }
+
+    @Override
     public JSONObject telecallingScreen(String userName,int cirCode) {
         JSONObject json=null;
         for(int i=0; i<=5; i++){

@@ -492,6 +492,35 @@ public class PaytmMasterDaoImp implements PaytmMasterDao {
     }
 
     @Override
+    public String updateAddress(int cust_uid, String changeAddress, String changePincode, String userName) {
+        EntityManager entityManager = null;
+        EntityTransaction transaction = null;
+        String msg=null;
+
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            javax.persistence.Query query = entityManager.createNativeQuery("{call usp_updateAddress(?,?,?,?)}");
+            query.setParameter(1, cust_uid);
+            query.setParameter(2, changeAddress);
+            query.setParameter(3, changePincode);
+            query.setParameter(4, userName);
+            msg = (String) query.getSingleResult();
+
+        } catch (Exception e) {
+            msg="err";
+            e.printStackTrace();
+        }
+        finally {
+            if (entityManager != null && entityManager.isOpen())
+            {
+                entityManager.close();
+            }
+        }
+    return  msg;
+
+    }
+
+    @Override
     public boolean exists(String s) {
         return false;
     }

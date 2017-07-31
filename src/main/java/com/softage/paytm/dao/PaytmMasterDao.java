@@ -26,5 +26,6 @@ public interface PaytmMasterDao extends CrudRepository<PaytmMastEntity,String> {
     public SpokeMastEntity getSpokemast(String spokeCode);
     public AllocationMastEntity getAllocationentity(String custid,int jobid);
     public String updatePaytmMast(PaytmMastEntity paytmMastEntity);
+    public String updateAddress(int cust_uid,String changeAddress,String changePincode, String userName);
 
 }

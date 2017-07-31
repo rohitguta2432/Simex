@@ -29,5 +29,6 @@ public interface PaytmMasterService {
     public SpokeMastEntity spokeMastEntity(String spokeAudit);
     public AllocationMastEntity getallocationMastEntity(String custid,int jobid);
     public String updatePaytmMast(PaytmMastEntity paytmMastEntity);
+    public String updateAddress(int cust_uid,String changeAddress,String changePincode, String userName);
 
 }

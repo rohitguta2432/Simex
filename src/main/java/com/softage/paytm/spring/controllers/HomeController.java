@@ -1744,7 +1744,7 @@ class HomeController {
                 changePincode=request.getParameter("zipcode");
                 changeAddress=request.getParameter("changeAddress");
                 cust_uid=  Integer.parseInt(request.getParameter("cust_uid"));
-                PaytmMastEntity paytmMastEntity=paytmMasterService.getPaytmMastDatas(cust_uid);
+                /*PaytmMastEntity paytmMastEntity=paytmMasterService.getPaytmMastDatas(cust_uid);
                 if(paytmMastEntity!=null){
                     String lastAddress=paytmMastEntity.getAddress();
                     String lastpincode=paytmMastEntity.getPincode();
@@ -1752,12 +1752,13 @@ class HomeController {
                     paytmMastEntity.setLastPincode(lastpincode);
                     paytmMastEntity.setAddressStatus("U");
                     paytmMastEntity.setAddress(changeAddress);
-                    paytmMastEntity.setPincode(changePincode);
-                    result =paytmMasterService.updatePaytmMast(paytmMastEntity);
+                    paytmMastEntity.setPincode(changePincode);*/
+                    //result =paytmMasterService.updatePaytmMast(cust_uid,changeAddress,changePincode,userName);
+                    result =paytmMasterService.updateAddress(cust_uid,changeAddress,changePincode,userName);
                     if(result.equalsIgnoreCase("done")){
                         result="success";
                     }
-                }
+                //}
 
 
             } else {
