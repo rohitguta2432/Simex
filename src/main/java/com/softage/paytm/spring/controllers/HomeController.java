@@ -100,6 +100,9 @@ class HomeController {
     @Autowired
     private ManualLeadService manualLeadService;
 
+    @Autowired
+    private MobileAppService mobileAppService;
+
     /**
      * Simply selects the home view to render by returning its name.
      */
@@ -1721,6 +1724,37 @@ class HomeController {
         }
         return returnObj;
     }
+
+
+    @RequestMapping(value = "/TestAppSevice", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public JSONObject TestAppSevice(HttpServletRequest request,HttpServletResponse response) {
+
+        JSONObject returnObj = new JSONObject();
+        String userName = "system";
+        String changePincode="";
+        String changeAddress="";
+        String result="";
+
+        int cust_uid = 0;
+
+        logger.info("calling to customer>>>>> wait");
+        try {
+           result= mobileAppService.test("");
+
+        } catch (Exception e) {
+            returnObj.put("authentication", "Technical error");
+            logger.error("", e);
+        }
+        returnObj.put("status",result);
+        return returnObj;
+    }
+
+
+
+
+
+
 
 
     @RequestMapping(value = "/updateAddress", method = {RequestMethod.GET, RequestMethod.POST})

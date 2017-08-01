@@ -49,7 +49,7 @@
             <properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
             <!--<property name="hibernate.connection.url" value="jdbc:mysql://172.25.37.10:3306/simedDelhi26072017"/>-->
-            <property name="hibernate.connection.url" value="jdbc:mysql://172.25.37.10:3306/simexDelhi19072017"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://172.25.37.10:3306/simex_delhi_dev"/>
                     <!-- <property name="hibernate.connection.url" value="jdbc:mysql://172.25.37.10:3306/simex_delhi_dev"/>-->
            <!-- <property name="hibernate.connection.url" value="jdbc:mysql://172.25.38.10:3306/pahchaanTestLive"/>-->
 	    	<!--<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/paytmqa"/>-->
@@ -66,6 +66,9 @@
 
 		</properties>
 	</persistence-unit>
+
+
+
 </persistence>
 
 	<!--<properties>
