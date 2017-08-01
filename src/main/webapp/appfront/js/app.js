@@ -1571,7 +1571,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
     $scope.changeLocation=function(){
         var scope=$rootScope.$new();
         scope.custUID=$scope.codes.cust_uid;
-        var modalInstance=$modal.open({
+        scope.modalInstance=$modal.open({
             scope:scope,
             templateUrl: 'Telecalling/changeLocationModal.html',
             controller : 'telecalling'
@@ -1581,7 +1581,7 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
     $scope.submitNewLocation=function(custuid){
 
         var data='zipcode='+$scope.changedZipcode+'&changeAddress='+$scope.changedAddress+'&cust_uid='+custuid;
-
+        $scope.modalInstance.close();
         $http.get(domain+'/updateAddress?' + data)
             .success(function (data, status, headers, config) {
 

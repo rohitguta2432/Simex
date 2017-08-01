@@ -1758,6 +1758,9 @@ class HomeController {
                     if(result.equalsIgnoreCase("done")){
                         result="success";
                     }
+                    else{
+                        result="Technical Error";
+                    }
                 //}
 
 
@@ -1957,7 +1960,7 @@ class HomeController {
                             }
                         }
 
-                        if (alternateNumber1 == alternateNumber2) {
+                        if ((finalAltNumList.get(0)) == (finalAltNumList.get(1))) {
                             alternateNumber1 = finalAltNumList.get(0);
                         } else {
                             alternateNumber1 = finalAltNumList.get(0);
