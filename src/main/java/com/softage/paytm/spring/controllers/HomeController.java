@@ -1960,7 +1960,7 @@ class HomeController {
                             }
                         }
 
-                        if((finalAltNumList.get(1)) != null){
+                        if((finalAltNumList.size()) == 2){
                             if ((finalAltNumList.get(0)) == (finalAltNumList.get(1))) {
                                 alternateNumber1 = finalAltNumList.get(0);
                             } else {
@@ -1968,7 +1968,7 @@ class HomeController {
                                 alternateNumber2 = finalAltNumList.get(1);
                             }
                         }
-                        else{
+                        else if((finalAltNumList.size()) == 1){
                             alternateNumber1 = finalAltNumList.get(0);
                         }
 
