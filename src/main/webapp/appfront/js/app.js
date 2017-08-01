@@ -1588,6 +1588,9 @@ routerApp.controller('telecalling',['$rootScope','$scope', '$http','$q','$log','
                 if(data.status == 'success'){
                     alert('Address Updated Successfully');
                     location.reload();
+                }
+                else if(data.status == 'fail'){
+                    alert('Technical Error');
                 }else{
                     alert(data.authentication);
                 }

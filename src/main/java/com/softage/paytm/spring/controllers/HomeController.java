@@ -1759,7 +1759,7 @@ class HomeController {
                         result="success";
                     }
                     else{
-                        result="Technical Error";
+                        result="fail";
                     }
                 //}
 
@@ -1960,12 +1960,18 @@ class HomeController {
                             }
                         }
 
-                        if ((finalAltNumList.get(0)) == (finalAltNumList.get(1))) {
-                            alternateNumber1 = finalAltNumList.get(0);
-                        } else {
-                            alternateNumber1 = finalAltNumList.get(0);
-                            alternateNumber2 = finalAltNumList.get(1);
+                        if((finalAltNumList.get(1)) != null){
+                            if ((finalAltNumList.get(0)) == (finalAltNumList.get(1))) {
+                                alternateNumber1 = finalAltNumList.get(0);
+                            } else {
+                                alternateNumber1 = finalAltNumList.get(0);
+                                alternateNumber2 = finalAltNumList.get(1);
+                            }
                         }
+                        else{
+                            alternateNumber1 = finalAltNumList.get(0);
+                        }
+
                     }
 
                     String remarks =row.getCell(17)!=null?row.getCell(17).getStringCellValue().trim():"";
