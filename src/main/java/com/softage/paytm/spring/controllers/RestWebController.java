@@ -85,6 +85,12 @@ public class RestWebController {
     @Autowired
     private CircleService circleService;
 
+    @Autowired
+    private SaveAadharDetailsService saveAadharDetailsService;
+
+    @Autowired
+    private UpdateKycAllocationStatusService updateKycAllocationStatusService ;
+
     @RequestMapping(value = "/getTest", method = {RequestMethod.GET, RequestMethod.POST})
     public JSONObject test(HttpServletRequest request, HttpServletResponse response) {
         JSONObject jsonObject = new JSONObject();
@@ -1775,5 +1781,39 @@ public class RestWebController {
         }
         return result;
     }
+    @RequestMapping(value = "/KYCAllocationStatusUpdate", method = {RequestMethod.GET, RequestMethod.POST})
+    public String kycAllocationStatusUpdate(HttpServletRequest request) {
 
+        String result="";
+        String cust_id = request.getParameter("customerId");
+        String status = request.getParameter("statusCode");
+        String agentCode = request.getParameter("AgentCode");
+        String jobid = request.getParameter("Jobid");
+        result = updateKycAllocationStatusService.updateKycAllocationStatus(cust_id,status,jobid,agentCode);
+        return result;
+    }
+    @RequestMapping(value = "/AadharDetailsUpdate", method = {RequestMethod.GET, RequestMethod.POST})
+    public String aadharDetailsUpdate(HttpServletRequest request) {
+        String result = "";
+        String cust_id = request.getParameter("customerId");
+        String aadharNo = request.getParameter("AadhaarNumber");
+        String residentName = request.getParameter("ResidentName");
+        String dob = request.getParameter("DateOfBirth");
+        String gender = request.getParameter("Gender");
+        String mNO= request.getParameter("PhoneNumber");
+        String emailId = request.getParameter("EmailId");
+        String careOf = request.getParameter("CareOf");
+        String landmark = request.getParameter("Landmark");
+        String locality = request.getParameter("Locality");
+        String vtc = request.getParameter("Vtc");
+        String district = request.getParameter("District");
+        String hNo = request.getParameter("HouseNumber");
+        String street = request.getParameter("Street");
+        String postOffice = request.getParameter("PostOffice");
+        String subDistrict = request.getParameter("SubDistrict");
+        String state = request.getParameter("State");
+        String pincode = request.getParameter("Pincode");
+        result = saveAadharDetailsService.insertAadharDetails(cust_id,aadharNo,residentName,dob,gender,mNO,emailId,careOf,landmark,locality,vtc,district,hNo,street,postOffice,subDistrict,state,pincode);
+        return result;
+    }
 }
