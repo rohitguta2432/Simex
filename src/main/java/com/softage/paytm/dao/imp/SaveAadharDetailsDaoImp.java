@@ -20,9 +20,11 @@ public class SaveAadharDetailsDaoImp implements SaveAadharDetailsDao {
     @Autowired
     private EntityManagerFactory entityManagerFactory;
     @Override
-    public String saveAadharDetailData( String cust_id, String aadharNo, String residentName, String dob, String gender,
+    public String saveAadharDetailData( int cust_id, int aadharNo, String residentName, String dob, String gender,
                                         String mobNo, String emailId, String careOf, String landmark, String locality,
-                                        String vtc, String district, String hNo, String street, String postOffice, String subDistrict, String state, String pincode ) {
+                                        String vtc, String district, String hNo, String street, String postOffice, String subDistrict, String state, int pin
+                                       , String uploadedBy,String uploadedOn
+    ) {
 
         EntityManager entityManager=null;
         EntityTransaction transaction=null;
@@ -30,7 +32,7 @@ public class SaveAadharDetailsDaoImp implements SaveAadharDetailsDao {
         try{
             entityManager=entityManagerFactory.createEntityManager();
 
-            Query query=entityManager.createNativeQuery("{call usp_insertAadharDetails(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+            Query query=entityManager.createNativeQuery("{call usp_insertAadharDetails(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
             query.setParameter(1,cust_id);
             query.setParameter(2,aadharNo);
             query.setParameter(3,residentName);
@@ -48,7 +50,9 @@ public class SaveAadharDetailsDaoImp implements SaveAadharDetailsDao {
             query.setParameter(15,postOffice);
             query.setParameter(16,subDistrict);
             query.setParameter(17,state);
-            query.setParameter(18,pincode);
+            query.setParameter(18,pin);
+            query.setParameter(19,uploadedBy);
+            query.setParameter(20,uploadedOn);
             result=(String)query.getSingleResult();
 
             logger.info("save accept Entry>>>>>>  "+result);

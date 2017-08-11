@@ -13,7 +13,7 @@ public class UpdateAadharDetails{
     private int id;
     private int customerId;
     private int aadharNo;
-    private int mobNo;
+    private String mobNo;
     private String residentName;
     private String dateOfBirth;
     private String gender;
@@ -64,11 +64,11 @@ public class UpdateAadharDetails{
         this.aadharNo = aadharNo;
     }
     @Column(name = "mob_no",nullable = false,insertable = true,updatable = true)
-    public int getMobNo() {
+    public String getMobNo() {
         return mobNo;
     }
 
-    public void setMobNo(int mobNo) {
+    public void setMobNo(String mobNo) {
         this.mobNo = mobNo;
     }
     @Column(name = "res_name",nullable = false,insertable = true,updatable = true)

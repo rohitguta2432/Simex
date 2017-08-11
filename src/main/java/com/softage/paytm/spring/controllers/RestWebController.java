@@ -1795,12 +1795,15 @@ public class RestWebController {
     @RequestMapping(value = "/AadharDetailsUpdate", method = {RequestMethod.GET, RequestMethod.POST})
     public String aadharDetailsUpdate(HttpServletRequest request) {
         String result = "";
-        String cust_id = request.getParameter("customerId");
-        String aadharNo = request.getParameter("AadhaarNumber");
+        String cust_ide = request.getParameter("customerId");
+        int cust_id = Integer.parseInt(cust_ide);
+        String aadharNumber = request.getParameter("AadhaarNumber");
+        int aadharNo = Integer.parseInt(aadharNumber);
         String residentName = request.getParameter("ResidentName");
         String dob = request.getParameter("DateOfBirth");
         String gender = request.getParameter("Gender");
         String mNO= request.getParameter("PhoneNumber");
+        //int mNO = Integer.parseInt(mobNO);
         String emailId = request.getParameter("EmailId");
         String careOf = request.getParameter("CareOf");
         String landmark = request.getParameter("Landmark");
@@ -1813,7 +1816,10 @@ public class RestWebController {
         String subDistrict = request.getParameter("SubDistrict");
         String state = request.getParameter("State");
         String pincode = request.getParameter("Pincode");
-        result = saveAadharDetailsService.insertAadharDetails(cust_id,aadharNo,residentName,dob,gender,mNO,emailId,careOf,landmark,locality,vtc,district,hNo,street,postOffice,subDistrict,state,pincode);
+        int pin = Integer.parseInt(pincode);
+        String uploadedBy = request.getParameter("UploadedBy");
+        String uploadedOn = request.getParameter("UploadedOn");
+        result = saveAadharDetailsService.insertAadharDetails(cust_id,aadharNo,residentName,dob,gender,mNO,emailId,careOf,landmark,locality,vtc,district,hNo,street,postOffice,subDistrict,state,pin,uploadedBy,uploadedOn);
         return result;
     }
 }
