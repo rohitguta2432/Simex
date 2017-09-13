@@ -968,11 +968,14 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$document','$
        if($scope.cust_number!=undefined && $scope.sim_number!=undefined){
         if(dropdownValue=='No'){
             $scope.acceptFlag=true;
+            $scope.rejectFlag=false;
         }else if(dropdownValue=='Yes'){
             if($scope.name_matched=='No' ||$scope.photo_matched=='No' || $scope.sign_matched=='No' || $scope.dob_matched=='No'){
                 $scope.acceptFlag=true;
+
             }else{
                 $scope.acceptFlag=false;
+                $scope.rejectFlag=true;
             }
         }
        }
@@ -1280,12 +1283,14 @@ routerApp.controller('CircleAudit',['$scope', '$http','$q','$log','$document','$
 
 
 //QCInterface changed to CircleAudit By Arpan
-routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$location','$mdDialog','$mdMedia','$sce', function($scope,$http,$q,$log,$document,$location,$mdDialog,$mdMedia, $sce){
+routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$location','$mdDialog','$mdMedia','$sce','$window', function($scope,$http,$q,$log,$document,$location,$mdDialog,$mdMedia, $sce,$windows){
+
+    $scope.auto='manual';
+    $scope.acceptFlag='';
+    $scope.rejectFlag='';
 
 
     var index=0;
-
-
 
     $scope.errormessage = '';
 
@@ -1296,24 +1301,108 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$loca
     });
 
 
+
     $scope.disableAccept=function(dropdownValue){
         if($scope.cust_number!=undefined && $scope.sim_number!=undefined){
             if(dropdownValue=='No'){
                 $scope.acceptFlag=true;
+                $scope.rejectFlag=false;
             }else if(dropdownValue=='Yes'){
                 if($scope.name_matched=='No' ||$scope.photo_matched=='No' || $scope.sign_matched=='No' || $scope.dob_matched=='No'){
                     $scope.acceptFlag=true;
+
                 }else{
                     $scope.acceptFlag=false;
+                    $scope.rejectFlag=true;
                 }
             }
         }
     }
 
-    $scope.AoAuditInit=function(){
-        $http.get(domain+'/getCustomerDetailsForAoAudit')
+
+
+
+        if($scope.auto='manual'){
+
+            $scope.ShowLable=true;
+            $scope.ShowButtonLable=true;
+
+
+
+        $scope.AuditBasedOnCustNumber = function () {
+
+
+
+            if ($scope.ManualCustNumber != null) {
+
+                var data = 'mobNo=' + $scope.ManualCustNumber;
+
+
+
+            $http.get(domain + '/getCustomerDetailsForAoAuditBasedOnPhoneNo?' + data)
+                .success(function (data, status, headers, config) {
+
+
+                    if (data.auditStatus == 'Available') {
+                        $scope.acceptFlag = true;
+                        $scope.rejectFlag = true;
+                    }
+
+                    if (data.auditStatus == 'Unavailable') {
+                        $scope.Message = ' Data Not  Found';
+                        alert($scope.Message);
+
+                    }
+
+
+                    if (data.auditStatus == 'No Images To Audit') {
+                        alert('No Images To Audit');
+                        $scope.img_count = 1;
+                        $scope.image_source = 'assets/img/noimage.jpg';
+
+                        $scope.acceptFlag = true;
+                        $scope.rejectFlag = true;
+                    } else {
+                        $scope.cust_number = data.mobile;
+                        $scope.sim_number = data.simNo;
+                        $scope.cust_name = data.name;
+                        $scope.cust_address = data.address;
+                        $scope.scan_id = data.scanID;
+                        //$scope.image_path=data.imagePath;
+                        $scope.pathList = data.filePathList;
+                        $scope.img_count = data.imgCount;
+                        $scope.actual_img_count = data.actualCount;
+                        $scope.image_source = $scope.pathList[index];
+
+                        $scope.custUID = data.custuid;
+                        $scope.circleStatus = data.cirStatus;
+                    }
+                })
+                .error(function (data, status, headers, config) {
+                    alert('Error');
+                    })
+                }
+            else{
+                alert('Please Enter Mobile Number')
+                }
+            }
+
+        }
+
+
+
+    $scope.ChangeOnAutoSelect=function(){
+
+
+        $scope.ShowLable=false;
+        $scope.ShowButtonLable=false;
+
+
+
+         $http.get(domain+'/getCustomerDetailsForAoAudit')
             .success(function(data,status,headers,config){
-                //alert(data.auditStatus);
+
+
                 if(data.auditStatus=='No Images To Audit'){
                     //alert('No Images To Audit');
                     $scope.img_count=1;
@@ -1331,15 +1420,111 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$loca
                     $scope.img_count=data.imgCount;
                     $scope.actual_img_count=data.actualCount;
                     $scope.image_source=$scope.pathList[index];
+
                     $scope.custUID=data.custuid;
                     $scope.circleStatus=data.cirStatus;
+
+
+
                 }
             })
             .error(function(data,status,headers,config){
                 alert('Error');
             })
 
+
+
     }
+
+
+
+
+    $scope.ChangeOnManual=function() {
+        console.log($scope)
+        $scope.pathList='';
+        $scope.img_count='';
+        $scope.actual_img_count='';
+        $scope.image_source='';
+
+        $scope.ShowLable = true;
+        $scope.ShowButtonLable = true;
+
+        $scope.cust_number = '';
+        $scope.sim_number = '';
+        $scope.cust_name = '';
+        $scope.cust_address = '';
+        $scope.ManualCustNumber = '';
+        $scope.acceptFlag='';
+        $scope.rejectFlag='';
+
+
+
+
+        location.reload();
+
+    }
+
+        $scope.AuditBasedOnCustNumber = function () {
+
+         if ($scope.ManualCustNumber != null) {
+
+
+                var data = 'mobNo=' + $scope.ManualCustNumber;
+
+                $http.get(domain + '/getCustomerDetailsForAoAuditBasedOnPhoneNo?' + data)
+                    .success(function (data, status, headers, config) {
+
+
+
+
+
+                        if (data.auditStatus == 'Available') {
+                            $scope.acceptFlag = true;
+                            $scope.rejectFlag = true;
+                        }
+
+                        if (data.auditStatus == 'Unavailable') {
+                            $scope.Message = ' Data Not  Found';
+                            alert($scope.Message);
+                            /*  $scope.acceptFlag=false;
+                             $scope.rejectFlag=false;*/
+                        }
+
+
+                        if (data.auditStatus == 'No Images To Audit') {
+                            alert('No Images To Audit');
+                            $scope.img_count = 1;
+                            $scope.image_source = 'assets/img/noimage.jpg';
+
+
+                        } else {
+
+                            $scope.cust_number = data.mobile;
+                            $scope.sim_number = data.simNo;
+                            $scope.cust_name = data.name;
+                            $scope.cust_address = data.address;
+                            $scope.scan_id = data.scanID;
+                            //$scope.image_path=data.imagePath;
+                            $scope.pathList = data.filePathList;
+                            $scope.img_count = data.imgCount;
+                            $scope.actual_img_count = data.actualCount;
+                            $scope.image_source = $scope.pathList[index];
+                            $scope.custUID = data.custuid;
+                            $scope.circleStatus = data.cirStatus;
+                        }
+                    })
+                    .error(function (data, status, headers, config) {
+                        alert('Error');
+                    })
+            }
+            else {
+                alert('Please Enter Mobile Number')
+            }
+        }
+
+
+
+
 
     $scope.next=function(){
         var img=$scope.image_source;
@@ -1370,48 +1555,57 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$loca
     }
 
     $scope.qcOK= function(ev) {
-        var qcStatus='Accepted';
-        if($scope.name_matched==undefined || $scope.name_matched=='Select' || $scope.name_matched==''){
-            ev._preventDefault();
-        }else if($scope.photo_matched==undefined || $scope.photo_matched=='Select' || $scope.photo_matched==''){
-            ev._preventDefault();
+
+        if ($scope.cust_number != undefined) {
+            var qcStatus = 'Accepted';
+            if ($scope.name_matched == undefined || $scope.name_matched == 'Select' || $scope.name_matched == '') {
+                ev._preventDefault();
+            } else if ($scope.photo_matched == undefined || $scope.photo_matched == 'Select' || $scope.photo_matched == '') {
+                ev._preventDefault();
+            }
+            else if ($scope.sign_matched == undefined || $scope.sign_matched == 'Select' || $scope.sign_matched == '') {
+                ev._preventDefault();
+            }
+            else if ($scope.dob_matched == undefined || $scope.dob_matched == 'Select' || $scope.dob_matched == '') {
+                ev._preventDefault();
+            } else {
+                if ($scope.other_reason == undefined) {
+                    $scope.other_reason = '';
+                }
+                var data = 'scanId=' + $scope.scan_id +
+                    '&nameMatched=' + $scope.name_matched + '&photoMatched=' + $scope.photo_matched
+                    + '&signMatched=' + $scope.sign_matched + '&dobMatched=' + $scope.dob_matched +
+                    '&otherReason=' + $scope.other_reason + '&qcStatus=' + qcStatus + '&custUID=' + $scope.custUID;
+
+
+                $http.get(domain + '/aoAuditStatus?' + data)
+                    .success(function (data, status, headers, config) {
+                        //     $scope.url1= data.url;
+
+                        console.log("dataa" + $scope.url1);
+
+                        alert(data.message);
+                        location.reload();
+
+                    })
+                    .error(function (data, status, headers, config) {
+                        alert("failure message: " + JSON.stringify({data: data}));
+                    });
+            }
+
         }
-        else if($scope.sign_matched==undefined || $scope.sign_matched=='Select' || $scope.sign_matched==''){
-            ev._preventDefault();
+
+    else
+        {
+            alert('Details are not Specified.. ')
         }
-        else if($scope.dob_matched==undefined || $scope.dob_matched=='Select' || $scope.dob_matched==''){
-            ev._preventDefault();
-        }else{
-        if($scope.other_reason==undefined){
-            $scope.other_reason='';
-        }
-        var data = 'scanId='+$scope.scan_id +
-            '&nameMatched='+$scope.name_matched+'&photoMatched='+$scope.photo_matched
-            +'&signMatched='+$scope.sign_matched+'&dobMatched='+$scope.dob_matched+
-            '&otherReason='+$scope.other_reason+'&qcStatus='+qcStatus+'&custUID='+$scope.custUID;
+    }
 
-
-
-
-        $http.get(domain+'/aoAuditStatus?' + data)
-            .success(function (data, status, headers, config) {
-                //     $scope.url1= data.url;
-
-                console.log("dataa" +$scope.url1);
-
-                alert(data.message);
-                location.reload();
-
-            })
-            .error(function (data, status, headers, config) {
-                alert("failure message: " + JSON.stringify({data: data}));
-            });
-        }
-
-    };
 
     $scope.qcReject= function(ev) {
         //    alert(" Reject "+ $scope.rejct_pages);
+
+        if($scope.cust_number != undefined){
         var qcStatus='Rejected';
         if($scope.name_matched==undefined || $scope.name_matched=='Select' || $scope.name_matched==''){
             ev._preventDefault();
@@ -1456,7 +1650,9 @@ routerApp.controller('AoAudit',['$scope', '$http','$q','$log','$document','$loca
 
 
     };
-
+        }else{
+            alert('Details are not Specified.. ')
+        }
     }
 
 }]);
@@ -1478,7 +1674,7 @@ $scope.cust_number='';
     if($scope.cust_number.length==10){
        // $scope.mobFlag=true;
         var data='mobNo='+$scope.cust_number;
-        $http.get(domain+'/getFormRecievingDetails?'+data)
+        $http.get(domain+'/getFormRecievingDetails?' + data)
             .success(function(data,status,headers,config){
                // alert(JSON.stringify({data: data}))
                 //alert($scope.auditFlag);

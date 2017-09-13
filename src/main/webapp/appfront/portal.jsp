@@ -296,6 +296,8 @@
                            AO Audit </span></a></li>
             <li><a ui-sref="FormRecieving"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
                            Form Recieving </span></a></li>
+            <li><a ui-sref="report"><i class="menu-icon fa fa-calendar"></i><span class="menu-text">
+                        Reports </span></a></li>
             <li><a ng-click="logout()"><i class="menu-icon fa fa-sign-out"></i><span style="cursor: pointer;" class="menu-text">
                         Sign out</span> </a></li>
             <%-- <li><a ui-sref="dataentry"><i class="menu-icon fa fa-edit"></i><span class="menu-text">

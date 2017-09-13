@@ -1,4 +1,14 @@
+<style>
+    .checkbox, .radio {
+        position: relative;
+        display: block;
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
 
+</style>
+
+<!--ng-init="AoAuditInit()"-->
 <div class="page-body" style="padding: 2px 5px 24px;" ng-controller="AoAudit" ng-init="AoAuditInit()">
 
     <div class="row">
@@ -8,10 +18,11 @@
                 <div class="widget">
                     <div class="widget-body" style="overflow:hidden;">
 
-                        <!--<iframe width="100%" height="400px" ng-src="D:/1000000001/1000000001_11.jpg"></iframe>-->
+
                         <div style="overflow: auto; height: 400px;width: 100%" ng-model="image_source">
-                            <!--<img src="../resources/ftpimages/1000000001/1000000001_1.jpg" ng-model="image_source">-->
-                            <img src="{{image_source}}">
+
+                            <img ng-src="{{image_source}}">
+
                         </div>
 
 
@@ -40,23 +51,62 @@
                 <div class="widget">
                     <div class="widget-header bordered-bottom bordered-themeprimary">
                         <span class="widget-caption">AO Audit Interface</span>
-                        <!-- <div class="widget-buttons">
-                             <a href="#" data-toggle="collapse">
-                                 <i class="fa fa-minus"></i>
-                             </a>
-                             <a href="#" data-toggle="dispose">
-                                 <i class="fa fa-times"></i>
-                             </a>
-                         </div>-->
+
+
+
+                        <div class="widget-buttons">
+
+                            <div style="display: inline-block; border:0px solid red;">
+
+                                <div class="radio pull-left" style="padding:0 10px">
+
+                                    <label>
+
+                                        <input name="form-field-radio" type="radio"   ng-model="auto" value="automatic" ng-click="ChangeOnAutoSelect()">
+
+                                        <span class="text">Auto</span>
+
+                                    </label>
+
+                                </div>
+
+                                <div class="radio pull-right" style="margin:0px 5px 0 0px">
+
+                                    <label>
+
+                                        <input name="form-field-radio" type="radio" class="inverted" ng-model="auto" value="manual" ng-click="ChangeOnManual()">
+
+                                        <span class="text">Manual</span>
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
                     </div>
 
                     <div class="widget-body" style="overflow:hidden;">
                         <div id="horizontal-form" >
-                            <form class="form-horizontal" name="myForm1" role="form"  ng-controller="AoAudit" novalidate>
+                            <form class="form-horizontal" name="myForm1" role="form"   novalidate>
 
                                 <div style="clear:both; height:5px;"></div>
 
                                 <div  class="form-group col-sm-12 no-padding">
+                                    <div class="col-sm-4" style="float: left;" ng-show="ShowButtonLable">
+
+                                        <button type="button"  ng-click="AuditBasedOnCustNumber()" class="btn btn-azure shiny">Search</button>
+                                    </div>
+
+
+                                    <div class="col-sm-8" ng-show="ShowLable">
+                                        <input type="text" class="form-control" placeholder="Search Customer Number"   name="ManualCustNumber" ng-model="ManualCustNumber" maxlength="10"/>
+                                    </div>
+
+                                    <div style="clear:both; height:5px;"></div>
 
                                     <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Customer Number</label>
                                     <div class="col-sm-8">
@@ -79,6 +129,7 @@
                                     <div style="clear:both; height:5px;"></div>
 
                                     <label class="col-sm-4 control-label no-padding-center" style="padding-right:0px !important">Customer Address</label>
+
                                     <div class="col-sm-8">
                                         <input type="text" class="form-control"   name="cust_address" ng-model="cust_address" ng-readonly="true" />
                                     </div>

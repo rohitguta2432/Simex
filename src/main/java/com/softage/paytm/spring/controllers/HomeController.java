@@ -3551,6 +3551,95 @@ class HomeController {
         }
 
     }
+    @RequestMapping(value = "/getCustomerDetailsForAoAuditBasedOnPhoneNo", method = {RequestMethod.POST, RequestMethod.GET})
+    @ResponseBody
+    public JSONObject getCustomerDetailsForAoAuditBasedOnPhoneNo(HttpServletRequest request) {
+        JSONObject jsonObject = new JSONObject();
+        HttpSession session = request.getSession();
+        JSONObject ftpdetailsjson=new JSONObject();
+
+        String customer_number = (String) request.getParameter("mobNo");
+
+        String spokecode = (String) session.getAttribute("spoke_code");
+        Integer circle_code = (Integer) session.getAttribute("cirCode");
+
+        //String spokecode="DELSOU205"; Currently spoke code set static -JIA Sarai
+        String empcode = (String) session.getAttribute("name");
+        List<String> filepathList = new ArrayList<String>();
+
+        // this for ao Audit Spoke Wise
+        //    JSONObject detailJson = aoAuditService.getAoAuditDetails(spokecode, empcode);
+        // this for ao Audit Circle Wise
+
+        JSONObject detailJson = aoAuditService.getAoAuditDetailsByCircleCodeBasedONPhoneNo(circle_code,empcode,customer_number);
+
+        String cirStatus=null;
+        String status = (String) detailJson.get("status");
+        Integer circleStatus=(Integer)detailJson.get("circleStatus");
+
+
+        //Code added for ao audit images downloading which dont exist after circle audit
+        Integer custUID = (Integer) detailJson.get("custUID");
+        Integer imgCount = (Integer) detailJson.get("imgCount");
+        String imagePath = (String) detailJson.get("imagePath");
+        String projectPath = request.getServletContext().getRealPath("/");
+        String localPath = projectPath + "/resources/ftpimages/" + custUID;
+        String ftpImagespath=projectPath + "/resources/ftpimages/";
+
+        ftpdetailsjson = qcStatusService.getFTPDetailsForUser(circle_code);
+        File ftpImagesFolder = new File(localPath);
+
+        if(!ftpImagesFolder.exists()){
+
+            downloadImages(imagePath, localPath, ftpdetailsjson);
+        }
+        //Code ends for ao audit images downloading which dont exist after circle audit
+
+        if (status.equals("Unavailable")) {
+
+            jsonObject.put("auditStatus", "No Images To Audit");
+
+        } else {
+
+            jsonObject.put("auditStatus", "Available");
+
+            if (circleStatus==2){
+                cirStatus="Rejected";
+            }else{
+                cirStatus="Accepted";
+            }
+
+            // String imagePath = (String) detailJson.get("imagePath");
+
+            for (int i = 0; i < imgCount; i++) {
+                String filepath = "../resources/ftpimages/" + custUID + "/" + custUID + "_" + (i + 1) + ".jpg";
+                filepathList.add(filepath);
+            }
+            String mobNo = (String) detailJson.get("mobile");
+            Integer scanid = (Integer) detailJson.get("scanID");
+            String sim_no = (String) detailJson.get("simNo");
+            String username = (String) detailJson.get("name");
+            String address = (String) detailJson.get("address");
+            Integer actualCount = (Integer) detailJson.get("actualCount");
+            //String circleRemarks=(String)detailJson.get("circleRemarks");
+            jsonObject.put("mobile", mobNo);
+            jsonObject.put("scanID", scanid);
+            jsonObject.put("simNo", sim_no);
+            jsonObject.put("name", username);
+            jsonObject.put("address", address);
+            jsonObject.put("imgCount", imgCount);
+            jsonObject.put("actualCount", actualCount);
+            jsonObject.put("filePathList", filepathList);
+            //jsonObject.put("circleRemarks",circleRemarks);
+            jsonObject.put("custuid", custUID);
+            jsonObject.put("cirStatus",cirStatus);
+        }
+        return jsonObject;
+    }
+
+
+
+
 
     @RequestMapping(value = "/getCustomerDetailsForAoAudit", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
@@ -3558,6 +3647,7 @@ class HomeController {
         JSONObject jsonObject = new JSONObject();
         HttpSession session = request.getSession();
         JSONObject ftpdetailsjson=new JSONObject();
+
         String spokecode = (String) session.getAttribute("spoke_code");
         Integer circle_code = (Integer) session.getAttribute("cirCode");
         //String spokecode="DELSOU205"; Currently spoke code set static -JIA Sarai

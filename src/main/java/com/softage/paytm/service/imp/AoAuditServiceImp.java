@@ -28,6 +28,11 @@ public class AoAuditServiceImp implements AoAuditService {
     }
 
     @Override
+    public JSONObject getAoAuditDetailsByCircleCodeBasedONPhoneNo(int circle_code, String empcode, String PhoneNo) {
+        return aoAuditDao.getAoAuditDetailsByCircleCodeBasedOnPhoneNo(circle_code,empcode,PhoneNo);
+    }
+
+    @Override
     public String saveAuditEntity(AoAuditEntity aoAuditEntity) {
         return aoAuditDao.saveAoAuditEntity(aoAuditEntity);
     }
